@@ -1,7 +1,7 @@
 # Weekly update and agenda: 27 October 2026
 
 **Student:** Vibhor Malik | **Supervisor:** Dr Borna Noureddin  
-**Status:** Prospective draft as of 2 October 2026, America/Vancouver; AI-assisted text for my review, not completed personal work.  
+**Status:** Prospective draft as of 4 October 2026, America/Vancouver; AI-assisted draft for my review; actual progress remains to be recorded.  
 **Week 4:** 26 October 2026 to 1 November 2026; **12 future active hours**.  
 **Update due:** Tuesday, 27 October 2026, 10:00 am, America/Vancouver.  
 **Meeting proposed:** Wednesday, 28 October 2026, 10:00 to 10:30 am, America/Vancouver; confirmation pending.  
@@ -9,9 +9,9 @@
 
 ## My intended focus
 
-**Reserved evaluation, only if the gates pass.** The October snapshot records zero reserved ranking rows and no reserved parser results. H1 and H2 are not assessed and H3 has not run. I intend to evaluate only after the committed human-evidence, full-freeze and runtime gates are satisfied, then report parser accuracy before ranking outcomes.
+**Reserved evaluation if ready.** The October snapshot records zero reserved ranking rows and no reserved parser results. H1 and H2 are not assessed and H3 has not run. I will use the 23 October readiness decision to check whether all prerequisites are met. Proceed with reserved evaluation only when all prerequisites are met; otherwise keep it pending and agree a feasible completion scope. If it proceeds, I will report parser accuracy before ranking outcomes.
 
-E1 remains frozen. In the drafting snapshot, E2 lacks genuine independent student annotation and available Ollama runtime. H1/H2 are not assessed; descriptive H3 has not run.
+At the 4 October review, E1 was complete and frozen. E2 still needed the independent student pass and available Ollama runtime. H1/H2 were not assessed; descriptive H3 had not run.
 
 ## Actual progress
 
@@ -34,7 +34,7 @@ E1 remains frozen. In the drafting snapshot, E2 lacks genuine independent studen
 | 4 h | If the earlier stages permit it, I plan to run the ranking stage and inspect completeness without retuning prompts, rules, bands or hypotheses from outcomes. | Ranking rows and execution/completeness logs tied to the frozen version. |
 | 2 h | I plan to prepare the update, attend the confirmed check-in and record what was actually discussed. | Reviewed update and actual minutes, clearly separating results from blocked tasks. |
 
-The 12-hour budget includes supervision. Actual logs will exclude AI work and unattended runtime.
+The 12-hour budget includes 45 minutes for the update, 30 minutes for the meeting and 45 minutes for follow-up. Actual logs will exclude agent work and unattended runtime.
 
 ## Obstacle and conditional fallback
 

@@ -26,12 +26,13 @@ DOC_FILES = {
     "meeting-templates.md", "proposal-amendment.md", "publication-roadmap.md",
     "repository-handoff.md", "supervisor-decision-packet.md",
     "supervisor-progress-2026-10-02.md", "windows-and-colab.md", "LLM_RUNTIME.md",
-    "experiment2-annotation-rubric.md",
+    "experiment2-annotation-rubric.md", "supervisor-email-draft.md",
+    "documentation-update-2026-10-04.md",
 }
 DELIVERABLE_FILES = {
     "COMP9500-Research-Paper.pdf", "COMP9500-BCIT-Presentation.pdf",
     "COMP9500-Experiment2-Status.pdf", "COMP9500-Final-Progress-Report.pdf",
-    "COMP9500-135-Hour-Plan.docx",
+    "COMP9500-135-Hour-Plan.docx", "COMP9500-Supervisor-Progress-Report.docx",
 }
 PAPER_FILES = {"manuscript.tex", "references.bib", "IEEEtran.cls", "IEEEtran.bst"}
 PRESENTATION_FILES = {"main.tex", "bcit_logo.png", "speaker-notes.md", "README.md"}
@@ -85,8 +86,9 @@ def selection(path: Path) -> tuple[bool, str]:
 
 README = """# COMP 9500: partial code-review copy
 
-This copy is prepared for a private supervisor repository. No repository,
-remote URL, identity, upload or invitation has been created by this package.
+This is a partial code-review copy. Repository visibility and the actual
+sharing record are documented in docs/repository-handoff.md. Packaging this
+copy does not itself upload files or invite a supervisor.
 
 It contains implementation, test source, frontend source/build, current paper,
 BCIT presentation and selected supervision documents. It excludes all research
@@ -115,7 +117,7 @@ not traversed. Excluded-file hashes are an inventory, not disclosed file
 contents or evidence of experimental execution. The manifest's own digest is
 not embedded in itself. The adjacent ZIP fingerprint covers the whole copy.
 
-Read docs/repository-handoff.md before creating a private repository. Keep the
+Read docs/repository-handoff.md for the actual sharing record. Keep the
 full research archive and its separate fingerprint as the evidence authority.
 """
 

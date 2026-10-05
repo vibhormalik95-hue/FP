@@ -1,7 +1,7 @@
 # Weekly update and agenda: 3 November 2026
 
 **Student:** Vibhor Malik | **Supervisor:** Dr Borna Noureddin  
-**Status:** Prospective draft as of 2 October 2026, America/Vancouver; AI-assisted text for my review, not completed personal work.  
+**Status:** Prospective draft as of 4 October 2026, America/Vancouver; AI-assisted draft for my review; actual progress remains to be recorded.  
 **Week 5:** 2 November 2026 to 8 November 2026; **12 future active hours**.  
 **Update due:** Tuesday, 3 November 2026, 10:00 am, America/Vancouver.  
 **Meeting proposed:** Wednesday, 4 November 2026, 10:00 to 10:30 am, America/Vancouver; confirmation pending.  
@@ -9,9 +9,9 @@
 
 ## My intended focus
 
-**Analyse intended control and quality cost.** The planned primary analysis concerns H1 intent satisfaction against both comparators and H2 intended-direction movement per interaction. H3 is descriptive paired quality estimation, with no non-inferiority claim. The snapshot contains no reserved outcomes, so none of these planned calculations or decisions is represented as completed here.
+**Analysis and interpretation.** The planned primary analysis concerns H1 intent satisfaction against both comparators and H2 intended-direction movement per interaction. H3 is descriptive paired quality estimation, with no non-inferiority claim. The snapshot contains no reserved outcomes, so none of these planned calculations or decisions is represented as completed here.
 
-E1 remains frozen. In the drafting snapshot, E2 lacks genuine independent student annotation and available Ollama runtime. H1/H2 are not assessed; descriptive H3 has not run.
+At the 4 October review, E1 was complete and frozen. E2 still needed the independent student pass and available Ollama runtime. H1/H2 were not assessed; descriptive H3 had not run.
 
 ## Actual progress
 
@@ -33,7 +33,7 @@ E1 remains frozen. In the drafting snapshot, E2 lacks genuine independent studen
 | 3 h | I plan to inspect impossible and already-satisfied cases as sensitivity context without substituting them for the primary analysis. | A clearly separated sensitivity note and supported threats-to-validity discussion. |
 | 2 h | I plan to prepare the update, discuss the evidence at the confirmed meeting and write actual minutes afterward. | Reviewed update and actual decisions, with the next meeting slot checked. |
 
-The 12-hour budget includes supervision. Actual logs will exclude AI work and unattended runtime.
+The 12-hour budget includes 45 minutes for the update, 30 minutes for the meeting and 45 minutes for follow-up. Actual logs will exclude agent work and unattended runtime.
 
 ## Obstacle and conditional fallback
 

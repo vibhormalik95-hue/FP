@@ -1,12 +1,12 @@
 week,start_date,end_date,planned_active_hours,update_due_local,meeting_proposed_local,timezone,focus
-1,2026-10-05,2026-10-11,13,2026-10-06T10:00:00,2026-10-07T10:00:00,America/Vancouver,"Confirm scope, ownership and the completion plan"
-2,2026-10-12,2026-10-18,12,2026-10-13T10:00:00,2026-10-14T10:00:00,America/Vancouver,Read the evidence and complete eligible annotation
-3,2026-10-19,2026-10-25,12,2026-10-20T10:00:00,2026-10-21T10:00:00,America/Vancouver,"Agreement, adjudication and runtime readiness"
-4,2026-10-26,2026-11-01,12,2026-10-27T10:00:00,2026-10-28T10:00:00,America/Vancouver,"Reserved evaluation, only if the gates pass"
-5,2026-11-02,2026-11-08,12,2026-11-03T10:00:00,2026-11-04T10:00:00,America/Vancouver,Analyse intended control and quality cost
-6,2026-11-09,2026-11-15,13,2026-11-10T10:00:00,2026-11-11T10:00:00,America/Vancouver,Reproduce the implementation and app
-7,2026-11-16,2026-11-22,12,2026-11-17T10:00:00,2026-11-18T10:00:00,America/Vancouver,Independent numerical and claims review
-8,2026-11-23,2026-11-29,12,2026-11-24T10:00:00,2026-11-25T10:00:00,America/Vancouver,Write the complete research argument
-9,2026-11-30,2026-12-06,12,2026-12-01T10:00:00,2026-12-02T10:00:00,America/Vancouver,Apply supervisor feedback and finish artifact documentation
-10,2026-12-07,2026-12-13,12,2026-12-08T10:00:00,2026-12-09T10:00:00,America/Vancouver,Rehearse and complete release verification
-11,2026-12-14,2026-12-18,13,2026-12-15T10:00:00,2026-12-16T10:00:00,America/Vancouver,"Final review, submission and handoff"
+1,2026-10-05,2026-10-11,13,2026-10-06T10:00:00,2026-10-07T10:00:00,America/Vancouver,"Scope and evidence review"
+2,2026-10-12,2026-10-18,12,2026-10-13T10:00:00,2026-10-14T10:00:00,America/Vancouver,Sources and independent annotation
+3,2026-10-19,2026-10-25,12,2026-10-20T10:00:00,2026-10-21T10:00:00,America/Vancouver,"Agreement and runtime readiness"
+4,2026-10-26,2026-11-01,12,2026-10-27T10:00:00,2026-10-28T10:00:00,America/Vancouver,"Reserved evaluation if ready"
+5,2026-11-02,2026-11-08,12,2026-11-03T10:00:00,2026-11-04T10:00:00,America/Vancouver,Analysis and interpretation
+6,2026-11-09,2026-11-15,13,2026-11-10T10:00:00,2026-11-11T10:00:00,America/Vancouver,Engineering and reproduction
+7,2026-11-16,2026-11-22,12,2026-11-17T10:00:00,2026-11-18T10:00:00,America/Vancouver,Cold review and personal checks
+8,2026-11-23,2026-11-29,12,2026-11-24T10:00:00,2026-11-25T10:00:00,America/Vancouver,Complete paper draft
+9,2026-11-30,2026-12-06,12,2026-12-01T10:00:00,2026-12-02T10:00:00,America/Vancouver,Supervisor revisions and artifacts
+10,2026-12-07,2026-12-13,12,2026-12-08T10:00:00,2026-12-09T10:00:00,America/Vancouver,Rehearsal and release candidate
+11,2026-12-14,2026-12-18,13,2026-12-15T10:00:00,2026-12-16T10:00:00,America/Vancouver,"Final review and submission"

@@ -1,0 +1,282 @@
+{
+  "purpose": "documentation wording update; no new experiment",
+  "prepared_utc": "2026-10-05T05:24:30.942021+00:00",
+  "base_commit": "a9a9c4d46c7c59a00be3bd986338a222a855d090",
+  "files": [
+    {
+      "path": "README-CODE-REVIEW.md",
+      "sha256": "66e67dd18067c089468ef0d462dbb321227c10a2542bcb050a2748d068d8b989",
+      "bytes": 1843
+    },
+    {
+      "path": "README.md",
+      "sha256": "d71d891af2ed1bfbf4a3a8adbe80225eb7cd7f98d7e48104be6db00adc7da68e",
+      "bytes": 6700
+    },
+    {
+      "path": "START-HERE.md",
+      "sha256": "04736756e96ab00fde7bd39792cae3f5fff03346206a8b30d2873142cf2fce54",
+      "bytes": 2994
+    },
+    {
+      "path": "deliverables/COMP9500-135-Hour-Plan.docx",
+      "sha256": "b61457b9c31ab2706b1ebedb47a3c367ea3aed368fd6dc57372fa2dfb499a967",
+      "bytes": 33256
+    },
+    {
+      "path": "deliverables/COMP9500-BCIT-Presentation.pdf",
+      "sha256": "d6d166407b4336b7110b2ece2664049363566e8b309aadbbcc974b4ba17b90db",
+      "bytes": 238014
+    },
+    {
+      "path": "deliverables/COMP9500-Experiment2-Status.pdf",
+      "sha256": "074dc9d2df2f99277a956261278cf9b2fa8b9abb16c6b094c28e9f8456112263",
+      "bytes": 45893
+    },
+    {
+      "path": "deliverables/COMP9500-Final-Progress-Report.pdf",
+      "sha256": "91a3513637d24d01bbe70961e34b8afb632c3cd4f6fac49ffa418bebde09c0c6",
+      "bytes": 107365
+    },
+    {
+      "path": "deliverables/COMP9500-Research-Paper.pdf",
+      "sha256": "c3f63816e447b6022093047180d66d354d8b88539c3706822fb0aa5b2472412e",
+      "bytes": 248115
+    },
+    {
+      "path": "deliverables/COMP9500-Supervisor-Progress-Report.docx",
+      "sha256": "df26769fb95570c5811554f6d178f773b656dad7d59b9b73e2a2914de18bc997",
+      "bytes": 31104
+    },
+    {
+      "path": "docs/135-hour-plan.md",
+      "sha256": "13d31212a28454b30b233beeedbda94abcb9bc78dac9583fd9b85f6f72bb893b",
+      "bytes": 10203
+    },
+    {
+      "path": "docs/documentation-update-2026-10-04.md",
+      "sha256": "b91c2f33d647397a797c0819dca160e7d3d9ffbeac35f98a06f081e57ef36b8f",
+      "bytes": 3210
+    },
+    {
+      "path": "docs/experiment2-status.md",
+      "sha256": "60c4179ff7362c38d6b02ddeb91ccb9866e392610e53bde6f322eb5b7fff1167",
+      "bytes": 3827
+    },
+    {
+      "path": "docs/final-progress-report.md",
+      "sha256": "e75694e8a7b80eb41e013083f69a2e1db772e243871348f950f02c365424fd14",
+      "bytes": 6664
+    },
+    {
+      "path": "docs/proposal-amendment.md",
+      "sha256": "6726b554093386a88084eac35565ef7b7275b2593f1c1d06bcdf1b1d399fb0ce",
+      "bytes": 7467
+    },
+    {
+      "path": "docs/repository-handoff.md",
+      "sha256": "6a617065be2a95debf8acd020c9d693c1c4aae3f4f843815e63ecaa473b00837",
+      "bytes": 2837
+    },
+    {
+      "path": "docs/supervision/2026-10-06-update-and-agenda.md",
+      "sha256": "c730e45be0dc251cd842c47849d96493c192b1f9d11c86f8b916dffc0cef02fb",
+      "bytes": 5677
+    },
+    {
+      "path": "docs/supervision/2026-10-07-meeting-minutes.md",
+      "sha256": "38c9f9c0eee927f49bc61da87e173c893f77455b373f5bff6a39ff3f459245d1",
+      "bytes": 3665
+    },
+    {
+      "path": "docs/supervision/2026-10-13-update-and-agenda.md",
+      "sha256": "93612626c5a867981499bf182fe5987b1b387aec2f0a07402bc3b8c8c245fa93",
+      "bytes": 5091
+    },
+    {
+      "path": "docs/supervision/2026-10-14-meeting-minutes.md",
+      "sha256": "06ce9a651ee53b8fd6279d78758501184066b0a6fe1ebda68a53104f6eb2b1e0",
+      "bytes": 3561
+    },
+    {
+      "path": "docs/supervision/2026-10-20-update-and-agenda.md",
+      "sha256": "6d914feaad8d221a75eef73a819be05daca185625f275fad08d16d8e89528ed2",
+      "bytes": 5284
+    },
+    {
+      "path": "docs/supervision/2026-10-21-meeting-minutes.md",
+      "sha256": "4c06da069ae1c56af1fc3709ef21b4e54ae5baf55cf75063d3be182c84abfa14",
+      "bytes": 3611
+    },
+    {
+      "path": "docs/supervision/2026-10-27-update-and-agenda.md",
+      "sha256": "e6015dd478be3a3d38fffe6f054d8d2df1e16463fd6a9e1f8e19ed539b33f7c4",
+      "bytes": 5314
+    },
+    {
+      "path": "docs/supervision/2026-10-28-meeting-minutes.md",
+      "sha256": "f939614b67e2fd038918f4816afd360c8097f334b8b21d9de635a0e0f28dfbdc",
+      "bytes": 3633
+    },
+    {
+      "path": "docs/supervision/2026-11-03-update-and-agenda.md",
+      "sha256": "b18d77a6ec7ee82a8fb7af74f43b128e2db8cad22c7d6a62caf78a8a01b826d4",
+      "bytes": 5160
+    },
+    {
+      "path": "docs/supervision/2026-11-04-meeting-minutes.md",
+      "sha256": "89ac886bec65052128fe234653120562910a8de96573557e50adef928ea80e74",
+      "bytes": 3757
+    },
+    {
+      "path": "docs/supervision/2026-11-10-update-and-agenda.md",
+      "sha256": "8f5ac9384ab01dc648a94e0fe546064372c7d3da0652dde375b10e80ce4d9e24",
+      "bytes": 4295
+    },
+    {
+      "path": "docs/supervision/2026-11-11-meeting-minutes.md",
+      "sha256": "9fcb7f755825558ebccf0cc3712ef6187eb77bb662cffd665e8aca22cf9320ce",
+      "bytes": 3142
+    },
+    {
+      "path": "docs/supervision/2026-11-17-update-and-agenda.md",
+      "sha256": "5dfe35b980ecd809faeb1d8301911d3fac007b4c84384745488303640446f9f5",
+      "bytes": 4218
+    },
+    {
+      "path": "docs/supervision/2026-11-18-meeting-minutes.md",
+      "sha256": "e36d2c0b5edf16e9954bd8ce9d12841480269a5064aa6d8d0db881a08dfae733",
+      "bytes": 3108
+    },
+    {
+      "path": "docs/supervision/2026-11-24-update-and-agenda.md",
+      "sha256": "2d4b76ff51d6ffdb6af8eb9e5a4a68dc9483d725f6cef580704c5db342878645",
+      "bytes": 4345
+    },
+    {
+      "path": "docs/supervision/2026-11-25-meeting-minutes.md",
+      "sha256": "257c7d53d108c47a887ab8b60a8f213886ca8440ad4e5fa5647d2ace0e1e6d7b",
+      "bytes": 3184
+    },
+    {
+      "path": "docs/supervision/2026-12-01-update-and-agenda.md",
+      "sha256": "11d1efa3577ce6aee9b55521b168f90a0f9fc15373ca67cab4ffc19b95b179a5",
+      "bytes": 4274
+    },
+    {
+      "path": "docs/supervision/2026-12-02-meeting-minutes.md",
+      "sha256": "fa1e113b2981e1cffe4548d94ed3497d90be87a9846b63db1907919bd000a398",
+      "bytes": 3127
+    },
+    {
+      "path": "docs/supervision/2026-12-08-update-and-agenda.md",
+      "sha256": "00a2a21d6d8a45d30f5113093d0a3605337c55029e7456166464e8048c3ea6aa",
+      "bytes": 4291
+    },
+    {
+      "path": "docs/supervision/2026-12-09-meeting-minutes.md",
+      "sha256": "1737fb01d41cb67209ee42c1542e2080e69dd61526b581284111dc078f30e943",
+      "bytes": 3170
+    },
+    {
+      "path": "docs/supervision/2026-12-15-update-and-agenda.md",
+      "sha256": "34026b62a05d3a96fe6f7d88bf043b2a2c1d126e4fcd222d8de823d91830ffbd",
+      "bytes": 4449
+    },
+    {
+      "path": "docs/supervision/2026-12-16-meeting-minutes.md",
+      "sha256": "faf9e9000c9956bbbb661d15d905bebec9ab85b76980791cb05b2db8c66e7c0c",
+      "bytes": 3223
+    },
+    {
+      "path": "docs/supervision/COMP9500-Prefilled-Weekly-Workbook.md",
+      "sha256": "1948ad7248d42834111172c7b5c43694e5e611ca893f6f715079a4300346b5fd",
+      "bytes": 94895
+    },
+    {
+      "path": "docs/supervision/README.md",
+      "sha256": "41f0624faeae114a08ada049f02c6ad2dd3d1b874e619409501b588349a3d1df",
+      "bytes": 4026
+    },
+    {
+      "path": "docs/supervision/decisions-and-risks.md",
+      "sha256": "beac230bc115ec50854042dc23bb81705d2181844e76182133a26a832b2ac80a",
+      "bytes": 5620
+    },
+    {
+      "path": "docs/supervision/planned-hours.csv",
+      "sha256": "3216b54c84a07ec902f44ee767c7b730d1a7c96505ba8d9a256c2baef14d2067",
+      "bytes": 1373
+    },
+    {
+      "path": "docs/supervision/prefilled-readme.md",
+      "sha256": "13f8edd51a0be09854281e50a0def2de927a6a54f916bb4f347efbae5f5b68f0",
+      "bytes": 3479
+    },
+    {
+      "path": "docs/supervision/requirements-matrix.md",
+      "sha256": "8fc05c029edd85f563e5e20434f077d8b38acf8ab0c37127e6d3e9ec2e7751cb",
+      "bytes": 4073
+    },
+    {
+      "path": "docs/supervisor-decision-packet.md",
+      "sha256": "8e4292e3f4b1924319ccb89459754f10c112970e7d61748c488fc3bdd48d4145",
+      "bytes": 4929
+    },
+    {
+      "path": "docs/supervisor-email-draft.md",
+      "sha256": "47e8c66dd10d82c26038d855aabf49c687c13835ed3d776c89a59825126afe1c",
+      "bytes": 1355
+    },
+    {
+      "path": "docs/supervisor-progress-2026-10-02.md",
+      "sha256": "7dffcac3c87ed8f80a28bee33750a206d3d6c88a12bdcf910ee3b660353a3b3d",
+      "bytes": 5641
+    },
+    {
+      "path": "paper/manuscript.tex",
+      "sha256": "ebeb94298cd73ea57065a3ff848609457724273915ebc8028d0379caf1cba78a",
+      "bytes": 54874
+    },
+    {
+      "path": "presentation-bcit/README.md",
+      "sha256": "d0ca70582844fc297caddd0af9484915209b56c6e9c87f67073a0a9a1b3aa1b6",
+      "bytes": 2946
+    },
+    {
+      "path": "presentation-bcit/main.tex",
+      "sha256": "b54ec6dfa42ede98e17b8359200fa45101bf0982bb2415d92d4ff3ffe5e6d92c",
+      "bytes": 20895
+    },
+    {
+      "path": "presentation-bcit/speaker-notes.md",
+      "sha256": "4f97b718c90f144bb528fe7b8f81b9d2a4602510b3be60d5454e5e3a3c298c5b",
+      "bytes": 19773
+    },
+    {
+      "path": "scripts/build_plan_doc.py",
+      "sha256": "d4402fc1ab581b0a605e09096a37c3eedaf8ff050f25a1c7b600c4f57af5fe11",
+      "bytes": 5987
+    },
+    {
+      "path": "scripts/build_progress_report.py",
+      "sha256": "58f01becbf99b19817c2d6bae2853995e667942de0c95c86faa803eafef2ad84",
+      "bytes": 2644
+    },
+    {
+      "path": "scripts/prepare_code_review_copy.py",
+      "sha256": "5b733a820e8680edce3c6e5aaf6015bd34b00c6ea20dba5a1dec99f158ed4712",
+      "bytes": 9481
+    }
+  ],
+  "source_documents": [
+    {
+      "name": "COMP9500-135-Hour-Weekly-Plan-2026-10-04(1).docx",
+      "sha256": "aabf0dd3c01aaf5b55dcba5a955b29cf1f021eb42b051a4e594ca2aba528d284"
+    },
+    {
+      "name": "COMP9500-Supervisor-Progress-Report-2026-10-04(1).docx",
+      "sha256": "74c6ba016f2d238b4c7a333490347449a2c46cca7aa320f50906e52d9d0939dc"
+    }
+  ]
+}

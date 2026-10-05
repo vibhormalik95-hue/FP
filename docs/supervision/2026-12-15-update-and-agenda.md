@@ -1,12 +1,12 @@
 # Weekly update and agenda: 15 December 2026
 
-**Prospective draft as of 2 October 2026, America/Vancouver**
+**Prospective draft as of 4 October 2026, America/Vancouver**
 
 **Student:** Vibhor Malik. **Supervisor:** Dr Borna Noureddin.  
 **Planning week:** 11 of 11, 14 December to 18 December 2026; 13 planned hours within 135 future active student hours.  
 **Update due:** Tuesday, 15 December 2026, by 10:00 am, America/Vancouver.  
 **Meeting proposed:** Wednesday, 16 December 2026, 10:00 to 10:30 am, America/Vancouver.  
-**Authorship:** AI-assisted planning draft for my review, not evidence of completed student work. 18 December remains provisional. Any submission target and follow-up meeting must be confirmed from actual course or supervisor evidence.
+**Authorship:** AI-assisted planning draft for my review. 18 December remains provisional. Any submission target and follow-up meeting must be confirmed from actual course or supervisor evidence.
 
 ## Progress and evidence status
 
@@ -15,11 +15,11 @@
 **Release and prior actions:** Not yet recorded; version identifier and genuine previous minutes needed.  
 **Plan deviations:** Not yet recorded; actual effort, blockers and agreed reallocation evidence needed.
 
-E1 is frozen. E2 is blocked by pending genuine student annotation and unavailable Ollama. H1/H2 are not assessed; H3 is unrun and descriptive. No future result or approval is implied.
+At the 4 October review, E1 was complete and frozen. E2 still needed the independent student pass and available Ollama runtime. H1/H2 were not assessed; descriptive H3 had not run. I will update this status when evidence changes.
 
 ## Planned work and expected evidence
 
-**Focus: Final review, submission and handoff.** I plan to apply final corrections only where agreement has actually been recorded, verify the release, and check evidence for all five assessment components. I will practise difficult questions and the demo recovery path, then submit only the version and materials authorized through the confirmed course process.
+**Focus: Final review and submission.** I plan to apply final corrections only where agreement has actually been recorded, verify the release, and check evidence for all five assessment components. I will practise difficult questions and the demo recovery path, then submit only the version and materials authorized through the confirmed course process.
 
 I plan to revisit the assessment matrix, actual feedback and the final claim-to-evidence table. I will check my explanation of the contribution, quality cost, reproducibility limits and AI assistance before submission, recording genuine reading and practice only after they occur.
 
@@ -28,7 +28,7 @@ I plan to revisit the assessment matrix, actual feedback and the final claim-to-
 | Final agreed corrections | 3 h |
 | Release hashes and five assessment components | 3 h |
 | Question practice and demo recovery | 3 h |
-| Approved submission and retention of actual receipt | 2 h |
+| Submission preparation and receipts when submitted | 2 h |
 | Update, meeting and subsequent minutes | 2 h |
 
 I expect a final identified release, an assessment-evidence checklist, an honest actual-work record and a remaining-limitations statement. A submission receipt will exist only if submission really occurs; it must identify the actual time, destination and version. I plan to move the usual Saturday allocation into evenings before the provisional Friday deadline.
@@ -58,4 +58,4 @@ If E2 remains blocked, I plan to seek an explicit decision on the accurately lim
 **Attachments or links sent:** Not yet recorded; sent message and exact versions needed.  
 **Deadline:** 18 December 2026 remains provisional pending confirmation.
 
-I will record progress only after it occurs. Agent work and unattended runtime are excluded from student hours. This draft does not populate CSV logs.
+The two supervision hours cover 45 minutes for the update, 30 minutes for the meeting and 45 minutes for follow-up. I will record actual work separately, excluding agent work and unattended runtime.

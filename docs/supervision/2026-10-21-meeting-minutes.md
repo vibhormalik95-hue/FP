@@ -1,6 +1,6 @@
 # Prospective meeting record: 21 October 2026
 
-**Status:** Prospective draft as of 2 October 2026, America/Vancouver. **The meeting has not occurred as of this drafting snapshot.**  
+**Status:** Prospective draft as of 4 October 2026, America/Vancouver. **Actual minutes will be added after the meeting.**  
 **Intended participants:** Vibhor Malik and Dr Borna Noureddin.  
 **Proposed time:** Wednesday, 21 October 2026, 10:00 to 10:30 am, America/Vancouver; confirmation pending.  
 **Related update:** `2026-10-20-update-and-agenda.md`  
@@ -8,7 +8,7 @@
 
 ## My proposed discussion, not actual minutes
 
-I intend to discuss **agreement, adjudication and runtime readiness**. I will bring only evidence that exists by the meeting date. E1 remains frozen. In the drafting snapshot, E2 lacks genuine independent student annotation and available Ollama runtime. H1/H2 are not assessed; descriptive H3 has not run.
+I intend to discuss **agreement and runtime readiness**. I will bring only evidence that exists by the meeting date. At the 4 October review, E1 was complete and frozen. E2 still needed the independent student pass and available Ollama runtime. H1/H2 were not assessed; descriptive H3 had not run.
 
 | Minutes | Proposed discussion |
 | --- | --- |
@@ -36,9 +36,9 @@ Decision topics: D06 remaining annotation/adjudication issues; D09 runtime route
 | Proposed action | Proposed owner | Suggested timing | Required evidence |
 | --- | --- | --- | --- |
 | Preserve passes and complete agreement/adjudication in sequence, if eligible | Vibhor Malik, proposed | Within 19 to 25 October if prerequisites exist | Preserved inputs, agreement report and blinded adjudication record. |
-| Verify runtime and report a go/no-go gate status | Vibhor Malik, proposed | Before any reserved evaluation and the proposed 28 October check-in | Runtime log, model identifier and complete gate checklist or blocked status. |
+| Verify runtime and report a go/no-go gate status | Vibhor Malik, proposed | By 23 October, before any reserved evaluation | Runtime log, model identifier and complete gate checklist or blocked status. |
 
-If E2 remains blocked, I will discuss the costed fallback in `2026-10-20-update-and-agenda.md` and any effect on later work. I will not treat planned work or a suggested owner/date as agreed or completed.
+If E2 remains blocked, I will discuss the costed fallback in `2026-10-20-update-and-agenda.md` and any effect on later work. I will record any agreed changes after the meeting.
 
 ## Next meeting and distribution
 

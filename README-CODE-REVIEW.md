@@ -1,34 +1,15 @@
-# COMP 9500: partial code-review copy
+# COMP 9500 code review copy
 
-This copy is prepared for a private supervisor repository. No repository,
-remote URL, identity, upload or invitation has been created by this package.
+This is the public code-review repository at https://github.com/vibhormalik95-hue/FP. The first upload completed on 4 October 2026, Vancouver time, at commit a9a9c4d46c7c59a00be3bd986338a222a855d090. Supervisor access has not been confirmed.
 
-It contains implementation, test source, frontend source/build, current paper,
-BCIT presentation and selected supervision documents. It excludes all research
-data and result folders, Experiment 2 language banks, caches, parser predictions,
-sealed material, original source evidence and dependency runtimes.
+The copy contains implementation, test source, frontend source and build, the current paper, BCIT presentation and selected supervision documents. It excludes research data, models, results, Experiment 2 language banks, caches, predictions, original source evidence and dependency runtimes.
 
-This is NOT the executable full evidence package. Research evaluation,
-checkpoint inference, cached replay, full acceptance tests and archive/release
-verification require the separate authoritative research archive. Some isolated
-synthetic unit tests may run after dependency installation, but no full-suite or
-experiment execution is claimed for this partial copy. References to omitted
-evidence in the original README, source and documents are intentional.
+Full research evaluation, checkpoint inference, replay, full acceptance tests and archive/release verification require the separate authoritative research archive. Some synthetic tests may run after dependency installation. This repository does not claim a new full-suite or experiment execution.
 
-This is NOT blind-annotator material. It contains parser implementation and
-development summaries. The student must not read it while performing the
-independent annotation pass. Resolve prior exposure and use the separate
-annotation handoff before making any independence statement.
+This copy contains parser implementation and development summaries. It is not blind annotation material. Follow docs/annotation-handoff.md and resolve prior exposure before the independent student pass.
 
-Experiment 1 is complete and frozen. Experiment 2 reserved results remain
-pending. AI work is disclosed in docs/academic-use.md. Future student hours,
-reading and personal verification must be logged as they actually occur.
+Experiment 1 is complete and frozen. Experiment 2 reserved results remain pending. The current progress report and completion plan use the student's revised wording. AI work remains documented in docs/academic-use.md. Actual student hours and personal checks are recorded when they occur.
 
-sharing-manifest.json records included and excluded regular source files with
-SHA-256 hashes. Excluded dependency/VCS directories are listed separately and
-not traversed. Excluded-file hashes are an inventory, not disclosed file
-contents or evidence of experimental execution. The manifest's own digest is
-not embedded in itself. The adjacent ZIP fingerprint covers the whole copy.
+sharing-manifest.json is the retained inventory of the original sharing copy, including hashes of files excluded from that copy. Its source-file hashes describe that original snapshot, not later documentation revisions. The separately dated documentation update record identifies subsequent edits. The full archive and its fingerprint remain the authority for research evidence.
 
-Read docs/repository-handoff.md before creating a private repository. Keep the
-full research archive and its separate fingerprint as the evidence authority.
+Read docs/repository-handoff.md for the repository record and docs/supervision/README.md for weekly work.

@@ -32,7 +32,7 @@ def add_table(doc, lines):
     rows = [[cell.strip() for cell in line.strip().strip('|').split('|')] for line in lines]
     rows = [row for row in rows if not all(re.fullmatch(r':?-+:?', value) for value in row)]
     count = len(rows[0])
-    widths = [0.5, 0.9, 0.5, 2.0, 3.0] if count == 5 else [1.5, 0.9, 4.5]
+    widths = {2: [2.0, 4.9], 3: [1.5, 0.9, 4.5], 4: [0.5, 1.35, 0.55, 4.5], 5: [0.5, 0.9, 0.5, 2.0, 3.0]}.get(count, [6.9 / count] * count)
     table = doc.add_table(rows=0, cols=count)
     table.autofit = False
     for col, width in zip(table.columns, widths):
@@ -121,6 +121,9 @@ def main():
         if line.startswith('# '):
             p = doc.add_paragraph(style='Title')
             inline(p, line[2:].replace('-', ' '))
+        elif line.startswith('### '):
+            p = doc.add_paragraph(style='Heading 2')
+            inline(p, line[4:])
         elif line.startswith('## '):
             title = line[3:]
             p = doc.add_paragraph(style='Heading 1')

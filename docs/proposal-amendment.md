@@ -2,9 +2,11 @@
 
 Student: Vibhor Malik. Supervisor: Borna Noureddin. Intended course: COMP 9500.
 
+Updated: 4 October 2026, Vancouver time.
+
 The supplied COMP 9080 proposal is an **unsigned draft**. Neither research path is ticked, all three approval signature blocks are blank, and the office Approved field is unmarked. The copy therefore provides no evidence of approval. This package does not establish whether a separate approval exists. Ask the supervisor to confirm COMP 9500, select the appropriate research path and complete the applicable approval process before treating this revised scope as approved. This document records changes from the draft text; it is not an amendment to an evidenced approved scope.
 
-Sources: `sources/COMP9080-Proposal-Unsigned.docx` (Research Path, Objectives, Expected Outcomes, Approval Signatures) and `sources/course-email-transcript.md` (student-supplied transcript of the 21 September 2026 course email). The transcript states course requirements; it does not approve this student's methodology. The native email and its presentation-template attachment are not included.
+Sources: `sources/COMP9080-Proposal-Unsigned.docx` (Research Path, Objectives, Expected Outcomes, Approval Signatures) and `sources/course-email-transcript.md` (student-supplied transcript of the 21 September 2026 course email), retained in the full evidence archive. The transcript states course requirements; it does not approve this student's methodology. The native email is not included. The separately supplied BCIT presentation template has been applied to the current deck and is documented in `presentation-bcit/README.md`.
 
 Original proposed title retained pending decision: **LLM-Mediated Natural Language Controls for Short-Video Recommender Systems: An Offline Study of Controllability**.
 

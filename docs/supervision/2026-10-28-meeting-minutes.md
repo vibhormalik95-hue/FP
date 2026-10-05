@@ -1,6 +1,6 @@
 # Prospective meeting record: 28 October 2026
 
-**Status:** Prospective draft as of 2 October 2026, America/Vancouver. **The meeting has not occurred as of this drafting snapshot.**  
+**Status:** Prospective draft as of 4 October 2026, America/Vancouver. **Actual minutes will be added after the meeting.**  
 **Intended participants:** Vibhor Malik and Dr Borna Noureddin.  
 **Proposed time:** Wednesday, 28 October 2026, 10:00 to 10:30 am, America/Vancouver; confirmation pending.  
 **Related update:** `2026-10-27-update-and-agenda.md`  
@@ -8,7 +8,7 @@
 
 ## My proposed discussion, not actual minutes
 
-I intend to discuss **reserved evaluation, only if the gates pass**. I will bring only evidence that exists by the meeting date. E1 remains frozen. In the drafting snapshot, E2 lacks genuine independent student annotation and available Ollama runtime. H1/H2 are not assessed; descriptive H3 has not run.
+I intend to discuss **reserved evaluation if ready**. I will bring only evidence that exists by the meeting date. At the 4 October review, E1 was complete and frozen. E2 still needed the independent student pass and available Ollama runtime. H1/H2 were not assessed; descriptive H3 had not run.
 
 | Minutes | Proposed discussion |
 | --- | --- |
@@ -38,7 +38,7 @@ Decision topics: Whether evidence supports moving from the frozen gates to evalu
 | Complete the one reserved evaluation only if all gates pass | Vibhor Malik, proposed | Within 26 October to 1 November if prerequisites permit | Opening record, parser report, preserved cache and complete ranking logs. |
 | Prepare analysis handoff or a precise blocked-status note | Vibhor Malik, proposed | Before the proposed 4 November check-in | Versioned completeness statement and an agreed reallocation if needed. |
 
-If E2 remains blocked, I will discuss the costed fallback in `2026-10-27-update-and-agenda.md` and any effect on later work. I will not treat planned work or a suggested owner/date as agreed or completed.
+If E2 remains blocked, I will discuss the costed fallback in `2026-10-27-update-and-agenda.md` and any effect on later work. I will record any agreed changes after the meeting.
 
 ## Next meeting and distribution
 

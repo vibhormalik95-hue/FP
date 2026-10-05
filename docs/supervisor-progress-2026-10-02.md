@@ -1,3 +1,5 @@
+> Historical draft from 2 October. The current supervisor report is [final-progress-report.md](final-progress-report.md), updated to the revised 4 October Word document. Repository status and the current schedule should be read there and in [repository-handoff.md](repository-handoff.md).
+
 # COMP 9500 progress report for the supervisor
 
 **Project:** LLM-Mediated Natural Language Controls for Short-Video Recommender Systems: An Offline Study of Controllability  

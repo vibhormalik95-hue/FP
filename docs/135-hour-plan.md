@@ -1,90 +1,139 @@
-# COMP 9500 prospective 135-hour completion and verification plan
+# COMP 9500 Completion Plan
+
+Weekly work and evidence for the remaining term
 
 **Student:** Vibhor Malik  
-**Supervisor:** Dr Borna Noureddin  
-**Prepared:** 2 October 2026, Vancouver time (3 October 2026 UTC)  
-**Planning window:** 5 October to 18 December 2026  
-**Status:** Proposed schedule. December 2026 is the student's selected target; 18 December is a provisional planning date, not a confirmed course deadline.
+**Supervisor:** Dr Borna Noureddin
 
-The project already has code, recorded Experiment 1 results and draft research artifacts. This plan allocates **135 future active student hours** to understanding, checking, completing and improving that work with the supervisor. It is not a claim that 135 hours have been worked, that the student manually produced every artifact, or that Experiment 2 is complete. Agent work and unattended machine runtime do not count as student hours. Actual dates, effort and evidence will be entered only after the work occurs.
+**Prepared:** 4 October 2026, Vancouver time
 
-The course is 15 weeks and approximately 135 hours. Eleven calendar weeks remain in this proposed window. This plan therefore uses twelve hours in eight weeks and thirteen hours in three weeks: **8 × 12 + 3 × 13 = 135 hours**. It does not retrospectively fill the earlier course weeks. The supervisor should confirm that this remaining-term allocation and the December deadline are appropriate.
+I will verify the work, complete the gated follow-up experiment, and finish the paper, repository and presentation. The project already has substantial artifacts; this budget focuses on understanding, checking and completing them.
 
-## Weekly working pattern
+**Working window:** 5 October to 18 December 2026. This is a proposed remaining-term plan; the final deadline and allocation need supervisor confirmation.
 
-A normal 12-hour week can use Monday, Tuesday, Thursday and Friday evenings for two hours each, Wednesday for 1.5 hours plus the 30-minute supervision meeting, and Saturday for two hours. Add one hour in weeks 1, 6 and 11. Weeks 1 to 10 run Monday to Sunday. In the final week, move the normal Saturday allocation into evenings before the provisional Friday deadline. Shift sessions as needed, keeping the weekly budget visible. The update, meeting and minutes together receive two hours within each week's total; they are not additional hours.
+## Weekly allocation
 
-The individual meeting transcript agrees on **Wednesdays at 10:00 am for about 30 minutes**, subject to the supervisor's recurring invitation and any adjustment for the other student. Send the update **by Tuesday at 10:00 am**, at least 24 hours beforehand. Prepare minutes after each actual meeting, ideally that day. All dates below use **America/Vancouver**, including the change in UTC offset. Nothing here sends an email, grants repository access or creates an accepted meeting. Check all dates against the institution's calendar, including whether the proposed November 11 slot needs moving.
+| Week | Dates in 2026 | Hours | Main deliverable |
+|---|---|---:|---|
+| 1 | 5 to 11 Oct | 13 | Scope and evidence review |
+| 2 | 12 to 18 Oct | 12 | Sources and independent annotation |
+| 3 | 19 to 25 Oct | 12 | Agreement and runtime readiness |
+| 4 | 26 Oct to 1 Nov | 12 | Reserved evaluation if ready |
+| 5 | 2 to 8 Nov | 12 | Analysis and interpretation |
+| 6 | 9 to 15 Nov | 13 | Engineering and reproduction |
+| 7 | 16 to 22 Nov | 12 | Cold review and personal checks |
+| 8 | 23 to 29 Nov | 12 | Complete paper draft |
+| 9 | 30 Nov to 6 Dec | 12 | Supervisor revisions and artifacts |
+| 10 | 7 to 13 Dec | 12 | Rehearsal and release candidate |
+| 11 | 14 to 18 Dec | 13 | Final review and submission |
+| Total | 5 Oct to 18 Dec | 135 | |
 
-## Dated work and evidence
+Eight weeks at 12 hours and three at 13 hours total **135 future active student hours**. I will record actual work after it occurs, excluding agents' processing time and unattended runtime. Every week includes two hours for the update, meeting and minutes.
 
-| Week | Dates | Hours | Main work | Evidence to retain |
-|---|---|---:|---|---|
-| 1 | 05 Oct to 11 Oct | 13 | Confirm scope, ownership and the completion plan. | Scope decision record, exposure declaration, repository handoff checklist. |
-| 2 | 12 Oct to 18 Oct | 12 | Read the evidence and complete eligible annotation. | Reading log; genuine completed student sheet and receipt only if actually completed. |
-| 3 | 19 Oct to 25 Oct | 12 | Agreement, adjudication and runtime readiness. | Agreement record, preserved label passes, adjudication record, real runtime evidence and gate status. |
-| 4 | 26 Oct to 01 Nov | 12 | Reserved evaluation, only if the gates pass. | One-time opening record, complete parser cache, ranking rows and execution logs, or a precise blocked status. |
-| 5 | 02 Nov to 08 Nov | 12 | Analyse intended control and quality cost. | Statistics with denominators, intervals, BH-adjusted values and an explicit hypothesis decision table. |
-| 6 | 09 Nov to 15 Nov | 13 | Reproduce the implementation and app. | Commands, logs, build diff, browser checklist and explicit platform status. |
-| 7 | 16 Nov to 22 Nov | 12 | Independent numerical and claims review. | Cold reports, response log, numerical traceability and revised claims. |
-| 8 | 23 Nov to 29 Nov | 12 | Write the complete research argument. | Complete IEEE/ACM LaTeX draft within the course page range and a claim-to-evidence table. |
-| 9 | 30 Nov to 06 Dec | 12 | Apply supervisor feedback and finish artifact documentation. | Revised paper, official-template slides, repository access evidence and answered review items. |
-| 10 | 07 Dec to 13 Dec | 12 | Rehearse and complete release verification. | Timed rehearsal notes, final cold-review responses and a candidate release fingerprint. |
-| 11 | 14 Dec to 18 Dec | 13 | Final review, submission and handoff. | Final release, actual work log, genuine submission receipt and remaining-limitations statement. |
-| **Total** | **5 October to 18 December** | **135** | **Prospective active student work.** | **Actual work remains to be logged.** |
+## Weeks 1 to 5
 
-## Task budgets
+Each weekly budget below includes 2 hours for supervision: 45 minutes to prepare the update, 30 minutes for the meeting, and 45 minutes for follow-up actions. These hours are included in the stated total.
 
-**Week 1, 13 hours:** Review the E1 conclusion and proposal departures (3 h); inspect provenance and the existing E2 commitment without reserved wording (3 h); review AI disclosure and annotation exposure (2 h); prepare private repository handoff (3 h); update, meeting and minutes (2 h).
+### Week 1: Scope and evidence review
 
-**Week 2, 12 hours:** Read primary sources and verify claim boundaries (3 h); complete genuine independent student annotation if eligible (6 h); check worksheet syntax without generating labels (1 h); update, meeting and minutes (2 h).
+Review the E1 conclusion and proposal departures (3 h); Trace provenance and the existing E2 parser commitment (3 h); Record AI use and prior annotation exposure (2 h); Prepare repository access and agree feedback dates (3 h).
 
-**Week 3, 12 hours:** Compare independent labels and report pre-adjudication agreement (3 h); blinded adjudication and evidence preservation (3 h); verify the existing parser commitment and full-freeze prerequisites (2 h); restore and verify the recorded Ollama model on a suitable machine (2 h); update, meeting and minutes (2 h).
+Evidence for discussion: Scope and assessment checklist, exposure record, repository handoff plan and agreed review dates.
 
-**Week 4, 12 hours:** Verify full-freeze inputs and provenance (2 h); run and actively monitor reserved parsing (2 h); report parser accuracy before ranking (2 h); run ranking and inspect completeness (4 h); update, meeting and minutes (2 h).
+### Week 2: Sources and independent annotation
 
-**Week 5, 12 hours:** Recompute H1 by class and pooled plus H2 under the prespecified 11-test family (4 h); compute paired quality estimates and user-bootstrap intervals (3 h); inspect impossible and already-satisfied cases without replacing the primary analysis (3 h); update, meeting and minutes (2 h).
+Read primary sources and record supported claims (3 h); Complete the student annotation pass if eligible (6 h); Check submission syntax without generating labels (1 h).
 
-**Week 6, 13 hours:** Run a fresh environment from a path with a space and relocated server (3 h); inspect frontend rebuild and browser acceptance (3 h); replay committed evidence and distinguish replay from fresh inference (3 h); resolve engineering findings without changing frozen methods (2 h); update, meeting and minutes (2 h).
+Evidence for discussion: Source notes and, if eligible and completed, the original student worksheet with genuine provenance.
 
-**Week 7, 12 hours:** Prepare a self-contained release for cold review (2 h); personally recompute selected high-risk numbers (3 h); respond to numerical and claims findings with evidence (3 h); audit citations and experiment separation (2 h); update, meeting and minutes (2 h).
+### Week 3: Agreement and runtime readiness
 
-**Week 8, 12 hours:** Revise the paper with supported results or explicit pending status (5 h); review related work and the contribution boundary (3 h); verify abstract length, figures, captions and references (2 h); update, meeting and minutes (2 h).
+Calculate agreement before adjudication (2 h); Adjudicate without model predictions and preserve both passes (3 h); Restore and verify the specified Llama runtime (3 h); Check freeze prerequisites and document the execution decision (2 h).
 
-**Week 9, 12 hours:** Apply recorded feedback to paper and documentation (4 h); clean private repository documentation and reproduction instructions (3 h); complete the supplied BCIT presentation template and speaker notes (3 h); update, meeting and minutes (2 h).
+Evidence for discussion: Agreement and adjudication records, runtime log and a written go or no-go decision by 23 October.
 
-**Week 10, 12 hours:** Rehearse a 20 to 25 minute talk and 10 to 15 minute question session (4 h); run final archive, release and isolated replay checks where evidence permits (3 h); resolve remaining factual or packaging findings (3 h); update, meeting and minutes (2 h).
+### Week 4: Reserved evaluation if ready
 
-**Week 11, 13 hours:** Apply final agreed corrections (3 h); verify release hashes and all five assessment components (3 h); practise questions and the demo recovery path (3 h); submit approved artifacts and retain actual submission receipt (2 h); update, meeting and minutes (2 h).
+Verify all freeze inputs and provenance (2 h); Execute and actively monitor reserved parsing (2 h); Report parser accuracy before ranking (2 h); Execute ranking and check output completeness (4 h).
 
-## Relationship to the 15-week course structure
+Evidence for discussion: One reserved opening record, parser report, caches and ranking rows; otherwise an explicit blocked status.
 
-| Course phase | Course weeks | Remaining work covered here |
-|---|---|---|
-| Initiation, literature and design | 1 to 5 | Completion-plan weeks 1 to 3 revisit scope, sources, provenance and the existing committed design. Their existence is not evidence of earlier student work. |
-| Implementation | 6 to 10 | Completion-plan weeks 3 to 6 verify runtime, gates, execution and the existing implementation. Frozen experimental methods remain unchanged. |
-| Evaluation | 11 to 12 | Completion-plan weeks 4 to 7 cover the gated study, analysis and independent review. |
-| Report writing | 13 to 14 | Completion-plan weeks 8 to 9 develop the final argument and apply feedback. |
-| Submission and presentation | 15 | Completion-plan weeks 10 to 11 cover rehearsal, release checks and actual submission. |
+### Week 5: Analysis and interpretation
 
-This is a mapping of remaining tasks to the course phases, not a claim that eleven weeks replace the registered fifteen-week course or that any milestone has been approved.
+Recompute H1 by class and pooled, and H2 (4 h); Estimate paired quality changes and user-level intervals (3 h); Inspect feasibility, already-satisfied cases and limitations (3 h).
 
-## Scientific gates and delay policy
+Evidence for discussion: Traceable tables, denominators, confidence intervals, adjusted tests and an explicit hypothesis decision table.
 
-Experiment 1 is finished. Preserve its frozen data, models, prompts, gold labels, `data/parser_test.jsonl` and results. Replay can verify evidence but cannot make the exposed test untouched again. The existing Experiment 2 parser commitment is dated **2026-09-29T05:32:37.866606+00:00**. Verify it rather than creating a new timestamp or developing again on this bank.
+## Weeks 6 to 11
 
-Experiment 2 is currently blocked: the genuine independent student annotation is missing, and the current environment has no available Ollama runtime. The reserved test has no parser or ranking results. H1 and H2 are not assessed; H3 has not run and is descriptive. An AI may help validate JSON syntax but may not supply the student's labels, identity, attestation or invented annotation times.
+The same 2-hour supervision allocation is included each week. My budget covers preparing inputs, personally checking findings and responding, not agents' processing time.
 
-Use `annotation-handoff.md` to record exposure before accessing the annotation-only pack. Before annotation, the student must truthfully record any prior access to reserved wording, author labels, parser implementation, predictions or accuracy summaries and follow the rubric's eligibility conditions. Existing reports have already shown development summaries. Do not sign an independence statement without checking what was actually viewed. If exposure compromises the required pass, keep this study blocked and discuss a separately identified prospective study with fresh material where required. A conversation with the supervisor does not retroactively repair blinding or permit a false receipt.
+### Week 6: Engineering and reproduction
 
-The required sequence is: verify the existing parser commitment; genuine eligible student annotation; agreement before adjudication; adjudication blinded to model predictions; full freeze; verified Llama 3.1 8B runtime; one reserved evaluation; parser accuracy before ranking results. Retain unsuccessful attempts. Do not tune prompts, rules, policy, metric bands or hypotheses from reserved wording or outcomes. Follow `experiment2-runbook.md` for the precise stage commands and receipts.
+Test a fresh environment at a path with spaces and a relocated server (3 h); Check the frontend rebuild and browser behaviour (3 h); Replay committed evidence and investigate hash discrepancies (3 h); Resolve engineering findings and update reproduction instructions (2 h).
 
-If any gate prevents weeks 2 to 5, use that week's existing hours for primary-source reading, Experiment 1 evidence tracing, reproducibility checks, paper clarity or presentation practice. Record the reallocation in the decision register. Keep Experiment 2 pending and move its dependent work only after the supervisor agrees a feasible schedule within the remaining budget. Do not promise delayed work at zero hours. If H1 or H2 eventually fails, report that natural-language feedback did not demonstrate an expressiveness advantage under this protocol, identifying the failed comparison.
+Evidence for discussion: Execution logs, frontend diff, browser checklist and resolved or disclosed reproduction findings.
 
-## Evidence and assessment
+### Week 7: Cold review and personal checks
 
-Use `supervision/README.md` for the dated update and minutes files, the blank actual-hours log, and the five-component assessment matrix. Weekly templates contain planned prompts, not completed activities or supervisor decisions. Retain verbatim cold-review reports. Their authors' time does not belong in the student's 135-hour log.
+Prepare a self-contained package for review (2 h); Recompute selected high-risk numbers (3 h); Resolve review findings with evidence (3 h); Audit citations and separate the two experiments clearly (2 h).
 
-The official BCIT presentation template and logo have now been supplied. Template availability does not establish supervisor approval of the research or completion of the presentation. Confirm the IEEE or ACM report format, final deadline, revised scope, research path and AI disclosure. Discuss the original Experiment 1 NI wording: the absolute-margin numerical pass is uninformative at this baseline, and the relative-margin interpretation is unsupported. Experiment 2 makes no NI claim.
+Evidence for discussion: Verbatim numerical, claims and engineering reports; response log and a claim-to-evidence map.
 
-The course email specifies a 6 to 10 page LaTeX paper, a 150 to 250 word abstract, and a 20 to 25 minute presentation plus 10 to 15 minutes for questions. Windows and Google Colab remain unverified until actually checked. Academic completion and publication readiness require the supervisor's judgment and evidence beyond software test passes.
+### Week 8: Complete paper draft
+
+Integrate supported findings into the full paper (5 h); Refine related work and the contribution boundary (3 h); Check abstract, figures, captions, references and page count (2 h).
+
+Evidence for discussion: Complete 6 to 10 page LaTeX draft by 27 November, including explicit pending status wherever results are absent.
+
+### Week 9: Supervisor revisions and artifacts
+
+Apply supervisor feedback to the paper and documentation (4 h); Complete repository documentation and access checks (3 h); Finish the BCIT slide deck and speaker notes (3 h).
+
+Evidence for discussion: Feedback response log, revised paper, repository handoff evidence and a complete presentation draft.
+
+### Week 10: Rehearsal and release candidate
+
+Rehearse the talk, questions and demonstration (4 h); Run archive, release and isolated replay checks (3 h); Resolve remaining factual and packaging findings (3 h).
+
+Evidence for discussion: Timed 20 to 25 minute talk, 10 to 15 minute question practice and a checked release candidate.
+
+### Week 11: Final review and submission
+
+Apply final agreed corrections (3 h); Check hashes and all five assessment components (3 h); Practise questions and the demo recovery path (3 h); Prepare submission and retain receipts when submitted (2 h).
+
+Evidence for discussion: Final paper, code, artifacts, slides and actual activity record; submission receipt only after submission.
+
+## Supervision and completion decisions
+
+### Weekly working routine
+
+The proposed routine follows our individual meeting discussion: Wednesday at 10:00 am Vancouver time for about 30 minutes, subject to the recurring invitation. I will send the update by Tuesday at 10:00 am and prepare minutes after each actual meeting. The first proposed update is 6 October and check-in is 7 October. We should confirm holiday availability, including the 11 November slot.
+
+A normal 12-hour week fits four two-hour evening sessions on Monday, Tuesday, Thursday and Friday; 1.5 hours on Wednesday plus the 30-minute meeting; and two hours on Saturday. Weeks 1, 6 and 11 add one hour. In the final week, weekend hours move into weekday evenings before the provisional Friday target.
+
+This plan covers the remaining 11 calendar weeks of the 15-week course. Dated update drafts, proposed meeting records and separate actual logs are in [supervision/README.md](supervision/README.md).
+
+A public review repository now exists at [github.com/vibhormalik95-hue/FP](https://github.com/vibhormalik95-hue/FP). Its first commit is `a9a9c4d46c7c59a00be3bd986338a222a855d090`, dated 4 October at 9:55 pm Vancouver time. It excludes data and results; complete artifact handoff and supervisor-access confirmation remain pending.
+
+### Decision before reserved evaluation
+
+Experiment 1 is complete and its evidence remains frozen. Experiment 2's reserved evaluation has not run. The current project records still lack the independent student pass and available Ollama runtime. H1 and H2 are not assessed; H3 has not run and is descriptive.
+
+By **23 October**, check annotation eligibility and actual prior exposure, the student pass, pre-adjudication agreement, blinded adjudication, the existing parser commitment, the full freeze and a verified Llama 3.1 8B runtime. The three-hour runtime allocation is a recovery time box. The original parser commitment dated `2026-09-29T05:32:37.866606+00:00` must be preserved. Use [annotation-handoff.md](annotation-handoff.md) to record exposure and [experiment2-runbook.md](experiment2-runbook.md) for the execution sequence. AI annotations do not replace the required student pass.
+
+**Proceed with reserved evaluation only when all prerequisites are met; otherwise keep it pending and agree a feasible completion scope.** If dependent tasks are delayed, reallocate their existing hours to source reading, E1 evidence tracing, reproduction, paper revisions or presentation practice and record the change in the decision register.
+
+If execution proceeds, open the reserved evaluation once and report parser accuracy before ranking results. Keep failures and impossible cases. Do not tune on test outcomes. Use the user as the analysis unit, average the three seeds within user, retain the prespecified 11-test BH family and report user-level bootstrap intervals. H3 is descriptive, without a non-inferiority claim. If H1 or H2 fails, report that natural-language feedback did not demonstrate an expressiveness advantage under this protocol and explain the failed comparison.
+
+### Evidence required for course completion
+
+| Assessed component | Evidence to bring to the final review |
+|---|---|
+| Meetings and progress | Actual updates, minutes, decisions and a truthful activity log. |
+| Implementation and solution review | Code walkthrough, reproducible checks and documented limitations. |
+| Project report | 6 to 10 page IEEE or ACM LaTeX paper with a 150 to 250 word abstract. |
+| Repository and artifacts | Confirmed supervisor access, documented reproduction steps and a checked release. |
+| Final presentation | BCIT template, 20 to 25 minute talk and preparation for 10 to 15 minutes of questions. |
+
+For the first meeting: confirm the scope and approval route, the 135-hour remaining-term allocation, the final deadline, annotation eligibility, the paper template, the original E1 non-inferiority margin reading, repository access and a feedback turnaround for the 27 November draft. Course completion and publication readiness remain separate judgments.

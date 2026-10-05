@@ -1,6 +1,6 @@
 # Prospective meeting record: 4 November 2026
 
-**Status:** Prospective draft as of 2 October 2026, America/Vancouver. **The meeting has not occurred as of this drafting snapshot.**  
+**Status:** Prospective draft as of 4 October 2026, America/Vancouver. **Actual minutes will be added after the meeting.**  
 **Intended participants:** Vibhor Malik and Dr Borna Noureddin.  
 **Proposed time:** Wednesday, 4 November 2026, 10:00 to 10:30 am, America/Vancouver; confirmation pending.  
 **Related update:** `2026-11-03-update-and-agenda.md`  
@@ -8,7 +8,7 @@
 
 ## My proposed discussion, not actual minutes
 
-I intend to discuss **analyse intended control and quality cost**. I will bring only evidence that exists by the meeting date. E1 remains frozen. In the drafting snapshot, E2 lacks genuine independent student annotation and available Ollama runtime. H1/H2 are not assessed; descriptive H3 has not run.
+I intend to discuss **analysis and interpretation**. I will bring only evidence that exists by the meeting date. At the 4 October review, E1 was complete and frozen. E2 still needed the independent student pass and available Ollama runtime. H1/H2 were not assessed; descriptive H3 had not run.
 
 | Minutes | Proposed discussion |
 | --- | --- |
@@ -38,7 +38,7 @@ Decision topics: Evidence-supported H1/H2 conclusions if evaluated, descriptive 
 | Produce supported primary and descriptive analysis, if valid inputs exist | Vibhor Malik, proposed | Within 2 to 8 November if evaluation is complete | Traceable statistics, adjusted values, intervals and a hypothesis decision table. |
 | Draft bounded conclusions and confirm the next meeting slot | Vibhor Malik to propose; supervisor schedule confirmation requested | Before 10 November update deadline | Evidence-linked conclusion or pending-status note, plus a real scheduling response. |
 
-If E2 remains blocked, I will discuss the costed fallback in `2026-11-03-update-and-agenda.md` and any effect on later work. I will not treat planned work or a suggested owner/date as agreed or completed.
+If E2 remains blocked, I will discuss the costed fallback in `2026-11-03-update-and-agenda.md` and any effect on later work. I will record any agreed changes after the meeting.
 
 ## Next meeting and distribution
 

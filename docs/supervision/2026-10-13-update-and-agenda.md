@@ -1,7 +1,7 @@
 # Weekly update and agenda: 13 October 2026
 
 **Student:** Vibhor Malik | **Supervisor:** Dr Borna Noureddin  
-**Status:** Prospective draft as of 2 October 2026, America/Vancouver; AI-assisted text for my review, not completed personal work.  
+**Status:** Prospective draft as of 4 October 2026, America/Vancouver; AI-assisted draft for my review; actual progress remains to be recorded.  
 **Week 2:** 12 October 2026 to 18 October 2026; **12 future active hours**.  
 **Update due:** Tuesday, 13 October 2026, 10:00 am, America/Vancouver.  
 **Meeting proposed:** Wednesday, 14 October 2026, 10:00 to 10:30 am, America/Vancouver; confirmation pending.  
@@ -9,9 +9,9 @@
 
 ## My intended focus
 
-**Read the evidence and complete eligible annotation.** The annotation handoff says the existing first pass was authored by an AI agent and the genuine student pass is unfinished. It also records prior exposure to development accuracy summaries. I intend to establish an honest eligibility route before any annotation; these drafts do not assert that I am independent or eligible.
+**Sources and independent annotation.** The annotation handoff says the existing first pass was authored by an AI agent and the genuine student pass is unfinished. It also records prior exposure to development accuracy summaries. I intend to establish an honest eligibility route before any annotation; these drafts do not assert that I am independent or eligible.
 
-E1 remains frozen. In the drafting snapshot, E2 lacks genuine independent student annotation and available Ollama runtime. H1/H2 are not assessed; descriptive H3 has not run.
+At the 4 October review, E1 was complete and frozen. E2 still needed the independent student pass and available Ollama runtime. H1/H2 were not assessed; descriptive H3 had not run.
 
 ## Actual progress
 
@@ -33,7 +33,7 @@ E1 remains frozen. In the drafting snapshot, E2 lacks genuine independent studen
 | 1 h | If I have completed an eligible sheet, I plan to validate its format without asking AI to generate or choose labels. | A syntax-validation log tied to the preserved student file. |
 | 2 h | I plan to prepare the update, attend the confirmed meeting and write actual minutes afterward. | Reviewed update and actual meeting record, with sending evidence only after sending. |
 
-The 12-hour budget includes supervision. Actual logs will exclude AI work and unattended runtime.
+The 12-hour budget includes 45 minutes for the update, 30 minutes for the meeting and 45 minutes for follow-up. Actual logs will exclude agent work and unattended runtime.
 
 ## Obstacle and conditional fallback
 

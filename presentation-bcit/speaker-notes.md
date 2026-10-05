@@ -3,7 +3,7 @@
 **Student:** Vibhor Malik  
 **Supervisor:** Borna Noureddin  
 **Paper:** LLM-Mediated Natural Language Controls for Short-Video Recommender Systems: An Offline Study of Controllability  
-**Version:** Supervisor review draft, 2 October 2026, America/Vancouver  
+**Version:** Supervisor review draft, 4 October 2026, Vancouver time  
 **Format:** 22 main slides and six backup slides, using the supplied BCIT Beamer template  
 **Timing:** Proposed 23-minute talk followed by 10 to 15 minutes of questions. This is a rehearsal plan, not a measured delivery time.
 
@@ -147,17 +147,17 @@ Evidence: protocol analysis section. H1 requires both pooled differences to be p
 
 ### 19. Current blockers
 
-Experiment 1 is finished. Experiment 2 lacks the genuine student annotation and a completed reserved evaluation. The delivery environment has no available local Llama runtime, so live execution stops without substituting rules. Windows and Colab are unverified. Passing software checks or recomputing archived summaries cannot remove these limits. Do not call the second experiment completed merely because its code and protocol exist.
+Experiment 1 is finished. Experiment 2 still requires the independent student annotation and a completed reserved evaluation. The 3 October runtime check found no Ollama executable and a refused local endpoint. The specified Llama runtime must be restored and verified before reserved execution. Full research execution on Windows and Colab remains unverified. Software checks and archived summaries provide useful evidence, while the reserved experiment remains pending.
 
-Evidence: `results/experiment2/summary.json` and this delivery's runtime evidence record supplied with the package. The current runtime statement is separate from the archived September 29 Llama runs.
+Evidence: `results/experiment2/summary.json` and `results/experiment2/verification/supervisor-2026-10-03/ollama-availability.json` in the full evidence archive. The 3 October runtime check is separate from the archived September 29 Llama runs.
 
 ### 20. Contribution
 
-The supported contribution is an inspectable separation of parsing, validation, enforcement and measurement, plus a reproducible limitation result on the narrow task. The follow-up protocol adds a falsifiable comparison against both the item proxy and rules. A stronger paper needs completed reserved evidence and a clear justification for its intent construct. Broader language, human evaluation or a stronger backbone would need a separately identified extension with its own prospective decisions. Publication suitability is an assessment to make with the supervisor after examining the evidence, not an outcome this package can guarantee.
+The supported contribution is an inspectable separation of parsing, validation, enforcement and measurement. The tested templates show no observed ranking benefit from LLM parsing, and category boosting has an explicit quality cost. The follow-up protocol adds a falsifiable comparison against both the item proxy and rules. A stronger paper needs completed reserved evidence and a clear justification for its intent construct. Broader language, human evaluation or a stronger backbone would need a separately identified extension with its own prospective decisions. Publication suitability remains a question for supervisor review after examining the evidence.
 
 ### 21. Completion plan
 
-The proposed 135 hours are future student work for reading, verification, completion, discussion and revision. They do not claim that 135 hours have already been completed. The remaining proposed period is eleven calendar weeks, October 5 through December 18. The exact final date needs confirmation. The individual meeting agreement is Wednesday at ten, with the update by Tuesday at ten to meet the 24-hour expectation. Record decisions and actions after each meeting. If annotation or runtime gates cannot be completed, report the blocked study honestly rather than manufacturing a finish.
+The proposed 135 hours cover future student reading, verification, completion, discussion and revision across eleven calendar weeks, 5 October through 18 December. The readiness decision is due by 23 October. Reserved evaluation is planned for 26 October to 1 November if the protocol requirements are satisfied, followed by analysis on 2 to 8 November. Reproduction work occupies 9 to 15 November, cold review 16 to 22 November, and the complete paper draft is due by 27 November. Supervisor revisions, repository handoff and presentation practice follow, with final review and submission preparation during 14 to 18 December. The exact final deadline needs confirmation. The proposed check-in is Wednesday at 10:00 am Vancouver time, with the update by Tuesday at 10:00 am. Record decisions and actions after each actual meeting. If the annotation or runtime requirements remain unmet, retain an explicit blocked status.
 
 Evidence: user-supplied meeting transcripts and course email. The dated weekly plan in the supervision pack supplies task and hour detail.
 
@@ -183,4 +183,3 @@ Ask the supervisor to confirm the revised scope and approval record, the interpr
 5. If demonstrating the app, identify it as the Experiment 1 interface and state the selected parser backend. A rule demo is not a live Llama test.
 6. Keep the PDF available locally and verify the projector rendering on the actual presentation machine. That platform check remains the student's future action.
 7. After rehearsal, log questions that could not be answered and resolve them against source files before claiming personal verification.
-

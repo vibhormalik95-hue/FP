@@ -1,20 +1,20 @@
 # Prospective meeting record: 11 November 2026
 
-**Prospective draft as of 2 October 2026, America/Vancouver**
+**Prospective draft as of 4 October 2026, America/Vancouver**
 
-**The meeting has not occurred as of this drafting snapshot.** This AI-assisted agenda and proposed actions await my review. They are not actual minutes, approval or completed student work.
+**This is a proposed agenda, not actual minutes.** I will record the discussion and decisions after the meeting.
 
 **Student:** Vibhor Malik. **Supervisor:** Dr Borna Noureddin.  
 **Proposed meeting:** Wednesday, 11 November 2026, 10:00 to 10:30 am, America/Vancouver.  
 **Related update:** `2026-11-10-update-and-agenda.md`, due Tuesday at 10:00 am.  
 **Weekly budget:** 13 planned hours, including 2 for update, meeting and minutes, within 135 future active student hours.  
-**Scheduling note:** The proposed 11 November slot needs calendar confirmation or rescheduling. I will not treat it as an accepted meeting.
+**Scheduling note:** We should confirm holiday availability for 11 November or arrange another slot.
 
 ## Drafted discussion
 
-**Focus:** Reproduce the implementation and app. I plan to ask Dr Noureddin which app checks and platform claims are needed for assessment, and whether any extra check fits the remaining budget.
+**Focus:** Engineering and reproduction. I plan to ask Dr Noureddin which app checks and platform claims are needed for assessment, and whether any extra check fits the remaining budget.
 
-E1 remains frozen. E2 has pending genuine student annotation and unavailable Ollama; H1/H2 are not assessed and H3 is unrun and descriptive. If blocked, I propose the update's alternative within existing hours, recording agreed reallocations. 18 December remains provisional.
+At the 4 October review, E1 was complete and frozen, and E2 still needed the independent student pass and available Ollama runtime. H1/H2 were not assessed; descriptive H3 had not run. If still blocked, I will discuss the update's alternative within the existing hours. The 18 December target remains provisional.
 
 | Minutes | Drafted agenda |
 |---|---|
@@ -28,7 +28,7 @@ E1 remains frozen. E2 has pending genuine student annotation and unavailable Oll
 **Actual time, attendees and mode:** Not yet recorded; attendance, timing and meeting-mode evidence needed.  
 **Progress discussed and release:** Not yet recorded; contemporaneous notes and exact version needed.  
 **Obstacles and effort discussed:** Not yet recorded; meeting notes and personal activity evidence needed.  
-**Decisions, rationale and conditions:** Not yet recorded; dated explicit agreement needed. Suggestions or silence cannot establish approval.  
+**Decisions, rationale and conditions:** Not yet recorded; dated explicit agreement needed.  
 **Action commitments:** Not yet recorded; agreed owners and due dates needed. Entries below are proposals only.
 
 ## Proposed actions for discussion

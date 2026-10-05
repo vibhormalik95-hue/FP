@@ -1,8 +1,8 @@
 # Prospective meeting record: 25 November 2026
 
-**Prospective draft as of 2 October 2026, America/Vancouver**
+**Prospective draft as of 4 October 2026, America/Vancouver**
 
-**The meeting has not occurred as of this drafting snapshot.** This AI-assisted agenda and proposed actions await my review. They are not actual minutes, approval or completed student work.
+**This is a proposed agenda, not actual minutes.** I will record the discussion and decisions after the meeting.
 
 **Student:** Vibhor Malik. **Supervisor:** Dr Borna Noureddin.  
 **Proposed meeting:** Wednesday, 25 November 2026, 10:00 to 10:30 am, America/Vancouver.  
@@ -12,9 +12,9 @@
 
 ## Drafted discussion
 
-**Focus:** Write the complete research argument. I plan to ask Dr Noureddin to assess the argument, format and contribution boundary, including the wording needed if E2 cannot be completed.
+**Focus:** Complete paper draft. I plan to ask Dr Noureddin to assess the argument, format and contribution boundary, including any pending E2 status, so I can complete the draft by 27 November and receive feedback in time for Week 9 revisions.
 
-E1 remains frozen. E2 has pending genuine student annotation and unavailable Ollama; H1/H2 are not assessed and H3 is unrun and descriptive. If blocked, I propose the update's alternative within existing hours, recording agreed reallocations. 18 December remains provisional.
+At the 4 October review, E1 was complete and frozen, and E2 still needed the independent student pass and available Ollama runtime. H1/H2 were not assessed; descriptive H3 had not run. If still blocked, I will discuss the update's alternative within the existing hours. The 18 December target remains provisional.
 
 | Minutes | Drafted agenda |
 |---|---|
@@ -28,15 +28,15 @@ E1 remains frozen. E2 has pending genuine student annotation and unavailable Oll
 **Actual time, attendees and mode:** Not yet recorded; attendance, timing and meeting-mode evidence needed.  
 **Progress discussed and release:** Not yet recorded; contemporaneous notes and exact version needed.  
 **Obstacles and effort discussed:** Not yet recorded; meeting notes and personal activity evidence needed.  
-**Decisions, rationale and conditions:** Not yet recorded; dated explicit agreement needed. Suggestions or silence cannot establish approval.  
+**Decisions, rationale and conditions:** Not yet recorded; dated explicit agreement needed.  
 **Action commitments:** Not yet recorded; agreed owners and due dates needed. Entries below are proposals only.
 
 ## Proposed actions for discussion
 
 | Draft action | Proposed owner | Proposed target | Expected evidence |
 |---|---|---|---|
-| Prepare the complete research draft | Vibhor Malik, proposed | 1 December 2026, proposed | Versioned LaTeX source, rendered paper and page/abstract counts. |
-| Prepare a claim-to-evidence and literature review record | Vibhor Malik, proposed | 1 December 2026, proposed | Traceability table, checked citations and genuine reading notes. |
+| Prepare the complete research draft | Vibhor Malik, proposed | 27 November 2026, proposed | Versioned LaTeX source, rendered paper and page/abstract counts. |
+| Prepare a claim-to-evidence and literature review record | Vibhor Malik, proposed | 27 November 2026, proposed | Traceability table, checked citations and genuine reading notes. |
 
 ## Follow-up and distribution
 

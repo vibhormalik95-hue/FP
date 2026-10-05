@@ -44,7 +44,7 @@
 \title[COMP 9500: Natural-language controls]{Natural-Language Controls for\\Short-Video Recommenders}
 \subtitle{An offline study of controllability}
 \author{Vibhor Malik}
-\date{Supervisor review draft: 2 October 2026}
+\date{Supervisor review draft: 4 October 2026, Vancouver time}
 \institute{COMP 9500, M.Sc. Research Project\\British Columbia Institute of Technology\\Supervisor: Borna Noureddin}
 \begin{document}
 
@@ -139,7 +139,7 @@ One boost and one mute request per user, under seeds 42, 43 and 44. The item-fee
 \src{A is not a reconstruction of a commercial feedback algorithm. B must rank identically to A.}
 \end{frame}
 
-\begin{frame}{Parser reliability depends on the language}
+\begin{frame}{Parser results on synthetic language}
 \begin{tabular}{@{}lrr@{}}
 \toprule
 Language material & Llama correct & Meaning\\\midrule
@@ -153,7 +153,7 @@ Adversarial subset & 2/10 & Major weakness\\\bottomrule
 \item The rule parser scores 81/100 on the same broader set.
 \item The 120 canonical wording patterns informed development.
 \end{itemize}
-\src{The adversarial subset belongs to the 100 cases. It is not an additional sample.}
+\src{The adversarial subset belongs to the 100 cases. These finite synthetic sets do not establish general language reliability.}
 \end{frame}
 
 \begin{frame}{Category enforcement works under the policy}
@@ -209,7 +209,7 @@ The absolute 10 percentage point non-inferiority margin is uninformative at this
 \begin{frame}{Experiment 1 conclusion}
 \begin{enumerate}
 \item Deterministic category control works: TCP 11.6\% to 79.2\%, TCER 6.1\% to zero.
-\item Llama parses templates reliably, but broader language reaches only 79/100 and adversarial language 2/10.
+\item Llama parsed 120/120 templated inputs, 79/100 broader synthetic inputs and 2/10 adversarial cases.
 \item All 10/10 explanation fact selections equal the template.
 \item Boost NDCG@10 falls 45.7\%. Non-inferiority is uninformative.
 \item Backbone HR@1 is 0.0--0.46\%, below recency popularity's 8.0\%.
@@ -309,8 +309,8 @@ Experiment 1 & Finished and frozen.\\[0.13cm]
 Experiment 2 H1 / H2 & Not assessed. No pass or failure claim.\\[0.13cm]
 Experiment 2 H3 & Not run. No quality conclusion.\\[0.13cm]
 Student annotation & Required genuine human pass is missing.\\[0.13cm]
-Local Llama runtime & Unavailable in this delivery environment.\\[0.13cm]
-Windows and Colab & Unverified.\\\bottomrule
+Local Llama runtime & Unavailable at the 3 October check.\\[0.13cm]
+Windows and Colab & Full research execution unverified.\\\bottomrule
 \end{tabular}\par
 \src{Software verification does not complete the blocked experiment. No rule output substitutes for Llama.}
 \end{frame}
@@ -319,7 +319,7 @@ Windows and Colab & Unverified.\\\bottomrule
 \textbf{Supported contribution}
 \begin{itemize}
 \item An inspectable implementation separating translation from enforcement.
-\item A reproducible negative result for LLM benefit on simple templates, with an explicit quality cost.
+\item No observed ranking benefit from LLM parsing on the tested templates, with an explicit quality cost.
 \item A prospective protocol for testing richer feedback against both relevant comparators.
 \end{itemize}
 \vspace{0.3cm}
@@ -336,10 +336,10 @@ Windows and Colab & Unverified.\\\bottomrule
 \begin{tabular}{@{}P{2.2cm}P{7.7cm}@{}}
 \toprule
 Proposed period & Main checkpoint\\\midrule
-5--16 October & Scope approval, personal evidence review, annotation and runtime gates.\\[0.18cm]
-19 October--6 November & Reserved evaluation only after gates, error analysis and independent replay.\\[0.18cm]
-9--27 November & Statistical review, claims audit and paper revision.\\[0.18cm]
-30 November--18 December & Repository handoff, rehearsal and final delivery.\\\bottomrule
+5--23 Oct & Scope, sources, annotation and runtime. Readiness decision by 23 October.\\[0.18cm]
+26 Oct--8 Nov & Reserved evaluation 26 Oct--1 Nov if ready. Analysis 2--8 November.\\[0.18cm]
+9--27 Nov & Reproduction 9--15 Nov. Cold review 16--22 Nov. Complete paper draft by 27 Nov.\\[0.18cm]
+30 Nov--18 Dec & Supervisor revisions, repository handoff, rehearsal and final review.\\\bottomrule
 \end{tabular}\par
 \vspace{0.25cm}
 11 remaining calendar weeks, \textbf{135 prospective hours}. Exact submission date requires confirmation.
