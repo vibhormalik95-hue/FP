@@ -1,0 +1,11 @@
+# Versions measured in the Linux CPU verification environment.
+# Install torch from its official CPU index before installing the package.
+numpy==2.3.5
+scipy==1.17.1
+torch==2.5.1
+fastapi==0.135.1
+uvicorn==0.42.0
+pytest==9.0.2
+httpx==0.28.1
+pydantic==2.13.5
+

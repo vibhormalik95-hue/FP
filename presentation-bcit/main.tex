@@ -1,0 +1,452 @@
+\documentclass[10pt]{beamer}
+% Adapted from the supervisor-supplied BCIT Beamer template.
+% Original 4:3 aspect ratio, theme, colours and logo placement retained.
+\usetheme[progressbar=head,numbering=fraction,sectionpage=none]{metropolis}
+\usepackage{appendixnumberbeamer}
+\usepackage{booktabs,array,amsmath,graphicx,tikz}
+\newcolumntype{P}[1]{>{\raggedright\arraybackslash}p{#1}}
+\usetikzlibrary{positioning,arrows.meta}
+\definecolor{bcitblue}{HTML}{003C71}
+\definecolor{bcityellow}{HTML}{FFEA2E}
+\definecolor{bcitlight}{HTML}{F8F9FF}
+\definecolor{bcitgray}{HTML}{6E6E6E}
+\setbeamercolor{palette primary}{bg=bcitblue,fg=bcitlight}
+\setbeamercolor{progress bar}{fg=bcityellow,bg=bcitblue!30}
+\setbeamercolor{progress bar in head/foot}{fg=bcityellow,bg=bcitblue!30}
+\setbeamercolor{frametitle}{bg=bcitblue,fg=bcitlight}
+\setbeamercolor{block title}{bg=bcitblue!90,fg=bcitlight}
+\setbeamercolor{block body}{bg=bcitblue!10,fg=black}
+\setbeamercolor{block title alerted}{bg=bcityellow!90,fg=bcitblue}
+\setbeamercolor{block body alerted}{bg=bcityellow!10,fg=black}
+\setbeamercolor{item}{fg=bcitblue}
+\setbeamercolor{itemize item}{fg=bcitblue}
+\setbeamertemplate{blocks}[rounded]
+% Fit the template title content inside the plain frame's available height.
+\setbeamertemplate{title page}{
+  \begin{minipage}[b][\textheight]{\textwidth}
+  \vfill
+  \usebeamertemplate*{title}
+  \usebeamertemplate*{subtitle}
+  \usebeamertemplate*{title separator}
+  \usebeamertemplate*{author}
+  \usebeamertemplate*{date}
+  \usebeamertemplate*{institute}
+  \vfill
+  \end{minipage}
+}
+\setbeamertemplate{frame footer}{\raisebox{-0.1cm}{\includegraphics[height=0.4cm]{bcit_logo.png}}\hspace{0.4cm}\tiny\insertshorttitle}
+\makeatletter
+\setlength{\metropolis@progressonsectionpage@linewidth}{2pt}
+\setlength{\metropolis@progressinheadfoot@linewidth}{2pt}
+\makeatother
+\newcommand{\src}[1]{\vfill{\tiny\color{bcitgray}#1}}
+\newcommand{\cat}[1]{\texttt{category\_#1}}
+\title[COMP 9500: Natural-language controls]{Natural-Language Controls for\\Short-Video Recommenders}
+\subtitle{An offline study of controllability}
+\author{Vibhor Malik}
+\date{Supervisor review draft: 2 October 2026}
+\institute{COMP 9500, M.Sc. Research Project\\British Columbia Institute of Technology\\Supervisor: Borna Noureddin}
+\begin{document}
+
+{\setbeamertemplate{frame footer}{}
+\setbeamertemplate{background}{\begin{tikzpicture}[remember picture,overlay]
+\node[anchor=north east,xshift=-0.5cm,yshift=-0.5cm] at (current page.north east){\includegraphics[height=0.8cm]{bcit_logo.png}};
+\end{tikzpicture}}
+\begin{frame}[plain]
+
+\maketitle
+\end{frame}}
+
+\section{Research question}
+\begin{frame}{Current research position}
+\begin{itemize}
+\item Experiment 1 establishes category enforcement under a fixed policy.
+\item The LLM adds no ranking advantage on the templated task, and boosting costs predictive quality.
+\item Experiment 2 tests richer intents, but its reserved evaluation remains blocked.
+\end{itemize}
+\begin{alertblock}{Claim boundary}
+No demonstrated expressiveness advantage, accuracy gain or improvement in human experience.
+\end{alertblock}
+\src{Evidence: Experiment 1 summaries and Experiment 2 status record, archived 29 September 2026.}
+\end{frame}
+
+\begin{frame}{Research question}
+Can one natural-language interaction satisfy a richer intended change than one item reaction?
+\vspace{0.35cm}
+\begin{itemize}
+\item A compound request can specify several categories, strength and exceptions.
+\item The LLM must also outperform a rule parser to establish its own contribution.
+\item Offline compliance and historical prediction measure different outcomes.
+\end{itemize}
+\vspace{0.2cm}
+The claim that language \emph{feels more natural} requires human evidence beyond this study.
+\end{frame}
+
+\section{Related work}
+\begin{frame}{Prior work supports a control question}
+\small
+\begin{tabular}{@{}P{2.1cm}P{8.0cm}@{}}
+\toprule
+Source & Relevant evidence\\\midrule
+Mozilla, 2022 & Dislike prevented 12\% of unwanted recommendations and Not interested 11\%, relative to no feedback.\\[0.15cm]
+Ramos et al., 2024 & Positive profile edits raised target Coverage@10 without further fine-tuning. Amazon-MT RMSE: 0.941 versus MF 0.925, where lower is better.\\[0.15cm]
+Sanner et al., 2023 & Language preferences were competitive in a near cold-start movie setting.\\[0.15cm]
+Chen and Pu, 2012 & Critiquing systems already studied richer explicit preference feedback.\\\bottomrule
+\end{tabular}\par
+\src{Historical results in different settings. Full references and source links: backup slide and speaker notes.}
+\end{frame}
+
+\section{Experiment 1}
+\begin{frame}{Translation and enforcement are separate}
+\begin{tabular}{@{}P{2.2cm}P{7.9cm}@{}}
+\toprule
+Stage & Role\\\midrule
+Recommender & Frozen SASRec-style scores for the candidate catalogue.\\[0.18cm]
+Translator & Llama 3.1 8B or rules compile language into a validated command.\\[0.18cm]
+Enforcer & Shared deterministic reranking applies the command.\\[0.18cm]
+Explanation & Verified facts describe the displayed item and control.\\\bottomrule
+\end{tabular}\par
+\vspace{0.35cm}
+A correct hard exclusion comes from the enforcement code. It does not demonstrate language understanding.
+\end{frame}
+
+\begin{frame}{Data and information boundaries}
+\begin{itemize}
+\item KuaiRec cohort: \textbf{865 users}, \textbf{2,593 candidates}, 31 opaque category identifiers.
+\item Positive event: watch ratio $>2$, an engagement proxy.
+\item Global chronological windows: nominal 70\% training, 15\% request history, 15\% held-out evaluation.
+\item Requests use training and request history only.
+\item Quality target: first eligible held-out positive item.
+\end{itemize}
+\vspace{0.2cm}
+Synthetic requests and numeric category labels limit claims about real preferences and language.
+\src{Filtered cohort counts, not the upstream KuaiRec matrix size. Frozen candidate policy permits seen items.}
+\end{frame}
+
+\begin{frame}{Five matched configurations}
+\small
+\begin{tabular}{@{}cP{8.9cm}@{}}
+\toprule
+ID & Mechanism\\\midrule
+A & One simulated reaction changes one historical exemplar item.\\[0.15cm]
+B & A plus display-only explanations.\\[0.15cm]
+C & Free text compiles into a category control.\\[0.15cm]
+D & An editable preference sentence compiles into a category control.\\[0.15cm]
+E & Text, profile and explanations, with duplicate commands removed.\\\bottomrule
+\end{tabular}\par
+\vspace{0.25cm}
+One boost and one mute request per user, under seeds 42, 43 and 44. The item-feedback proxy is an explicit design choice.
+\src{A is not a reconstruction of a commercial feedback algorithm. B must rank identically to A.}
+\end{frame}
+
+\begin{frame}{Parser reliability depends on the language}
+\begin{tabular}{@{}lrr@{}}
+\toprule
+Language material & Llama correct & Meaning\\\midrule
+Templated inputs & 120/120 & Canonical task\\
+Broader synthetic set & 79/100 & Below 85\% target\\
+Adversarial subset & 2/10 & Major weakness\\\bottomrule
+\end{tabular}\par
+\vspace{0.3cm}
+\begin{itemize}
+\item 79\% exceeds the 70\% floor. It misses the 85\% target.
+\item The rule parser scores 81/100 on the same broader set.
+\item The 120 canonical wording patterns informed development.
+\end{itemize}
+\src{The adversarial subset belongs to the 100 cases. It is not an additional sample.}
+\end{frame}
+
+\begin{frame}{Category enforcement works under the policy}
+\begin{tabular}{@{}lrr@{}}
+\toprule
+Top-10 exposure & A & C, D and E\\\midrule
+Boost target share, TCP & 11.6\% & 79.2\%\\[0.15cm]
+Muted target share, TCER & 6.1\% & 0.0\%\\\bottomrule
+\end{tabular}\par
+\vspace{0.4cm}
+\begin{itemize}
+\item Hard exclusion guarantees zero exposure when parsed correctly.
+\item Category-wide boosts affect more items than A's single-item adjustment.
+\item Rule and LLM paths produce identical feeds for this task.
+\end{itemize}
+\src{Averages over 865 users and three seeds. This is enforcement evidence, not an LLM advantage.}
+\end{frame}
+
+\begin{frame}{Steering has a predictive quality cost}
+\begin{tabular}{@{}lrr@{}}
+\toprule
+Boost requests & A & C\\\midrule
+NDCG@10 & 0.03012 & 0.01637\\\bottomrule
+\end{tabular}\par
+\vspace{0.35cm}
+\textbf{45.7\% relative decrease.}
+\vspace{0.3cm}
+
+Paired mean change: $-0.01375$\par
+95\% user-bootstrap interval: $[-0.02086,-0.00655]$.
+\vspace{0.3cm}
+
+This post-hoc secondary contrast measures agreement with a historical next item. It does not measure user dissatisfaction after steering.
+\src{Post-hoc exploratory interval, outside the frozen primary BH family.}
+\end{frame}
+
+\begin{frame}{A weak backbone limits the quality claim}
+\begin{tabular}{@{}lr@{}}
+\toprule
+Uncontrolled ranking & HR@1\\\midrule
+SASRec, seed 42 & 0.000\%\\
+SASRec, seed 43 & 0.347\%\\
+SASRec, seed 44 & 0.462\%\\
+Recency popularity & 7.977\%\\\bottomrule
+\end{tabular}\par
+\vspace{0.3cm}
+Recency pools all users' request history. The model's weights use the older training window. This comparison is descriptive.
+\vspace{0.2cm}
+The absolute 10 percentage point non-inferiority margin is uninformative at this baseline.
+\src{Post-hoc uncontrolled baselines. A pooled HR@1 interval includes zero. No accuracy gain is established.}
+\end{frame}
+
+\begin{frame}{Experiment 1 conclusion}
+\begin{enumerate}
+\item Deterministic category control works: TCP 11.6\% to 79.2\%, TCER 6.1\% to zero.
+\item Llama parses templates reliably, but broader language reaches only 79/100 and adversarial language 2/10.
+\item All 10/10 explanation fact selections equal the template.
+\item Boost NDCG@10 falls 45.7\%. Non-inferiority is uninformative.
+\item Backbone HR@1 is 0.0--0.46\%, below recency popularity's 8.0\%.
+\end{enumerate}
+\src{The study establishes bounded enforcement and its limitations. It does not establish an LLM advantage or useful quality preservation.}
+\end{frame}
+
+\section{Experiment 2}
+\begin{frame}{Experiment 2: richer intent per interaction}
+\begin{description}
+\item[H1] Higher induced intent satisfaction than both the one-item proxy and the rule parser.
+\item[H2] More intended-direction rank movement than one item reaction, with one interaction each.
+\item[H3] Paired NDCG@10 and HR@1 changes against A and recency popularity, with intervals.
+\end{description}
+\vspace{0.25cm}
+H3 is descriptive. It has no pass threshold and no non-inferiority claim.
+\src{Prespecified protocol dated 29 September 2026. H1 and H2 remain unassessed.}
+\end{frame}
+
+\begin{frame}{Four classes of intent}
+\small
+\begin{tabular}{@{}P{2.0cm}P{4.0cm}P{3.7cm}@{}}
+\toprule
+Class & Illustrative request & Top-10 requirement\\\midrule
+Compound & More X and less Y & $n(X)\geq2$, $n(Y)\leq1$\\[0.18cm]
+Graded & A bit more X & $2\leq n(X)\leq4$\\
+ & Much less X / none of X & $n(X)\leq1$ / $n(X)=0$\\[0.18cm]
+Floor & Less X, but not zero & $1\leq n(X)\leq2$\\[0.18cm]
+Conditional & More X only if also Y & $n(X\cap Y)\geq2$ and no increase in $X\setminus Y$ count\\\bottomrule
+\end{tabular}\par
+\vspace{0.25cm}
+Success also requires a full list and positive intended movement. Bands are operational conventions.
+\src{X and Y denote opaque categories. Conditional means the same item carries both labels. These are illustrative wording forms, not reserved cases.}
+\end{frame}
+
+\begin{frame}{A matched interaction budget}
+\begin{itemize}
+\item A gets one positive or negative reaction on one historical exemplar.
+\item Rule and LLM get the complete utterance once and share the same ranker.
+\item Assignments use only earlier history and a committed SHA-256 scheme.
+\item Channels share permitted pre-test information. Recency and SASRec use that information differently.
+\end{itemize}
+\vspace{0.3cm}
+The budget matches interaction count. It does not equalize semantic content, user effort or every possible feedback algorithm.
+\end{frame}
+
+\begin{frame}{Reserved evaluation procedure}
+\begin{enumerate}
+\item Preserve the 48 development and 100 reserved cases.
+\item Retain the parser commitment and record prior exposure.
+\item Obtain the student's independent annotation, agreement and blinded adjudication.
+\item Complete the freeze and verify the Llama runtime.
+\item Open reserved evaluation once. Report parser accuracy before ranking results.
+\end{enumerate}
+\vspace{0.2cm}
+AI annotation cannot supply the required independent student pass.
+\src{Separate development, annotation and evaluation accesses have distinct receipts. No tuning on reserved outcomes.}
+\end{frame}
+
+\begin{frame}{Development evidence is not a test result}
+\begin{tabular}{@{}lrr@{}}
+\toprule
+Development version & Rule parser & Llama\\\midrule
+v1 & 48/48 & 24/48\\
+v2, after development & 48/48 & 48/48\\\bottomrule
+\end{tabular}\par
+\vspace{0.3cm}
+\begin{itemize}
+\item Prompt and wording changed during development.
+\item v1 includes 10 operational errors for Llama.
+\item The 100 reserved parser outcomes remain unmeasured.
+\item Recorded reserved ranking rows: \textbf{0}.
+\end{itemize}
+\src{Archived development runs dated 29 September 2026. Equal development scores establish no LLM advantage.}
+\end{frame}
+
+\begin{frame}{Prespecified analysis}
+\begin{itemize}
+\item Unit: user. Average three seeds within each user.
+\item H1: four classes and pooled, against A and rules.
+\item H2: pooled intended movement against A.
+\item One family of \textbf{11} Wilcoxon comparisons, BH correction.
+\item User-bootstrap intervals from \textbf{5,000} resamples.
+\item Retain impossible and already-satisfied cases with explicit flags.
+\end{itemize}
+\vspace{0.2cm}
+H1 needs both positive pooled contrasts with $q<0.05$. H2 needs its positive pooled contrast with $q<0.05$.
+\src{Signed-rank symmetry, tied/sparse differences and BH dependence assumptions remain limitations.}
+\end{frame}
+
+\section{Completion and discussion}
+\begin{frame}{Current completion limits}
+\begin{tabular}{@{}P{3.3cm}P{6.7cm}@{}}
+\toprule
+Component & Status\\\midrule
+Experiment 1 & Finished and frozen.\\[0.13cm]
+Experiment 2 H1 / H2 & Not assessed. No pass or failure claim.\\[0.13cm]
+Experiment 2 H3 & Not run. No quality conclusion.\\[0.13cm]
+Student annotation & Required genuine human pass is missing.\\[0.13cm]
+Local Llama runtime & Unavailable in this delivery environment.\\[0.13cm]
+Windows and Colab & Unverified.\\\bottomrule
+\end{tabular}\par
+\src{Software verification does not complete the blocked experiment. No rule output substitutes for Llama.}
+\end{frame}
+
+\begin{frame}{Contribution and publication direction}
+\textbf{Supported contribution}
+\begin{itemize}
+\item An inspectable implementation separating translation from enforcement.
+\item A reproducible negative result for LLM benefit on simple templates, with an explicit quality cost.
+\item A prospective protocol for testing richer feedback against both relevant comparators.
+\end{itemize}
+\vspace{0.3cm}
+\textbf{Work needed for a stronger paper}
+\begin{itemize}
+\item Complete the reserved study and report its actual outcome.
+\item Justify the intent measures and resolve scope with the supervisor.
+\item Evaluate broader language and human experience in a separately approved extension.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Proposed 135-hour completion plan}
+\small
+\begin{tabular}{@{}P{2.2cm}P{7.7cm}@{}}
+\toprule
+Proposed period & Main checkpoint\\\midrule
+5--16 October & Scope approval, personal evidence review, annotation and runtime gates.\\[0.18cm]
+19 October--6 November & Reserved evaluation only after gates, error analysis and independent replay.\\[0.18cm]
+9--27 November & Statistical review, claims audit and paper revision.\\[0.18cm]
+30 November--18 December & Repository handoff, rehearsal and final delivery.\\\bottomrule
+\end{tabular}\par
+\vspace{0.25cm}
+11 remaining calendar weeks, \textbf{135 prospective hours}. Exact submission date requires confirmation.
+\src{Weekly check-in: Wednesday 10:00 am. Update by Tuesday 10:00 am. Meeting notes follow each meeting. No completed hours are claimed here.}
+\end{frame}
+
+\begin{frame}{Supervisor discussion}
+\begin{enumerate}
+\item Confirm the revised scope, approval record and report format.
+\item Resolve the original non-inferiority margin wording.
+\item Agree how prior exposure affects the independent annotation pass.
+\item Confirm the final date and repository access route.
+\end{enumerate}
+\vspace{0.5cm}
+The immediate conclusion is bounded: Experiment 1 establishes enforcement, while Experiment 2's expressiveness claim remains untested.\par
+\vspace{0.3cm}
+\textbf{Questions and discussion: 10--15 minutes.}
+\end{frame}
+
+\pdfstringdefDisableCommands{\def\translate#1{#1}}
+\appendix
+\begin{frame}{Backup: metric definitions}
+\begin{description}
+\item[TCP@10] Target-category items divided by ten for boost requests.
+\item[TCER@10] Target-category items divided by ten for mute requests.
+\item[HR@1] One if the first item equals the held-out target, otherwise zero.
+\item[NDCG@10] For one relevant item at rank $r\leq10$, $1/\log_2(r+1)$. Zero if absent.
+\end{description}
+\vspace{0.3cm}
+Both exposure metrics have the same arithmetic and opposite desired directions. Historical quality does not directly measure preference satisfaction after intervention.
+\end{frame}
+
+\begin{frame}{Backup: backbone and control settings}
+\begin{tabular}{@{}P{3.8cm}P{6.0cm}@{}}
+\toprule
+Backbone & Compact SASRec-style implementation\\\midrule
+Hidden size / context & 32 / 50 items\\
+Attention & Two blocks, one head\\
+Training & 20 epochs, Adam, learning rate 0.001\\
+Batch / dropout & 64 / 0.2\\
+Training seeds & 42, 43, 44\\
+Experiment 1 control & Normalized score +0.25, or hard mute\\
+Experiment 2 strengths & 0.10, 0.25, 0.50\\
+Language backend & Llama 3.1 8B, temperature 0\\\bottomrule
+\end{tabular}\par
+\src{The backbone is independently implemented. The study does not claim an exact SASRec paper reproduction.}
+\end{frame}
+
+\begin{frame}{Backup: why non-inferiority is uninformative}
+\small
+\begin{tabular}{@{}P{6.6cm}r@{}}
+\toprule
+Pooled Experiment 1 quantity & Value\\\midrule
+A HR@1 baseline & 0.2505\%\\
+C minus A, mean & +0.193 pp\\
+Paired 95\% interval & $[-0.058,+0.501]$ pp\\
+Simultaneous lower bound & $-0.07707$ pp\\
+Absolute proposed threshold & $-10$ pp\\
+Relative 10\% loss threshold & $-0.02505$ pp\\\bottomrule
+\end{tabular}\par
+\vspace{0.3cm}
+The absolute reading numerically passes while allowing the entire small baseline to disappear. The relative reading fails. Only eight of 865 users have nonzero paired HR@1 differences.
+\src{Both operations pooled, distinct from the boost-only NDCG contrast. pp means percentage points.}
+\end{frame}
+
+\begin{frame}{Backup: intended-direction movement}
+\small
+\[
+D(S)=\frac{\sum_{r=1}^{10}\mathbf{1}[i_r\in S]/\log_2(r+1)}{\sum_{r=1}^{10}1/\log_2(r+1)}
+\]
+$\Delta D$ is the channel value minus its uncontrolled value.
+\begin{tabular}{@{}P{2.7cm}P{7.0cm}@{}}
+\toprule
+Class & Signed movement $M$\\\midrule
+Compound & $\min(\Delta D(X),-\Delta D(Y))$\\
+Boost / reduction & $\Delta D(X)$ / $-\Delta D(X)$\\
+Floor & $-\Delta D(X)$, zero if the floor is violated\\
+Conditional & $\Delta D(X\cap Y)-\max(0,\Delta D(X\setminus Y))$\\\bottomrule
+\end{tabular}\par
+\vspace{0.25cm}
+Induced satisfaction requires a full list, the class band and $M>10^{-12}$. This operational measure is not Shannon information.
+\end{frame}
+
+\begin{frame}{Backup: evidence and responsible authorship}
+\small
+\begin{itemize}
+\item E1 metrics: \texttt{results/llm/seed\_*/request\_metrics.csv}.
+\item E1 parser: \texttt{results/parser\_ollama\_test/}.
+\item Baselines and paired analysis: \texttt{results/audit\_revision/}.
+\item E2 commitments and status: \texttt{results/experiment2/}.
+\item E2 protocol: \texttt{docs/experiment2-protocol.md}.
+\end{itemize}
+\vspace{0.3cm}
+AI assisted implementation and documentation. Personal reading, independent annotation and manual execution should be claimed only when completed and recorded by the student.
+\src{The current demo illustrates Experiment 1. Inspecting source files is not an execution record.}
+\end{frame}
+
+\begin{frame}{Backup: selected references}
+\footnotesize
+\begin{itemize}
+\item Ricks and McCrosky (Mozilla), 2022. \emph{Does this button work? Investigating YouTube's ineffective user controls.}
+\item Ramos et al., 2024. \emph{Transparent and Scrutable Recommendations Using Natural Language User Profiles}. arXiv:2402.05810.
+\item Sanner et al., RecSys 2023. \emph{Large Language Models are Competitive Near Cold-start Recommenders for Language- and Item-based Preferences}. arXiv:2307.14225.
+\item Chen and Pu, 2012. \emph{Critiquing-based recommenders: survey and emerging trends}. UMUAI 22, 125--150.
+\item Kang and McAuley, ICDM 2018. \emph{Self-Attentive Sequential Recommendation}.
+\item Gao et al., CIKM 2022. \emph{KuaiRec: A Fully-observed Dataset and Insights for Evaluating Recommender Systems}.
+\end{itemize}
+\src{Complete bibliographic records: paper/references.bib. Direct source links: speaker-notes.md.}
+\end{frame}
+\end{document}
