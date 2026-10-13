@@ -25,4 +25,4 @@ The public repository contains a partial code-review copy. Full data, results, h
 
 The numerical audit reproduced all 25,950 top-10 lists but found unresolved score and full-ranking hash differences. Full research execution on Windows and Colab remains unverified. Current verification should be recorded separately from historical checks.
 
-The [weekly workbook](docs/supervision/COMP9500-Prefilled-Weekly-Workbook.md) and dated files provide proposed updates and meeting records. Complete actual hours, meeting outcomes and verification entries as they occur. [Academic use](docs/academic-use.md) records AI assistance and the evidence the student still needs to provide.
+The [weekly workbook](docs/supervision/COMP9500-Prefilled-Weekly-Workbook.md) and dated files provide proposed updates and meeting records. See the [methods and provenance note](docs/academic-use.md) for assistance and activity-record conventions, and the [13 October Windows check](docs/verification-2026-10-13.md) for current engineering evidence.

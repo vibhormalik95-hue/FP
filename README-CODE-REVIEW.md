@@ -8,7 +8,7 @@ Full research evaluation, checkpoint inference, replay, full acceptance tests an
 
 This copy contains parser implementation and development summaries. It is not blind annotation material. Follow docs/annotation-handoff.md and resolve prior exposure before the independent student pass.
 
-Experiment 1 is complete and frozen. Experiment 2 reserved results remain pending. The current progress report and completion plan use the student's revised wording. AI work remains documented in docs/academic-use.md. Actual student hours and personal checks are recorded when they occur.
+Experiment 1 is complete and frozen. Experiment 2 reserved results remain pending. The current progress report and completion plan use the student's revised wording. See the [methods and provenance note](docs/academic-use.md) for assistance, annotation provenance and activity records.
 
 sharing-manifest.json is the retained inventory of the original sharing copy, including hashes of files excluded from that copy. Its source-file hashes describe that original snapshot, not later documentation revisions. The separately dated documentation update record identifies subsequent edits. The full archive and its fingerprint remain the authority for research evidence.
 

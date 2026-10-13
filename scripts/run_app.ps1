@@ -2,7 +2,7 @@ $ErrorActionPreference = 'Stop'
 Set-Location (Join-Path $PSScriptRoot '..')
 $AppPython = Join-Path (Get-Location) '.venv\Scripts\python.exe'
 if (-not (Test-Path $AppPython)) {
-    throw 'Follow the Python 3.12 installation steps in README.md: py -3.12 -m venv .venv, then install the CPU PyTorch wheel and pip install -e ".[test,analysis]" using .venv\Scripts\python.exe.'
+    throw 'Follow the Python 3.12 installation steps in docs/windows-and-colab.md: py -3.12 -m venv .venv, then install the CPU PyTorch wheel and pip install -e ".[test,analysis]" using .venv\Scripts\python.exe.'
 }
 if (-not (Test-Path 'web\dist\index.html')) {
     Push-Location web

@@ -35,7 +35,7 @@ Read the [protocol](docs/experiment2-protocol.md), [annotation handoff](docs/ann
 
 The recovery records include recomputation of 51,900 Experiment 1 metric rows. The October engineering review records 271 passing tests plus 44 passing subtests, 17 Chromium checks and a byte-identical frontend rebuild. A later numerical audit reproduced all 25,950 top-10 lists but found 2,009 full-ranking hash differences and 5,190 request-score hash differences with an unresolved cause. These are recorded project checks, not new checks of this documentation update.
 
-Full research execution on Windows 11 and Google Colab remains unverified. Uploading files from Windows does not verify the research pipeline. See the [progress report](docs/final-progress-report.md) for the evidence references and [academic-use record](docs/academic-use.md) for AI assistance and student responsibilities.
+Full research execution on Windows 11 and Google Colab remains unverified. The [13 October Windows engineering check](docs/verification-2026-10-13.md) records synthetic tests and preservation of all 288 E1 file hashes. See the [progress report](docs/final-progress-report.md) for historical evidence and the [methods and provenance note](docs/academic-use.md) for assistance and activity records.
 
 ## Repository contents
 

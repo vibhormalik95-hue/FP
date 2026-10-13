@@ -1,20 +1,18 @@
-# Authorship and research use
+# Methods, assistance and provenance
 
-Prepared 3 October 2026 UTC. This package contains substantial AI-assisted and AI-executed work. Agents performed literature discovery and critique, software and test development, dataset preparation, recorded model training, local LLM inference, recommendation evaluation, analysis, figures and document drafting. These activities are not evidence that Vibhor personally performed every step or completed 135 hours of independent study.
+Updated 13 October 2026 UTC; consolidates the assistance note prepared 3 October. AI agents performed literature discovery and critique, software and test development, dataset preparation, recorded model training, local LLM inference, recommendation evaluation, analysis, figures and drafting. Vibhor reports that the professor permits AI use. This permission does not change the recorded research methods, annotation provenance, exposure history or experimental evidence.
 
 The student is responsible for understanding and defending the final submission. Actual reading, code review, independent reproduction, revisions and meeting participation belong in the activity log with dates and evidence. A prepared explanation or test report can support that work; it cannot certify that the student has read a source or run a command. Use the defence guide to practise, then record what was actually checked.
 
-## Disclosure for supervisor review
-
-> I used AI agents for literature discovery, methodology critique, implementation, test development, experiment execution, analysis and drafting. The package identifies the recorded AI-executed work and preserves its provenance. My own reading, code comprehension, reproduction and revisions will be documented separately in the activity log. I remain responsible for the final submission and its interpretation, and I would like to confirm the disclosure and independent evidence required for this course.
-
-Update this wording as student actions actually occur. Do not add "I manually built and tested everything", "I independently reproduced the experiments" or "I completed 135 hours" unless the corresponding claim is true and supported. The course AI policy has not been supplied. The transcript discussing AI access does not itself grant approval for every proposed use.
+The recommender uses SASRec and the language-model condition specifies Llama 3.1 8B through Ollama. Recorded model versions, digests, prompts and runtime receipts remain the authority for individual runs. The rule parser is a diagnostic comparator, never a replacement for the model condition. Historical checks and new environment-specific verification must remain distinguishable.
 
 ## Independent annotation is a real human requirement
 
 Experiment 2 specifically requires a second annotation pass by the student. An AI cannot act as that person, supply their identity or timestamps, or label AI output as human agreement. Before starting, record what the student has already seen, including gold labels, parser predictions or development accuracy where relevant to the rubric. Development accuracy summaries have already appeared in the project discussion. Resolve any exposure conflict through the protocol and supervisor rather than silently declaring the pass blind.
 
 Keep the student pass independent of author gold and parser predictions. Report agreement before blinded adjudication and retain both original passes. If the required independence cannot be achieved, document the limitation and obtain a prospective, explicitly recorded procedure for any new study. Do not alter the existing freeze, invent an independent-pass receipt or use the reserved outcomes for tuning. The separate annotation-handoff.md explains the immediate handoff.
+
+Formal E2 remains pending. A prospective Borna-approved amendment must resolve the replacement bank and provenance, a valid annotation route and exposure handling, followed by the full freeze and verification of the specified runtime. Preserve the original protocol and parser commitment rather than retrospectively rewriting them. Do not infer held-out status or inspect reserved outcomes to resolve these gates.
 
 ## Frozen evidence and prospective work
 

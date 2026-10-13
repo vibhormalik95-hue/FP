@@ -1,6 +1,23 @@
 # Run on Windows 11 or Google Colab
 
-The supplied research results were executed in a Linux CPU VM. Windows and Colab are documented rerun paths, but neither platform was available for an interactive acceptance run in this session. The user's Core i9 / 32 GB Windows laptop has sufficient RAM for the demonstrated small SASRec architecture and a local quantized 8B language model; exact inference speed depends on CPU generation, cooling and any compatible GPU. SASRec itself does not require paid compute.
+The supplied research results were executed in a Linux CPU VM. Windows and Colab remain documented full-research rerun paths. The [13 October Windows check](verification-2026-10-13.md) covers synthetic tests and E1 byte preservation, not full research execution. The user's Core i9 / 32 GB Windows laptop has sufficient RAM for the demonstrated small SASRec architecture and a local quantized 8B language model; exact inference speed depends on CPU generation, cooling and any compatible GPU. SASRec itself does not require paid compute.
+
+## Public code-review checkout: safe checks
+
+This partial repository omits research data and reserved material. With the required packages already installed, run only the self-contained checks below. Use a new, unused directory for `--basetemp`: pytest clears that directory if it already exists.
+
+```powershell
+python -m pytest -q tests/test_data.py tests/test_api.py tests/test_output_safety.py tests/test_controls.py -k "not benchmark_splits" --basetemp "$env:TEMP\comp9500-new-synthetic-check" -p no:cacheprovider
+python -m pytest -q tests/test_frozen_e1_manifest.py --basetemp "$env:TEMP\comp9500-new-manifest-check" -p no:cacheprovider
+```
+
+The excluded benchmark-split test requires omitted archive files. These checks use synthetic fixtures and mocked model responses; they do not establish model inference, experimental accuracy or formal E2 readiness. Full-suite and pipeline commands below require the authoritative archive and the applicable execution authorization.
+
+For a read-only E1 integrity check, supply the extracted full-archive root to the standalone verifier. It validates the entire 288-entry manifest before streaming hashes, without parsing research evidence, starting services or running experiments:
+
+```powershell
+python scripts/verify_frozen_e1.py "C:\path with spaces\cmp9500-recommender"
+```
 
 ## Windows: reproduce the experiment
 
@@ -33,7 +50,7 @@ The Ollama Windows application normally starts its loopback API automatically. I
 
 ## Windows: open the demonstration app
 
-Use the main README commands to build the React frontend and run `feedctrl.api:app`. The app has genuine metadata cards; the dataset does not distribute playable source videos. Read the visible data/backend status before demonstrating it. Rule controls are a software diagnostic; select Ollama for actual LLM parsing.
+After the documented environment setup, run `scripts\run_app.ps1` to build the frontend if needed and launch the loopback application. The app has genuine metadata cards; the dataset does not distribute playable source videos. Read the visible data/backend status before demonstrating it. Rule controls are a software diagnostic; select Ollama for actual LLM parsing.
 
 ## Google Colab
 
@@ -52,7 +69,7 @@ Colab's [official FAQ](https://research.google.com/colaboratory/faq.html) says r
 5. A and B ranking hashes agree; no negative-category item survives a successful hard mute; empty filtered feeds remain empty.
 6. Aggregate uncertainty uses users as the sampling unit across seeds. Read warnings about exploratory results and the held-out engagement proxy before drawing conclusions.
 
-The 135-hour plan is a prospective work allocation. Machine execution time and generated assistance are not a retrospective record of student work.
+See the [methods and provenance note](academic-use.md) for assistance and activity-record conventions.
 
 ## Official sources checked September 28, 2026
 
