@@ -1,0 +1,69 @@
+{
+  "schema_version": 1,
+  "date_utc": "2026-10-13",
+  "base_commit": "7ab27c28500851d1496c3bc790a40c3dc1ee2c02",
+  "scope": "Exact finalized Library bytes; no document rewriting; email remains unsent.",
+  "metadata_note": "Actual xattrs verified on native ext4 files; Git records bytes and this receipt, not filesystem xattrs.",
+  "files": [
+    {
+      "path": "deliverables/COMP9500-Weekly-Progress-Update-2026-10-13.docx",
+      "library_file_id": "libfile_159eeda4da688191bc966bfc26e2562d",
+      "file_id": "file_00000000fc7081fb95aca29673790ed7",
+      "version": 4,
+      "size_bytes": 39470,
+      "sha256": "397e0a7aad2102d27593c077c0274b8bd217725cba351180890952dcda586f57",
+      "verified_local_xattrs": {
+        "user.library-file-version": "4",
+        "user.library-file-id": "libfile_159eeda4da688191bc966bfc26e2562d"
+      }
+    },
+    {
+      "path": "deliverables/COMP9500-Evidence-and-Completion-Checklist-2026-10-13.docx",
+      "library_file_id": "libfile_568d3398f0348191a9f7ad8feb61ac2f",
+      "file_id": "file_000000005c8881fb9779f6cb25ac7bfb",
+      "version": 4,
+      "size_bytes": 43261,
+      "sha256": "1b35f1bf97176dba08e524fe77dd114037a30e8c93a113f53e83d9f12b7c5a92",
+      "verified_local_xattrs": {
+        "user.library-file-version": "4",
+        "user.library-file-id": "libfile_568d3398f0348191a9f7ad8feb61ac2f"
+      }
+    },
+    {
+      "path": "deliverables/COMP9500-Professor-Email-Draft-2026-10-13.txt",
+      "library_file_id": "libfile_086f2a39f6588191b3dacdcdba12d646",
+      "file_id": "file_00000000eb4c81f58353f515ac7aab6a",
+      "version": 4,
+      "size_bytes": 1774,
+      "sha256": "14b04266c00a758e5c2886c8f20135644bea1edcf20f53bade1baf1eeda12070",
+      "verified_local_xattrs": {
+        "user.library-file-version": "4",
+        "user.library-file-id": "libfile_086f2a39f6588191b3dacdcdba12d646"
+      }
+    },
+    {
+      "path": "deliverables/COMP9500-Practice-Answer-Guide-2026-10-13.docx",
+      "library_file_id": "libfile_0b460ab86d308191b7d82385b12ae724",
+      "file_id": "file_00000000dfe881fbaa21eb8fd4b7b8e7",
+      "version": 1,
+      "size_bytes": 45951,
+      "sha256": "76328ec447c38d3dfec9c80508301375bdc8e0d6b8c0bc0108e7b37ae8651e0e",
+      "verified_local_xattrs": {
+        "user.library-file-version": "1",
+        "user.library-file-id": "libfile_0b460ab86d308191b7d82385b12ae724"
+      }
+    },
+    {
+      "path": "deliverables/COMP9500-Worked-Practice-100-2026-10-11.csv",
+      "library_file_id": "libfile_a6d77e574bc48191850c079c95042407",
+      "file_id": "file_000000000d2881f89e578c0701aba6b3",
+      "version": 0,
+      "size_bytes": 68900,
+      "sha256": "f7694c4235c2644db85631b09f7df3f2daf9cad765caf6426f532035a91b4e83",
+      "verified_local_xattrs": {
+        "user.library-file-version": "0",
+        "user.library-file-id": "libfile_a6d77e574bc48191850c079c95042407"
+      }
+    }
+  ]
+}

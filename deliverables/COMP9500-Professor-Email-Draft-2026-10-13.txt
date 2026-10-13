@@ -1,0 +1,20 @@
+To: Dr Borna Noureddin <borna_noureddin@bcit.ca>
+Subject: COMP 9500 progress update, October 13
+Date: October 13, 2026, Vancouver time
+Status: Draft for review; not sent
+
+Hi Professor Noureddin,
+
+Please find my updated progress report and evidence checklist, dated October 13 and reconciled against the October 4 plan.
+
+For October 5 to 11, I reported 13 active hours, including 2 hours of independent work after our meeting was skipped. The checklist records the full allocation. The outstanding Week 2 tasks are still pending, and the planned 12 hours for October 12 to 18 have not been recorded as completed activity.
+
+Today's cloud and local checks each matched all 288 frozen E1 file hashes. The E2 commitment timestamp is preserved. The 100-question practice package is ready, and safe-engineering updates are pushed in commit 7ab27c2 on the review branch. Main is unchanged. Formal Experiment 2 remains pending while we agree the prospective method and replacement bank.
+
+The cloud runner has nine missing dependencies and 18 version differences, with Ollama unavailable there. The earlier local run passed 48 synthetic tests, with one archive-dependent test deselected; seven new verifier tests passed separately. The local Ollama client is installed, but the service still needs to run before model verification. The historical-log recount confirmed 5,190 score-hash and 2,009 full-ranking differences. Their cause remains unresolved, and missing original score vectors prevent quantifying numerical error. No new model or ranking run is reported.
+
+Could we confirm the formal evaluation route, repository access, and feedback timing for the November 27 draft at our proposed October 14 check-in?
+https://github.com/vibhormalik95-hue/FP
+
+Best regards,
+Vibhor Malik

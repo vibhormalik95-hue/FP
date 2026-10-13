@@ -6,6 +6,18 @@ The project has a working research prototype, a completed first experiment and a
 
 This public repository is a **partial code-review copy**. It contains implementation and test source, the frontend, the current paper and BCIT slides, and planning documents. Research data, models, results, caches, reserved language material and original source evidence remain in the separate full research archive. Full experimental replay and full-suite verification require that archive.
 
+## October 13 delivery
+
+The finalized current packet is available as dated files. Earlier reports, plans and historical records are retained.
+
+- [Weekly progress update](deliverables/COMP9500-Weekly-Progress-Update-2026-10-13.docx)
+- [Evidence and completion checklist](deliverables/COMP9500-Evidence-and-Completion-Checklist-2026-10-13.docx), including methods and provenance
+- [Professor email draft — unsent](deliverables/COMP9500-Professor-Email-Draft-2026-10-13.txt)
+- [Practice answer guide](deliverables/COMP9500-Practice-Answer-Guide-2026-10-13.docx)
+- [100 worked practice answers](deliverables/COMP9500-Worked-Practice-100-2026-10-11.csv)
+
+The guide and CSV are exposed AI-generated practice, not independent annotations or formal E2 evidence. Formal E2 remains pending. The packet records the engineering baseline at `7ab27c2`; the delivery commit adds the finalized files without rewriting that baseline. [Delivery provenance and checks](docs/delivery-2026-10-13.md) identify exact versions and hashes.
+
 ## Current documents
 
 - [Supervisor progress report](docs/final-progress-report.md) and [Word document](deliverables/COMP9500-Supervisor-Progress-Report.docx).

@@ -4,6 +4,10 @@ Vibhor Malik | Updated 4 October 2026, Vancouver time
 
 Experiment 1 is complete and frozen. Experiment 2 has development evidence and a committed protocol, but its reserved evaluation has not run. The next priority is to test richer intents and make the final paper fully traceable to evidence.
 
+## Latest packet
+
+The [October 13 delivery](README.md#october-13-delivery) contains the finalized update, checklist, unsent email and practice materials. The October 4 reports and plan below remain the historical baseline.
+
 ## Read first
 
 1. [Progress report](docs/final-progress-report.md), [Word](deliverables/COMP9500-Supervisor-Progress-Report.docx) and [PDF](deliverables/COMP9500-Final-Progress-Report.pdf).
