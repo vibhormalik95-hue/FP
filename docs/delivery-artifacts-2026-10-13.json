@@ -8,24 +8,24 @@
     {
       "path": "deliverables/COMP9500-Weekly-Progress-Update-2026-10-13.docx",
       "library_file_id": "libfile_159eeda4da688191bc966bfc26e2562d",
-      "file_id": "file_00000000fc7081fb95aca29673790ed7",
-      "version": 4,
-      "size_bytes": 39470,
-      "sha256": "397e0a7aad2102d27593c077c0274b8bd217725cba351180890952dcda586f57",
+      "file_id": "file_0000000000e48206903a49a42cb9dc42",
+      "version": 5,
+      "size_bytes": 39481,
+      "sha256": "020d7031fbd6b27be9acad5b71ba783cdfff0de2e95ee4e5809a77cc254a31a8",
       "verified_local_xattrs": {
-        "user.library-file-version": "4",
+        "user.library-file-version": "5",
         "user.library-file-id": "libfile_159eeda4da688191bc966bfc26e2562d"
       }
     },
     {
       "path": "deliverables/COMP9500-Evidence-and-Completion-Checklist-2026-10-13.docx",
       "library_file_id": "libfile_568d3398f0348191a9f7ad8feb61ac2f",
-      "file_id": "file_000000005c8881fb9779f6cb25ac7bfb",
-      "version": 4,
-      "size_bytes": 43261,
-      "sha256": "1b35f1bf97176dba08e524fe77dd114037a30e8c93a113f53e83d9f12b7c5a92",
+      "file_id": "file_00000000e190822fbaa2c414894cbef6",
+      "version": 5,
+      "size_bytes": 43268,
+      "sha256": "49f355fdb181ad66160916216c3cf9423257ec512f6ce4e542b36410e5e21027",
       "verified_local_xattrs": {
-        "user.library-file-version": "4",
+        "user.library-file-version": "5",
         "user.library-file-id": "libfile_568d3398f0348191a9f7ad8feb61ac2f"
       }
     },
@@ -65,5 +65,33 @@
         "user.library-file-id": "libfile_a6d77e574bc48191850c079c95042407"
       }
     }
-  ]
+  ],
+  "superseded_artifacts": [
+    {
+      "path": "deliverables/COMP9500-Weekly-Progress-Update-2026-10-13.docx",
+      "library_file_id": "libfile_159eeda4da688191bc966bfc26e2562d",
+      "file_id": "file_00000000fc7081fb95aca29673790ed7",
+      "version": 4,
+      "size_bytes": 39470,
+      "sha256": "397e0a7aad2102d27593c077c0274b8bd217725cba351180890952dcda586f57",
+      "verified_local_xattrs": {
+        "user.library-file-version": "4",
+        "user.library-file-id": "libfile_159eeda4da688191bc966bfc26e2562d"
+      }
+    },
+    {
+      "path": "deliverables/COMP9500-Evidence-and-Completion-Checklist-2026-10-13.docx",
+      "library_file_id": "libfile_568d3398f0348191a9f7ad8feb61ac2f",
+      "file_id": "file_000000005c8881fb9779f6cb25ac7bfb",
+      "version": 4,
+      "size_bytes": 43261,
+      "sha256": "1b35f1bf97176dba08e524fe77dd114037a30e8c93a113f53e83d9f12b7c5a92",
+      "verified_local_xattrs": {
+        "user.library-file-version": "4",
+        "user.library-file-id": "libfile_568d3398f0348191a9f7ad8feb61ac2f"
+      }
+    }
+  ],
+  "correction_parent_commit": "5d5bdce2440a41234be0b5134c62b648f857cf61",
+  "correction_note": "Document author v5 changes only the runtime sentence in weekly update and checklist; original v4 records retained below."
 }
