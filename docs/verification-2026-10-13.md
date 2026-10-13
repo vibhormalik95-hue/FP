@@ -11,6 +11,14 @@ Executed by the coding agent on the user's AI_work Windows computer against publ
 - Six new synthetic verifier cases **passed**, with one deprecation warning, in 0.12 seconds. They cover matching/changed/missing bytes, forbidden E2 paths, traversal, absolute paths, alternate data streams and incorrect inventory size. Command: `python -m pytest -q tests/test_frozen_e1_manifest.py --basetemp <another-fresh-task-local-directory> -p no:cacheprovider`.
 - `git diff --check` and PowerShell syntax parsing of `scripts/run_app.ps1` passed. The launcher now points its missing-environment message to the actual setup instructions. The launcher was not executed.
 
+## Independent source review follow-up
+
+A separate reviewer inspected the nine-file engineering commit `35eada6581e9314c5608ae5c83ff6293b29f54cb` without opening research evidence. One issue was found: checking the manifest's entry count and path prefixes did not authenticate the original frozen inventory. The verifier now pins the original manifest SHA-256 and rejects changed manifest bytes before JSON parsing or evidence-file hashing. The production CLI offers no override; synthetic tests supply an explicit fixture fingerprint through the Python helper.
+
+After this fix, **7 synthetic verifier tests passed**, with one deprecation warning, in 0.14 seconds. The manifest-only check again returned **288 matched, zero missing, zero mismatched**, with the same original manifest SHA-256. The existing 48-test suite was not rerun because its implementation was unchanged. The original six-test result above is retained as the pre-review record.
+
+The independent reviewer then checked the fix and reported the finding resolved, with no remaining actionable findings in the code diff. This was source review; the reviewer did not independently execute the research or repeat the tests.
+
 ## Runtime observation
 
 Python 3.14 is the selected interpreter. Installed distribution metadata compared with `requirements-tested.txt`:

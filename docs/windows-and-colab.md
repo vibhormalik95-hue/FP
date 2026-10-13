@@ -13,7 +13,7 @@ python -m pytest -q tests/test_frozen_e1_manifest.py --basetemp "$env:TEMP\comp9
 
 The excluded benchmark-split test requires omitted archive files. These checks use synthetic fixtures and mocked model responses; they do not establish model inference, experimental accuracy or formal E2 readiness. Full-suite and pipeline commands below require the authoritative archive and the applicable execution authorization.
 
-For a read-only E1 integrity check, supply the extracted full-archive root to the standalone verifier. It validates the entire 288-entry manifest before streaming hashes, without parsing research evidence, starting services or running experiments:
+For a read-only E1 integrity check, supply the extracted full-archive root to the standalone verifier. It first checks the manifest against its pinned original SHA-256, then validates all 288 paths before streaming hashes, without parsing research evidence, starting services or running experiments:
 
 ```powershell
 python scripts/verify_frozen_e1.py "C:\path with spaces\cmp9500-recommender"

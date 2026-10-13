@@ -8,9 +8,16 @@ from pathlib import Path, PurePosixPath
 import re
 
 
-def verify(root: Path, manifest: Path, expected_count: int = 288) -> dict:
+ORIGINAL_MANIFEST_SHA256 = "80ff8138e6ad7abd3e8482bc59fcaa044dfe7f7ca507edabdd569d217635e595"
+
+
+def verify(root: Path, manifest: Path, expected_count: int = 288,
+           *, expected_manifest_sha256: str = ORIGINAL_MANIFEST_SHA256) -> dict:
     root = root.resolve(strict=True)
     raw = manifest.read_bytes()
+    manifest_sha256 = hashlib.sha256(raw).hexdigest()
+    if manifest_sha256 != expected_manifest_sha256:
+        raise ValueError("Frozen E1 manifest fingerprint mismatch")
     files = json.loads(raw)["files"]
     if not isinstance(files, dict) or len(files) != expected_count:
         raise ValueError("Unexpected frozen E1 manifest file count")
@@ -48,7 +55,7 @@ def verify(root: Path, manifest: Path, expected_count: int = 288) -> dict:
         else:
             mismatched += 1
     return {"status": "passed" if matched == expected_count else "failed",
-            "manifest_sha256": hashlib.sha256(raw).hexdigest(),
+            "manifest_sha256": manifest_sha256,
             "expected": expected_count, "matched": matched,
             "missing": missing, "mismatched": mismatched,
             "scope": "E1 byte hashes only; no evidence parsing or experiment execution"}
