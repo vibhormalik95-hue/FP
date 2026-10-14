@@ -1,0 +1,75 @@
+{
+  "reviewed_utc": "2026-10-14T17:49:57.122248+00:00",
+  "status": "passed",
+  "review_method": "Fresh Python process; independent stdlib metric and aggregation implementation; no feedctrl imports, inference, tuning or human adjudication.",
+  "limitations": "Same AI agent performed this computational audit; no claim of a second human or blinded reviewer. Bootstrap intervals and signed-rank calculations are retained from the existing evaluator, not independently reimplemented here.",
+  "scope": "Exposed practice against AI references only; original formal E2 remains pending.",
+  "manifest_files_checked": 3013,
+  "parser_recount": {
+    "rule_compound": {
+      "total": 100,
+      "correct": 18,
+      "operational_errors": 0
+    },
+    "ollama_compound": {
+      "total": 100,
+      "correct": 73,
+      "operational_errors": 24
+    }
+  },
+  "raw_response_files": 100,
+  "ranking_rows_checked": 41508,
+  "score_vectors_checked": 2595,
+  "requests": 3459,
+  "users": 865,
+  "class_counts": {
+    "conditional": 25,
+    "floor": 25,
+    "compound": 25,
+    "graded": 25
+  },
+  "independent_pooled_metrics": {
+    "A": {
+      "induced_success": 0.039210019267822735,
+      "intended_movement": -0.0025025966473844375,
+      "hr1": 0.0019267822736030828,
+      "ndcg_at_10": 0.03128021368291077,
+      "band_satisfied": 0.2556197816313423,
+      "baseline_already_satisfies": 0.19951830443159924
+    },
+    "rule": {
+      "induced_success": 0.08400770712909442,
+      "intended_movement": 0.03153505792765152,
+      "hr1": 0.0024084778420038534,
+      "ndcg_at_10": 0.02925972650606135,
+      "band_satisfied": 0.29585741811175337,
+      "baseline_already_satisfies": 0.19951830443159924
+    },
+    "llm": {
+      "induced_success": 0.23805394990366088,
+      "intended_movement": 0.05941280254300685,
+      "hr1": 0.0018304431599229286,
+      "ndcg_at_10": 0.024613182360258112,
+      "band_satisfied": 0.6380539499036609,
+      "baseline_already_satisfies": 0.19951830443159924
+    },
+    "recency": {
+      "induced_success": 0.07263969171483622,
+      "intended_movement": -0.019266180581424538,
+      "hr1": 0.07976878612716763,
+      "ndcg_at_10": 0.11865539033972143,
+      "band_satisfied": 0.2252408477842004,
+      "baseline_already_satisfies": 0.19951830443159924
+    }
+  },
+  "parser_error_messages": {
+    "ParserOperationalError: Compound condition is not explicitly grounded in the request": 23,
+    "ParserOperationalError: Only reduce can have a floor": 1
+  },
+  "posthoc_raw_response_diagnostic": {
+    "raw_reference_agreement_before_application_validation": 95,
+    "denominator": 100,
+    "scope": "Post hoc failure explanation only; does not replace the fixed validated-parser score."
+  },
+  "failures": []
+}

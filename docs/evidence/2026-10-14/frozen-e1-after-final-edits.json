@@ -1,0 +1,9 @@
+{
+  "status": "passed",
+  "manifest_sha256": "80ff8138e6ad7abd3e8482bc59fcaa044dfe7f7ca507edabdd569d217635e595",
+  "expected": 288,
+  "matched": 288,
+  "missing": 0,
+  "mismatched": 0,
+  "scope": "E1 byte hashes only; no evidence parsing or experiment execution"
+}

@@ -1,5 +1,9 @@
 # COMP 9500 supervisor handoff
 
+For the latest local evidence, start with the [14 October execution record](docs/execution-2026-10-14.md) and [plan reconciliation](docs/supervision/2026-10-14-execution-checkpoint.md). The exposed-practice diagnostic is separate from the still-pending formal study. The October 13 packet and earlier frozen records remain preserved.
+
+The [reviewed October 14 delivery](docs/delivery-2026-10-14.md) links the seven-page main paper, separate ten-page supplement, updated slides, Word documents, practice materials and local evidence manifest. Read the [prospective amendment](docs/formal-e2-prospective-amendment.md) before any formal bank is created. The primary practice parser score is 73/100; improved control success comes with lower NDCG@10. The slides' PDF composition route and missing Beamer dependency are documented honestly.
+
 Vibhor Malik | Updated 4 October 2026, Vancouver time
 
 Experiment 1 is complete and frozen. Experiment 2 has development evidence and a committed protocol, but its reserved evaluation has not run. The next priority is to test richer intents and make the final paper fully traceable to evidence.

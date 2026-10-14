@@ -1,23 +1,38 @@
 \documentclass[conference]{IEEEtran}
-\usepackage[T1]{fontenc}
+\usepackage{iftex}
+\ifXeTeX
+  \usepackage{fontspec}
+  \setmainfont{Times New Roman}
+  \setsansfont{Arial}
+  \setmonofont{Courier New}
+\else
+  \usepackage[T1]{fontenc}
+  \usepackage{lmodern}
+\fi
 \usepackage[utf8]{inputenc}
-\usepackage{amsmath,amssymb,booktabs,array,url,graphicx}
-\usepackage[hidelinks]{hyperref}
-\usepackage{microtype}
-\usepackage{balance}
+\usepackage{amsmath,amssymb,array,url,graphicx}
+% Local rendering uses existing TeX packages only; scientific content is unchanged.
+\IfFileExists{booktabs.sty}{\usepackage{booktabs}}{
+  \newcommand{\toprule}{\hline}
+  \newcommand{\midrule}{\hline}
+  \newcommand{\bottomrule}{\hline}
+}
+\IfFileExists{kvsetkeys.sty}{\usepackage[hidelinks]{hyperref}}{}
+\IfFileExists{microtype.sty}{\usepackage{microtype}}{}
+\IfFileExists{balance.sty}{\usepackage{balance}}{\newcommand{\balance}{}}
 \usepackage{etoolbox}
 \patchcmd{\abstract}{---}{: }{}{}
 \patchcmd{\IEEEkeywords}{---}{: }{}{}
 \newcommand{\system}{\textsc{FeedCtrl}}
 \title{LLM-Mediated Natural Language Controls for Short-Video Recommender Systems: An Offline Study of Controllability}
-\author{\IEEEauthorblockN{Vibhor Malik}\IEEEauthorblockA{M.Sc. in Applied Computing\\British Columbia Institute of Technology\\Supervisor: Borna Noureddin\\COMP 9500 research project\\Review draft: 4 October 2026, Vancouver time}}
+\author{\IEEEauthorblockN{Vibhor Malik}\IEEEauthorblockA{M.Sc. in Applied Computing\\British Columbia Institute of Technology\\Supervisor: Borna Noureddin\\COMP 9500 research project\\Review draft: 14 October 2026, Vancouver time}}
 \begin{document}
 \bstctlcite{controlNoAuthorDash}
 \maketitle
 \thispagestyle{plain}
 \pagestyle{plain}
 \begin{abstract}
-Experiment 1 shows that deterministic category enforcement works under the specified policy: TCP@10 rises from 11.6\% to 79.2\% and TCER@10 falls from 6.1\% to zero, with enforcement supplied by construction rather than learned by the LLM. Llama parsed 120/120 templated inputs, 79/100 broader synthetic inputs and 2/10 adversarial cases. The broader-set score clears the proposal's 70\% floor but misses its 85\% target. These finite synthetic sets do not establish general language reliability. Explanations show no observed LLM advantage: all 10/10 generated fact selections equal the deterministic template. Steering costs predictive quality: boost requests reduce NDCG@10 by 45.7\%, and the non-inferiority check is uninformative at this low baseline. The frozen backbone is below recency popularity: per-seed HR@1 is 0.0--0.46\%, compared with 8.0\% for the descriptive recency comparator, whose estimator uses pooled recent history. The study establishes bounded category control and its observed costs; it does not establish an LLM expressiveness advantage, more natural interaction, improved recommendation accuracy or useful quality preservation, and Experiment 2 remains unassessed pending annotation, runtime readiness and reserved evaluation.
+Experiment 1 shows that deterministic category enforcement works under the specified policy: TCP@10 rises from 11.6\% to 79.2\% and TCER@10 falls from 6.1\% to zero, with enforcement supplied by construction rather than learned by the LLM. Llama parsed 120/120 templated inputs, 79/100 broader synthetic inputs and 2/10 adversarial cases. The broader-set score clears the proposal's 70\% floor but misses its 85\% target. These finite synthetic sets do not establish general language reliability. Explanations show no observed LLM advantage: all 10/10 generated fact selections equal the deterministic template. Steering costs predictive quality: boost requests reduce NDCG@10 by 45.7\%, and the non-inferiority check is uninformative at this low baseline. The frozen backbone is below recency popularity: per-seed HR@1 is 0.0--0.46\%, compared with 8.0\% for the descriptive recency comparator, whose estimator uses pooled recent history. The study establishes bounded category control and its observed costs; it does not establish an LLM expressiveness advantage, more natural interaction, improved recommendation accuracy or useful quality preservation. Formal Experiment 2 awaits an approved replacement bank and independent annotation; exposed-practice results are reported separately.
 \end{abstract}
 \begin{IEEEkeywords}
 controllable recommendation, natural-language interfaces, sequential recommendation, offline evaluation, reproducibility
@@ -290,24 +305,22 @@ The study uses a public dataset and conducts no new participant recruitment. Pub
 The package used substantial AI assistance for research synthesis, code, testing, documents, model training, inference and statistical analysis. The student remains responsible for understanding and reproducing the work, checking course policy and acknowledging assistance. The prospective 135-hour plan certifies no completed student work. Exposed test data cannot become untouched through a later freeze. Effort, supervisory decisions and revisions require contemporaneous records; generated records cannot substitute for meetings, signatures or presentation.
 
 \section{Experiment 2: Prespecified Expressiveness Study}
-Experiment 2 tests compound-command expressiveness against an extended rule comparator. The dated \texttt{docs/experiment2-protocol.md} specifies evidence under \texttt{results/experiment2/}; Experiment 1 remains frozen. Student annotation is pending; reserved-test accuracy, ranking estimates, agreement statistics and hypothesis decisions are unavailable.
+\subsection{Original design and pending formal status}
+The original design covers compound, graded, nonzero-floor and same-item conditional intents, with 48 development and 100 originally reserved questions across 31 opaque categories. Development v1 recorded rule 48/48 and Llama 24/48, including ten Llama operational errors; development v2 recorded 48/48 for both after permitted development changes. These are development results. The 100 worked questions and AI answers have since been exposed as practice. Formal evaluation therefore needs prospective supervisor agreement on a replacement unseen bank and a valid independent annotation route; the original September 29 parser commitment remains preserved.
 
-\subsection{Recorded development and current status}
-Development version 1 gives 48/48 rule matches and 24/48 Llama matches, including ten operational errors. After development changes to the prompt and conditional wording, version 2 gives 48/48 for both parsers, with zero operational errors. These are development observations, not independent test accuracy, and they show no measured LLM advantage on the development bank. Both versions and their provenance remain available. The version 2 parser commitment is dated 29 September 2026; it is distinct from the full procedural freeze that requires genuine human annotation and adjudication.
+The original procedure requires genuine independent labels, agreement before blinded adjudication, a full freeze and verified model provenance. It defines H1 as an advantage in induced satisfaction against both item feedback and rules, H2 as intended movement against item feedback, and H3 as descriptive quality cost. Rules and Llama share the ranker; one historical item reaction is a diagnostic comparator, not equal semantic information or effort. No formal hypothesis decision follows from the exposed practice run.
 
-The saved study summary contains zero reserved ranking rows and marks H1 and H2 not assessed; H3 has not run. A delivery check on 3 October 2026 found no Ollama executable and a refused local endpoint connection. Live evaluation therefore remains stopped. An AI-generated second pass cannot be recorded as the required independent student annotation. Neither the missing pass nor unavailable inference is a negative hypothesis result. Development-cache replay cannot create the absent reserved evidence.
+The protocol fixes operational count bands for compound, graded, floor and intersection requests; these conventions do not establish human satisfaction. Success requires positive intended movement. SHA-256 assignment uses training and request history; relevance labels enter only after ranking. Analysis averages seeds within user, retains 5,000 user bootstrap resamples and an eleven-test BH family, and tunes no band or weight on outcomes.
 
-\subsection{Hypotheses and controls}
-H1 compares LLM induced intent satisfaction against single-item proxy A and the rule parser. H2 compares intended-direction discounted rank movement per interaction against A. Channels receive one interaction; effort and semantic content are not assumed equal. H3 describes paired NDCG@10 and HR@1 changes against A and recency popularity with intervals, without non-inferiority claims. Comparators access the same pre-test corpus; the sequential model and recency counter use it differently. Rule and LLM share enforcement, isolating any parser contribution.
 
-The four classes are two-category requests, graded changes, reductions with a nonzero floor, and conditional boosts. At $K=10$, the compound band requires at least two X items and at most one Y; a slight boost requires two to four X items; strong reduction permits at most one; exclusion permits zero; and a nonzero-floor reduction requires one or two. Conditional boosts require at least two intersection items without increasing the count of non-intersection X items relative to the uncontrolled feed. Their movement metric separately penalizes increased discounted exposure of non-intersection X items. Primary satisfaction additionally requires strictly positive intended movement relative to the uncontrolled feed. Already-satisfied or structurally impossible requests are flagged and retained. Score adjustments are 0.10, 0.25 or 0.50 by strength, with exclusions and floor enforcement. No band or weight is fitted to test results.
+\subsection{Exposed practice diagnostic on 14 October 2026}
+The student authorized a local download of the original \texttt{llama3.1:8b} model from the official Ollama library. Its Q4\_K\_M digest is \texttt{46e0c10c039e} (full digest in the execution record). Ollama was version 0.34.0, compared with historical 0.34.4. A separate protocol was saved before inference. The existing E2 prompt, schema, validation, rules and ranking implementation were reused unchanged, with temperature 0, seed 42, context 4096, output limit 768, six threads and a 600-second request timeout. There was no retry, tuning or model substitution in the completed run.
 
-These bands are operational conventions, not validated human meanings of words such as ``slightly''. Student annotation checks the utterance-to-command mapping, not the suitability of a numerical band. Any result is therefore limited to this prespecified computational definition of satisfaction.
+The 100 exact questions and labels were copied from the delivered worked-practice CSV. Those labels are AI-generated examples, not independent human gold. Class assignments follow their directive shapes. Llama agreed with 73/100 references and rules with 18/100; Llama had 24 validation rejections, retained in the 100-case denominator (23 conditional-grounding checks and one invalid floor). These scores measure agreement with an exposed AI reference, not unseen-test generalization or human-label accuracy.
 
-\subsection{Language, assignment and analysis}
-The corpus contains 48 development and 100 reserved utterances, balanced across four classes and covering all 31 opaque categories per split. A separate AI author commits reserved bytes; the parser developer sees development cases only. This separation does not constitute human validation. The student annotates without author gold or model output. Agreement and blinded adjudication precede test inference, after parser prompt and rules are frozen and hashed. Llama 3.1 8B runs at temperature zero with provenance caches. Unavailable Ollama stops execution; rule output cannot replace it.
+Using the three frozen recommender seeds, the diagnostic produced 41,508 ranking rows for 3,459 assigned user/class requests and 865 users. Assignment used training and request history; final behavioral labels were accessed only for relevance scoring. User-averaged induced success was 0.0392 for the item-feedback comparator, 0.0840 for rules and 0.2381 for Llama. Practice NDCG@10 was 0.02461 for Llama versus 0.03128 for item feedback, so greater control movement did not imply greater recommendation quality. These are descriptive practice results under the existing operational satisfaction bands. Full score vectors, predictions, raw model responses, failures and all exclusions are retained. A separate standard-library audit recomputed every row's control/relevance metrics and pooled means without discrepancies. The same AI agent performed this audit; bootstrap and signed-rank code were not independently reimplemented.
 
-For each user/class, SHA-256 selects an exact reserved utterance whose categories occur in train plus request history, never using a final behavioral label or substituting category tokens after parsing. Missing eligibility is reported. Cached parses serve multiple users and seeds; ranking-row counts do not inflate language observations. Parser accuracy precedes ranking outcomes. User-level analyses average three seeds, use Pratt signed-rank tests, BH adjustment over 11 prespecified contrasts and 5,000 user-bootstrap resamples. Intervals condition on this finite wording bank. H1 requires both pooled satisfaction contrasts to pass; H2 requires the pooled movement contrast to pass. If either fails, the conclusion must state that this protocol did not demonstrate an expressiveness advantage. Naturalness remains outside this offline study.
+All 288 E1 file hashes and the original parser commitment remained unchanged. Formal H1, H2 and H3 remain pending prospective supervisor approval of a replacement unseen bank, valid independent annotation, agreement, blinded adjudication and full freeze.
 
 \section{Conclusion}
 Deterministic category enforcement works under the Experiment 1 policy: TCP@10 increases from 11.6\% to 79.2\% and TCER@10 decreases from 6.1\% to zero, reflecting control built into the ranker. Llama parsed 120/120 templated inputs, 79/100 broader synthetic inputs and 2/10 adversarial cases. The broader-set score clears the 70\% floor but misses the 85\% target. These finite synthetic sets do not establish general language reliability. Explanations show no observed LLM advantage because all 10/10 outputs equal the template. Steering costs predictive quality: boost NDCG@10 falls 45.7\%, while the non-inferiority check is uninformative at this baseline. The backbone is below recency popularity, with per-seed HR@1 of 0.0--0.46\% versus 8.0\% for the descriptive comparator. The study establishes bounded category control and its observed costs; it does not establish natural-language expressiveness, naturalness, an accuracy improvement or useful quality preservation.

@@ -3,13 +3,15 @@
 **Student:** Vibhor Malik  
 **Supervisor:** Borna Noureddin  
 **Paper:** LLM-Mediated Natural Language Controls for Short-Video Recommender Systems: An Offline Study of Controllability  
-**Version:** Supervisor review draft, 4 October 2026, Vancouver time  
-**Format:** 22 main slides and six backup slides, using the supplied BCIT Beamer template  
+**Version:** Supervisor review draft, 14 October 2026, Vancouver time
+**Format:** Final PDF has 23 main slides and six backups. The supplied BCIT layout is preserved through documented PDF composition; the editable Beamer source has not rebuilt locally because `beamer.cls` is absent.
 **Timing:** Proposed 23-minute talk followed by 10 to 15 minutes of questions. This is a rehearsal plan, not a measured delivery time.
 
 These notes describe the evidence in the package. They do not certify that the student has personally performed any reading, test, annotation or rehearsal. Mark personal checks in the activity log after doing them. Do not read reserved Experiment 2 material as preparation while the independent annotation and freeze requirements remain unresolved.
 
 ## Timed talk
+
+This is the historical October 4 rehearsal plan, with its original 22-slide numbering. The final PDF inserts practice findings at slide 18, so later original main slides shift by one; backups are pages 24â€“29. Rehearsal of the revised deck and its duration remain unverified. The general AI-assistance sentence is delivered once on the opening slide; model/runtime and AI-reference provenance belongs in the methods discussion.
 
 | Slide | Subject | Time | Cumulative |
 | --- | --- | ---: | ---: |
@@ -183,3 +185,18 @@ Ask the supervisor to confirm the revised scope and approval record, the interpr
 5. If demonstrating the app, identify it as the Experiment 1 interface and state the selected parser backend. A rule demo is not a live Llama test.
 6. Keep the PDF available locally and verify the projector rendering on the actual presentation machine. That platform check remains the student's future action.
 7. After rehearsal, log questions that could not be answered and resolve them against source files before claiming personal verification.
+
+
+## October 14 practice execution
+
+Final PDF slide 18 reports Llama control success 23.81%, rules 8.40% and item feedback 3.92%, together with NDCG@10 0.02461 for Llama versus 0.03128 for item feedback. These are descriptive exposed-practice findings, not unseen formal E2 results. The final PDF's replacement pages are 1, 2, 16, 17, 20, 21, 23 and 28; page 18 is inserted. The remaining original vector pages are preserved, with main-slide numbering visually updated. See `docs/delivery-2026-10-14.md` for the build limitations and evidence route.
+
+Llama structured agreement with the supplied AI reference is 73/100; rule agreement is 18/100. Parser/validation errors: Llama 24, rule 0, retained in the denominator. These are exposed-practice agreement scores, not human-label accuracy or unseen-test performance.
+
+The run saved 41,508 ranking rows for 3,459 assigned user/class requests and 865 users, across three frozen recommender seeds and four conditions. It saved 2,595 complete score vectors. Requests with no eligible practice case remain in the exclusion record.
+
+User-averaged induced-success proportions: A 0.0392, rule 0.0840, llm 0.2381, recency 0.0726. User means average seeds within class and eligible classes within user. The existing evaluator retains descriptive intervals; no formal H1/H2 decision is claimed.
+
+A fresh-process audit independently recomputed all 41,508 rows' control and relevance metrics and pooled means from saved score vectors, top-10 lists and exposed references, with no discrepancies. The same AI agent performed this computational audit; it is not a second human or blinded review. Bootstrap intervals and signed-rank calculations were not independently reimplemented.
+
+Formal E2 requires Borna's prospective approval of a replacement unseen bank and valid annotation route, genuine independent labels, pre-adjudication agreement, blinded adjudication and full freeze. The current 100 worked questions cannot supply that unseen bank.

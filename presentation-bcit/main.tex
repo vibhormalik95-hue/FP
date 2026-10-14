@@ -2,8 +2,13 @@
 % Adapted from the supervisor-supplied BCIT Beamer template.
 % Original 4:3 aspect ratio, theme, colours and logo placement retained.
 \usetheme[progressbar=head,numbering=fraction,sectionpage=none]{metropolis}
-\usepackage{appendixnumberbeamer}
-\usepackage{booktabs,array,amsmath,graphicx,tikz}
+\IfFileExists{appendixnumberbeamer.sty}{\usepackage{appendixnumberbeamer}}{}
+\usepackage{array,amsmath,graphicx,tikz}
+\IfFileExists{booktabs.sty}{\usepackage{booktabs}}{
+  \newcommand{\toprule}{\hline}
+  \newcommand{\midrule}{\hline}
+  \newcommand{\bottomrule}{\hline}
+}
 \newcolumntype{P}[1]{>{\raggedright\arraybackslash}p{#1}}
 \usetikzlibrary{positioning,arrows.meta}
 \definecolor{bcitblue}{HTML}{003C71}
@@ -31,6 +36,7 @@
   \usebeamertemplate*{author}
   \usebeamertemplate*{date}
   \usebeamertemplate*{institute}
+  \vspace{0.2cm}{\scriptsize AI assistance was used for implementation, analysis and drafting.}
   \vfill
   \end{minipage}
 }
@@ -44,7 +50,7 @@
 \title[COMP 9500: Natural-language controls]{Natural-Language Controls for\\Short-Video Recommenders}
 \subtitle{An offline study of controllability}
 \author{Vibhor Malik}
-\date{Supervisor review draft: 4 October 2026, Vancouver time}
+\date{Supervisor review draft: 14 October 2026, Vancouver time}
 \institute{COMP 9500, M.Sc. Research Project\\British Columbia Institute of Technology\\Supervisor: Borna Noureddin}
 \begin{document}
 
@@ -62,12 +68,12 @@
 \begin{itemize}
 \item Experiment 1 establishes category enforcement under a fixed policy.
 \item The LLM adds no ranking advantage on the templated task, and boosting costs predictive quality.
-\item Experiment 2 tests richer intents, but its reserved evaluation remains blocked.
+\item Exposed practice shows better Llama control success with lower NDCG; formal unseen E2 remains pending.
 \end{itemize}
 \begin{alertblock}{Claim boundary}
-No demonstrated expressiveness advantage, accuracy gain or improvement in human experience.
+No unseen language generalization, accuracy gain or improvement in human experience is established.
 \end{alertblock}
-\src{Evidence: Experiment 1 summaries and Experiment 2 status record, archived 29 September 2026.}
+\src{Frozen E1 evidence and the separately recorded exposed-practice diagnostic on 14 October 2026.}
 \end{frame}
 
 \begin{frame}{Research question}
@@ -256,9 +262,9 @@ Success also requires a full list and positive intended movement. Bands are oper
 The budget matches interaction count. It does not equalize semantic content, user effort or every possible feedback algorithm.
 \end{frame}
 
-\begin{frame}{Reserved evaluation procedure}
+\begin{frame}{Formal evaluation procedure}
 \begin{enumerate}
-\item Preserve the 48 development and 100 reserved cases.
+\item Preserve the original bank; agree a replacement unseen bank.
 \item Retain the parser commitment and record prior exposure.
 \item Obtain the student's independent annotation, agreement and blinded adjudication.
 \item Complete the freeze and verify the Llama runtime.
@@ -280,10 +286,26 @@ v2, after development & 48/48 & 48/48\\\bottomrule
 \begin{itemize}
 \item Prompt and wording changed during development.
 \item v1 includes 10 operational errors for Llama.
-\item The 100 reserved parser outcomes remain unmeasured.
-\item Recorded reserved ranking rows: \textbf{0}.
+\item The original 100 questions are now exposed practice.
+\item Formal reserved evaluation remains pending a replacement bank.
 \end{itemize}
 \src{Archived development runs dated 29 September 2026. Equal development scores establish no LLM advantage.}
+\end{frame}
+
+
+\begin{frame}{Exposed practice execution on 14 October}
+\begin{itemize}
+\item Original Llama 3.1 8B digest; Ollama 0.34.0.
+\item Fixed E2 prompt and schema; no tuning or retries.
+\item AI reference agreement: Llama 73/100; rules 18/100.
+\item Llama validation rejections: 24/100, retained.
+\item Induced success: Llama 23.81\%, rules 8.40\%, item feedback 3.92\%.
+\item 41,508 ranking rows across 865 users and three seeds.
+\item NDCG@10: Llama 0.02461; item feedback 0.03128.
+\end{itemize}
+\vspace{0.15cm}
+The questions and AI labels were already exposed. These are practice diagnostics, with no unseen-test or formal H1/H2 claim.
+\src{October 14 methods bundle: raw responses, complete score vectors and independent computational metric recount. All 288 E1 hashes preserved.}
 \end{frame}
 
 \begin{frame}{Prespecified analysis}
@@ -306,11 +328,12 @@ H1 needs both positive pooled contrasts with $q<0.05$. H2 needs its positive poo
 \toprule
 Component & Status\\\midrule
 Experiment 1 & Finished and frozen.\\[0.13cm]
-Experiment 2 H1 / H2 & Not assessed. No pass or failure claim.\\[0.13cm]
-Experiment 2 H3 & Not run. No quality conclusion.\\[0.13cm]
+Practice diagnostic & Parsing, ranking and separate metric recount complete.\\[0.13cm]
+Formal E2 H1 / H2 & Not assessed. No pass or failure claim.\\[0.13cm]
+Formal E2 H3 & Not run. Practice quality cost is descriptive.\\[0.13cm]
 Student annotation & Required genuine human pass is missing.\\[0.13cm]
-Local Llama runtime & Unavailable at the 3 October check.\\[0.13cm]
-Windows and Colab & Full research execution unverified.\\\bottomrule
+Local Llama runtime & Original model digest verified on 14 October.\\[0.13cm]
+Windows and Colab & Windows practice run complete; formal replay pending.\\\bottomrule
 \end{tabular}\par
 \src{Software verification does not complete the blocked experiment. No rule output substitutes for Llama.}
 \end{frame}
@@ -325,7 +348,7 @@ Windows and Colab & Full research execution unverified.\\\bottomrule
 \vspace{0.3cm}
 \textbf{Work needed for a stronger paper}
 \begin{itemize}
-\item Complete the reserved study and report its actual outcome.
+\item Approve a fresh bank and annotation route, freeze, then evaluate once.
 \item Justify the intent measures and resolve scope with the supervisor.
 \item Evaluate broader language and human experience in a separately approved extension.
 \end{itemize}
@@ -433,7 +456,7 @@ Induced satisfaction requires a full list, the class band and $M>10^{-12}$. This
 \item E2 protocol: \texttt{docs/experiment2-protocol.md}.
 \end{itemize}
 \vspace{0.3cm}
-AI assisted implementation and documentation. Personal reading, independent annotation and manual execution should be claimed only when completed and recorded by the student.
+Personal reading, independent annotation and manual execution should be claimed only when completed and recorded by the student.
 \src{The current demo illustrates Experiment 1. Inspecting source files is not an execution record.}
 \end{frame}
 

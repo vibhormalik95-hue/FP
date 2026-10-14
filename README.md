@@ -1,5 +1,17 @@
 # Natural language controls for short video recommendation
 
+## Latest local execution
+
+The [14 October execution record](docs/execution-2026-10-14.md) documents a local Llama 3.1 8B diagnostic on the 100 exposed worked-practice questions. Its AI reference labels cannot establish unseen-test or human-label accuracy. Formal E2 remains pending a prospective supervisor decision, replacement bank and valid annotation route. The original protocol, parser commitment and all 288 frozen E1 files are preserved. See the [plan reconciliation](docs/supervision/2026-10-14-execution-checkpoint.md) and dated October 14 deliverables for the verified update; earlier records below retain their historical dates.
+
+The reviewed practice result is **73/100 validated agreement**, with **23.81% control success** versus rules **8.40%** and item feedback **3.92%**, alongside lower NDCG@10 (**0.02461 versus 0.03128** for item feedback). It does not complete formal E2.
+
+- [Seven-page main paper](deliverables/COMP9500-Research-Paper-2026-10-14.pdf), [ten-page supplementary extended report](deliverables/COMP9500-Supplementary-Extended-Report-2026-10-14.pdf) and [29-page BCIT slide PDF](deliverables/COMP9500-BCIT-Presentation-2026-10-14.pdf)
+- [Weekly update](deliverables/COMP9500-Weekly-Progress-Update-2026-10-14.docx), [completion checklist](deliverables/COMP9500-Evidence-and-Completion-Checklist-2026-10-14.docx) and [unsent professor reply](deliverables/COMP9500-Professor-Email-Draft-2026-10-14.txt)
+- [Delivery, visual review and rendering limitations](docs/delivery-2026-10-14.md), [public audit evidence](docs/evidence/2026-10-14/) and [prospective formal amendment](docs/formal-e2-prospective-amendment.md)
+
+The main paper has six report pages plus one page of references. Full local evidence is retained separately. The slide PDF uses documented PDF composition because the installed Beamer dependencies are incomplete; no successful Beamer rebuild is claimed.
+
 COMP 9500 research project by Vibhor Malik, supervised by Dr Borna Noureddin. Documentation updated 4 October 2026, Vancouver time.
 
 The project has a working research prototype, a completed first experiment and a prepared follow-up experiment. The clearest result so far is that category rules change the feed as intended, while the simple requests tested show no added ranking benefit from an LLM. The next priority is to test the richer-intent question in Experiment 2 and make the final paper fully traceable to evidence.

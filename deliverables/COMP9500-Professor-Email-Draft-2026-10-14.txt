@@ -1,0 +1,25 @@
+To: Dr Borna Noureddin <borna_noureddin@bcit.ca>
+Subject: COMP 9500 verified execution update, October 14
+Prepared: October 14, 2026, Vancouver time
+Status: Draft for student review; not sent
+
+Hi Professor Noureddin,
+
+The local evaluation has now run on my AI_WORK computer using the recorded Llama 3.1 8B model digest. All 288 frozen Experiment 1 files still match their hashes. The paper, BCIT slides and checklist now distinguish this practice execution from the pending formal study.
+
+Llama structured agreement with the supplied AI reference is 73/100; rule agreement is 18/100. Parser/validation errors: Llama 24, rule 0, retained in the denominator. These are exposed-practice agreement scores, not human-label accuracy or unseen-test performance.
+
+The run saved 41,508 ranking rows for 3,459 assigned user/class requests and 865 users, across three frozen recommender seeds and four conditions. It saved 2,595 complete score vectors. Requests with no eligible practice case remain in the exclusion record. A separate computational recount reproduced the parser scores, ranking metrics and pooled means without discrepancies.
+
+Under the fixed practice criteria, user-averaged induced success is 23.81% for Llama, 8.40% for rules and 3.92% for item feedback. This benefit comes with lower NDCG@10: 0.02461 for Llama versus 0.03128 for item feedback.
+
+The current worked questions and AI answers were exposed before the run. I am therefore not presenting this as an unseen test or a completed formal Experiment 2. Could we agree the prospective formal method, replacement-bank provenance and valid independent annotation route before the October 23 readiness decision?
+
+I retain my previously reported 13 Week 1 hours; Week 2 actual hours and personal reading/annotation evidence remain unreported. No new student hours or meeting occurrence are asserted by the automated execution. The historical score/ranking hash discrepancies remain unresolved.
+
+Please also confirm repository and full-evidence access, the paper format and final deadline, and feedback timing for the November 27 draft.
+
+https://github.com/vibhormalik95-hue/FP/tree/codex/oct13-safe-engineering
+
+Best regards,
+Vibhor Malik

@@ -1,0 +1,266 @@
+{
+  "reviewed_utc": "2026-10-14T18:28:58.438229+00:00",
+  "status": "passed",
+  "review_scope": "Fresh process validates delivery identities, independently recounted facts and original-source preservation. No model inference or ranking rerun.",
+  "review_limitations": "Same AI agent reviewed the changes; not an independent human or blinded review. Bootstrap and signed-rank statistics were not separately implemented.",
+  "visual_review": "All 7 main report pages; all 10 extended pages; all 3 weekly and 6 checklist pages; all 29 slides in contact sheets, all 9 composed pages at full size. Final rendered pages inspected for legibility, clipping and factual scope.",
+  "page_counts": {
+    "COMP9500-Research-Paper-2026-10-14.pdf": 7,
+    "COMP9500-Supplementary-Extended-Report-2026-10-14.pdf": 10,
+    "COMP9500-BCIT-Presentation-2026-10-14.pdf": 29,
+    "COMP9500-Weekly-Progress-Update-2026-10-14.docx": 3,
+    "COMP9500-Evidence-and-Completion-Checklist-2026-10-14.docx": 6
+  },
+  "checks": [
+    {
+      "check": "separate metric recount passed",
+      "passed": true
+    },
+    {
+      "check": "primary validated parser denominator and failures",
+      "passed": true
+    },
+    {
+      "check": "ranking evidence counts",
+      "passed": true
+    },
+    {
+      "check": "executed source and input hashes unchanged",
+      "passed": true
+    },
+    {
+      "check": "post-edit 288 frozen E1 matches",
+      "passed": true
+    },
+    {
+      "check": "actual terminal and API receipt succeeds",
+      "passed": true
+    },
+    {
+      "check": "actual GitHub identity",
+      "passed": true
+    },
+    {
+      "check": "Research-Paper page count",
+      "passed": true
+    },
+    {
+      "check": "Research-Paper resolved citations",
+      "passed": true
+    },
+    {
+      "check": "Supplementary-Extended-Report page count",
+      "passed": true
+    },
+    {
+      "check": "Supplementary-Extended-Report resolved citations",
+      "passed": true
+    },
+    {
+      "check": "BCIT-Presentation page count",
+      "passed": true
+    },
+    {
+      "check": "BCIT-Presentation resolved citations",
+      "passed": true
+    },
+    {
+      "check": "six report pages and one reference page",
+      "passed": true
+    },
+    {
+      "check": "Weekly-Progress-Update reviewed page count",
+      "passed": true
+    },
+    {
+      "check": "Evidence-and-Completion-Checklist reviewed page count",
+      "passed": true
+    },
+    {
+      "check": "COMP9500-Research-Paper-2026-10-14.pdf primary agreement and quality cost",
+      "passed": true
+    },
+    {
+      "check": "COMP9500-Research-Paper-2026-10-14.pdf practice and reference scope",
+      "passed": true
+    },
+    {
+      "check": "COMP9500-Supplementary-Extended-Report-2026-10-14.pdf primary agreement and quality cost",
+      "passed": true
+    },
+    {
+      "check": "COMP9500-Supplementary-Extended-Report-2026-10-14.pdf practice and reference scope",
+      "passed": true
+    },
+    {
+      "check": "COMP9500-BCIT-Presentation-2026-10-14.pdf primary agreement and quality cost",
+      "passed": true
+    },
+    {
+      "check": "COMP9500-BCIT-Presentation-2026-10-14.pdf practice and reference scope",
+      "passed": true
+    },
+    {
+      "check": "COMP9500-Weekly-Progress-Update-2026-10-14.docx primary agreement and quality cost",
+      "passed": true
+    },
+    {
+      "check": "COMP9500-Weekly-Progress-Update-2026-10-14.docx practice and reference scope",
+      "passed": true
+    },
+    {
+      "check": "COMP9500-Evidence-and-Completion-Checklist-2026-10-14.docx primary agreement and quality cost",
+      "passed": true
+    },
+    {
+      "check": "COMP9500-Evidence-and-Completion-Checklist-2026-10-14.docx practice and reference scope",
+      "passed": true
+    },
+    {
+      "check": "presentation general disclosure once at opening",
+      "passed": true
+    },
+    {
+      "check": "presentation control benefit alongside NDCG cost",
+      "passed": true
+    },
+    {
+      "check": "100 exposed AI references retained",
+      "passed": true
+    },
+    {
+      "check": "COMP9500-Worked-Practice-100-2026-10-11.csv unchanged copy",
+      "passed": true
+    },
+    {
+      "check": "COMP9500-Practice-Answer-Guide-2026-10-13.docx unchanged copy",
+      "passed": true
+    },
+    {
+      "check": "main report no overfull boxes",
+      "passed": true
+    },
+    {
+      "check": "all source citation keys exist",
+      "passed": true
+    },
+    {
+      "check": "run_exposed_practice.py syntax parsed without execution",
+      "passed": true
+    },
+    {
+      "check": "audit_exposed_practice.py syntax parsed without execution",
+      "passed": true
+    },
+    {
+      "check": "capture_comp9500_receipt.py syntax parsed without execution",
+      "passed": true
+    },
+    {
+      "check": "compose_oct14_slide_pdf.py syntax parsed without execution",
+      "passed": true
+    },
+    {
+      "check": "original experiment source/protocol not edited",
+      "passed": true
+    },
+    {
+      "check": "COMP9500-BCIT-Presentation-2026-10-14.pdf local/Git copy identity",
+      "passed": true
+    },
+    {
+      "check": "COMP9500-Evidence-and-Completion-Checklist-2026-10-14.docx local/Git copy identity",
+      "passed": true
+    },
+    {
+      "check": "COMP9500-Practice-Answer-Guide-2026-10-13.docx local/Git copy identity",
+      "passed": true
+    },
+    {
+      "check": "COMP9500-Professor-Email-Draft-2026-10-14.txt local/Git copy identity",
+      "passed": true
+    },
+    {
+      "check": "COMP9500-Research-Paper-2026-10-14.pdf local/Git copy identity",
+      "passed": true
+    },
+    {
+      "check": "COMP9500-Supplementary-Extended-Report-2026-10-14.pdf local/Git copy identity",
+      "passed": true
+    },
+    {
+      "check": "COMP9500-Weekly-Progress-Update-2026-10-14.docx local/Git copy identity",
+      "passed": true
+    },
+    {
+      "check": "COMP9500-Worked-Practice-100-2026-10-11.csv local/Git copy identity",
+      "passed": true
+    }
+  ],
+  "reviewed_payloads": {
+    "COMP9500-BCIT-Presentation-2026-10-14.pdf": {
+      "bytes": 1320386,
+      "sha256": "d8ca662f5a7af1685e3d78da05ea70a61742ad940b5447ad2f9045c074c5a519"
+    },
+    "COMP9500-Evidence-and-Completion-Checklist-2026-10-14.docx": {
+      "bytes": 44444,
+      "sha256": "8bfd0c5eb53b8664b169698fd7b4917ee3bd22cbdbc8f531199abac48a2eb5ec"
+    },
+    "COMP9500-Formal-E2-Prospective-Amendment-2026-10-14.md": {
+      "bytes": 4870,
+      "sha256": "54d64177a4efb4d6f8a69657651e7c4f5954194aa0db3a399666d4787ae0bf51"
+    },
+    "COMP9500-Methods-Record-2026-10-14.md": {
+      "bytes": 11095,
+      "sha256": "265c20d8e7e988e0a4cc1b8bb7bdb45da60a9172cd5fb78c0ece85f4e9800a98"
+    },
+    "COMP9500-Practice-Answer-Guide-2026-10-13.docx": {
+      "bytes": 45951,
+      "sha256": "76328ec447c38d3dfec9c80508301375bdc8e0d6b8c0bc0108e7b37ae8651e0e"
+    },
+    "COMP9500-Professor-Email-Draft-2026-10-14.txt": {
+      "bytes": 2225,
+      "sha256": "f72fa735df4d2049f428442e064cfa6511687852dfd7128c84b34f7327e46aa4"
+    },
+    "COMP9500-Research-Paper-2026-10-14.pdf": {
+      "bytes": 181127,
+      "sha256": "453e151aca2e50897db04ce311a27ffdbd15d63c81e0379171cdfcdc41ed8699"
+    },
+    "COMP9500-Supplementary-Extended-Report-2026-10-14.pdf": {
+      "bytes": 212056,
+      "sha256": "01d815578534525a6591401257e544b10e69056a8654e41c383bd51ff017a79c"
+    },
+    "COMP9500-Weekly-Progress-Update-2026-10-14.docx": {
+      "bytes": 40821,
+      "sha256": "c2be156d76ec2f2d26dfd543609a76a2096e13237bf03d2e8a979cde092c8158"
+    },
+    "COMP9500-Worked-Practice-100-2026-10-11.csv": {
+      "bytes": 68900,
+      "sha256": "f7694c4235c2644db85631b09f7df3f2daf9cad765caf6426f532035a91b4e83"
+    }
+  },
+  "proposal_sources": {
+    "COMP9080-Proposal-Unsigned.docx": {
+      "sha256": "4ce520f72ab175ca3d575fcd544e58abb31287e1c2d5488cb6efbee43a87a0d0",
+      "bytes": 40810
+    },
+    "proposal-text-extract.txt": {
+      "sha256": "5ab57b950a00469abc52a7edf39c10846908c618e3999fd57b2ad0878fedb3c3",
+      "bytes": 9058
+    },
+    "course-email-transcript.md": {
+      "sha256": "35d67d588038d6f518e5aeecf711d0f061fc52f30ab94acb4194aa3431465854",
+      "bytes": 6095
+    }
+  },
+  "frozen_e1_after_final_edits": {
+    "status": "passed",
+    "manifest_sha256": "80ff8138e6ad7abd3e8482bc59fcaa044dfe7f7ca507edabdd569d217635e595",
+    "expected": 288,
+    "matched": 288,
+    "missing": 0,
+    "mismatched": 0,
+    "scope": "E1 byte hashes only; no evidence parsing or experiment execution"
+  },
+  "local_final_terminal_receipt_sha256": "6e4a372343f68c0b7bd215dd57434ffed7efda42e7b63b1ffc410b5f313de4fd"
+}

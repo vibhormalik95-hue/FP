@@ -1,0 +1,222 @@
+\documentclass[conference]{IEEEtran}
+\usepackage{iftex}
+\ifXeTeX
+\usepackage{fontspec}
+\setmainfont{Times New Roman}
+\setsansfont{Arial}
+\setmonofont{Courier New}
+\else
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\fi
+\usepackage{amsmath,amssymb,array,url,graphicx,etoolbox}
+\IfFileExists{booktabs.sty}{\usepackage{booktabs}}{\newcommand{\toprule}{\hline}\newcommand{\midrule}{\hline}\newcommand{\bottomrule}{\hline}}
+\IfFileExists{kvsetkeys.sty}{\usepackage[hidelinks]{hyperref}}{}
+\IfFileExists{microtype.sty}{\usepackage{microtype}}{}
+\patchcmd{\abstract}{---}{: }{}{}
+\patchcmd{\IEEEkeywords}{---}{: }{}{}
+\title{LLM-Mediated Natural Language Controls for Short-Video Recommender Systems: An Offline Study of Controllability}
+\author{\IEEEauthorblockN{Vibhor Malik}\IEEEauthorblockA{M.Sc. in Applied Computing\\British Columbia Institute of Technology\\Supervisor: Borna Noureddin\\COMP 9500 research project\\Review draft: 14 October 2026, Vancouver time}}
+\begin{document}
+\bstctlcite{controlNoAuthorDash}
+\maketitle
+\thispagestyle{plain}\pagestyle{plain}
+\begin{abstract}
+This offline study separates language translation from deterministic control of a short-video recommendation feed. In frozen Experiment 1, target-category proportion increases from 11.6\% to 79.2\%, while muted-category exposure falls from 6.1\% to zero through hard exclusion. Llama parses 120/120 templated inputs, 79/100 broader synthetic inputs and 2/10 adversarial cases. Rules and Llama produce identical canonical-task rankings, and all 10 generated explanations match the template. Boost NDCG@10 decreases 45.7\%, against a weak recommendation backbone. A separate local diagnostic on 100 already exposed practice questions records validated agreement with AI-generated references of 73/100 for Llama and 18/100 for rules. User-averaged induced control success is 23.81\% for Llama, 8.40\% for rules and 3.92\% for item feedback, but Llama NDCG@10 is 0.02461 versus 0.03128 for item feedback. Its 24 validation rejections remain in the denominator. A separate computational recount reproduces all 41,508 practice ranking rows' metrics. These findings support bounded category enforcement and a descriptive practice advantage with quality cost; they do not establish unseen language generalization, human satisfaction or improved recommendation accuracy. Formal Experiment 2 remains pending an approved replacement bank and independent annotation route. All 288 frozen Experiment 1 files are preserved.
+\end{abstract}
+\begin{IEEEkeywords}
+controllable recommendation, natural-language interfaces, sequential recommendation, offline evaluation, reproducibility
+\end{IEEEkeywords}
+
+\section{Introduction}
+Item feedback communicates a reaction to one recommendation. A request such as ``show more of this category'' specifies a broader intervention, while a profile can carry a preference across requests. Explanations serve a different purpose: making the information behind recommendations visible. Comparing these mechanisms requires separating the language model's interpretation from the ranker's mechanical enforcement.
+
+Mozilla's 2022 audit of YouTube controls reported that Dislike prevented 12\% and Not interested 11\% of unwanted recommendations relative to its no-feedback control~\cite{ricks2022button}. This historical platform evidence motivates investigation; it is neither a current platform measurement nor a baseline for the present implementation. The research question here is narrower: how reliably does a local language model compile category requests, and how do category exposure and next-item accuracy change when the commands are applied to a frozen recommender?
+
+The contribution is an inspectable applied artifact and evaluation pipeline. It does not introduce language-based recommendation or establish the novelty of combining controls. Parser validation, policy application, ranking metrics and explanations remain independently observable. The study uses historical public interactions and synthetic instructions, with no new participant recruitment. Consequently it cannot establish trust, naturalness, perceived agency or real-world satisfaction.
+
+The supplied proposal is an unsigned draft, with unselected research-path boxes and blank approval fields. It specifies a 6--8-page IEEE or ACM paper; the supplied course-email transcript gives a broader 6--10-page range. Neither establishes whether references or appendices count. This main report includes its references within its page count and has no appendices. The preserved extended report and complete execution evidence are separate supplements; their existence does not establish supervisor approval of the implemented method.
+
+\section{Related Work}
+Language-based profiles are an established direction. Radlinski et al. outline transparent, scrutable profiles~\cite{radlinski2022profiles}; Wo\'{z}niak et al. investigate user-editable profiles~\cite{wozniak2025profiles}; Ramos et al. study edits and recommendation changes~\cite{ramos2024transparent}. These motivate explicit preferences, without showing that the present one-preference offline profile is equivalent to a rich human-edited profile. Sanner et al., Chen and Pu, and Zhou et al. provide related profile and critiquing approaches~\cite{sanner2023competitive,chen2012critiquing,zhou2024language}. Niu et al. examine conversational short-video control through interviews and a user study~\cite{niu2025chat}; Fabbri et al. describe an integrated transparent, controllable feed~\cite{fabbri2026feeding}. It would therefore be inaccurate to describe prior work universally as isolated single-channel systems.
+
+Lu et al. align language models with recommendation instructions using a conversational recommender with a backbone such as SASRec~\cite{lu2024aligning}. Dai et al. study learned control tokens for reranking~\cite{dai2025token}. The current implementation instead freezes its recommender and uses the LLM only to translate commands; it cannot inherit those systems' reported benefits. SASRec supplies the architectural basis for the independently implemented compact network~\cite{kang2018sasrec}. KuaiRec provides dense historical short-video feedback and categories, not responses to the interventions constructed here~\cite{gao2022kuairec}.
+
+Evaluation design is central. Ji et al. identify leakage risks when recommendation splits admit future interactions~\cite{ji2023leakage}. A category derived from a held-out item is still outcome-derived information even if the item's identifier is hidden. The revised pipeline prevents that path. Zhang et al.'s vision paper motivates preference-alignment measures beyond historical ranking accuracy~\cite{zhang2026context}; it does not validate this project's numerical satisfaction bands. Compliance, predictive relevance and human preference remain distinct constructs.
+
+\section{Method}
+\subsection{Data and information boundaries}
+The processed cohort contains 865 eligible users, 2,593 candidate items and 31 opaque official category identifiers. The source KuaiRec matrix contains 1,411 users, 3,327 items and 4,676,570 interactions~\cite{gao2022kuairec}. A watch ratio above 2.0 is a derived positive-engagement proxy, not an observed like. Official documentation defines watch ratio as play duration divided by video duration~\cite{kuairecdocs}.
+
+Preprocessing excludes 181,992 records without timestamps rather than inventing dates. Shared chronological boundaries divide source events into nominal 70\% training, 15\% request history and 15\% evaluation windows, before positive-event filtering and eligibility. Users need at least three training, two request-history and one evaluation item. Candidates must have a positive event before the training cutoff; 43,708 post-cutoff positive cold-item events are removed before user filtering. The retained histories contain 127,173 training positives, 11,712 request-history positives and 4,662 test positives. These counts describe different stages and must not be interpreted as one common-denominator retention fraction.
+
+Training uses only training sequences. Scoring receives training plus request history, truncated to its maximum context. Requests may access that history and static categories, never final behavioral labels. The first eligible final item supplies the relevance label only after assignment and ranking. The frozen full-catalogue policy permits seen items, although the retained cohort has no repeated training items or test/history overlap; repeated targets therefore do not justify that policy. An unseen-only candidate design would be a separate experiment.
+
+Categories remain identifiers such as \texttt{category\_12}; the study does not infer topic names or test understanding of natural video subjects. Synthetic requests are deterministic experimental assignments, not observations of what users wanted. Historical support does not make them independent human preferences or establish a causal response to an intervention.
+
+\subsection{Recommender and matched configurations}
+The compact SASRec-style network uses item and position embeddings, two self-attention blocks, one attention head, hidden dimension 32, maximum history 50 and dropout 0.2. It uses Adam with learning rate 0.001, batch size 64 and gradient clipping at 5.0, for 20 fixed epochs in seeds 42, 43 and 44. Negative sampling excludes training-positive items without consulting later positives. Checkpoints remain fixed across control conditions. The initial 256-user, three-epoch run measured execution cost before control-outcome inspection; the main run's fixed larger scope is retained in its provenance. No current run retrains or tunes the backbone.
+
+Five configurations use the same catalogue and frozen score vector: A is simulated positive or negative feedback on one historical exemplar; B adds display-only explanations to A; C compiles a text command; D compiles one explicit profile preference; E combines text, profile and explanations without double-counting a repeated command. B must equal A in rank order. Equivalent C, D and E commands deliberately share policy. These configurations do not identify every mechanism's independent contribution: a category command communicates more than a single-item reaction, and explanations have no offline ranking intervention.
+
+\begin{table}[t]\centering\small
+\caption{Matched mechanisms and the comparison each supports}
+\begin{tabular}{p{0.4cm}p{2.6cm}p{3.9cm}}\toprule
+ID&Mechanism&Interpretation\\\midrule
+A&One historical item reaction&Explicit simulated reference policy\\
+B&A with explanation display&Ranking invariance, not a preference effect\\
+C&Parsed free-text command&Translation followed by enforcement\\
+D&One profile preference&Equivalent-intent consistency within session\\
+E&Text, profile and explanation&Merge consistency without double counting\\\bottomrule
+\end{tabular}\end{table}
+
+For each user, category support comes from training and request history. A hash selects supported boost and mute targets; the latest matching historical item supplies A's exemplar. The free-text and profile channels express the same category operation. Their canonical wording was used during development, so that task is a consistency check rather than held-out language generalization.
+
+\subsection{Parsing, enforcement and explanations}
+The actual language backend is local Llama 3.1 8B through Ollama, with constrained structured output and application validation. A transparent rule parser is a separate comparator, never a substitute for failed inference. For E1, a command contains boost, mute, reset or clarify, a category and strength. Unknown categories, unsupported operations and malformed outputs remain errors. In end-to-end ranking, an error applies no new control and stays in the denominator.
+
+Scores are normalized by each user's catalogue minimum and maximum, with tied scores mapped to zero. The default category boost adds 0.25; a hard mute removes matching items without padding forbidden items back into an underfilled list. Item identifiers break ties deterministically. Profile state is session scoped, and explicit commands take precedence over an equivalent stored preference. The profile does not implement the proposal's rich, approximately 200-word human-edited representation.
+
+Explanations select one to three verbatim statements from a verified set of item, category and historical-association facts. This is grounded statement selection, not unrestricted explanation generation, causal faithfulness or evidence of human-perceived quality. Only ten baseline items have an actual model-generated cache; unmatched cards receive a visibly labeled verified template. Explanations do not change B's ranking.
+
+The cache key binds the exact facts and model provenance. Changed history or item facts cannot legitimately reuse a mismatching explanation. Conversely, histories with the same verified facts may share a key. Ten cached cards therefore do not cover the full user/item space, and a visible template fallback must not be counted as another model inference. Source-code inspection or displaying a card is not evidence that a new explanation-generation experiment occurred.
+
+Stateful interface checks are also separate from offline evidence. The API bounds inputs, isolates sessions/users and exposes backend/data status. Functional workflows cover setting preferences, changing users and resetting state. These checks can establish that the application applies a command consistently; they cannot determine whether a person understands a category identifier or prefers the resulting feed. A persistent profile across application restarts and a licensed video-playback experience are outside the implemented prototype.
+
+\section{Evaluation}
+\subsection{Metrics and statistical units}
+At $K=10$, target-category proportion TCP@10 is the fraction of slots carrying a boosted target; TCER@10 is the same arithmetic for an unwanted target, where lower is better. The harness separately reports fill rate, conditional exposure for nonempty lists and filled compliance. Zero exposure after an empty output must not be mistaken for successful control. A positive presence check does not guarantee improved exposure over baseline.
+
+Relevance uses one historical next-item label. HR@1 is one when it ranks first; NDCG@10 is $1/\log_2(r+1)$ when it appears at rank $r\leq10$, otherwise zero. These are next-item recovery proxies, not utility over all candidates or human satisfaction. A steering request can legitimately disagree with the historically observed next item, which predates the intervention.
+
+E1 averages paired outcomes across requests and three seeds within each user. Thus 865 users remain 865 analysis units, rather than 5,190 independent observations. Its six primary contrasts are C, D and E versus A for TCP and TCER, with Wilcoxon signed-rank tests, Pratt zeros, rounded ties and Benjamini--Hochberg adjustment~\cite{scipywilcoxon,scipyfdr}. User-bootstrap intervals use 5,000 resamples. Shared configurations, sparse nonzero differences, ties and dependence restrict interpretation. Neither a small $p$ value nor a narrow interval corrects synthetic-intent bias or a weak backbone.
+
+\subsection{Language accuracy and non-inferiority}
+The frozen E1 broader suite measures exact operation/category/strength agreement with its fixed synthetic rubric. It maps ``less'' and ``fewer'' to hard mute, treats conditional requests as unsupported and asks for clarification when a neutral ``show'' request lacks direction. Those conventions are not established human meanings. One development/test pair differs only by a full stop; shared templates further limit independence. The separate 120 canonical inputs were development wording, and the ten adversarial cases form a small finite stress set.
+
+The original parser target is 85\%, with a 70\% degradation floor. The broader suite's descriptive 95\% Wilson interval assumes a binomial working model; it does not establish population-wide reliability. Operational and validation failures remain in the denominator. Request/seed reuse cannot enlarge the number of unique language observations. A later prompt change would create development evidence and require a fresh prospective bank, not repair the interpretation of an already observed test.
+
+The parser report distinguishes three levels: a model response may complete, its JSON may satisfy the supplied schema, and the validated command may agree with the reference. These are different outcomes. Application grounding can reject a syntactically valid command, while a valid accepted command can still express the wrong operation. End-to-end exact agreement treats both cases as failures. Reporting only completed HTTP requests or only cases that pass validation would inflate reliability. Raw responses, accepted commands, rejected commands and clarification outcomes must therefore remain traceable per question.
+
+The proposal's ``within 10\%'' non-inferiority phrase is ambiguous. The frozen implementation used absolute HR@1 margin 0.10; the later audit additionally reports 10\% of the paired A baseline as a post hoc sensitivity analysis. With baseline about 0.0025048, that relative margin is about 0.00025048. The simultaneous lower bound for C/D/E minus A is about $-0.0007707$: above $-0.10$, below $-0.00025048$. The absolute calculation passes numerically but could permit complete baseline loss; the relative reading is unsupported. Neither establishes useful quality preservation or retroactive prespecification.
+
+\section{Frozen Experiment 1 Results}
+The executed cohort and checkpoints remain unchanged. Table~\ref{tab:e1} summarizes the matched control run. Target exposure changes are large, but policy construction explains their direction: category-wide boosting directly favors TCP against item-only feedback, and hard exclusion guarantees zero muted exposure after correct parsing. C, D and E have identical rankings on equivalent canonical commands; the separately executed rule comparator gives the same recorded rankings and aggregate metrics. This attributes the canonical-task gain to shared enforcement, not an observed LLM advantage.
+
+\begin{table}[t]\centering\small
+\caption{Frozen E1 control results, user means}\label{tab:e1}
+\begin{tabular}{lrr}\toprule
+Metric & A/B & C/D/E\\\midrule
+Boost TCP@10 (\%) &11.615&79.222\\
+Mute TCER@10 (\%) &6.112&0.000\\
+Fill rate (\%) &100.000&100.000\\
+Boost NDCG@10 &0.03012&0.01637\\
+Mute NDCG@10 &0.03370&0.03526\\\bottomrule
+\end{tabular}\end{table}
+
+For C versus A, the mean paired boost TCP difference is 67.607 percentage points, with 95\% user-bootstrap interval [65.788, 69.438]; the TCER difference is $-6.112$ points, interval [$-7.056,-5.241$]. D and E yield the same contrasts. The BH-adjusted Wilcoxon values are approximately $1.35\times10^{-142}$ for boosts and $1.05\times10^{-65}$ for mutes. The proposal's directional control criterion is numerically supported under these conventions; this is not evidence that the LLM improves recommendation accuracy or understands general human intent.
+
+Quality moves differently. Boost NDCG@10 decreases 45.7\%. The post hoc paired boost C--A difference is $-0.01375$, with user-bootstrap interval [$-0.02086,-0.00655$], and 108 users have nonzero differences. This secondary analysis was added after inspection and remains outside the unchanged primary BH family. Muted requests' NDCG increases, so one pooled metric would conceal distinct effects. The historical next-item label may disagree with a newly assigned steering instruction; the result still rules out an unqualified ``no quality cost'' claim.
+
+The backbone is weak: per-seed HR@1 is 0.000\%, 0.347\% and 0.462\%, against about 7.977\% for request-window popularity. The latter uses pooled recent pre-test histories; the trained network uses each user's recent history for scoring but its weights were fitted on the earlier training window. Both avoid final labels, but this estimator difference prevents a controlled model-class superiority claim. Between 73.9\% and 96.2\% of users share the most-common first prediction within a seed. Such concentration and near-zero accuracy make non-inferiority especially uninformative.
+
+\begin{table}[t]\centering\small
+\caption{Historical uncontrolled backbone diagnosis}
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{lrrr}\toprule
+Model&HR@1 (\%)&HR@10 (\%)&NDCG@10\\\midrule
+Uniform, expected&0.039&0.386&0.00175\\
+Training popularity&0.116&0.578&0.00298\\
+Recent popularity&7.977&16.532&0.11866\\
+SASRec seed 42&0.000&4.509&0.01642\\
+SASRec seed 43&0.347&10.058&0.03627\\
+SASRec seed 44&0.462&11.098&0.04584\\\bottomrule
+\end{tabular}\end{table}
+
+Llama parses all 120/120 canonical inputs, 79/100 broader synthetic requests and 2/10 adversarial requests. The broader-set Wilson interval is [70.02\%, 85.83\%]: the 70\% floor is cleared, while the 85\% point target is missed. The rule comparator obtains 81/100, not proof of general superiority from this finite set. Seven Llama cases are grounding rejections, recorded as errors rather than discarded; correct structured syntax and intended meaning are separate checks. All ten generated explanation cards equal the template, establishing no observed explanation advantage in this limited sample.
+
+\begin{table}[t]\centering\small
+\caption{Frozen E1 broader synthetic language results}
+\begin{tabular}{lrr}\toprule
+Case group&Rule correct&Llama correct\\\midrule
+Positive&26/30&30/30\\
+Negative&24/30&30/30\\
+Reset&3/10&10/10\\
+Ambiguous/unsupported&18/20&7/20\\
+Adversarial&10/10&2/10\\\midrule
+Total&81/100&79/100\\
+Validation rejections&0&7\\\bottomrule
+\end{tabular}\end{table}
+
+The supported positive, negative and reset cases are all correct for Llama under the fixed E1 rubric. Difficulty concentrates in ambiguity and adversarial instructions. Fourteen broader-set cases yield valid but rubric-incorrect commands, in addition to the seven rejections. A rule can outperform a model on a narrow, explicitly coded rubric without demonstrating richer language understanding; a model can similarly clear a finite score floor without establishing safe interpretation of arbitrary requests. The result must be stated with its actual vocabulary, category scope and denominator.
+
+Historical verification reconstructs prepared sequences and recomputes all 25,950 actual-model ranking rows. A later audit reproduces all 25,950 top-ten lists but reports 2,009 full-ranking hash differences and 5,190 request-score hash differences. Their cause remains unresolved; missing original score vectors prevent quantifying numerical error. Dependency pins alone do not guarantee cross-platform equality. These records are historical Linux checks, not a newly completed E1 replay on Windows or Colab.
+
+\section{Exposed Practice Diagnostic}
+\subsection{Prospective settings and reference provenance}
+On 14 October the student authorized downloading the required model from the official Ollama library on AI\_WORK. Its \texttt{llama3.1:8b} Q4\_K\_M digest is \texttt{46e0c10c039e} (full SHA-256 in the methods record), matching the archived model identity. The installed model is 4,920,753,328 bytes. Ollama is 0.34.0, compared with historical 0.34.4; this runtime difference is documented, not described as exact historical reproduction.
+
+A separate protocol was saved before inference. It reuses the existing E2 prompt, schema, validators, rule parser and ranking implementation, with temperature 0, seed 42, context 4096, maximum output 768, six threads and a 600-second timeout. Each question is attempted once per backend, in CSV order. No prompt, threshold, validator or model is tuned after observing outcomes. Source snapshots and exact input hashes identify the executed Windows files; their CRLF line endings differ from the archive's LF bytes, while normalized parser, evaluator and protocol text matches.
+
+The 100 exact questions and answers come from the delivered worked-practice CSV, explicitly marked non-held-out practice and AI generated. They are neither genuine student annotations nor independent human gold. Their original supplied timestamp strings remain preserved, with their formatting/authentication limitation recorded. Directive shapes assign 25 cases to each of compound, graded, nonzero-floor and conditional classes. The original reserved bank and September 29 parser commitment remain unchanged; no unseen bank is created or claimed.
+
+\subsection{Validated parsing and ranking results}
+Llama's primary validated agreement is \textbf{73/100}, compared with \textbf{18/100} for rules. Llama retains 24 validation rejections: 23 conditional-grounding checks and one invalid floor command. Rule operational errors are zero, but 75 requests clarify. A post hoc recount finds 95/100 raw model responses match the AI reference before application validation. That supplementary diagnostic explains the loss between raw translation and accepted commands; it does not replace 73/100 or justify changing the validator on these outcomes.
+
+\begin{table}[t]\centering\small
+\caption{Practice parser agreement with exposed AI references}
+\begin{tabular}{lrrr}\toprule
+Class&Rule correct&Llama correct&Llama errors\\\midrule
+Compound&6/25&25/25&0\\
+Conditional&1/25&2/25&23\\
+Nonzero floor&1/25&22/25&1\\
+Graded&10/25&24/25&0\\\midrule
+All&18/100&73/100&24\\\bottomrule
+\end{tabular}\end{table}
+
+This class breakdown prevents the pooled 73\% score from concealing the conditional failure concentration. The supplied AI references and the application validator implement different checks; agreement with the former does not guarantee acceptance by the latter. The recorded raw-response diagnostic suggests that application grounding contributes materially to these failures. It does not authenticate human intent or establish which interpretation a person would endorse. Fixing the validator on these observed questions would be development work, requiring a separately documented revision before any genuinely fresh evaluation.
+
+For each user/class, SHA-256 selects a practice question whose category references occur in training plus request history. One conditional user/class pair lacks eligibility and is retained as an exclusion. There are 3,459 assigned requests for 865 users. Three frozen recommender seeds and four conditions produce 41,508 rows and 2,595 saved score vectors. The 100 distinct language questions do not become 41,508 independent language observations.
+
+Table~\ref{tab:practice} reports user-averaged descriptive outcomes. The existing operational bands define induced success as a full top-ten list satisfying the count band with strictly positive intended movement. They require controlled counts for graded changes and floors, and intersection growth without additional non-intersection exposure for conditional requests. These are computational conventions, not validated human satisfaction. Errors apply the baseline ranking and remain counted; impossible and already-satisfied cases are flagged rather than silently removed.
+
+\begin{table}[t]\centering\small
+\caption{Exposed-practice results, not formal E2 findings}\label{tab:practice}
+\begin{tabular}{lrrr}\toprule
+Condition&Success (\%)&HR@1 (\%)&NDCG@10\\\midrule
+Item feedback&3.921&0.193&0.03128\\
+Rules&8.401&0.241&0.02926\\
+Llama&23.805&0.183&0.02461\\
+Recency&7.264&7.977&0.11866\\\bottomrule
+\end{tabular}\end{table}
+
+Llama handles these exposed practice requests better under the fixed control criteria, but its NDCG@10 is lower than item feedback's 0.03128. Greater steering success therefore coexists with predictive quality cost. Users, not request-seed rows, are the analysis units: seed means are combined within class, then eligible classes are weighted equally within user. The existing evaluator retains 5,000-resample user intervals and its eleven-contrast calculations, but they do not turn exposed practice into formal H1/H2 evidence.
+
+The retained feasibility flags also matter. The evaluator records 1,107 structurally infeasible assigned request/seed combinations and 2,071 combinations whose uncontrolled baseline already satisfies the request band; those counts use the A-row request/seed denominator, not all four condition rows. Floor violations are retained in all conditions, including 342 Llama rows. A band-satisfied feed is not necessarily induced success: the latter additionally requires positive movement. Already-satisfied requests, missing opportunity and structural impossibility therefore remain visible rather than being selected away to improve the reported proportion. These operational flags are evaluator diagnostics, not human judgments of feasibility or satisfaction.
+
+A fresh Python process with a separate standard-library implementation checks all 3,013 manifest files, reference identities, parser scores, deterministic request assignments, complete seed/condition pairs, every row's control/relevance metrics and pooled means. It finds no discrepancies. The same AI agent performs this computational audit, not a second human or blinded reviewer. Bootstrap intervals and signed-rank calculations are not independently reimplemented. All 288 E1 hashes match before and after execution.
+
+\section{Validity, Reproducibility and Formal Next Step}
+Synthetic opaque categories restrict construct validity. A single historical exemplar conveys less information than a category instruction. Equivalent policy outputs do not establish equivalent usability, while hard exclusion's zero exposure is true by construction. The study neither observes real steering intentions nor measures human comprehension or satisfaction. KuaiRec's platform, period, positive-event threshold and filtered active cohort restrict external validity.
+
+Shared templates and exposure limit language independence. The weak untuned backbone, sparse paired quality differences and globally pooled recency comparator complicate quality interpretation. The original absolute and relative non-inferiority readings remain visible. No post hoc approval can make a margin prospectively specified, an exposed bank unseen, or a computational audit human annotation. Unresolved historical ranking/score hashes remain disclosed alongside successful top-ten reproduction.
+
+The artifact separates preprocessing, training, controls, evaluation and a React/FastAPI demonstration. Real-data versus fixture status and rule versus local-model status are visible. Metadata cards are not playable video assets. State is session scoped; malformed commands remain errors. Prior unit/API/browser checks support software behavior, not the research hypotheses or present full-platform acceptance. The current Windows practice run is verified; full E1 replay and Colab execution remain unverified.
+
+The separate methods bundle retains the literal prompt/schema, runtime digest, options, source snapshots, input hashes, original reference bytes, 100 raw responses, 200 parse records, score vectors, ranking rows, exclusions, failures, terminal logs and audit evidence. It also preserves the interrupted wrong-model attempt, from which no result is used. New complete score vectors improve traceability for this run without resolving the older E1 discrepancy. Dataset/model licenses and pseudonymous identities must be respected; model weights are not redistributed.
+
+The local execution environment is identified by a real terminal receipt from AI\_WORK, not inferred from a cloud workspace. The installed Ollama service responded on loopback and its model manifest digest matched the archived Llama identity after the authorized download. Python was 3.14.0, with NumPy 2.3.5, SciPy 1.16.3 and PyTorch 2.9.1 CPU; the exact environment record is preserved. This differs from historical package snapshots. Passing byte hashes proves artifact identity, not numerical equivalence across all runtime versions.
+
+Reproduction should start from those saved artifacts: authenticate the E1 inventory, verify current source/input hashes and runtime identity, then replay the cached parsing and recompute rankings from the recorded scores. A fresh inference call is a new execution and should receive a new directory and timestamp; it must not silently replace these completed records. The public repository remains a partial review copy, while the full local bundle retains pseudonymous request-level evidence and scores. The compiled main report and separate supplementary report do not replace the experiment's frozen inputs.
+
+The project used substantial AI assistance for implementation, analysis and drafting. Responsibility for understanding, source checking, policy compliance and genuine activity records remains with the student. This paper claims no new student hours, personal reading, meeting occurrence or independent human annotation from automated execution.
+
+Formal E2 remains unexecuted. A prospective amendment and data-free freeze specification are supplied for supervisor decision. The next action is to record approval of the fresh bank's provenance and access controls, eligible independent annotators, blind adjudication, metrics and the exact parser/model/runtime freeze. Only after explicit approval should a separate bank be created and frozen before eligible annotation or model exposure. Actual independent labels, agreement before adjudication, completed adjudication and a full freeze are required before a single formal evaluation. The existing practice cases cannot fill that role; no fresh bank or approval is inferred here.
+
+\section{Conclusion}
+Frozen E1 demonstrates bounded category enforcement and its costs, without an observed LLM advantage on canonical ranking or the ten explanation cards. The completed exposed-practice diagnostic records better validated translation and induced control success for Llama than for the specified comparators, alongside lower NDCG@10. Its AI references and prior exposure preclude unseen-test or human-validity claims. Preserved failures, complete score vectors and a separate metric recount make that bounded result reviewable. Formal expressiveness hypotheses await a fresh approved bank and genuine independent human evidence.
+
+\clearpage
+\bibliographystyle{IEEEtran}
+\bibliography{references}
+\end{document}
