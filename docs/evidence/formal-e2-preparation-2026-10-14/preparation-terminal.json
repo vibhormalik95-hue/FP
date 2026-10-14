@@ -1,0 +1,19 @@
+{
+  "started_utc": "2026-10-14T20:13:11.246361+00:00",
+  "completed_utc": "2026-10-14T20:13:18.471838+00:00",
+  "argv": [
+    "C:\\Python314\\python.exe",
+    "scripts/prepare_formal_e2.py",
+    "--output",
+    "C:\\Users\\vs981\\Documents\\COMP9500\\formal-e2-2026-10-14-preparation-01",
+    "--archive",
+    "C:\\Users\\vs981\\Downloads\\COMP9500-Research-Project-Recovered (2)\\cmp9500-recommender",
+    "--practice",
+    "C:\\Users\\vs981\\Documents\\COMP9500\\2026-10-14\\evaluation-llama31-practice-01",
+    "--old-delivery",
+    "C:\\Users\\vs981\\Documents\\COMP9500\\2026-10-14\\delivered"
+  ],
+  "exit_code": 0,
+  "stdout": "{\"created_utc\": \"2026-10-14T20:13:11.770623+00:00\", \"client_date\": \"2026-10-14\", \"client_timezone\": \"America/Vancouver\", \"scope\": \"preparation only; no bank, labels, final freeze or inference\", \"status\": \"prepared_pending_custodian_and_design_decisions\", \"repository_head_before_preparation_commit\": \"c6ebda06008c92e4141aa2d91991ac2c0328a1de\", \"branch\": \"codex/oct13-safe-engineering\", \"preserved_practice_commit\": \"c6ebda06008c92e4141aa2d91991ac2c0328a1de\", \"model_available\": true, \"model_inference_requests\": 0, \"new_cases\": 0, \"new_labels\": 0, \"source_files_snapshotted\": 13, \"practice_manifest_entries_preserved\": 3013, \"frozen_e1_matched\": 288, \"next_decision\": \"Name the fresh-bank custodian who will establish access, eligibility and reference-origin decisions before authoring.\", \"completed_utc\": \"2026-10-14T20:13:18.361833+00:00\", \"files\": 25}\n",
+  "stderr": ""
+}

@@ -1,0 +1,7 @@
+{
+  "status": "passed",
+  "run_manifest_sha256": "ab5ee56a139e39e55dc8913534456ad535b1c28123e98e0ca2c242f899f68595",
+  "run_files_matched": 3013,
+  "prior_delivery_files_matched": 14,
+  "scope": "streamed hashes only; no practice/model rerun"
+}

@@ -1,0 +1,5 @@
+28 passed, 1 warning in 0.30s
+Warning: installed pytest_asyncio plugin uses deprecated asyncio.get_event_loop_policy.
+Source: actual terminal tool output from this chat; no execution-start timestamp was separately recorded.
+Command: C:\Python314\python.exe -m pytest tests\test_formal_e2_inference.py -q -p no:cacheprovider --basetemp C:\Users\vs981\Documents\COMP9500\formal-e2-software-tests-2026-10-14-02
+Scope: explicit synthetic fixtures and mocked boundary/API calls only.

@@ -1,0 +1,24 @@
+{
+  "recorded_utc": "2026-10-14T20:14:27.146117+00:00",
+  "reviewer": "separate AI agent /root/formal_protocol_review; fresh context",
+  "review_scope": "protocol, original gate source, new blocked inference worker, synthetic tests, preparation helper/document and unsent professor draft",
+  "final_status": "no_publication_blockers_for_explicitly_blocked_preparation",
+  "protocol_findings": [
+    "Custody and eligible human participants remain unspecified. User-reported oral approval is not a verified/written receipt, and need not be requested again.",
+    "Original CLI exposes gold to its inference process. Original parser-only commitment is narrower than the amendment pre-exposure source/runtime lock.",
+    "Original design is an AI author reference plus a genuine independent student pass, not two independent human passes. No numeric IAA acceptance cutoff is specified.",
+    "Full freeze needs genuine independent labels, agreement before blinded adjudication, immutable journals and all source/runtime/input hashes. Unsupported final consensus blocks the ranking study."
+  ],
+  "candidate_fixes_reviewed": [
+    "Fixed protected deployment/trust location and exact schema instead of caller-selected trust.",
+    "Fixed Windows SID executable, signed private inventory, distinct protected artifact paths and denied-read/tree probes.",
+    "Exclusive opening before one question-byte read/hash/parse. Synthetic main-path tests and actual inherited payload options test added."
+  ],
+  "remaining_formal_execution_blocks": [
+    "Named custody/participants, actual eligibility and reference-origin/design decisions.",
+    "Real key enrollment, restricted OS account, read-only deployment, protected ledger and verified private inventory including copies.",
+    "Protected scorer bridge validating real gates/freeze and immutable predictions before joining references."
+  ],
+  "exposure_attestation": "Reviewer inspected only authorized documents/source and explicit software fixtures. No data/results directories, cases, actual references, predictions or outputs were opened. No tests/inference run, cases/labels generated, files edited or people contacted by reviewer.",
+  "limitations": "Independent AI code/protocol review, not an independent human annotation pass or verification of actual supervisor approval, execution receipts or deployed ACLs."
+}

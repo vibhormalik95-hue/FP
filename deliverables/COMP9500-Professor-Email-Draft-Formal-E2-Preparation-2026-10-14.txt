@@ -1,0 +1,16 @@
+To: Dr Borna Noureddin <borna_noureddin@bcit.ca>
+Subject: COMP 9500 fresh-bank custody decision
+Status: Draft for student review; not sent
+
+Hi Professor Noureddin,
+
+I have recorded my report of your oral approval of the fresh-bank and annotation amendment. Formal Experiment 2 has not run, and no new questions or labels have been created.
+
+The preparation keeps the completed practice evidence intact and separates the proposed inference worker from reference labels. The remaining immediate decision is who will hold the fresh bank and establish the access and annotation arrangements.
+
+Could you serve as bank custodian or name a human custodian who can confirm the eligible independent annotator, blinded adjudicator and intended reference-label route before authoring begins? The independent human pass, agreement, adjudication and full freeze still need to occur under that route.
+
+The prior exposed-practice finding remains Llama 73/100 validated agreement. Its greater control success came with lower NDCG@10; it is not an unseen formal-test result. No additional student hours or meeting record are asserted here.
+
+Best regards,
+Vibhor Malik

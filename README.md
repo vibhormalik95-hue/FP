@@ -1,5 +1,9 @@
 # Natural language controls for short video recommendation
 
+## Formal E2 preparation checkpoint
+
+The user now reports Borna's oral approval of the fresh-bank/annotation amendment; this is recorded as a user report, not a written or independently verified supervisor receipt. [Preparation and exact requirements](docs/formal-e2-preparation-2026-10-14.md) distinguish the candidate source/runtime lock from the still-missing bank, genuine human annotation and full freeze. A separate AI reviewer checked the protocol and blocked runner design. No fresh cases, labels or inference have been produced. The next decision is to name the bank custodian. The prior practice commit `c6ebda06008c92e4141aa2d91991ac2c0328a1de` and its delivery remain intact.
+
 ## Latest local execution
 
 The [14 October execution record](docs/execution-2026-10-14.md) documents a local Llama 3.1 8B diagnostic on the 100 exposed worked-practice questions. Its AI reference labels cannot establish unseen-test or human-label accuracy. Formal E2 remains pending a prospective supervisor decision, replacement bank and valid annotation route. The original protocol, parser commitment and all 288 frozen E1 files are preserved. See the [plan reconciliation](docs/supervision/2026-10-14-execution-checkpoint.md) and dated October 14 deliverables for the verified update; earlier records below retain their historical dates.
