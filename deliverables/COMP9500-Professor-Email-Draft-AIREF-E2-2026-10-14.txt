@@ -1,0 +1,22 @@
+To: Dr Borna Noureddin <borna_noureddin@bcit.ca>
+Subject: COMP 9500 revised evaluation and report for review
+Status: Draft for Vibhor review only; not sent
+
+Hi Professor Noureddin,
+
+I have completed the revised, prospectively frozen synthetic-language evaluation using the recorded local Llama 3.1 8B model. On the fresh AI-authored synthetic bank, validated whole-command agreement is 76/100 for Llama and 11/100 for rules. Llama operational or validation failures total 23; every failure remains in the denominator. All 23 recorded failures are unchanged-validator rejections of a condition that was not explicitly grounded in the request.
+
+User-averaged induced control success is 20.145% for Llama, 3.854% for rules and 3.815% for item feedback. NDCG@10 is 0.02580 for Llama versus 0.03184 for item feedback. Control and next-item ranking quality must be interpreted together.
+
+The two references came from separate AI annotation contexts, with initial labels locked before comparison and the original decisions preserved. These results concern agreement with AI references and do not establish independent human validation or user satisfaction. The exposed practice result remains separately reported at 73/100 and was not rerun.
+
+All 288 frozen Experiment 1 files still match. Predictions, failures, full ranking scores and the independent calculation audit are saved. The report fits the proposal's 6 to 8 pages including references, with detailed evidence separate. The presentation records its PDF composition and source-rebuild limitation.
+
+The paper, slides, progress update and checklist are ready for your review. No new activity hours or meeting occurrence are asserted. The broader human experience study, full replay in Colab and historical score-hash discrepancy remain outside verified completion.
+
+Please confirm your access to the repository and evidence, the final submission deadline and feedback timing. The methods record preserves my report of oral approval of the revised approach without representing it as a written approval receipt.
+
+https://github.com/vibhormalik95-hue/FP/tree/codex/oct13-safe-engineering
+
+Best regards,
+Vibhor Malik

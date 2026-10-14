@@ -1,0 +1,35 @@
+{
+  "verified_utc": "2026-10-14T20:50:28.020329+00:00",
+  "status": "passed",
+  "original_payloads": {
+    "COMP9500-BCIT-Presentation-2026-10-14.pdf": true,
+    "COMP9500-Evidence-and-Completion-Checklist-2026-10-14.docx": true,
+    "COMP9500-Execution-and-Audit-Evidence-2026-10-14.zip": true,
+    "COMP9500-Formal-E2-Prospective-Amendment-2026-10-14.md": true,
+    "COMP9500-Git-Push-Receipt-2026-10-14.json": true,
+    "COMP9500-Methods-Record-2026-10-14.md": true,
+    "COMP9500-Practice-Answer-Guide-2026-10-13.docx": true,
+    "COMP9500-Professor-Email-Draft-2026-10-14.txt": true,
+    "COMP9500-Research-Paper-2026-10-14.pdf": true,
+    "COMP9500-Supplementary-Extended-Report-2026-10-14.pdf": true,
+    "COMP9500-Weekly-Progress-Update-2026-10-14.docx": true,
+    "COMP9500-Worked-Practice-100-2026-10-11.csv": true
+  },
+  "all_existing_files": {
+    "COMP9500-BCIT-Presentation-2026-10-14.pdf": "d8ca662f5a7af1685e3d78da05ea70a61742ad940b5447ad2f9045c074c5a519",
+    "COMP9500-Evidence-and-Completion-Checklist-2026-10-14.docx": "8bfd0c5eb53b8664b169698fd7b4917ee3bd22cbdbc8f531199abac48a2eb5ec",
+    "COMP9500-Execution-and-Audit-Evidence-2026-10-14.zip": "1f16dcaf2b849b19028e1a3cbfb72f299ace01b31c94a473ff529a0e581ac1d9",
+    "COMP9500-Formal-E2-Prospective-Amendment-2026-10-14.md": "54d64177a4efb4d6f8a69657651e7c4f5954194aa0db3a399666d4787ae0bf51",
+    "COMP9500-Git-Push-Receipt-2026-10-14.json": "4e9e2158bfe8ab51d6685fc43838e00a085e932f113fa31357053417f6fb2925",
+    "COMP9500-Methods-Record-2026-10-14.md": "265c20d8e7e988e0a4cc1b8bb7bdb45da60a9172cd5fb78c0ece85f4e9800a98",
+    "COMP9500-Practice-Answer-Guide-2026-10-13.docx": "76328ec447c38d3dfec9c80508301375bdc8e0d6b8c0bc0108e7b37ae8651e0e",
+    "COMP9500-Professor-Email-Draft-2026-10-14.txt": "f72fa735df4d2049f428442e064cfa6511687852dfd7128c84b34f7327e46aa4",
+    "COMP9500-Research-Paper-2026-10-14.pdf": "453e151aca2e50897db04ce311a27ffdbd15d63c81e0379171cdfcdc41ed8699",
+    "COMP9500-Supplementary-Extended-Report-2026-10-14.pdf": "01d815578534525a6591401257e544b10e69056a8654e41c383bd51ff017a79c",
+    "COMP9500-Weekly-Progress-Update-2026-10-14.docx": "c2be156d76ec2f2d26dfd543609a76a2096e13237bf03d2e8a979cde092c8158",
+    "COMP9500-Worked-Practice-100-2026-10-11.csv": "f7694c4235c2644db85631b09f7df3f2daf9cad765caf6426f532035a91b4e83",
+    "delivery-manifest.json": "d258cf0a2913d599e2760e97ae0ae0b18e3fccbfe79ed1515d64b2217f5042b2",
+    "SHA256SUMS.txt": "1e3ab00179c8e95c76fc74e119d4a483f730e0c73fda8d46b936a544eb16d34d"
+  },
+  "policy": "New revision uses new filenames; no prior file overwritten"
+}

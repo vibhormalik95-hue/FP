@@ -1,0 +1,60 @@
+{
+  "status": "passed",
+  "reviewed_utc": "2026-10-14T21:46:13.822607+00:00",
+  "reviewer": "primary agent; direct visual inspection of all rendered pages and slides",
+  "page_counts": "7-page paper including references, 29-slide presentation, 2-page weekly, 2-page checklist",
+  "inspection": "Each final page and slide was visually reviewed through original-resolution contact sheets. No visible clipping, overlap or missing pages; factual result labels, practice/fresh distinction, AI provenance and limitations checked against audited summary. This is not an independent content audit.",
+  "pdfs": {
+    "manuscript": {
+      "path": "C:\\Users\\vs981\\Documents\\Codex\\2026-10-13\\task\\FP\\deliverables\\COMP9500-Research-Paper-AIREF-E2-2026-10-14.pdf",
+      "sha256": "9aa602b7ac697b71c9304cedbe94931e837202598d4bc8786c7921cdb667652d",
+      "pages": 7,
+      "extracted_characters": 39568
+    },
+    "presentation": {
+      "path": "C:\\Users\\vs981\\Documents\\Codex\\2026-10-13\\task\\FP\\deliverables\\COMP9500-BCIT-Presentation-AIREF-E2-2026-10-14.pdf",
+      "sha256": "cdb6c4f696d704918fa7401f6c47215d56992b305675b806d9edd625ba079f0e",
+      "pages": 29,
+      "extracted_characters": 15040
+    },
+    "weekly": {
+      "path": "C:\\Users\\vs981\\Documents\\COMP9500\\ai-reference-e2-2026-10-14-v1-r2\\artifacts\\visual-renders\\COMP9500-Weekly-Progress-Update-AIREF-E2-2026-10-14.pdf",
+      "sha256": "5cd5f444eaa090fc5397e057f6693c5968772d360935440e43ba974ef6f7c085",
+      "pages": 2,
+      "extracted_characters": 4586
+    },
+    "checklist": {
+      "path": "C:\\Users\\vs981\\Documents\\COMP9500\\ai-reference-e2-2026-10-14-v1-r2\\artifacts\\visual-renders\\COMP9500-Evidence-and-Completion-Checklist-AIREF-E2-2026-10-14.pdf",
+      "sha256": "81d2c6ee81091066c945c265dabab07b852211a51ea3ffb0e2c785200e91b780",
+      "pages": 2,
+      "extracted_characters": 5675
+    }
+  },
+  "word_sources": {
+    "weekly": {
+      "path": "C:\\Users\\vs981\\Documents\\Codex\\2026-10-13\\task\\FP\\deliverables\\COMP9500-Weekly-Progress-Update-AIREF-E2-2026-10-14.docx",
+      "sha256": "47f261b881e61c115f993ca5294ca0526039bc0187a3d94b74b3d4f842314437"
+    },
+    "checklist": {
+      "path": "C:\\Users\\vs981\\Documents\\Codex\\2026-10-13\\task\\FP\\deliverables\\COMP9500-Evidence-and-Completion-Checklist-AIREF-E2-2026-10-14.docx",
+      "sha256": "a6e663c098d1f96d31a6bb0a97ff1f24817dc1b7a046b465038659cafa3a56ad"
+    }
+  },
+  "contact_sheet_sha256": {
+    "paper-01-06.jpg": "57b30dee146fdc33f3e7c40ef9c051fbb198c8fbfaebe9a2303eeba6dadb6f41",
+    "paper-07-07.jpg": "6ce276e3a1d69d009ee7d5f57ec08ec1401c98902966ccfea880c04cac49b983",
+    "slides-01-06.jpg": "0f89df32e72e9cd9180c17c1cacd650efb8e7d2d18611fd7fb49158f6c24a5bc",
+    "slides-07-12.jpg": "2beb48bc8d770d76bd69ef6bde530f91ba088701e29ab58ddb734998e223b248",
+    "slides-13-18.jpg": "7dd0247dfbfb05f4a815b0025f5573dcd9c863ea236fb3425e7d884541ac001c",
+    "slides-19-24.jpg": "c0b8a124144e1ca2775cb5feba2a40042324ec9ddf4c4c0959a79efe7b836753",
+    "slides-25-29.jpg": "1696d7ce763d47552f2c2739dff47683b6b7b62f1ed15328405efe0afcbb950d",
+    "weekly-01-02.jpg": "2360adf8bbd541be2212ba9dc18daf9e0114cec2d58861c54e33a82ebea63654",
+    "checklist-01-02.jpg": "cd79c5b11501bee66b1c231e5298e23545cdb6923add0f948929a84e6d02383d"
+  },
+  "notes": [
+    "Seven manuscript pages include references, conservatively satisfying the ambiguous six-to-eight-page requirement.",
+    "Presentation PDF is composed from original vector pages and revised ReportLab text pages; full Beamer source rebuild remains unverified because local beamer.cls is absent.",
+    "Word COM rendered the two DOCX documents for visual review; the rendered PDFs are QA artifacts, not separate final deliverables.",
+    "Independent calculation and final-project reviews have separate receipts."
+  ]
+}

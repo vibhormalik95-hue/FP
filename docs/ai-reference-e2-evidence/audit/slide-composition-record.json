@@ -1,0 +1,77 @@
+{
+  "pages": 29,
+  "main_slides": 23,
+  "backup_slides": 6,
+  "replaced_original_indices": [
+    0,
+    1,
+    12,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    26
+  ],
+  "inserted_practice_after_original_index": 16,
+  "route": "Original vector PDF pages retained; new Arial text composed with ReportLab/pypdf. Corresponding editable Beamer source retained but full rebuild unverified: local beamer.cls absent.",
+  "slides": {
+    "1": [
+      "Current research position",
+      "Frozen E1 establishes bounded category enforcement.\nEquivalent commands yield identical canonical rankings.\n\nExposed practice remains a separate 73/100 diagnostic.\n\nThe new prospective AI-reference evaluation measures\nparser agreement and control with ranking-quality cost.",
+      "The finite synthetic bank and AI references do not establish human validity or general performance across LLMs."
+    ],
+    "12": [
+      "Experiment Two under the AI revision",
+      "H1_AI: greater induced control success than both\nitem feedback and the unchanged rule parser.\n\nH2_AI: greater intended movement than item feedback.\n\nH3_AI: report HR@1 and NDCG@10 descriptively.\n\nAll claims concern this fixed system and AI references.",
+      "The user reports oral approval from Borna. No written or independently verified approval receipt is asserted."
+    ],
+    "15": [
+      "Prospective design and separated roles",
+      "Protocol and source frozen before any fresh wording.\n\nVibhor: AI custodian controlling manifests and access.\nSeparate author: fresh requests from the seeded plan.\nTanishq and Khushi: separate AI annotation contexts.\n\nBoth label sets lock before comparison. Disputes use\na fresh AI adjudicator without predictions.",
+      "All AI roles inherit GPT-6.1-sol / xhigh. Shared model-family errors remain possible."
+    ],
+    "16": [
+      "Fresh bank and reference provenance",
+      "100 selected requests, 25 in each of four classes.\n31 target category IDs covered by the fixed plan.\n\nScreened against 100 exposed and 48 development texts.\nNo duplicate or frozen close-paraphrase flags selected.\n\nInitial AI label agreement: 100/100.\nCohen kappa: 1.0000. Adjudicated disputes: 0.",
+      "Lexical screening does not prove semantic or pretraining novelty. AI agreement is not human ground truth."
+    ],
+    "17": [
+      "Prespecified analysis",
+      "User is the analysis unit. Average three seeds within\neach request/class, then equal eligible classes per user.\n\n5,000 paired user bootstrap samples, seed 2026.\nPratt one-sided Wilcoxon with joint BH over 11 tests.\n\nKeep failures, infeasibility and exclusions visible.\nReport control, HR@1 and NDCG@10 together.",
+      "Frozen prompts, validators, model digest, ranking inputs, seeds and metrics precede inference. No outcome tuning."
+    ],
+    "18": [
+      "Fresh AI-reference evaluation results",
+      "Validated parser agreement: Llama 76/100; rules 11/100.\nLlama operational/validation failures: 23, retained.\n\nInduced success: Llama 20.14%; rules 3.85%;\nitem feedback 3.82%.\nNDCG@10: Llama 0.02580; item feedback 0.03184.\n\n41,520 ranking rows; 2,595 full score vectors.",
+      "These measured control and quality outcomes concern AI-authored synthetic requests, not independent human validation."
+    ],
+    "19": [
+      "Contribution and limits",
+      "H1_AI: supported. H2_AI: supported.\nDecisions apply only to the prospective AI revision.\n\nTranslation, enforcement and quality remain observable.\nThe current bank and all recorded failures are auditable.\n\nHuman experience, naturalistic language and other\nLLM models require separate evidence.",
+      "The weak backbone, opaque categories and historical next-item proxy limit recommendation-quality interpretation."
+    ],
+    "20": [
+      "Plan reconciliation",
+      "Verified now\nFrozen E1, exposed practice, revised AI-reference run,\nindependent audit and reviewed report artifacts.\n\nSeparate remaining scope\nFull E1 Windows replay and Colab remain unverified.\nHuman experience needs a separately designed study.\nHistorical score-hash discrepancy remains unresolved.",
+      "The 135-hour schedule is planned effort. No new student hours or meeting occurrence are inferred from agent/runtime activity."
+    ],
+    "21": [
+      "Supervisor review",
+      "Review the measured AI-reference findings and limits.\n\nConfirm repository and complete-evidence access,\nfinal submission deadline and feedback timing.\n\nMain report: 6-8 pages including references.\nDetailed methods and audit evidence are separate.\n\nThe professor email remains an unsent local draft.",
+      "The earlier human-annotation protocol remains archived history and is not a prerequisite of this AI revision."
+    ],
+    "26": [
+      "Backup evidence and execution route",
+      "288 frozen E1 hashes match after the new work.\n200 predictions committed before joining references.\n200 pre-call journals; 2,595 full score vectors.\n\nLocal llama3.1:8b / Q4_K_M, Ollama 0.34.0.\nModel digest and literal payloads are in methods evidence.\n\nSeparate reviewer checks saved outputs and calculations.",
+      "PDF composition retains original vector pages and uses revised Arial text pages. beamer.cls is absent; full Beamer rebuild unverified."
+    ]
+  },
+  "practice_slide": [
+    "Preserved exposed practice execution",
+    "Validated AI-reference agreement: Llama 73/100; rules 18/100.\nAll 24 Llama validation errors remain counted.\n\nInduced success: Llama 23.81%; rules 8.40%;\nitem feedback 3.92%.\nNDCG@10: Llama 0.02461; item feedback 0.03128.\n\n41,508 ranking rows; separate recount passed.",
+    "Original c6ebda0 practice run is intact and was not rerun. These exposed questions do not supply an unseen test."
+  ]
+}

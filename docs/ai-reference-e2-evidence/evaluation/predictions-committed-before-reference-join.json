@@ -1,0 +1,7 @@
+{
+  "study_id": "AIREF-E2-20261014-v1",
+  "status": "started",
+  "started_utc": "2026-10-14T21:21:11.217947+00:00",
+  "prediction_manifest_sha256": "9b936c5e4e6b386da4360b9f9ba70a61d8e3fdd1ff6c762b07e91ea680b35bd7",
+  "scope": "AI-reference synthetic evaluation; not independent human validation"
+}

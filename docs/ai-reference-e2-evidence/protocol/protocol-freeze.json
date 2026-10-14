@@ -1,0 +1,80 @@
+{
+  "study_id": "AIREF-E2-20261014-v1",
+  "status": "protocol_frozen_before_authoring",
+  "frozen_utc": "2026-10-14T20:44:17.557943+00:00",
+  "computer": "AI_WORK",
+  "python_executable": "C:\\Python314\\python.exe",
+  "python": "3.14.0 (tags/v3.14.0:ebf955d, Oct  7 2025, 10:15:03) [MSC v.1944 64 bit (AMD64)]",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "packages": {
+    "numpy": "2.3.5",
+    "scipy": "1.16.3",
+    "torch": "2.9.1",
+    "httpx": "0.28.1"
+  },
+  "ollama": {
+    "model": "llama3.1:8b",
+    "digest": "46e0c10c039e019119339687c3c1757cc81b9da49709a3b3924863ba87ca666e",
+    "ollama_version": "0.34.0",
+    "details": {
+      "parent_model": "",
+      "format": "gguf",
+      "family": "llama",
+      "families": [
+        "llama"
+      ],
+      "parameter_size": "8.0B",
+      "quantization_level": "Q4_K_M",
+      "context_length": 131072,
+      "embedding_length": 4096
+    }
+  },
+  "source_sha256": {
+    "docs/ai-reference-e2-protocol-2026-10-14.md": "b026eb39adfe590f699088d790d83b1b04b2556dffe03dfaddfb21681e341d10",
+    "docs/ai-reference-e2-rubric-2026-10-14.md": "ef238627a68f4c8308bd8c641a281f5ca3de585dcfc9f3fe04683d462e24f275",
+    "docs/ai-reference-e2-role-prompts-2026-10-14.json": "1ec3b29e4ab2b8ea29e184ae3cee4b44d434cb181a0e0044bb07dabcf20da073",
+    "scripts/ai_e2_bank.py": "5d05a572843a6a70b7252e19726ddb29b90ac9c3226698b47ae6789ffa71e817",
+    "scripts/ai_e2_inference_worker.py": "6f8536bbfd67b853618dac715716a9dabf71bdfbec19bb7667f5fd7b8aa020fa",
+    "scripts/test_ai_e2_boundary.py": "c63447ba84bb92d237c98d89fc207da65c68c21bee580bb6b4ff42d5b64db924",
+    "scripts/ai_e2_protocol_freeze.py": "2123b6768694c9215d97fc5a1191db7d5e02bf9ba5c8231b7cb8af208d94ddc8",
+    "feedctrl/__init__.py": "6ddfa9a7a340b76abf327086f5947518f4e81af47afc67b163f54da49524fd0c",
+    "feedctrl/controls.py": "0171ccb10551687c648e4eab706f7038ba808cf968e2f5269c49003fd86c5435",
+    "feedctrl/experiment2_controls.py": "54157e8a70e2997fa38af995df3a4146ce8f1050ae5e87f9f1fa2685ae5ee02c",
+    "feedctrl/experiment2_evaluation.py": "2bea03c3ecec7d464cea6efac85dc18c5c0b6768c1f069c84fe6e486e9890433",
+    "feedctrl/evaluation.py": "5b0725c438a811bf86503331397a956a52776938ae15e4ef4d3695db53d77e85",
+    "feedctrl/model.py": "d6a18cfd18acede85e5f8c81733e2c8359e53d5ddad4e8e2c808c1c6afd282c4"
+  },
+  "input_sha256": {
+    "C:\\Users\\vs981\\Documents\\Codex\\2026-10-13\\task\\FP\\deliverables\\COMP9500-Worked-Practice-100-2026-10-11.csv": "f7694c4235c2644db85631b09f7df3f2daf9cad765caf6426f532035a91b4e83",
+    "C:\\Users\\vs981\\Downloads\\COMP9500-Research-Project-Recovered (2)\\cmp9500-recommender\\results\\experiment2\\language-v2\\dev.jsonl": "e74caae24243958e79475c21378d61dfdad7076b554d05abaeef480c767516ef",
+    "C:\\Users\\vs981\\Downloads\\COMP9500-Research-Project-Recovered (2)\\cmp9500-recommender\\data\\processed.json": "96e63b901198e05c60034858fd6f437c2172dbfd71c257818673204cc81cb13c",
+    "C:\\Users\\vs981\\Downloads\\COMP9500-Research-Project-Recovered (2)\\cmp9500-recommender\\results\\models\\seed_42\\model.pt": "ca74de406a94d2fdcd587c7d93b376eb95accabd25dc282feee07704091cfea0",
+    "C:\\Users\\vs981\\Downloads\\COMP9500-Research-Project-Recovered (2)\\cmp9500-recommender\\results\\models\\seed_42\\metadata.json": "4ccf55d810be195f1a20e06307b27c24575d7234459075e00007e5197d58e92c",
+    "C:\\Users\\vs981\\Downloads\\COMP9500-Research-Project-Recovered (2)\\cmp9500-recommender\\results\\models\\seed_43\\model.pt": "90cc82592c4c9dc3a8bc1abacf9a42181b20617a3af587bd4aafb0b492c2d667",
+    "C:\\Users\\vs981\\Downloads\\COMP9500-Research-Project-Recovered (2)\\cmp9500-recommender\\results\\models\\seed_43\\metadata.json": "08823319f850e91f4c3120a3aa65cc12a9b272912bbb65a6de4601b01c45086b",
+    "C:\\Users\\vs981\\Downloads\\COMP9500-Research-Project-Recovered (2)\\cmp9500-recommender\\results\\models\\seed_44\\model.pt": "a7a141e7e9496db8d6b1f738682358cda76e19236af83d8edeb58070233bc3b9",
+    "C:\\Users\\vs981\\Downloads\\COMP9500-Research-Project-Recovered (2)\\cmp9500-recommender\\results\\models\\seed_44\\metadata.json": "f6a713bb248568d49bc4074ad131fc874eff9df31e84bee2ed1fcb936bf5529b"
+  },
+  "independent_protocol_review_sha256": "f43a62c54ed16e6465b1e8eb4728a1b3b7902000d95d59948d7f640491740975",
+  "boundary_preflight_sha256": "d5a585e184b0514f05549789cadbcaf22c9ae17dfab24dc237f106528b44ee8b",
+  "agent_model_identity_sha256": "5d8ec1601714f60ee96b7e92d6b88f60453c2e712392fd8c4dc7159e5a8140b0",
+  "author_brief_sha256": "11b38649feaa931e41ce5c96a8c023f2406eb822a9f0cfdd0caeb22a9e37b058",
+  "practice_manifest_sha256": "ab5ee56a139e39e55dc8913534456ad535b1c28123e98e0ca2c242f899f68595",
+  "e1": {
+    "status": "passed",
+    "manifest_sha256": "80ff8138e6ad7abd3e8482bc59fcaa044dfe7f7ca507edabdd569d217635e595",
+    "expected": 288,
+    "matched": 288,
+    "missing": 0,
+    "mismatched": 0,
+    "scope": "E1 byte hashes only; no evidence parsing or experiment execution"
+  },
+  "existing_practice_commit": "c6ebda06008c92e4141aa2d91991ac2c0328a1de",
+  "approval": "User reports Borna approved revised AI approach; not independently verified or written receipt.",
+  "command": [
+    "C:\\Python314\\python.exe",
+    "scripts/ai_e2_protocol_freeze.py",
+    "C:\\Users\\vs981\\Documents\\COMP9500\\ai-reference-e2-2026-10-14-v1",
+    "C:\\Users\\vs981\\Downloads\\COMP9500-Research-Project-Recovered (2)\\cmp9500-recommender"
+  ]
+}

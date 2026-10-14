@@ -1,0 +1,301 @@
+[
+  {
+    "id": "q_e1a728379397",
+    "text": "For any individual item also carrying category_28, moderately increase its category_17 content. Items without both categories on them should remain unchanged.",
+    "backend": "ollama_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": null,
+    "error": "ParserOperationalError: Compound condition is not explicitly grounded in the request",
+    "completed_utc": "2026-10-14T21:17:34.213665+00:00",
+    "wall_seconds": 1.7599839000031352
+  },
+  {
+    "id": "q_57c352672634",
+    "text": "I'd like a moderate boost for category_21 limited to items that also bear category_24 themselves. Keep the rest of the feed unchanged.",
+    "backend": "ollama_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": null,
+    "error": "ParserOperationalError: Compound condition is not explicitly grounded in the request",
+    "completed_utc": "2026-10-14T21:17:35.982538+00:00",
+    "wall_seconds": 1.7662820001132786
+  },
+  {
+    "id": "q_46c980bd57bf",
+    "text": "Give category_13 a moderate increase for items that themselves also belong to category_18; every item outside that same-item intersection should remain unchanged.",
+    "backend": "ollama_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": null,
+    "error": "ParserOperationalError: Compound condition is not explicitly grounded in the request",
+    "completed_utc": "2026-10-14T21:17:37.764088+00:00",
+    "wall_seconds": 1.7796866002026945
+  },
+  {
+    "id": "q_6c05d1f02c75",
+    "text": "An item bearing category_4 should receive a moderate lift only if it also bears category_0. All other items should be left unchanged.",
+    "backend": "ollama_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": null,
+    "error": "ParserOperationalError: Compound condition is not explicitly grounded in the request",
+    "completed_utc": "2026-10-14T21:17:46.639156+00:00",
+    "wall_seconds": 1.7627536999061704
+  },
+  {
+    "id": "q_9605bd2052d3",
+    "text": "Please moderately raise category_9 for recommendations that also have category_27 on the same recommendation. Don't change any other items in the feed.",
+    "backend": "ollama_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": null,
+    "error": "ParserOperationalError: Compound condition is not explicitly grounded in the request",
+    "completed_utc": "2026-10-14T21:17:48.384315+00:00",
+    "wall_seconds": 1.7429804999846965
+  },
+  {
+    "id": "q_a73a03abc964",
+    "text": "If an individual item carries category_20 together with category_4, moderately increase its category_20 presence. Please keep all other items unchanged.",
+    "backend": "ollama_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": null,
+    "error": "ParserOperationalError: Compound condition is not explicitly grounded in the request",
+    "completed_utc": "2026-10-14T21:18:02.135973+00:00",
+    "wall_seconds": 1.769302299944684
+  },
+  {
+    "id": "q_42580b1aa779",
+    "text": "For a recommendation that itself carries both category_28 and category_6, moderately boost category_28. Please leave every other recommendation as it currently is.",
+    "backend": "ollama_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": null,
+    "error": "ParserOperationalError: Compound condition is not explicitly grounded in the request",
+    "completed_utc": "2026-10-14T21:18:10.986274+00:00",
+    "wall_seconds": 1.7587104998528957
+  },
+  {
+    "id": "q_7a63e331f3af",
+    "text": "Please give category_11 a moderate lift exclusively on items that themselves also carry category_2. Leave all other items in my feed as they are.",
+    "backend": "ollama_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": null,
+    "error": "ParserOperationalError: Compound condition is not explicitly grounded in the request",
+    "completed_utc": "2026-10-14T21:18:23.920533+00:00",
+    "wall_seconds": 1.7620085999369621
+  },
+  {
+    "id": "q_614cd281c5aa",
+    "text": "Only when category_27 is on the very same item should its category_10 content receive a moderate lift. Leave all other items alone.",
+    "backend": "ollama_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": null,
+    "error": "ParserOperationalError: Compound condition is not explicitly grounded in the request",
+    "completed_utc": "2026-10-14T21:18:30.090361+00:00",
+    "wall_seconds": 1.7650643000379205
+  },
+  {
+    "id": "q_92a107ca725b",
+    "text": "Only when an item itself has category_7 too should its category_0 content get a moderate boost. All other items should remain untouched.",
+    "backend": "ollama_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": null,
+    "error": "ParserOperationalError: Compound condition is not explicitly grounded in the request",
+    "completed_utc": "2026-10-14T21:18:36.875304+00:00",
+    "wall_seconds": 1.7892929001245648
+  },
+  {
+    "id": "q_98524224cd51",
+    "text": "For category_22, give a moderate increase only to items that also have category_29 on the same item; leave the rest untouched.",
+    "backend": "ollama_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": null,
+    "error": "ParserOperationalError: Compound condition is not explicitly grounded in the request",
+    "completed_utc": "2026-10-14T21:18:55.811217+00:00",
+    "wall_seconds": 1.7908916999585927
+  },
+  {
+    "id": "q_9a31203cdd81",
+    "text": "Only a recommendation carrying category_26 itself should receive a moderate increase for its category_25 content. Leave all other recommendations unchanged.",
+    "backend": "ollama_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": null,
+    "error": "ParserOperationalError: Compound condition is not explicitly grounded in the request",
+    "completed_utc": "2026-10-14T21:19:04.613302+00:00",
+    "wall_seconds": 1.7631240000482649
+  },
+  {
+    "id": "q_d02d631b3451",
+    "text": "When an item has both category_14 and category_24, moderately boost its category_14 presence; items without that exact combination should remain unchanged.",
+    "backend": "ollama_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": null,
+    "error": "ParserOperationalError: Compound condition is not explicitly grounded in the request",
+    "completed_utc": "2026-10-14T21:19:14.661565+00:00",
+    "wall_seconds": 1.7639604997821152
+  },
+  {
+    "id": "q_f738bfc5929c",
+    "text": "Only individual items bearing category_26 as well as category_1 should get a moderate lift for category_1. Keep every other item unchanged.",
+    "backend": "ollama_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": null,
+    "error": "ParserOperationalError: Compound condition is not explicitly grounded in the request",
+    "completed_utc": "2026-10-14T21:19:19.116784+00:00",
+    "wall_seconds": 1.7701361998915672
+  },
+  {
+    "id": "q_ed8f4321731b",
+    "text": "Moderately favor category_5 only on a recommendation that also bears category_18 itself. Every recommendation outside that overlap should keep its current treatment.",
+    "backend": "ollama_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": null,
+    "error": "ParserOperationalError: Compound condition is not explicitly grounded in the request",
+    "completed_utc": "2026-10-14T21:19:20.875572+00:00",
+    "wall_seconds": 1.7549762001726776
+  },
+  {
+    "id": "q_7938973e0de5",
+    "text": "Give category_15 moderately more weight only on individual recommendations also carrying category_9; the same recommendation must have both, and all others should remain unchanged.",
+    "backend": "ollama_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": null,
+    "error": "ParserOperationalError: Compound condition is not explicitly grounded in the request",
+    "completed_utc": "2026-10-14T21:19:32.966901+00:00",
+    "wall_seconds": 1.7517834999598563
+  },
+  {
+    "id": "q_5b2d81df92b2",
+    "text": "Moderately increase category_27 for an item only when category_9 is also attached to that item. Make no change to any other items.",
+    "backend": "ollama_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": null,
+    "error": "ParserOperationalError: Compound condition is not explicitly grounded in the request",
+    "completed_utc": "2026-10-14T21:19:54.004249+00:00",
+    "wall_seconds": 1.8319847001694143
+  },
+  {
+    "id": "q_bae5eb471886",
+    "text": "I'd like moderately more category_2 only for an item that also bears category_29 itself; the other items should remain as they are.",
+    "backend": "ollama_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": null,
+    "error": "ParserOperationalError: Compound condition is not explicitly grounded in the request",
+    "completed_utc": "2026-10-14T21:20:03.469066+00:00",
+    "wall_seconds": 1.769393199821934
+  },
+  {
+    "id": "q_f2ea0292a3dd",
+    "text": "Please moderately increase category_18 on each item also bearing category_16 itself, while keeping all other recommendations as they currently are.",
+    "backend": "ollama_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": null,
+    "error": "ParserOperationalError: Compound condition is not explicitly grounded in the request",
+    "completed_utc": "2026-10-14T21:20:05.248134+00:00",
+    "wall_seconds": 1.7760840998962522
+  },
+  {
+    "id": "q_f881bf669f95",
+    "text": "Where an individual recommendation has category_24 as well as category_9, give category_24 a moderate increase. Don't modify any other recommendations for me.",
+    "backend": "ollama_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": null,
+    "error": "ParserOperationalError: Compound condition is not explicitly grounded in the request",
+    "completed_utc": "2026-10-14T21:20:11.397268+00:00",
+    "wall_seconds": 1.7837414001114666
+  },
+  {
+    "id": "q_a7d1d8341e23",
+    "text": "Please moderately increase category_8 only for items that themselves also carry category_2; leave every other item in my feed unchanged.",
+    "backend": "ollama_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": null,
+    "error": "ParserOperationalError: Compound condition is not explicitly grounded in the request",
+    "completed_utc": "2026-10-14T21:20:20.882847+00:00",
+    "wall_seconds": 1.7596315999981016
+  },
+  {
+    "id": "q_b16034107b31",
+    "text": "Boost category_23 moderately only if the very same item also carries category_0. Leave all recommendations outside that overlap unchanged for me.",
+    "backend": "ollama_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": null,
+    "error": "ParserOperationalError: Compound condition is not explicitly grounded in the request",
+    "completed_utc": "2026-10-14T21:20:29.227663+00:00",
+    "wall_seconds": 1.7284079000819474
+  },
+  {
+    "id": "q_27ae524c4e38",
+    "text": "For items that individually have both category_16 and category_25, moderately favor category_16. Keep items outside that intersection unchanged in my feed.",
+    "backend": "ollama_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": null,
+    "error": "ParserOperationalError: Compound condition is not explicitly grounded in the request",
+    "completed_utc": "2026-10-14T21:20:36.976899+00:00",
+    "wall_seconds": 1.7336866001132876
+  }
+]

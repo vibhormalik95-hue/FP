@@ -1,0 +1,110 @@
+{
+  "study_id": "AIREF-E2-20261014-v1",
+  "frozen_utc": "2026-10-14T21:15:47.038847+00:00",
+  "status": "final_AI_references_frozen_before_inference",
+  "custodian": {
+    "is_ai": true,
+    "agent_name": "Vibhor",
+    "task_identity": "/root/vibhor_custodian",
+    "model_id": "gpt-6.1-sol",
+    "reasoning_effort": "xhigh",
+    "model_metadata_source": "inherited parent session model; no override",
+    "exact_backend_weights": "unavailable"
+  },
+  "n": 100,
+  "exact_initial_agreements": 100,
+  "adjudications": 0,
+  "initial_label_status": "both_hashes_locked_before_any_comparison_original_bytes_retained",
+  "compatibility_status": "all_100_final_canonical_labels_exactly_match_locked_subtype_and_target_roles",
+  "annotation_provenance": "AI references from separate contexts of a shared model family; no human annotation claim",
+  "class_counts": {
+    "compound": 25,
+    "graded": 25,
+    "floor": 25,
+    "conditional": 25
+  },
+  "source_hashes": {
+    "protocol_freeze": {
+      "path": "C:\\Users\\vs981\\Documents\\COMP9500\\ai-reference-e2-2026-10-14-v1-r2\\protocol\\protocol-freeze.json",
+      "sha256": "1c0eb05eb54887bc52f23051b53a774dab0dde1f2f10c29ae4adc2ddcfe606d5"
+    },
+    "protocol": {
+      "path": "C:\\Users\\vs981\\Documents\\Codex\\2026-10-13\\task\\FP\\docs\\ai-reference-e2-protocol-2026-10-14.md",
+      "sha256": "b026eb39adfe590f699088d790d83b1b04b2556dffe03dfaddfb21681e341d10"
+    },
+    "rubric": {
+      "path": "C:\\Users\\vs981\\Documents\\Codex\\2026-10-13\\task\\FP\\docs\\ai-reference-e2-rubric-2026-10-14.md",
+      "sha256": "ef238627a68f4c8308bd8c641a281f5ca3de585dcfc9f3fe04683d462e24f275"
+    },
+    "role_prompts": {
+      "path": "C:\\Users\\vs981\\Documents\\Codex\\2026-10-13\\task\\FP\\docs\\ai-reference-e2-role-prompts-2026-10-14.json",
+      "sha256": "1ec3b29e4ab2b8ea29e184ae3cee4b44d434cb181a0e0044bb07dabcf20da073"
+    },
+    "bank_code": {
+      "path": "C:\\Users\\vs981\\Documents\\Codex\\2026-10-13\\task\\FP\\scripts\\ai_e2_bank.py",
+      "sha256": "5d05a572843a6a70b7252e19726ddb29b90ac9c3226698b47ae6789ffa71e817"
+    },
+    "custodian_code": {
+      "path": "C:\\Users\\vs981\\Documents\\Codex\\2026-10-13\\task\\FP\\scripts\\ai_e2_references.py",
+      "sha256": "4b3de3255df76f21339d8c6d6120b50e868be87841512b948adc3b375df5baa6"
+    },
+    "bank_lock": {
+      "path": "C:\\Users\\vs981\\Documents\\COMP9500\\ai-reference-e2-2026-10-14-v1-r2\\custody\\bank-lock.json",
+      "sha256": "a51a98697cc28306156dad170a33ffa8149cb43d84aa96ea1d94d5d75b07a6e3"
+    },
+    "master": {
+      "path": "C:\\Users\\vs981\\Documents\\COMP9500\\ai-reference-e2-2026-10-14-v1-r2\\custody\\questions-master.json",
+      "sha256": "18ea5b4e7e74500031a92b24a32b05d107c7054a8935ac4ea0808fa3d79bbc9b"
+    },
+    "intent_plan": {
+      "path": "C:\\Users\\vs981\\Documents\\COMP9500\\ai-reference-e2-2026-10-14-v1-r2\\custody\\intent-plan.json",
+      "sha256": "e5759ad26055fd2868d2828af29caff30dc2a5a2e468f1ba373edbeeb98d3faa"
+    },
+    "tanishq_sheet": {
+      "path": "C:\\Users\\vs981\\Documents\\COMP9500\\ai-reference-e2-2026-10-14-v1-r2\\annotations\\tanishq\\questions.json",
+      "sha256": "4d1e9e34c480acf52faa5e06d260dfe898c78ce839970ac8de37b992ac204991"
+    },
+    "tanishq_labels": {
+      "path": "C:\\Users\\vs981\\Documents\\COMP9500\\ai-reference-e2-2026-10-14-v1-r2\\annotations\\tanishq\\labels.json",
+      "sha256": "90d99dfee55254ff5a3e69e17b9bd358979118ff4f0b8113d4d4ee7be6f33a0f"
+    },
+    "tanishq_receipt": {
+      "path": "C:\\Users\\vs981\\Documents\\COMP9500\\ai-reference-e2-2026-10-14-v1-r2\\annotations\\tanishq\\receipt.json",
+      "sha256": "1aca69d797e51bf45f01935ca6f99a858d01b0d5270156bb0eb56de4aee2afc8"
+    },
+    "khushi_sheet": {
+      "path": "C:\\Users\\vs981\\Documents\\COMP9500\\ai-reference-e2-2026-10-14-v1-r2\\annotations\\khushi\\questions.json",
+      "sha256": "d489a246d544877a46609dda359d4c1b035fab92bd431507d6a923df361ee43d"
+    },
+    "khushi_labels": {
+      "path": "C:\\Users\\vs981\\Documents\\COMP9500\\ai-reference-e2-2026-10-14-v1-r2\\annotations\\khushi\\labels.json",
+      "sha256": "40e015114b35ae9e96f6177f79decd8fb9236a44bfb454b273acc8df702dee1f"
+    },
+    "khushi_receipt": {
+      "path": "C:\\Users\\vs981\\Documents\\COMP9500\\ai-reference-e2-2026-10-14-v1-r2\\annotations\\khushi\\receipt.json",
+      "sha256": "881a50d535f8077cba729d828e9d143b44aa5d5538ef6f8838144af0ca80ee57"
+    },
+    "initial_lock": {
+      "sha256": "8d58fe953ec009b77a279a73c38eefda14e7432d72cd9bbcc3da79393d4dcddc"
+    },
+    "comparison_lock": {
+      "sha256": "67bbf8b0cead939267966db545382e0cf6227847abc4f8df5a8718a5fe611c30"
+    },
+    "agreement": {
+      "sha256": "ab3f8369970f7d787d8a7477fc8acb730bd9fe51b420210c913fa9b3be93d270"
+    },
+    "disputes": {
+      "sha256": "862713e8c4869b1feb3e78e0a24e72b701ed54bd1becc09b570088cffefc00b5"
+    }
+  },
+  "final_hashes": {
+    "final_cases": {
+      "path": "C:\\Users\\vs981\\Documents\\COMP9500\\ai-reference-e2-2026-10-14-v1-r2\\custody\\final-cases.json",
+      "sha256": "b94a206a93e425b2b26c355363680cddaeda14b0f29f8e5f05c447ea2ed9cf63"
+    },
+    "reference_provenance": {
+      "path": "C:\\Users\\vs981\\Documents\\COMP9500\\ai-reference-e2-2026-10-14-v1-r2\\custody\\final-reference-provenance.json",
+      "sha256": "3b7606f358817d8b412e9e2ccb7702e685c30d7348a909cb291d2bdedaab76b9"
+    }
+  }
+}

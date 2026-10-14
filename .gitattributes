@@ -1,0 +1,15 @@
+# Preserve exact byte hashes for the prospective AI-reference E2 study files.
+# Scoped to this new revision; historical project and frozen E1 files keep
+# their existing attributes and working-tree behavior.
+/deliverables/*AIREF-E2* -text whitespace=cr-at-eol
+/docs/ai-reference-e2-evidence/** -text whitespace=cr-at-eol
+/docs/ai-reference-e2-* -text whitespace=cr-at-eol
+/paper/ai-reference-report.tex -text whitespace=cr-at-eol
+/presentation-bcit/ai-reference-main.tex -text whitespace=cr-at-eol
+/scripts/ai_e2_* -text whitespace=cr-at-eol
+/scripts/audit_ai_e2.py -text whitespace=cr-at-eol
+/scripts/build_ai_e2_documents.py -text whitespace=cr-at-eol
+/scripts/compose_ai_e2_slides.py -text whitespace=cr-at-eol
+/scripts/package_ai_e2_delivery.py -text whitespace=cr-at-eol
+/scripts/publish_ai_e2_evidence.py -text whitespace=cr-at-eol
+/scripts/test_ai_e2_boundary.py -text whitespace=cr-at-eol

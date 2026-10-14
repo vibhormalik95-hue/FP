@@ -1,0 +1,47 @@
+{
+  "staged_utc": "2026-10-14T21:46:38.094413+00:00",
+  "status": "versioned_delivery_staged_prior_files_preserved",
+  "destination": "C:\\Users\\vs981\\Documents\\COMP9500\\2026-10-14\\delivered",
+  "copied": {
+    "COMP9500-Research-Paper-AIREF-E2-2026-10-14.pdf": {
+      "sha256": "9aa602b7ac697b71c9304cedbe94931e837202598d4bc8786c7921cdb667652d",
+      "bytes": 186836
+    },
+    "COMP9500-BCIT-Presentation-AIREF-E2-2026-10-14.pdf": {
+      "sha256": "cdb6c4f696d704918fa7401f6c47215d56992b305675b806d9edd625ba079f0e",
+      "bytes": 1318868
+    },
+    "COMP9500-Weekly-Progress-Update-AIREF-E2-2026-10-14.docx": {
+      "sha256": "47f261b881e61c115f993ca5294ca0526039bc0187a3d94b74b3d4f842314437",
+      "bytes": 38454
+    },
+    "COMP9500-Evidence-and-Completion-Checklist-AIREF-E2-2026-10-14.docx": {
+      "sha256": "a6e663c098d1f96d31a6bb0a97ff1f24817dc1b7a046b465038659cafa3a56ad",
+      "bytes": 38968
+    },
+    "COMP9500-Methods-Record-AIREF-E2-2026-10-14.md": {
+      "sha256": "466468222b8d3e06b1e755e5e4a74f70cb5f015b5aafa1e97a2cd835446ca1c5",
+      "bytes": 46175
+    },
+    "COMP9500-Professor-Email-Draft-AIREF-E2-2026-10-14.txt": {
+      "sha256": "3a2c85b2b53fa90c0997aa9b1c9160296ccb4429df3064a69882c471ac67e704",
+      "bytes": 2187
+    },
+    "COMP9500-Research-Paper-Source-AIREF-E2-2026-10-14.tex": {
+      "sha256": "fd22d7f42214cfe8e8ac9501bd3aa67d8ac4d734fc6412542f6e4d11d4f77e02",
+      "bytes": 37211
+    },
+    "COMP9500-BCIT-Presentation-Source-AIREF-E2-2026-10-14.tex": {
+      "sha256": "535dcbb3bbc0c251c57b667a2fea0fc60bf7b8647a62adf9d849eeabbcf09f8e",
+      "bytes": 20463
+    },
+    "COMP9500-AIREF-E2-Execution-and-Audit-Evidence-2026-10-14.zip": {
+      "sha256": "6aa7a16186a86973c26fdf7ad280aaafb1f73893acfaa58cd04624e1a8692824",
+      "bytes": 91345636,
+      "entries": 3467
+    }
+  },
+  "previous_files_preserved": 14,
+  "email_unsent": true,
+  "evidence_zip_local_only": true
+}
