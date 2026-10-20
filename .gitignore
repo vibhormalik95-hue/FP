@@ -1,0 +1,22 @@
+.venv/
+__pycache__/
+.pytest_cache/
+*.egg-info/
+web/node_modules/
+web/dist/
+data/raw/
+*.log
+*.aux
+*.bbl
+*.blg
+*.synctex.gz
+.env
+
+# Local editor files and machine-specific overrides.
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.env.local
+.env.*.local
+outgoing/

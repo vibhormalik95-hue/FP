@@ -1,0 +1,2710 @@
+{
+  "created_utc": "2026-10-14T20:54:27.480815+00:00",
+  "candidate_file_sha256": "0b62386ee8ea6030319f203604c2aea982d0a343378378d767964ad97f9e9fd8",
+  "practice_sha256": "f7694c4235c2644db85631b09f7df3f2daf9cad765caf6426f532035a91b4e83",
+  "dev_sha256": "e74caae24243958e79475c21378d61dfdad7076b554d05abaeef480c767516ef",
+  "audit": [
+    {
+      "id": "q_c1900ae649f9",
+      "round": 1,
+      "ordinal": 1,
+      "text": "Please give category_9 moderately more space in my feed and, separately, dial back category_6 by a moderate amount.",
+      "reasons": [],
+      "max_old_sequence": 0.47513812154696133,
+      "max_old_bigram": 0.1
+    },
+    {
+      "id": "q_c1900ae649f9",
+      "round": 1,
+      "ordinal": 2,
+      "text": "I'd like a moderate increase in category_9. Alongside that change, make a moderate decrease in category_6.",
+      "reasons": [],
+      "max_old_sequence": 0.6621621621621622,
+      "max_old_bigram": 0.22727272727272727
+    },
+    {
+      "id": "q_c1900ae649f9",
+      "round": 1,
+      "ordinal": 3,
+      "text": "Bring me moderately more category_9 content; I would also like moderately less category_6 content as a separate adjustment.",
+      "reasons": [],
+      "max_old_sequence": 0.39215686274509803,
+      "max_old_bigram": 0.14285714285714285
+    },
+    {
+      "id": "q_d44b07a43f1d",
+      "round": 1,
+      "ordinal": 1,
+      "text": "Make category_1 more prominent by a moderate amount, while independently giving category_13 moderately less prominence in what I see.",
+      "reasons": [],
+      "max_old_sequence": 0.5,
+      "max_old_bigram": 0.1111111111111111
+    },
+    {
+      "id": "q_d44b07a43f1d",
+      "round": 1,
+      "ordinal": 2,
+      "text": "I want moderately more material from category_1, and I also want a moderate reduction in material from category_13.",
+      "reasons": [],
+      "max_old_sequence": 0.5324675324675324,
+      "max_old_bigram": 0.13043478260869565
+    },
+    {
+      "id": "q_d44b07a43f1d",
+      "round": 1,
+      "ordinal": 3,
+      "text": "Could you increase category_1 moderately in my recommendations? Please reduce category_13 moderately as well, with each preference applying on its own.",
+      "reasons": [],
+      "max_old_sequence": 0.4694835680751174,
+      "max_old_bigram": 0.07407407407407407
+    },
+    {
+      "id": "q_8c3e47a53e8c",
+      "round": 1,
+      "ordinal": 1,
+      "text": "For my feed, moderately raise the presence of category_13 and make a separate moderate cut in the presence of category_6.",
+      "reasons": [],
+      "max_old_sequence": 0.5838509316770186,
+      "max_old_bigram": 0.14814814814814814
+    },
+    {
+      "id": "q_8c3e47a53e8c",
+      "round": 1,
+      "ordinal": 2,
+      "text": "Show me more category_13 at a moderate level. Also show me less category_6, with a moderate decrease for that category.",
+      "reasons": [],
+      "max_old_sequence": 0.46408839779005523,
+      "max_old_bigram": 0.09090909090909091
+    },
+    {
+      "id": "q_8c3e47a53e8c",
+      "round": 1,
+      "ordinal": 3,
+      "text": "My preferences are for a moderate rise in category_13 content together with an independent moderate fall in category_6 content.",
+      "reasons": [],
+      "max_old_sequence": 0.45098039215686275,
+      "max_old_bigram": 0.07142857142857142
+    },
+    {
+      "id": "q_cc0bf876b7b1",
+      "round": 1,
+      "ordinal": 1,
+      "text": "I'd prefer category_2 to appear moderately more often and category_5 moderately less often; apply both changes independently across my feed.",
+      "reasons": [],
+      "max_old_sequence": 0.5376344086021505,
+      "max_old_bigram": 0.23076923076923078
+    },
+    {
+      "id": "q_cc0bf876b7b1",
+      "round": 1,
+      "ordinal": 2,
+      "text": "A moderate increase in category_2 would suit me. Separately, please give category_5 a moderate decrease in my recommendations.",
+      "reasons": [],
+      "max_old_sequence": 0.49056603773584906,
+      "max_old_bigram": 0.15
+    },
+    {
+      "id": "q_cc0bf876b7b1",
+      "round": 1,
+      "ordinal": 3,
+      "text": "Turn category_2 up moderately for me, and also turn category_5 down moderately as its own change.",
+      "reasons": [],
+      "max_old_sequence": 0.453125,
+      "max_old_bigram": 0.03571428571428571
+    },
+    {
+      "id": "q_82266a5bb0e9",
+      "round": 1,
+      "ordinal": 1,
+      "text": "Please moderately favor category_30 content in my recommendations. In a separate change, moderately reduce the amount of category_18 content.",
+      "reasons": [],
+      "max_old_sequence": 0.475,
+      "max_old_bigram": 0.1111111111111111
+    },
+    {
+      "id": "q_82266a5bb0e9",
+      "round": 1,
+      "ordinal": 2,
+      "text": "I would like more category_30 and less category_18, with a moderate adjustment in each direction applied independently.",
+      "reasons": [],
+      "max_old_sequence": 0.48854961832061067,
+      "max_old_bigram": 0.4375
+    },
+    {
+      "id": "q_82266a5bb0e9",
+      "round": 1,
+      "ordinal": 3,
+      "text": "Increase the share of category_30 by a moderate amount, and independently decrease the share of category_18 by a moderate amount.",
+      "reasons": [],
+      "max_old_sequence": 0.455026455026455,
+      "max_old_bigram": 0.15
+    },
+    {
+      "id": "q_45c4b89214e1",
+      "round": 1,
+      "ordinal": 1,
+      "text": "Give category_28 a moderate lift in my feed; make an independent moderate reduction for category_30 at the same time.",
+      "reasons": [],
+      "max_old_sequence": 0.4725274725274725,
+      "max_old_bigram": 0.06666666666666667
+    },
+    {
+      "id": "q_45c4b89214e1",
+      "round": 1,
+      "ordinal": 2,
+      "text": "I'd like you to moderately increase how much category_28 I see, and separately moderately decrease how much category_30 I see.",
+      "reasons": [],
+      "max_old_sequence": 0.6211180124223602,
+      "max_old_bigram": 0.4
+    },
+    {
+      "id": "q_45c4b89214e1",
+      "round": 1,
+      "ordinal": 3,
+      "text": "My feed could use moderately more category_28. It could also use moderately less category_30, with that reduction applying independently.",
+      "reasons": [],
+      "max_old_sequence": 0.40609137055837563,
+      "max_old_bigram": 0.09090909090909091
+    },
+    {
+      "id": "q_772b63303773",
+      "round": 1,
+      "ordinal": 1,
+      "text": "Could category_0 have moderately greater representation in my feed? Independently, I want category_1 to have moderately less representation.",
+      "reasons": [],
+      "max_old_sequence": 0.42592592592592593,
+      "max_old_bigram": 0.05263157894736842
+    },
+    {
+      "id": "q_772b63303773",
+      "round": 1,
+      "ordinal": 2,
+      "text": "Please make two separate changes: a moderate increase for category_0 and a moderate decrease for category_1 in my feed.",
+      "reasons": [],
+      "max_old_sequence": 0.5128205128205128,
+      "max_old_bigram": 0.13636363636363635
+    },
+    {
+      "id": "q_772b63303773",
+      "round": 1,
+      "ordinal": 3,
+      "text": "I'd enjoy seeing moderately more from category_0, while a separate moderate cut to category_1 would also fit my preferences.",
+      "reasons": [],
+      "max_old_sequence": 0.4371584699453552,
+      "max_old_bigram": 0.07142857142857142
+    },
+    {
+      "id": "q_566a31094bfb",
+      "round": 1,
+      "ordinal": 1,
+      "text": "Moderately increase the category_3 material you recommend to me, and moderately decrease category_0 material as a separate preference.",
+      "reasons": [],
+      "max_old_sequence": 0.4444444444444444,
+      "max_old_bigram": 0.0625
+    },
+    {
+      "id": "q_566a31094bfb",
+      "round": 1,
+      "ordinal": 2,
+      "text": "I want a moderate shift upward for category_3 in my feed and an independent moderate shift downward for category_0.",
+      "reasons": [],
+      "max_old_sequence": 0.4675324675324675,
+      "max_old_bigram": 0.09523809523809523
+    },
+    {
+      "id": "q_566a31094bfb",
+      "round": 1,
+      "ordinal": 3,
+      "text": "Let category_3 appear moderately more in my recommendations. At the same time, reduce category_0 moderately, independently of that increase.",
+      "reasons": [],
+      "max_old_sequence": 0.4537037037037037,
+      "max_old_bigram": 0.08
+    },
+    {
+      "id": "q_b8ffe0466a50",
+      "round": 1,
+      "ordinal": 1,
+      "text": "In my recommendations, please raise category_29 moderately and separately lower category_9 moderately; both preferences should apply on their own.",
+      "reasons": [],
+      "max_old_sequence": 0.4433497536945813,
+      "max_old_bigram": 0.08
+    },
+    {
+      "id": "q_b8ffe0466a50",
+      "round": 1,
+      "ordinal": 2,
+      "text": "I'd like a moderate amount more category_29 content, along with an independent moderate amount less category_9 content.",
+      "reasons": [],
+      "max_old_sequence": 0.47560975609756095,
+      "max_old_bigram": 0.09523809523809523
+    },
+    {
+      "id": "q_b8ffe0466a50",
+      "round": 1,
+      "ordinal": 3,
+      "text": "Give me moderately more recommendations involving category_29. As a separate adjustment, give me moderately fewer involving category_9.",
+      "reasons": [],
+      "max_old_sequence": 0.45226130653266333,
+      "max_old_bigram": 0.05555555555555555
+    },
+    {
+      "id": "q_27bb4fa475fe",
+      "round": 1,
+      "ordinal": 1,
+      "text": "A moderate increase in content from category_12 would be welcome; please also make an independent moderate reduction in category_7.",
+      "reasons": [],
+      "max_old_sequence": 0.5113636363636364,
+      "max_old_bigram": 0.07692307692307693
+    },
+    {
+      "id": "q_27bb4fa475fe",
+      "round": 1,
+      "ordinal": 2,
+      "text": "Please raise how much category_12 I encounter by a moderate amount, and separately lower how much category_7 I encounter moderately.",
+      "reasons": [],
+      "max_old_sequence": 0.5119047619047619,
+      "max_old_bigram": 0.22727272727272727
+    },
+    {
+      "id": "q_27bb4fa475fe",
+      "round": 1,
+      "ordinal": 3,
+      "text": "I would prefer moderately more of category_12 in the feed and, independently, moderately less of category_7.",
+      "reasons": [],
+      "max_old_sequence": 0.5657894736842105,
+      "max_old_bigram": 0.1
+    },
+    {
+      "id": "q_ac0edfc66bad",
+      "round": 1,
+      "ordinal": 1,
+      "text": "Make room for moderately more category_7 in what you recommend, and apply a separate moderate decrease to category_22.",
+      "reasons": [],
+      "max_old_sequence": 0.5031446540880503,
+      "max_old_bigram": 0.13636363636363635
+    },
+    {
+      "id": "q_ac0edfc66bad",
+      "round": 1,
+      "ordinal": 2,
+      "text": "I would like category_7 moderately increased in my feed. My other preference is an independent moderate decrease in category_22.",
+      "reasons": [],
+      "max_old_sequence": 0.4878048780487805,
+      "max_old_bigram": 0.13043478260869565
+    },
+    {
+      "id": "q_ac0edfc66bad",
+      "round": 1,
+      "ordinal": 3,
+      "text": "Please give category_7 a moderate boost in representation, while separately reducing the representation of category_22 by a moderate amount.",
+      "reasons": [],
+      "max_old_sequence": 0.4642857142857143,
+      "max_old_bigram": 0.1
+    },
+    {
+      "id": "q_272de8fe345c",
+      "round": 1,
+      "ordinal": 1,
+      "text": "I'd like you to increase category_26 moderately. Independently of that request, please decrease category_27 moderately in my feed.",
+      "reasons": [],
+      "max_old_sequence": 0.4470588235294118,
+      "max_old_bigram": 0.045454545454545456
+    },
+    {
+      "id": "q_272de8fe345c",
+      "round": 1,
+      "ordinal": 2,
+      "text": "More category_26 and less category_27 would fit my preferences, with both changes moderate and each applying independently.",
+      "reasons": [],
+      "max_old_sequence": 0.43478260869565216,
+      "max_old_bigram": 0.21052631578947367
+    },
+    {
+      "id": "q_272de8fe345c",
+      "round": 1,
+      "ordinal": 3,
+      "text": "Bring the level of category_26 content up moderately, and make a separate moderate downward adjustment to category_27 content.",
+      "reasons": [],
+      "max_old_sequence": 0.4861111111111111,
+      "max_old_bigram": 0.15
+    },
+    {
+      "id": "q_18e516bd49cb",
+      "round": 1,
+      "ordinal": 1,
+      "text": "For category_6, I'd like a moderate increase; for category_9, I'd like a moderate decrease, with the two preferences applied independently.",
+      "reasons": [],
+      "max_old_sequence": 0.4205128205128205,
+      "max_old_bigram": 0.08695652173913043
+    },
+    {
+      "id": "q_18e516bd49cb",
+      "round": 1,
+      "ordinal": 2,
+      "text": "Moderately raise the amount of category_6 that reaches me. Please also moderately reduce category_9 as a separate change.",
+      "reasons": [],
+      "max_old_sequence": 0.45161290322580644,
+      "max_old_bigram": 0.15
+    },
+    {
+      "id": "q_18e516bd49cb",
+      "round": 1,
+      "ordinal": 3,
+      "text": "My preference is moderately more category_6, together with an independent moderate reduction in how much category_9 appears.",
+      "reasons": [],
+      "max_old_sequence": 0.4588235294117647,
+      "max_old_bigram": 0.125
+    },
+    {
+      "id": "q_89cf31ba3110",
+      "round": 1,
+      "ordinal": 1,
+      "text": "Could you moderately expand the presence of category_8, and independently reduce how much category_9 appears in my feed by a moderate amount?",
+      "reasons": [],
+      "max_old_sequence": 0.42780748663101603,
+      "max_old_bigram": 0.12903225806451613
+    },
+    {
+      "id": "q_89cf31ba3110",
+      "round": 1,
+      "ordinal": 2,
+      "text": "I want to see category_8 moderately more often. Please also show category_9 moderately less often as an independent adjustment.",
+      "reasons": [],
+      "max_old_sequence": 0.4508670520231214,
+      "max_old_bigram": 0.13043478260869565
+    },
+    {
+      "id": "q_89cf31ba3110",
+      "round": 1,
+      "ordinal": 3,
+      "text": "Please increase category_8 by a moderate amount and make an independent moderate decrease in category_9 across my recommendations.",
+      "reasons": [],
+      "max_old_sequence": 0.47474747474747475,
+      "max_old_bigram": 0.1
+    },
+    {
+      "id": "q_9cf2e27ad4d6",
+      "round": 1,
+      "ordinal": 1,
+      "text": "I'd like moderately greater emphasis on category_14, plus a separate moderate reduction in the emphasis given to category_21.",
+      "reasons": [],
+      "max_old_sequence": 0.5290322580645161,
+      "max_old_bigram": 0.13043478260869565
+    },
+    {
+      "id": "q_9cf2e27ad4d6",
+      "round": 1,
+      "ordinal": 2,
+      "text": "Let the feed show moderately more category_14 and moderately less category_21, treating those as two independent preferences.",
+      "reasons": [],
+      "max_old_sequence": 0.41975308641975306,
+      "max_old_bigram": 0.15
+    },
+    {
+      "id": "q_9cf2e27ad4d6",
+      "round": 1,
+      "ordinal": 3,
+      "text": "A moderate lift for category_14 would help my recommendations. Please pair it with an independent moderate cut for category_21.",
+      "reasons": [],
+      "max_old_sequence": 0.5093167701863354,
+      "max_old_bigram": 0.08333333333333333
+    },
+    {
+      "id": "q_6cd46dd643fd",
+      "round": 1,
+      "ordinal": 1,
+      "text": "Please bring up category_25 moderately in my feed. Separately, bring down category_29 moderately in the recommendations I receive.",
+      "reasons": [],
+      "max_old_sequence": 0.5443037974683544,
+      "max_old_bigram": 0.13636363636363635
+    },
+    {
+      "id": "q_6cd46dd643fd",
+      "round": 1,
+      "ordinal": 2,
+      "text": "I would like moderately more content bearing category_25, and I independently want moderately less content bearing category_29.",
+      "reasons": [],
+      "max_old_sequence": 0.49122807017543857,
+      "max_old_bigram": 0.15789473684210525
+    },
+    {
+      "id": "q_6cd46dd643fd",
+      "round": 1,
+      "ordinal": 3,
+      "text": "Adjust my feed toward a moderate increase in category_25; apply a moderate reduction to category_29 as a separate preference.",
+      "reasons": [],
+      "max_old_sequence": 0.4819277108433735,
+      "max_old_bigram": 0.09523809523809523
+    },
+    {
+      "id": "q_ccebd938dace",
+      "round": 1,
+      "ordinal": 1,
+      "text": "Raise the presence of category_19 a moderate amount, and separately reduce the presence of category_5 by a moderate amount.",
+      "reasons": [],
+      "max_old_sequence": 0.5644171779141104,
+      "max_old_bigram": 0.15
+    },
+    {
+      "id": "q_ccebd938dace",
+      "round": 1,
+      "ordinal": 2,
+      "text": "Could I get moderately more category_19 content in my feed? I would independently prefer moderately less category_5 content.",
+      "reasons": [],
+      "max_old_sequence": 0.4342857142857143,
+      "max_old_bigram": 0.14285714285714285
+    },
+    {
+      "id": "q_ccebd938dace",
+      "round": 1,
+      "ordinal": 3,
+      "text": "Please make category_19 moderately more common in my recommendations and category_5 moderately less common, with each adjustment applying independently.",
+      "reasons": [],
+      "max_old_sequence": 0.4649122807017544,
+      "max_old_bigram": 0.08
+    },
+    {
+      "id": "q_c78625ba8b33",
+      "round": 1,
+      "ordinal": 1,
+      "text": "In what you recommend, give category_22 a moderate increase and give category_13 an independent moderate decrease for me.",
+      "reasons": [],
+      "max_old_sequence": 0.46153846153846156,
+      "max_old_bigram": 0.14814814814814814
+    },
+    {
+      "id": "q_c78625ba8b33",
+      "round": 1,
+      "ordinal": 2,
+      "text": "I'd prefer a moderate rise in category_22 recommendations, along with a separate moderate drop in recommendations from category_13.",
+      "reasons": [],
+      "max_old_sequence": 0.5514018691588785,
+      "max_old_bigram": 0.08333333333333333
+    },
+    {
+      "id": "q_c78625ba8b33",
+      "round": 1,
+      "ordinal": 3,
+      "text": "Show category_22 moderately more often across my feed. Separately, cut back category_13 by a moderate amount for me.",
+      "reasons": [],
+      "max_old_sequence": 0.43137254901960786,
+      "max_old_bigram": 0.045454545454545456
+    },
+    {
+      "id": "q_7a62b0b6fc98",
+      "round": 1,
+      "ordinal": 1,
+      "text": "I want more category_27 and less category_26 in my feed, with moderate, independent adjustments to each category.",
+      "reasons": [],
+      "max_old_sequence": 0.5347593582887701,
+      "max_old_bigram": 0.21052631578947367
+    },
+    {
+      "id": "q_7a62b0b6fc98",
+      "round": 1,
+      "ordinal": 2,
+      "text": "Please lift category_27 moderately in my recommendations. Also lower category_26 moderately, with that preference applying on its own.",
+      "reasons": [],
+      "max_old_sequence": 0.5263157894736842,
+      "max_old_bigram": 0.08333333333333333
+    },
+    {
+      "id": "q_7a62b0b6fc98",
+      "round": 1,
+      "ordinal": 3,
+      "text": "Give me a moderate increase in category_27 material and, independently, a moderate reduction in the amount of category_26 material.",
+      "reasons": [],
+      "max_old_sequence": 0.5952380952380952,
+      "max_old_bigram": 0.11538461538461539
+    },
+    {
+      "id": "q_6925478c6a53",
+      "round": 1,
+      "ordinal": 1,
+      "text": "Moderately favor category_11 when adjusting my feed, and independently make a moderate cut to the amount of category_22.",
+      "reasons": [],
+      "max_old_sequence": 0.47435897435897434,
+      "max_old_bigram": 0.11538461538461539
+    },
+    {
+      "id": "q_6925478c6a53",
+      "round": 1,
+      "ordinal": 2,
+      "text": "My preferences call for moderately more category_11 content and a separate moderate decrease in how much category_22 content appears.",
+      "reasons": [],
+      "max_old_sequence": 0.46153846153846156,
+      "max_old_bigram": 0.07692307692307693
+    },
+    {
+      "id": "q_6925478c6a53",
+      "round": 1,
+      "ordinal": 3,
+      "text": "Please raise category_11 by a moderate amount in my feed; make an independent change lowering category_22 by a moderate amount.",
+      "reasons": [],
+      "max_old_sequence": 0.4270833333333333,
+      "max_old_bigram": 0.13636363636363635
+    },
+    {
+      "id": "q_bc0ed136ee03",
+      "round": 1,
+      "ordinal": 1,
+      "text": "I would welcome moderately more material from category_20. Independently, I would like a moderate reduction in material from category_18.",
+      "reasons": [],
+      "max_old_sequence": 0.5632183908045977,
+      "max_old_bigram": 0.2
+    },
+    {
+      "id": "q_bc0ed136ee03",
+      "round": 1,
+      "ordinal": 2,
+      "text": "Increase how often category_20 appears moderately, and separately decrease how often category_18 appears moderately in my recommendations.",
+      "reasons": [],
+      "max_old_sequence": 0.49101796407185627,
+      "max_old_bigram": 0.09523809523809523
+    },
+    {
+      "id": "q_bc0ed136ee03",
+      "round": 1,
+      "ordinal": 3,
+      "text": "Please apply a moderate increase to category_20 and an independent moderate decrease to category_18 throughout my feed.",
+      "reasons": [],
+      "max_old_sequence": 0.5128205128205128,
+      "max_old_bigram": 0.125
+    },
+    {
+      "id": "q_2794cce69539",
+      "round": 1,
+      "ordinal": 1,
+      "text": "Make a moderate upward adjustment to category_10 content, alongside a separate moderate downward adjustment to category_4 content in my feed.",
+      "reasons": [],
+      "max_old_sequence": 0.45,
+      "max_old_bigram": 0.2
+    },
+    {
+      "id": "q_2794cce69539",
+      "round": 1,
+      "ordinal": 2,
+      "text": "Could you show moderately more category_10? I would also like moderately less category_4, with each change applying independently.",
+      "reasons": [],
+      "max_old_sequence": 0.37433155080213903,
+      "max_old_bigram": 0.14285714285714285
+    },
+    {
+      "id": "q_2794cce69539",
+      "round": 1,
+      "ordinal": 3,
+      "text": "Please give category_10 moderately more representation in my recommendations. Separately, give category_4 moderately less representation in them.",
+      "reasons": [],
+      "max_old_sequence": 0.4818181818181818,
+      "max_old_bigram": 0.1111111111111111
+    },
+    {
+      "id": "q_24663dae9d2b",
+      "round": 1,
+      "ordinal": 1,
+      "text": "I'd like the feed to contain moderately more category_16, while independently containing moderately less category_15 than it does now.",
+      "reasons": [],
+      "max_old_sequence": 0.4678362573099415,
+      "max_old_bigram": 0.1111111111111111
+    },
+    {
+      "id": "q_24663dae9d2b",
+      "round": 1,
+      "ordinal": 2,
+      "text": "For my recommendations, increase category_16 moderately; in a separate adjustment, reduce category_15 by a moderate amount.",
+      "reasons": [],
+      "max_old_sequence": 0.5165562913907285,
+      "max_old_bigram": 0.09523809523809523
+    },
+    {
+      "id": "q_24663dae9d2b",
+      "round": 1,
+      "ordinal": 3,
+      "text": "Please give a moderate lift to content from category_16 and an independent moderate cut to content from category_15.",
+      "reasons": [],
+      "max_old_sequence": 0.5490196078431373,
+      "max_old_bigram": 0.13636363636363635
+    },
+    {
+      "id": "q_875b9128be1b",
+      "round": 1,
+      "ordinal": 1,
+      "text": "A moderate increase for category_18 and a separate moderate decrease for category_25 would match what I want in my feed.",
+      "reasons": [],
+      "max_old_sequence": 0.4567901234567901,
+      "max_old_bigram": 0.125
+    },
+    {
+      "id": "q_875b9128be1b",
+      "round": 1,
+      "ordinal": 2,
+      "text": "I'd like category_18 to come up moderately more often, and independently I'd like category_25 to come up moderately less often.",
+      "reasons": [],
+      "max_old_sequence": 0.5964912280701754,
+      "max_old_bigram": 0.21739130434782608
+    },
+    {
+      "id": "q_875b9128be1b",
+      "round": 1,
+      "ordinal": 3,
+      "text": "Please increase the amount of category_18 moderately. Along with that, make an independent moderate decrease in the amount of category_25.",
+      "reasons": [],
+      "max_old_sequence": 0.4606741573033708,
+      "max_old_bigram": 0.16
+    },
+    {
+      "id": "q_17aa284bfbd3",
+      "round": 1,
+      "ordinal": 1,
+      "text": "I want moderately more recommendations from category_15. As an independent preference, please reduce recommendations from category_18 by a moderate amount.",
+      "reasons": [],
+      "max_old_sequence": 0.49777777777777776,
+      "max_old_bigram": 0.09090909090909091
+    },
+    {
+      "id": "q_17aa284bfbd3",
+      "round": 1,
+      "ordinal": 2,
+      "text": "Turn up the presence of category_15 moderately, and separately turn down the presence of category_18 moderately in what you recommend.",
+      "reasons": [],
+      "max_old_sequence": 0.5153374233128835,
+      "max_old_bigram": 0.125
+    },
+    {
+      "id": "q_17aa284bfbd3",
+      "round": 1,
+      "ordinal": 3,
+      "text": "My feed should have a moderate increase in category_15 content and an independent moderate reduction in category_18 content, please.",
+      "reasons": [],
+      "max_old_sequence": 0.4550898203592814,
+      "max_old_bigram": 0.1111111111111111
+    },
+    {
+      "id": "q_45685eb9ee33",
+      "round": 1,
+      "ordinal": 1,
+      "text": "Please remove all content from category_4 so that none of it appears in my feed.",
+      "reasons": [],
+      "max_old_sequence": 0.5106382978723404,
+      "max_old_bigram": 0.05263157894736842
+    },
+    {
+      "id": "q_45685eb9ee33",
+      "round": 1,
+      "ordinal": 2,
+      "text": "I don't want to see anything carrying category_4; exclude every such item from my recommendations completely.",
+      "reasons": [],
+      "max_old_sequence": 0.44155844155844154,
+      "max_old_bigram": 0.09090909090909091
+    },
+    {
+      "id": "q_45685eb9ee33",
+      "round": 1,
+      "ordinal": 3,
+      "text": "Keep category_4 out of my feed entirely, with no content from that category included.",
+      "reasons": [],
+      "max_old_sequence": 0.5303030303030303,
+      "max_old_bigram": 0.11764705882352941
+    },
+    {
+      "id": "q_e0b488f0ca19",
+      "round": 1,
+      "ordinal": 1,
+      "text": "I want my recommendations to exclude category_24 altogether; please remove every item in that category.",
+      "reasons": [],
+      "max_old_sequence": 0.5280898876404494,
+      "max_old_bigram": 0.14285714285714285
+    },
+    {
+      "id": "q_e0b488f0ca19",
+      "round": 1,
+      "ordinal": 2,
+      "text": "Don't show me any category_24 content at all when putting together my feed, please.",
+      "reasons": [],
+      "max_old_sequence": 0.49624060150375937,
+      "max_old_bigram": 0.058823529411764705
+    },
+    {
+      "id": "q_e0b488f0ca19",
+      "round": 1,
+      "ordinal": 3,
+      "text": "Please filter out everything marked category_24. I do not want any of those items appearing.",
+      "reasons": [],
+      "max_old_sequence": 0.46060606060606063,
+      "max_old_bigram": 0.15789473684210525
+    },
+    {
+      "id": "q_91a6dcd75be3",
+      "round": 1,
+      "ordinal": 1,
+      "text": "Please sharply reduce how much category_21 content you recommend; I want to see far less of it.",
+      "reasons": [],
+      "max_old_sequence": 0.5,
+      "max_old_bigram": 0.13043478260869565
+    },
+    {
+      "id": "q_91a6dcd75be3",
+      "round": 1,
+      "ordinal": 2,
+      "text": "I'd like a substantial cut in category_21 across my feed, making it much less frequent.",
+      "reasons": [],
+      "max_old_sequence": 0.46808510638297873,
+      "max_old_bigram": 0.09523809523809523
+    },
+    {
+      "id": "q_91a6dcd75be3",
+      "round": 1,
+      "ordinal": 3,
+      "text": "The amount of category_21 in my recommendations needs a major reduction. Please dial it down strongly.",
+      "reasons": [],
+      "max_old_sequence": 0.5324675324675324,
+      "max_old_bigram": 0.16666666666666666
+    },
+    {
+      "id": "q_a6cb5a59a93e",
+      "round": 1,
+      "ordinal": 1,
+      "text": "Could you show just a little more category_5 content in my recommendations than I currently get?",
+      "reasons": [],
+      "max_old_sequence": 0.5035971223021583,
+      "max_old_bigram": 0.17647058823529413
+    },
+    {
+      "id": "q_a6cb5a59a93e",
+      "round": 1,
+      "ordinal": 2,
+      "text": "I'd like category_5 to appear slightly more often in my feed, with only a small increase.",
+      "reasons": [],
+      "max_old_sequence": 0.5645161290322581,
+      "max_old_bigram": 0.14285714285714285
+    },
+    {
+      "id": "q_a6cb5a59a93e",
+      "round": 1,
+      "ordinal": 3,
+      "text": "Please give the amount of category_5 in my recommendations a slight upward nudge for me.",
+      "reasons": [],
+      "max_old_sequence": 0.55,
+      "max_old_bigram": 0.17647058823529413
+    },
+    {
+      "id": "q_6581039152cc",
+      "round": 1,
+      "ordinal": 1,
+      "text": "I want much less category_17 in my feed, so please make a strong reduction in that content.",
+      "reasons": [],
+      "max_old_sequence": 0.47619047619047616,
+      "max_old_bigram": 0.25
+    },
+    {
+      "id": "q_6581039152cc",
+      "round": 1,
+      "ordinal": 2,
+      "text": "Cut back heavily on recommendations involving category_17; I'd like those to appear far less frequently.",
+      "reasons": [],
+      "max_old_sequence": 0.5076923076923077,
+      "max_old_bigram": 0.15789473684210525
+    },
+    {
+      "id": "q_6581039152cc",
+      "round": 1,
+      "ordinal": 3,
+      "text": "Please make a large downward adjustment to category_17 in my feed so I receive substantially less.",
+      "reasons": [],
+      "max_old_sequence": 0.6031746031746031,
+      "max_old_bigram": 0.4
+    },
+    {
+      "id": "q_892dea037c71",
+      "round": 1,
+      "ordinal": 1,
+      "text": "Remove category_23 from my recommendations entirely. I don't want any content from that category showing up.",
+      "reasons": [],
+      "max_old_sequence": 0.4918032786885246,
+      "max_old_bigram": 0.08333333333333333
+    },
+    {
+      "id": "q_892dea037c71",
+      "round": 1,
+      "ordinal": 2,
+      "text": "Please leave out every item associated with category_23 when deciding what goes into my feed.",
+      "reasons": [],
+      "max_old_sequence": 0.44025157232704404,
+      "max_old_bigram": 0.047619047619047616
+    },
+    {
+      "id": "q_892dea037c71",
+      "round": 1,
+      "ordinal": 3,
+      "text": "Nothing from category_23 should appear in my feed; please exclude that content completely for me.",
+      "reasons": [],
+      "max_old_sequence": 0.4358974358974359,
+      "max_old_bigram": 0.05263157894736842
+    },
+    {
+      "id": "q_a673d42def7b",
+      "round": 1,
+      "ordinal": 1,
+      "text": "The feed has more category_9 than I want. Please reduce it by a large amount.",
+      "reasons": [],
+      "max_old_sequence": 0.544,
+      "max_old_bigram": 0.17647058823529413
+    },
+    {
+      "id": "q_a673d42def7b",
+      "round": 1,
+      "ordinal": 2,
+      "text": "Make category_9 much less prevalent in my recommendations; I would like a strong cut in its presence.",
+      "reasons": [],
+      "max_old_sequence": 0.5476190476190477,
+      "max_old_bigram": 0.14285714285714285
+    },
+    {
+      "id": "q_a673d42def7b",
+      "round": 1,
+      "ordinal": 3,
+      "text": "Please drastically lower how often I see category_9 content in the recommendations you give me.",
+      "reasons": [],
+      "max_old_sequence": 0.5068493150684932,
+      "max_old_bigram": 0.09523809523809523
+    },
+    {
+      "id": "q_7b8db98d142f",
+      "round": 1,
+      "ordinal": 1,
+      "text": "Please make a major cut to category_1 in my feed so those recommendations appear much less often.",
+      "reasons": [],
+      "max_old_sequence": 0.5317919075144508,
+      "max_old_bigram": 0.1
+    },
+    {
+      "id": "q_7b8db98d142f",
+      "round": 1,
+      "ordinal": 2,
+      "text": "I'd prefer far less material from category_1. Turn down its presence in my recommendations sharply.",
+      "reasons": [],
+      "max_old_sequence": 0.5507246376811594,
+      "max_old_bigram": 0.14285714285714285
+    },
+    {
+      "id": "q_7b8db98d142f",
+      "round": 1,
+      "ordinal": 3,
+      "text": "Strongly reduce the amount of category_1 you show me; I want a substantial decrease in that content.",
+      "reasons": [],
+      "max_old_sequence": 0.49710982658959535,
+      "max_old_bigram": 0.15789473684210525
+    },
+    {
+      "id": "q_4dfbcc1fedb0",
+      "round": 1,
+      "ordinal": 1,
+      "text": "Could you exclude all category_13 content from my feed? I don't want to see any of it.",
+      "reasons": [],
+      "max_old_sequence": 0.46153846153846156,
+      "max_old_bigram": 0.08695652173913043
+    },
+    {
+      "id": "q_4dfbcc1fedb0",
+      "round": 1,
+      "ordinal": 2,
+      "text": "Please remove every recommendation that carries category_13, leaving that category out of the feed entirely.",
+      "reasons": [],
+      "max_old_sequence": 0.5058823529411764,
+      "max_old_bigram": 0.1111111111111111
+    },
+    {
+      "id": "q_4dfbcc1fedb0",
+      "round": 1,
+      "ordinal": 3,
+      "text": "I want category_13 completely absent from my recommendations, so don't include anything belonging to it.",
+      "reasons": [],
+      "max_old_sequence": 0.5342465753424658,
+      "max_old_bigram": 0.15
+    },
+    {
+      "id": "q_0d0b5a5a41a6",
+      "round": 1,
+      "ordinal": 1,
+      "text": "A little more category_2 in my feed would be welcome; please make just a slight increase.",
+      "reasons": [],
+      "max_old_sequence": 0.4925373134328358,
+      "max_old_bigram": 0.17647058823529413
+    },
+    {
+      "id": "q_0d0b5a5a41a6",
+      "round": 1,
+      "ordinal": 2,
+      "text": "Please increase the amount of category_2 I see by a small amount in my recommendations.",
+      "reasons": [],
+      "max_old_sequence": 0.64,
+      "max_old_bigram": 0.21052631578947367
+    },
+    {
+      "id": "q_0d0b5a5a41a6",
+      "round": 1,
+      "ordinal": 3,
+      "text": "I'd like a slight lift in how often category_2 appears when you put together my feed.",
+      "reasons": [],
+      "max_old_sequence": 0.44285714285714284,
+      "max_old_bigram": 0.043478260869565216
+    },
+    {
+      "id": "q_34377c30ad4a",
+      "round": 1,
+      "ordinal": 1,
+      "text": "Show me slightly more content from category_30; only a small increase would suit my preferences.",
+      "reasons": [],
+      "max_old_sequence": 0.46153846153846156,
+      "max_old_bigram": 0.1111111111111111
+    },
+    {
+      "id": "q_34377c30ad4a",
+      "round": 1,
+      "ordinal": 2,
+      "text": "I would appreciate a little extra category_30 in the feed, with a slight adjustment upward.",
+      "reasons": [],
+      "max_old_sequence": 0.4840764331210191,
+      "max_old_bigram": 0.10526315789473684
+    },
+    {
+      "id": "q_34377c30ad4a",
+      "round": 1,
+      "ordinal": 3,
+      "text": "Please nudge category_30 upward a little in my recommendations so I encounter it slightly more often.",
+      "reasons": [],
+      "max_old_sequence": 0.4838709677419355,
+      "max_old_bigram": 0.09090909090909091
+    },
+    {
+      "id": "q_bd75588b208e",
+      "round": 1,
+      "ordinal": 1,
+      "text": "Leave category_28 out completely when preparing my feed; no items from that category should appear.",
+      "reasons": [],
+      "max_old_sequence": 0.5034013605442177,
+      "max_old_bigram": 0.1111111111111111
+    },
+    {
+      "id": "q_bd75588b208e",
+      "round": 1,
+      "ordinal": 2,
+      "text": "I'd like every piece of category_28 content removed from what you recommend to me, please.",
+      "reasons": [],
+      "max_old_sequence": 0.5757575757575758,
+      "max_old_bigram": 0.15
+    },
+    {
+      "id": "q_bd75588b208e",
+      "round": 1,
+      "ordinal": 3,
+      "text": "Please block all recommendations associated with category_28. I don't want any of that content in my feed.",
+      "reasons": [],
+      "max_old_sequence": 0.5591397849462365,
+      "max_old_bigram": 0.041666666666666664
+    },
+    {
+      "id": "q_85c0c20e0a1e",
+      "round": 1,
+      "ordinal": 1,
+      "text": "Please reduce category_0 heavily in what you recommend, making the amount I see much smaller.",
+      "reasons": [],
+      "max_old_sequence": 0.49572649572649574,
+      "max_old_bigram": 0.13333333333333333
+    },
+    {
+      "id": "q_85c0c20e0a1e",
+      "round": 1,
+      "ordinal": 2,
+      "text": "I'd like a sharp drop in category_0 across the feed. Make a substantial reduction in that content.",
+      "reasons": [],
+      "max_old_sequence": 0.44285714285714284,
+      "max_old_bigram": 0.13636363636363635
+    },
+    {
+      "id": "q_85c0c20e0a1e",
+      "round": 1,
+      "ordinal": 3,
+      "text": "Far fewer category_0 recommendations would fit my preferences; please cut back on them by a large amount.",
+      "reasons": [],
+      "max_old_sequence": 0.5119047619047619,
+      "max_old_bigram": 0.15789473684210525
+    },
+    {
+      "id": "q_6bf93bf04386",
+      "round": 1,
+      "ordinal": 1,
+      "text": "I'd enjoy seeing a bit more category_3 in my recommendations, with a small increase in its presence.",
+      "reasons": [],
+      "max_old_sequence": 0.5228758169934641,
+      "max_old_bigram": 0.15
+    },
+    {
+      "id": "q_6bf93bf04386",
+      "round": 1,
+      "ordinal": 2,
+      "text": "Give category_3 just a slight boost in my feed so it comes up a little more often.",
+      "reasons": [],
+      "max_old_sequence": 0.4536082474226804,
+      "max_old_bigram": 0.10526315789473684
+    },
+    {
+      "id": "q_6bf93bf04386",
+      "round": 1,
+      "ordinal": 3,
+      "text": "Please make a minor upward adjustment to how much category_3 you recommend to me in the feed.",
+      "reasons": [],
+      "max_old_sequence": 0.47540983606557374,
+      "max_old_bigram": 0.1
+    },
+    {
+      "id": "q_ddaa3ebce98c",
+      "round": 1,
+      "ordinal": 1,
+      "text": "Could my feed have slightly more category_29? A small increase is all I'm looking for.",
+      "reasons": [],
+      "max_old_sequence": 0.4666666666666667,
+      "max_old_bigram": 0.10526315789473684
+    },
+    {
+      "id": "q_ddaa3ebce98c",
+      "round": 1,
+      "ordinal": 2,
+      "text": "I'd like the amount of category_29 content to rise a little in the recommendations I receive.",
+      "reasons": [],
+      "max_old_sequence": 0.55,
+      "max_old_bigram": 0.15789473684210525
+    },
+    {
+      "id": "q_ddaa3ebce98c",
+      "round": 1,
+      "ordinal": 3,
+      "text": "Please add a little more emphasis to category_29 in my feed, making only a slight increase.",
+      "reasons": [],
+      "max_old_sequence": 0.4666666666666667,
+      "max_old_bigram": 0.1111111111111111
+    },
+    {
+      "id": "q_bde4b8f06ad8",
+      "round": 1,
+      "ordinal": 1,
+      "text": "I'd like you to cut the presence of category_12 dramatically in the recommendations you show me.",
+      "reasons": [],
+      "max_old_sequence": 0.5217391304347826,
+      "max_old_bigram": 0.13043478260869565
+    },
+    {
+      "id": "q_bde4b8f06ad8",
+      "round": 1,
+      "ordinal": 2,
+      "text": "Reduce how much category_12 reaches my feed by a large amount; I want substantially less.",
+      "reasons": [],
+      "max_old_sequence": 0.45112781954887216,
+      "max_old_bigram": 0.17647058823529413
+    },
+    {
+      "id": "q_bde4b8f06ad8",
+      "round": 1,
+      "ordinal": 3,
+      "text": "Please make category_12 much less common in what I see by applying a strong reduction.",
+      "reasons": [],
+      "max_old_sequence": 0.5196850393700787,
+      "max_old_bigram": 0.10526315789473684
+    },
+    {
+      "id": "q_3585a501d1ba",
+      "round": 1,
+      "ordinal": 1,
+      "text": "Give me a little more category_7 content in the feed, please, with just a slight increase.",
+      "reasons": [],
+      "max_old_sequence": 0.46601941747572817,
+      "max_old_bigram": 0.3333333333333333
+    },
+    {
+      "id": "q_3585a501d1ba",
+      "round": 1,
+      "ordinal": 2,
+      "text": "A slight rise in category_7 recommendations would suit me. Please make that small adjustment to my feed.",
+      "reasons": [],
+      "max_old_sequence": 0.5280898876404494,
+      "max_old_bigram": 0.14285714285714285
+    },
+    {
+      "id": "q_3585a501d1ba",
+      "round": 1,
+      "ordinal": 3,
+      "text": "I'd prefer category_7 a bit more often among my recommendations, so increase its presence slightly.",
+      "reasons": [],
+      "max_old_sequence": 0.5542168674698795,
+      "max_old_bigram": 0.1
+    },
+    {
+      "id": "q_448d5fce29de",
+      "round": 1,
+      "ordinal": 1,
+      "text": "Don't include anything associated with category_26 in my recommendations; I want that content excluded entirely.",
+      "reasons": [],
+      "max_old_sequence": 0.47560975609756095,
+      "max_old_bigram": 0.10526315789473684
+    },
+    {
+      "id": "q_448d5fce29de",
+      "round": 1,
+      "ordinal": 2,
+      "text": "Please take all category_26 material out of my feed so none of it is shown.",
+      "reasons": [],
+      "max_old_sequence": 0.4666666666666667,
+      "max_old_bigram": 0.05555555555555555
+    },
+    {
+      "id": "q_448d5fce29de",
+      "round": 1,
+      "ordinal": 3,
+      "text": "I'd like to see no content from category_26. Filter out that category completely from my recommendations.",
+      "reasons": [],
+      "max_old_sequence": 0.5081081081081081,
+      "max_old_bigram": 0.07692307692307693
+    },
+    {
+      "id": "q_1eefe7b28579",
+      "round": 1,
+      "ordinal": 1,
+      "text": "Everything carrying category_6 should be excluded from my feed; please don't show any of those items.",
+      "reasons": [],
+      "max_old_sequence": 0.4225352112676056,
+      "max_old_bigram": 0.09523809523809523
+    },
+    {
+      "id": "q_1eefe7b28579",
+      "round": 1,
+      "ordinal": 2,
+      "text": "I want a feed with no category_6 content whatsoever, so remove that category from my recommendations.",
+      "reasons": [],
+      "max_old_sequence": 0.53125,
+      "max_old_bigram": 0.10526315789473684
+    },
+    {
+      "id": "q_1eefe7b28579",
+      "round": 1,
+      "ordinal": 3,
+      "text": "Please keep all material from category_6 out of what you show me, with none included.",
+      "reasons": [],
+      "max_old_sequence": 0.4827586206896552,
+      "max_old_bigram": 0.12
+    },
+    {
+      "id": "q_d4887e7b1959",
+      "round": 1,
+      "ordinal": 1,
+      "text": "I'd like a small increase in category_8 content, so let it appear slightly more in my recommendations.",
+      "reasons": [],
+      "max_old_sequence": 0.5714285714285714,
+      "max_old_bigram": 0.21052631578947367
+    },
+    {
+      "id": "q_d4887e7b1959",
+      "round": 1,
+      "ordinal": 2,
+      "text": "Could you raise the presence of category_8 just a little in the feed you prepare for me?",
+      "reasons": [],
+      "max_old_sequence": 0.5378151260504201,
+      "max_old_bigram": 0.13043478260869565
+    },
+    {
+      "id": "q_d4887e7b1959",
+      "round": 1,
+      "ordinal": 3,
+      "text": "Please favor category_8 a little more in my recommendations, with a slight increase in that content.",
+      "reasons": [],
+      "max_old_sequence": 0.48366013071895425,
+      "max_old_bigram": 0.15789473684210525
+    },
+    {
+      "id": "q_5f5be5b17b24",
+      "round": 1,
+      "ordinal": 1,
+      "text": "A bit more category_14 would be nice in my feed; please nudge its presence up slightly.",
+      "reasons": [],
+      "max_old_sequence": 0.45751633986928103,
+      "max_old_bigram": 0.2222222222222222
+    },
+    {
+      "id": "q_5f5be5b17b24",
+      "round": 1,
+      "ordinal": 2,
+      "text": "I would like you to show slightly more category_14 content when making recommendations for me.",
+      "reasons": [],
+      "max_old_sequence": 0.5755395683453237,
+      "max_old_bigram": 0.16666666666666666
+    },
+    {
+      "id": "q_5f5be5b17b24",
+      "round": 1,
+      "ordinal": 3,
+      "text": "Increase how often category_14 comes up by just a little in my feed, please.",
+      "reasons": [],
+      "max_old_sequence": 0.42857142857142855,
+      "max_old_bigram": 0.058823529411764705
+    },
+    {
+      "id": "q_b00553cd5e08",
+      "round": 1,
+      "ordinal": 1,
+      "text": "Please exclude category_25 completely from what you show me. I don't want any items from it.",
+      "reasons": [],
+      "max_old_sequence": 0.5074626865671642,
+      "max_old_bigram": 0.14285714285714285
+    },
+    {
+      "id": "q_b00553cd5e08",
+      "round": 1,
+      "ordinal": 2,
+      "text": "No recommendations bearing category_25 should reach my feed; please filter every one of them out.",
+      "reasons": [],
+      "max_old_sequence": 0.5354330708661418,
+      "max_old_bigram": 0.05555555555555555
+    },
+    {
+      "id": "q_b00553cd5e08",
+      "round": 1,
+      "ordinal": 3,
+      "text": "I'd like all category_25 content removed entirely from my recommendations so I never see it there.",
+      "reasons": [],
+      "max_old_sequence": 0.48044692737430167,
+      "max_old_bigram": 0.05
+    },
+    {
+      "id": "q_08d3fb4c1608",
+      "round": 1,
+      "ordinal": 1,
+      "text": "I want a substantial decrease in category_19 recommendations. Please make the amount in my feed much smaller.",
+      "reasons": [],
+      "max_old_sequence": 0.4968944099378882,
+      "max_old_bigram": 0.15789473684210525
+    },
+    {
+      "id": "q_08d3fb4c1608",
+      "round": 1,
+      "ordinal": 2,
+      "text": "Dial category_19 down sharply in my feed, reducing how often it appears by a large amount.",
+      "reasons": [],
+      "max_old_sequence": 0.509090909090909,
+      "max_old_bigram": 0.23529411764705882
+    },
+    {
+      "id": "q_08d3fb4c1608",
+      "round": 1,
+      "ordinal": 3,
+      "text": "Please cut back strongly on content from category_19; I'd prefer to encounter much less of it.",
+      "reasons": [],
+      "max_old_sequence": 0.4625,
+      "max_old_bigram": 0.07407407407407407
+    },
+    {
+      "id": "q_7e56b03cee83",
+      "round": 1,
+      "ordinal": 1,
+      "text": "Could you make category_22 slightly more common in my feed? I only want a small increase.",
+      "reasons": [],
+      "max_old_sequence": 0.559322033898305,
+      "max_old_bigram": 0.15789473684210525
+    },
+    {
+      "id": "q_7e56b03cee83",
+      "round": 1,
+      "ordinal": 2,
+      "text": "I'd appreciate a gentle increase in the amount of category_22 content that you recommend to me.",
+      "reasons": [],
+      "max_old_sequence": 0.5571428571428572,
+      "max_old_bigram": 0.15789473684210525
+    },
+    {
+      "id": "q_7e56b03cee83",
+      "round": 1,
+      "ordinal": 3,
+      "text": "Please show a little more category_22 in my feed, giving that content a slight upward adjustment.",
+      "reasons": [],
+      "max_old_sequence": 0.44871794871794873,
+      "max_old_bigram": 0.17647058823529413
+    },
+    {
+      "id": "q_34cef4c95963",
+      "round": 1,
+      "ordinal": 1,
+      "text": "Sharply lower how much category_27 you recommend to me; I would prefer a much smaller amount.",
+      "reasons": [],
+      "max_old_sequence": 0.49032258064516127,
+      "max_old_bigram": 0.08695652173913043
+    },
+    {
+      "id": "q_34cef4c95963",
+      "round": 1,
+      "ordinal": 2,
+      "text": "Please give category_27 a major reduction in my feed so that it comes up far less.",
+      "reasons": [],
+      "max_old_sequence": 0.5222929936305732,
+      "max_old_bigram": 0.17647058823529413
+    },
+    {
+      "id": "q_34cef4c95963",
+      "round": 1,
+      "ordinal": 3,
+      "text": "I'd like far less content associated with category_27, so reduce its presence strongly in my recommendations.",
+      "reasons": [],
+      "max_old_sequence": 0.5333333333333333,
+      "max_old_bigram": 0.08695652173913043
+    },
+    {
+      "id": "q_69420dbe5d79",
+      "round": 1,
+      "ordinal": 1,
+      "text": "Please reduce category_11 moderately in my feed, but make sure at least one item from it remains.",
+      "reasons": [],
+      "max_old_sequence": 0.6081871345029239,
+      "max_old_bigram": 0.22727272727272727
+    },
+    {
+      "id": "q_69420dbe5d79",
+      "round": 1,
+      "ordinal": 2,
+      "text": "I'd like moderately less category_11 content while still seeing one or more items from that category.",
+      "reasons": [],
+      "max_old_sequence": 0.52,
+      "max_old_bigram": 0.15384615384615385
+    },
+    {
+      "id": "q_69420dbe5d79",
+      "round": 1,
+      "ordinal": 3,
+      "text": "Cut back on category_11 by a moderate amount, taking care to retain at least one recommendation from it.",
+      "reasons": [],
+      "max_old_sequence": 0.6404494382022472,
+      "max_old_bigram": 0.24
+    },
+    {
+      "id": "q_f6aa2dd91076",
+      "round": 1,
+      "ordinal": 1,
+      "text": "Show me moderately less category_20, with at least one item from that category kept in the feed.",
+      "reasons": [],
+      "max_old_sequence": 0.6197183098591549,
+      "max_old_bigram": 0.23809523809523808
+    },
+    {
+      "id": "q_f6aa2dd91076",
+      "round": 1,
+      "ordinal": 2,
+      "text": "I'd like a moderate reduction in category_20 content, provided you leave one or more such items for me.",
+      "reasons": [],
+      "max_old_sequence": 0.5555555555555556,
+      "max_old_bigram": 0.13043478260869565
+    },
+    {
+      "id": "q_f6aa2dd91076",
+      "round": 1,
+      "ordinal": 3,
+      "text": "Please bring the amount of category_20 down moderately without letting the feed fall below one item from it.",
+      "reasons": [],
+      "max_old_sequence": 0.5142857142857142,
+      "max_old_bigram": 0.15
+    },
+    {
+      "id": "q_03efb7901048",
+      "round": 1,
+      "ordinal": 1,
+      "text": "A moderate cut to category_10 would suit me, as long as at least one item stays in my feed.",
+      "reasons": [],
+      "max_old_sequence": 0.5076923076923077,
+      "max_old_bigram": 0.13636363636363635
+    },
+    {
+      "id": "q_03efb7901048",
+      "round": 1,
+      "ordinal": 2,
+      "text": "Please lower the presence of category_10 by a moderate amount and keep one or more items from it.",
+      "reasons": [],
+      "max_old_sequence": 0.5660377358490566,
+      "max_old_bigram": 0.19230769230769232
+    },
+    {
+      "id": "q_03efb7901048",
+      "round": 1,
+      "ordinal": 3,
+      "text": "I'd prefer moderately fewer category_10 recommendations, but I still want at least one of those items included.",
+      "reasons": [],
+      "max_old_sequence": 0.5766871165644172,
+      "max_old_bigram": 0.10714285714285714
+    },
+    {
+      "id": "q_20d7615f7dbf",
+      "round": 1,
+      "ordinal": 1,
+      "text": "Keep at least one item from category_16 in my recommendations while reducing that category by a moderate amount.",
+      "reasons": [],
+      "max_old_sequence": 0.5810055865921788,
+      "max_old_bigram": 0.21739130434782608
+    },
+    {
+      "id": "q_20d7615f7dbf",
+      "round": 1,
+      "ordinal": 2,
+      "text": "I want a moderate decrease in category_16, with one or more items from it remaining in the feed.",
+      "reasons": [],
+      "max_old_sequence": 0.4864864864864865,
+      "max_old_bigram": 0.19230769230769232
+    },
+    {
+      "id": "q_20d7615f7dbf",
+      "round": 1,
+      "ordinal": 3,
+      "text": "Please dial category_16 down moderately for me, making sure you don't remove its last remaining item.",
+      "reasons": [],
+      "max_old_sequence": 0.43209876543209874,
+      "max_old_bigram": 0.047619047619047616
+    },
+    {
+      "id": "q_1fde2ca1245d",
+      "round": 1,
+      "ordinal": 1,
+      "text": "Moderately reduce how much category_18 I see, but retain at least one item belonging to that category.",
+      "reasons": [],
+      "max_old_sequence": 0.5733333333333334,
+      "max_old_bigram": 0.23809523809523808
+    },
+    {
+      "id": "q_1fde2ca1245d",
+      "round": 1,
+      "ordinal": 2,
+      "text": "I'd like less category_18 by a moderate amount; please still include one or more of its items.",
+      "reasons": [],
+      "max_old_sequence": 0.5362318840579711,
+      "max_old_bigram": 0.08333333333333333
+    },
+    {
+      "id": "q_1fde2ca1245d",
+      "round": 1,
+      "ordinal": 3,
+      "text": "Could you make category_18 moderately less common while keeping at least one recommendation from it in my feed?",
+      "reasons": [],
+      "max_old_sequence": 0.6129032258064516,
+      "max_old_bigram": 0.24
+    },
+    {
+      "id": "q_39cdfb589e99",
+      "round": 1,
+      "ordinal": 1,
+      "text": "Give category_15 a moderate reduction in my feed, with a minimum of one item from it still included.",
+      "reasons": [],
+      "max_old_sequence": 0.5408805031446541,
+      "max_old_bigram": 0.17391304347826086
+    },
+    {
+      "id": "q_39cdfb589e99",
+      "round": 1,
+      "ordinal": 2,
+      "text": "Please keep one or more category_15 items available in the feed while moderately reducing the category's overall presence.",
+      "reasons": [],
+      "max_old_sequence": 0.5119047619047619,
+      "max_old_bigram": 0.07692307692307693
+    },
+    {
+      "id": "q_39cdfb589e99",
+      "round": 1,
+      "ordinal": 3,
+      "text": "I'd prefer a moderate cutback in category_15, but at least one item from it needs to remain.",
+      "reasons": [],
+      "max_old_sequence": 0.5954198473282443,
+      "max_old_bigram": 0.2727272727272727
+    },
+    {
+      "id": "q_40d86402753d",
+      "round": 1,
+      "ordinal": 1,
+      "text": "Please let category_4 appear moderately less often, without taking away the last item from that category.",
+      "reasons": [],
+      "max_old_sequence": 0.519774011299435,
+      "max_old_bigram": 0.13636363636363635
+    },
+    {
+      "id": "q_40d86402753d",
+      "round": 1,
+      "ordinal": 2,
+      "text": "I'd like a moderate decrease in category_4 recommendations, with at least one such item retained in the feed.",
+      "reasons": [],
+      "max_old_sequence": 0.5679012345679012,
+      "max_old_bigram": 0.13043478260869565
+    },
+    {
+      "id": "q_40d86402753d",
+      "round": 1,
+      "ordinal": 3,
+      "text": "Reduce category_4 moderately in what I see and leave me one or more items from that category.",
+      "reasons": [],
+      "max_old_sequence": 0.5673758865248227,
+      "max_old_bigram": 0.15384615384615385
+    },
+    {
+      "id": "q_f50a68d5011b",
+      "round": 1,
+      "ordinal": 1,
+      "text": "I'd like moderately less material from category_24, but make sure at least one item is kept in my feed.",
+      "reasons": [],
+      "max_old_sequence": 0.5915492957746479,
+      "max_old_bigram": 0.15384615384615385
+    },
+    {
+      "id": "q_f50a68d5011b",
+      "round": 1,
+      "ordinal": 2,
+      "text": "Lower category_24 by a moderate amount in my recommendations, retaining a minimum of one item from it.",
+      "reasons": [],
+      "max_old_sequence": 0.5476190476190477,
+      "max_old_bigram": 0.17391304347826086
+    },
+    {
+      "id": "q_f50a68d5011b",
+      "round": 1,
+      "ordinal": 3,
+      "text": "Please make a moderate cut to category_24 while still including one or more recommendations from that category.",
+      "reasons": [],
+      "max_old_sequence": 0.6704545454545454,
+      "max_old_bigram": 0.21739130434782608
+    },
+    {
+      "id": "q_d33b0485bf69",
+      "round": 1,
+      "ordinal": 1,
+      "text": "My feed could use a moderate reduction in category_21, provided at least one item from it stays.",
+      "reasons": [],
+      "max_old_sequence": 0.5547445255474452,
+      "max_old_bigram": 0.22727272727272727
+    },
+    {
+      "id": "q_d33b0485bf69",
+      "round": 1,
+      "ordinal": 2,
+      "text": "Please decrease the amount of category_21 moderately; I still want one or more items bearing that category.",
+      "reasons": [],
+      "max_old_sequence": 0.5549132947976878,
+      "max_old_bigram": 0.15789473684210525
+    },
+    {
+      "id": "q_d33b0485bf69",
+      "round": 1,
+      "ordinal": 3,
+      "text": "Keep at least one category_21 recommendation for me as you bring down its overall presence by a moderate amount.",
+      "reasons": [],
+      "max_old_sequence": 0.6480446927374302,
+      "max_old_bigram": 0.11538461538461539
+    },
+    {
+      "id": "q_a625b3f9fdb9",
+      "round": 1,
+      "ordinal": 1,
+      "text": "I'd like you to moderately cut back on category_5, making sure that at least one item remains included.",
+      "reasons": [],
+      "max_old_sequence": 0.5411764705882353,
+      "max_old_bigram": 0.22727272727272727
+    },
+    {
+      "id": "q_a625b3f9fdb9",
+      "round": 1,
+      "ordinal": 2,
+      "text": "Reduce category_5 by a moderate amount, but do not let its representation fall below one item in my feed.",
+      "reasons": [],
+      "max_old_sequence": 0.44047619047619047,
+      "max_old_bigram": 0.08333333333333333
+    },
+    {
+      "id": "q_a625b3f9fdb9",
+      "round": 1,
+      "ordinal": 3,
+      "text": "Please retain one or more items from category_5 while giving the category a moderate decrease in my recommendations.",
+      "reasons": [],
+      "max_old_sequence": 0.5252525252525253,
+      "max_old_bigram": 0.14814814814814814
+    },
+    {
+      "id": "q_60bf4378a101",
+      "round": 1,
+      "ordinal": 1,
+      "text": "I'd prefer a moderate drop in category_17 content, with at least one item from it left in the feed.",
+      "reasons": [],
+      "max_old_sequence": 0.5507246376811594,
+      "max_old_bigram": 0.2
+    },
+    {
+      "id": "q_60bf4378a101",
+      "round": 1,
+      "ordinal": 2,
+      "text": "Please show moderately less from category_17, while ensuring one or more items from that category are still shown.",
+      "reasons": [],
+      "max_old_sequence": 0.5291005291005291,
+      "max_old_bigram": 0.14814814814814814
+    },
+    {
+      "id": "q_60bf4378a101",
+      "round": 1,
+      "ordinal": 3,
+      "text": "Bring category_17 down a moderate amount in my feed, but leave its last remaining item in place.",
+      "reasons": [],
+      "max_old_sequence": 0.4713375796178344,
+      "max_old_bigram": 0.07142857142857142
+    },
+    {
+      "id": "q_4faca4358715",
+      "round": 1,
+      "ordinal": 1,
+      "text": "Moderately reduce the frequency of category_23, and make sure at least one item from it still appears.",
+      "reasons": [],
+      "max_old_sequence": 0.6257668711656442,
+      "max_old_bigram": 0.22727272727272727
+    },
+    {
+      "id": "q_4faca4358715",
+      "round": 1,
+      "ordinal": 2,
+      "text": "I would like less category_23 by a moderate amount, as long as a minimum of one item remains.",
+      "reasons": [],
+      "max_old_sequence": 0.5503355704697986,
+      "max_old_bigram": 0.16666666666666666
+    },
+    {
+      "id": "q_4faca4358715",
+      "round": 1,
+      "ordinal": 3,
+      "text": "Please keep one or more category_23 recommendations in the feed while moderately cutting back on that category.",
+      "reasons": [],
+      "max_old_sequence": 0.5133689839572193,
+      "max_old_bigram": 0.13043478260869565
+    },
+    {
+      "id": "q_c24670e81fb1",
+      "round": 1,
+      "ordinal": 1,
+      "text": "I'd like category_9 reduced moderately, without removing every item from it; at least one should remain.",
+      "reasons": [],
+      "max_old_sequence": 0.49624060150375937,
+      "max_old_bigram": 0.17391304347826086
+    },
+    {
+      "id": "q_c24670e81fb1",
+      "round": 1,
+      "ordinal": 2,
+      "text": "Please make a moderate decrease in category_9 content but retain one or more such items in my feed.",
+      "reasons": [],
+      "max_old_sequence": 0.4691358024691358,
+      "max_old_bigram": 0.15
+    },
+    {
+      "id": "q_c24670e81fb1",
+      "round": 1,
+      "ordinal": 3,
+      "text": "Cut the amount of category_9 moderately, keeping at least one recommendation from that category for me to see.",
+      "reasons": [],
+      "max_old_sequence": 0.5621621621621622,
+      "max_old_bigram": 0.16666666666666666
+    },
+    {
+      "id": "q_79b1ca5143e7",
+      "round": 1,
+      "ordinal": 1,
+      "text": "Please lower category_1 moderately in my feed. At least one item from that category should still be included.",
+      "reasons": [],
+      "max_old_sequence": 0.5100671140939598,
+      "max_old_bigram": 0.17391304347826086
+    },
+    {
+      "id": "q_79b1ca5143e7",
+      "round": 1,
+      "ordinal": 2,
+      "text": "I'd prefer a moderate reduction in how much category_1 appears, while retaining a minimum of one such item.",
+      "reasons": [],
+      "max_old_sequence": 0.5747126436781609,
+      "max_old_bigram": 0.2
+    },
+    {
+      "id": "q_79b1ca5143e7",
+      "round": 1,
+      "ordinal": 3,
+      "text": "Let me see moderately less category_1, but keep one or more recommendations from it in the feed.",
+      "reasons": [],
+      "max_old_sequence": 0.6335403726708074,
+      "max_old_bigram": 0.21739130434782608
+    },
+    {
+      "id": "q_dcde8e00345b",
+      "round": 1,
+      "ordinal": 1,
+      "text": "Keep a minimum of one category_13 item in the feed, even as you reduce that category moderately.",
+      "reasons": [],
+      "max_old_sequence": 0.5972222222222222,
+      "max_old_bigram": 0.2857142857142857
+    },
+    {
+      "id": "q_dcde8e00345b",
+      "round": 1,
+      "ordinal": 2,
+      "text": "I'd like a moderate cut in category_13 content, with at least one of its recommendations remaining.",
+      "reasons": [],
+      "max_old_sequence": 0.5696969696969697,
+      "max_old_bigram": 0.1111111111111111
+    },
+    {
+      "id": "q_dcde8e00345b",
+      "round": 1,
+      "ordinal": 3,
+      "text": "Please dial down category_13 by a moderate amount and leave me one or more items belonging to it.",
+      "reasons": [],
+      "max_old_sequence": 0.5157232704402516,
+      "max_old_bigram": 0.10714285714285714
+    },
+    {
+      "id": "q_2927edb56d67",
+      "round": 1,
+      "ordinal": 1,
+      "text": "I'd like moderately fewer recommendations carrying category_2, though at least one of those items should stay included.",
+      "reasons": [],
+      "max_old_sequence": 0.5930232558139535,
+      "max_old_bigram": 0.08333333333333333
+    },
+    {
+      "id": "q_2927edb56d67",
+      "round": 1,
+      "ordinal": 2,
+      "text": "Please retain a minimum of one category_2 item as you reduce the category's presence by a moderate amount.",
+      "reasons": [],
+      "max_old_sequence": 0.5256410256410257,
+      "max_old_bigram": 0.15384615384615385
+    },
+    {
+      "id": "q_2927edb56d67",
+      "round": 1,
+      "ordinal": 3,
+      "text": "Make a moderate downward adjustment to category_2, ensuring the feed still has one or more items from it.",
+      "reasons": [],
+      "max_old_sequence": 0.5508982035928144,
+      "max_old_bigram": 0.21052631578947367
+    },
+    {
+      "id": "q_50ff5587f36b",
+      "round": 1,
+      "ordinal": 1,
+      "text": "Reduce the amount of category_30 moderately, but please make sure its last item is not removed from my feed.",
+      "reasons": [],
+      "max_old_sequence": 0.5,
+      "max_old_bigram": 0.14285714285714285
+    },
+    {
+      "id": "q_50ff5587f36b",
+      "round": 1,
+      "ordinal": 2,
+      "text": "I want a moderate cutback on category_30 while keeping at least one recommendation from that category.",
+      "reasons": [],
+      "max_old_sequence": 0.5868263473053892,
+      "max_old_bigram": 0.23809523809523808
+    },
+    {
+      "id": "q_50ff5587f36b",
+      "round": 1,
+      "ordinal": 3,
+      "text": "Please show moderately less category_30 and still leave one or more items from it among my recommendations.",
+      "reasons": [],
+      "max_old_sequence": 0.5,
+      "max_old_bigram": 0.2
+    },
+    {
+      "id": "q_afc44e54a4dc",
+      "round": 1,
+      "ordinal": 1,
+      "text": "A moderate decrease in category_28 would help, provided my feed retains at least one item from the category.",
+      "reasons": [],
+      "max_old_sequence": 0.5641025641025641,
+      "max_old_bigram": 0.16666666666666666
+    },
+    {
+      "id": "q_afc44e54a4dc",
+      "round": 1,
+      "ordinal": 2,
+      "text": "Please keep one or more category_28 items included while reducing how much of that content I see moderately.",
+      "reasons": [],
+      "max_old_sequence": 0.43523316062176165,
+      "max_old_bigram": 0.10714285714285714
+    },
+    {
+      "id": "q_afc44e54a4dc",
+      "round": 1,
+      "ordinal": 3,
+      "text": "I'd like category_28 dialed back by a moderate amount, but no lower than one item in my feed.",
+      "reasons": [],
+      "max_old_sequence": 0.4935064935064935,
+      "max_old_bigram": 0.07407407407407407
+    },
+    {
+      "id": "q_f38f8e045ddf",
+      "round": 1,
+      "ordinal": 1,
+      "text": "I'd like a moderate reduction in the presence of category_0; keep at least one item from it, please.",
+      "reasons": [],
+      "max_old_sequence": 0.6211180124223602,
+      "max_old_bigram": 0.2608695652173913
+    },
+    {
+      "id": "q_f38f8e045ddf",
+      "round": 1,
+      "ordinal": 2,
+      "text": "Show me less category_0 by a moderate amount, while leaving a minimum of one such item in place.",
+      "reasons": [],
+      "max_old_sequence": 0.6143790849673203,
+      "max_old_bigram": 0.20833333333333334
+    },
+    {
+      "id": "q_f38f8e045ddf",
+      "round": 1,
+      "ordinal": 3,
+      "text": "Please reduce category_0 moderately and preserve one or more recommendations carrying that category in the feed.",
+      "reasons": [],
+      "max_old_sequence": 0.5955056179775281,
+      "max_old_bigram": 0.125
+    },
+    {
+      "id": "q_505d17995e34",
+      "round": 1,
+      "ordinal": 1,
+      "text": "Bring down category_3 moderately in my recommendations, but don't take away the last item from that category.",
+      "reasons": [],
+      "max_old_sequence": 0.5128205128205128,
+      "max_old_bigram": 0.125
+    },
+    {
+      "id": "q_505d17995e34",
+      "round": 1,
+      "ordinal": 2,
+      "text": "I want moderately less category_3, with at least one item from it still making it into my feed.",
+      "reasons": [],
+      "max_old_sequence": 0.5925925925925926,
+      "max_old_bigram": 0.2727272727272727
+    },
+    {
+      "id": "q_505d17995e34",
+      "round": 1,
+      "ordinal": 3,
+      "text": "Please make a moderate cut in category_3 content, taking care to include one or more of its items.",
+      "reasons": [],
+      "max_old_sequence": 0.45,
+      "max_old_bigram": 0.15
+    },
+    {
+      "id": "q_979d195f2e49",
+      "round": 1,
+      "ordinal": 1,
+      "text": "Please moderately decrease how much category_29 I see and make sure at least one item from it remains.",
+      "reasons": [],
+      "max_old_sequence": 0.573170731707317,
+      "max_old_bigram": 0.22727272727272727
+    },
+    {
+      "id": "q_979d195f2e49",
+      "round": 1,
+      "ordinal": 2,
+      "text": "A moderate drop in category_29 recommendations would suit me if you retain one or more of those items.",
+      "reasons": [],
+      "max_old_sequence": 0.567741935483871,
+      "max_old_bigram": 0.125
+    },
+    {
+      "id": "q_979d195f2e49",
+      "round": 1,
+      "ordinal": 3,
+      "text": "Keep at least one item carrying category_29 in my feed while reducing its presence by a moderate amount.",
+      "reasons": [],
+      "max_old_sequence": 0.5730994152046783,
+      "max_old_bigram": 0.16666666666666666
+    },
+    {
+      "id": "q_c815e2d65553",
+      "round": 1,
+      "ordinal": 1,
+      "text": "I'd like a moderate decrease for category_12, with a minimum of one item from it kept in my feed.",
+      "reasons": [],
+      "max_old_sequence": 0.5766871165644172,
+      "max_old_bigram": 0.20833333333333334
+    },
+    {
+      "id": "q_c815e2d65553",
+      "round": 1,
+      "ordinal": 2,
+      "text": "Please give me moderately less category_12, but leave at least one recommendation from that category included.",
+      "reasons": [],
+      "max_old_sequence": 0.6040268456375839,
+      "max_old_bigram": 0.23809523809523808
+    },
+    {
+      "id": "q_c815e2d65553",
+      "round": 1,
+      "ordinal": 3,
+      "text": "Lower the overall amount of category_12 moderately while retaining one or more items associated with it for me.",
+      "reasons": [],
+      "max_old_sequence": 0.5113636363636364,
+      "max_old_bigram": 0.12
+    },
+    {
+      "id": "q_b4c4e97e0401",
+      "round": 1,
+      "ordinal": 1,
+      "text": "Reduce how often category_7 appears by a moderate amount, and keep at least one of its items in my feed.",
+      "reasons": [],
+      "max_old_sequence": 0.4939759036144578,
+      "max_old_bigram": 0.1111111111111111
+    },
+    {
+      "id": "q_b4c4e97e0401",
+      "round": 1,
+      "ordinal": 2,
+      "text": "I'd like category_7 moderately reduced, provided you still show one or more recommendations from that category.",
+      "reasons": [],
+      "max_old_sequence": 0.5359477124183006,
+      "max_old_bigram": 0.16666666666666666
+    },
+    {
+      "id": "q_b4c4e97e0401",
+      "round": 1,
+      "ordinal": 3,
+      "text": "Please make a moderate cutback on category_7 without letting the feed lose its last item from it.",
+      "reasons": [],
+      "max_old_sequence": 0.49696969696969695,
+      "max_old_bigram": 0.1
+    },
+    {
+      "id": "q_bb27e09c385f",
+      "round": 1,
+      "ordinal": 1,
+      "text": "I want moderately less category_26 in my recommendations, but at least one item from it should remain.",
+      "reasons": [],
+      "max_old_sequence": 0.5957446808510638,
+      "max_old_bigram": 0.2857142857142857
+    },
+    {
+      "id": "q_bb27e09c385f",
+      "round": 1,
+      "ordinal": 2,
+      "text": "Please decrease category_26 a moderate amount and retain a minimum of one recommendation bearing that category.",
+      "reasons": [],
+      "max_old_sequence": 0.675,
+      "max_old_bigram": 0.23809523809523808
+    },
+    {
+      "id": "q_bb27e09c385f",
+      "round": 1,
+      "ordinal": 3,
+      "text": "Let the feed contain less category_26 by a moderate amount, while keeping one or more items from it.",
+      "reasons": [],
+      "max_old_sequence": 0.5838509316770186,
+      "max_old_bigram": 0.24
+    },
+    {
+      "id": "q_8a0781ce23ac",
+      "round": 1,
+      "ordinal": 1,
+      "text": "Please retain at least one category_6 item, but reduce how much of that category I see moderately.",
+      "reasons": [],
+      "max_old_sequence": 0.5061728395061729,
+      "max_old_bigram": 0.14814814814814814
+    },
+    {
+      "id": "q_8a0781ce23ac",
+      "round": 1,
+      "ordinal": 2,
+      "text": "I'd like a moderate reduction in category_6 recommendations without dropping below one item from it in the feed.",
+      "reasons": [],
+      "max_old_sequence": 0.5935483870967742,
+      "max_old_bigram": 0.18181818181818182
+    },
+    {
+      "id": "q_8a0781ce23ac",
+      "round": 1,
+      "ordinal": 3,
+      "text": "Cut back moderately on category_6, making sure one or more items from that category are still included for me.",
+      "reasons": [],
+      "max_old_sequence": 0.5053763440860215,
+      "max_old_bigram": 0.14285714285714285
+    },
+    {
+      "id": "q_a7d1d8341e23",
+      "round": 1,
+      "ordinal": 1,
+      "text": "Please moderately increase category_8 only for items that themselves also carry category_2; leave every other item in my feed unchanged.",
+      "reasons": [],
+      "max_old_sequence": 0.48484848484848486,
+      "max_old_bigram": 0.14285714285714285
+    },
+    {
+      "id": "q_a7d1d8341e23",
+      "round": 1,
+      "ordinal": 2,
+      "text": "For an individual item bearing category_8, give that category a moderate boost only if the same item bears category_2. Keep all other items as they are.",
+      "reasons": [],
+      "max_old_sequence": 0.4585365853658537,
+      "max_old_bigram": 0.05128205128205128
+    },
+    {
+      "id": "q_a7d1d8341e23",
+      "round": 1,
+      "ordinal": 3,
+      "text": "I'd like moderately more category_8 only where category_8 and category_2 belong to the same recommendation. Don't change any recommendations outside that overlap.",
+      "reasons": [],
+      "max_old_sequence": 0.45188284518828453,
+      "max_old_bigram": 0.11764705882352941
+    },
+    {
+      "id": "q_d02d631b3451",
+      "round": 1,
+      "ordinal": 1,
+      "text": "When an item has both category_14 and category_24, moderately boost its category_14 presence; items without that exact combination should remain unchanged.",
+      "reasons": [],
+      "max_old_sequence": 0.4372093023255814,
+      "max_old_bigram": 0.12903225806451613
+    },
+    {
+      "id": "q_d02d631b3451",
+      "round": 1,
+      "ordinal": 2,
+      "text": "Give category_14 a moderate lift only on recommendations also marked category_24 on that very item, leaving all other recommendations alone.",
+      "reasons": [],
+      "max_old_sequence": 0.5402843601895735,
+      "max_old_bigram": 0.06451612903225806
+    },
+    {
+      "id": "q_d02d631b3451",
+      "round": 1,
+      "ordinal": 3,
+      "text": "I'd prefer category_14 moderately increased for an item only if that item also has category_24; everything else in the feed should stay as it is.",
+      "reasons": [],
+      "max_old_sequence": 0.45320197044334976,
+      "max_old_bigram": 0.07894736842105263
+    },
+    {
+      "id": "q_9a31203cdd81",
+      "round": 1,
+      "ordinal": 1,
+      "text": "Only a recommendation carrying category_26 itself should receive a moderate increase for its category_25 content. Leave all other recommendations unchanged.",
+      "reasons": [],
+      "max_old_sequence": 0.45643153526970953,
+      "max_old_bigram": 0.06060606060606061
+    },
+    {
+      "id": "q_9a31203cdd81",
+      "round": 1,
+      "ordinal": 2,
+      "text": "Please moderately favor category_25 on each item that also belongs to category_26, without adjusting any items outside that intersection.",
+      "reasons": [],
+      "max_old_sequence": 0.44660194174757284,
+      "max_old_bigram": 0.10344827586206896
+    },
+    {
+      "id": "q_9a31203cdd81",
+      "round": 1,
+      "ordinal": 3,
+      "text": "I want a moderate boost for category_25 when the same individual item also carries category_26. Keep every other item at its current treatment.",
+      "reasons": [],
+      "max_old_sequence": 0.5137614678899083,
+      "max_old_bigram": 0.07894736842105263
+    },
+    {
+      "id": "q_55815c3d7187",
+      "round": 1,
+      "ordinal": 1,
+      "text": "Apply a moderate increase to category_19 only on individual items also tagged category_9; don't change how any other items are treated.",
+      "reasons": [],
+      "max_old_sequence": 0.5052631578947369,
+      "max_old_bigram": 0.09090909090909091
+    },
+    {
+      "id": "q_55815c3d7187",
+      "round": 1,
+      "ordinal": 2,
+      "text": "If a particular recommendation bears both category_19 and category_9, moderately boost category_19 for that recommendation. Leave every other recommendation as it stands.",
+      "reasons": [],
+      "max_old_sequence": 0.5172413793103449,
+      "max_old_bigram": 0.09090909090909091
+    },
+    {
+      "id": "q_55815c3d7187",
+      "round": 1,
+      "ordinal": 3,
+      "text": "I'd like moderately more category_19 from items that themselves also carry category_9, while all items outside that overlap remain unchanged.",
+      "reasons": [],
+      "max_old_sequence": 0.5123152709359606,
+      "max_old_bigram": 0.08823529411764706
+    },
+    {
+      "id": "q_98524224cd51",
+      "round": 1,
+      "ordinal": 1,
+      "text": "For category_22, give a moderate increase only to items that also have category_29 on the same item; leave the rest untouched.",
+      "reasons": [],
+      "max_old_sequence": 0.4973544973544973,
+      "max_old_bigram": 0.06666666666666667
+    },
+    {
+      "id": "q_98524224cd51",
+      "round": 1,
+      "ordinal": 2,
+      "text": "Please boost category_22 moderately when an individual recommendation also belongs to category_29. Any recommendation lacking that same-item overlap should remain unchanged.",
+      "reasons": [],
+      "max_old_sequence": 0.4918032786885246,
+      "max_old_bigram": 0.12903225806451613
+    },
+    {
+      "id": "q_98524224cd51",
+      "round": 1,
+      "ordinal": 3,
+      "text": "I only want a moderate lift for category_22 on recommendations bearing both category_22 and category_29; keep every other recommendation exactly as it is.",
+      "reasons": [],
+      "max_old_sequence": 0.5248868778280543,
+      "max_old_bigram": 0.08823529411764706
+    },
+    {
+      "id": "q_5b2d81df92b2",
+      "round": 1,
+      "ordinal": 1,
+      "text": "Moderately increase category_27 for an item only when category_9 is also attached to that item. Make no change to any other items.",
+      "reasons": [],
+      "max_old_sequence": 0.5157232704402516,
+      "max_old_bigram": 0.10344827586206896
+    },
+    {
+      "id": "q_5b2d81df92b2",
+      "round": 1,
+      "ordinal": 2,
+      "text": "I'd like category_27 given a moderate boost on each recommendation that itself also bears category_9, leaving every recommendation outside that overlap alone.",
+      "reasons": [],
+      "max_old_sequence": 0.4711111111111111,
+      "max_old_bigram": 0.034482758620689655
+    },
+    {
+      "id": "q_5b2d81df92b2",
+      "round": 1,
+      "ordinal": 3,
+      "text": "Where both category_27 and category_9 occur on one item, moderately favor its category_27 content. All other items should retain their current treatment.",
+      "reasons": [],
+      "max_old_sequence": 0.410958904109589,
+      "max_old_bigram": 0.09090909090909091
+    },
+    {
+      "id": "q_7a63e331f3af",
+      "round": 1,
+      "ordinal": 1,
+      "text": "Please give category_11 a moderate lift exclusively on items that themselves also carry category_2. Leave all other items in my feed as they are.",
+      "reasons": [],
+      "max_old_sequence": 0.5,
+      "max_old_bigram": 0.08108108108108109
+    },
+    {
+      "id": "q_7a63e331f3af",
+      "round": 1,
+      "ordinal": 2,
+      "text": "An item should get a moderate boost for category_11 only if that same item also has category_2; don't adjust anything outside that overlap.",
+      "reasons": [],
+      "max_old_sequence": 0.5104166666666666,
+      "max_old_bigram": 0.18181818181818182
+    },
+    {
+      "id": "q_7a63e331f3af",
+      "round": 1,
+      "ordinal": 3,
+      "text": "I want moderately more category_11 from the items bearing both category_11 and category_2, with no change to recommendations that lack that combination.",
+      "reasons": [],
+      "max_old_sequence": 0.4426229508196721,
+      "max_old_bigram": 0.12121212121212122
+    },
+    {
+      "id": "q_a73a03abc964",
+      "round": 1,
+      "ordinal": 1,
+      "text": "If an individual item carries category_20 together with category_4, moderately increase its category_20 presence. Please keep all other items unchanged.",
+      "reasons": [],
+      "max_old_sequence": 0.4088888888888889,
+      "max_old_bigram": 0.07142857142857142
+    },
+    {
+      "id": "q_a73a03abc964",
+      "round": 1,
+      "ordinal": 2,
+      "text": "I'd like a moderate boost to category_20 only on recommendations also carrying category_4 themselves; every recommendation outside that intersection should stay as it is.",
+      "reasons": [],
+      "max_old_sequence": 0.4797047970479705,
+      "max_old_bigram": 0.08333333333333333
+    },
+    {
+      "id": "q_a73a03abc964",
+      "round": 1,
+      "ordinal": 3,
+      "text": "Give category_20 moderately more emphasis on an item only when that item also belongs to category_4. Don't alter any other items in my feed.",
+      "reasons": [],
+      "max_old_sequence": 0.5277777777777778,
+      "max_old_bigram": 0.15151515151515152
+    },
+    {
+      "id": "q_614cd281c5aa",
+      "round": 1,
+      "ordinal": 1,
+      "text": "Only when category_27 is on the very same item should its category_10 content receive a moderate lift. Leave all other items alone.",
+      "reasons": [],
+      "max_old_sequence": 0.45901639344262296,
+      "max_old_bigram": 0.05714285714285714
+    },
+    {
+      "id": "q_614cd281c5aa",
+      "round": 1,
+      "ordinal": 2,
+      "text": "Please moderately boost category_10 for recommendations bearing both category_10 and category_27; retain the existing treatment of every other recommendation.",
+      "reasons": [],
+      "max_old_sequence": 0.5545454545454546,
+      "max_old_bigram": 0.1
+    },
+    {
+      "id": "q_614cd281c5aa",
+      "round": 1,
+      "ordinal": 3,
+      "text": "I'd like category_10 moderately increased on an item if that item itself also carries category_27, with no adjustment to anything outside that overlap.",
+      "reasons": [],
+      "max_old_sequence": 0.46017699115044247,
+      "max_old_bigram": 0.07692307692307693
+    },
+    {
+      "id": "q_27ae524c4e38",
+      "round": 1,
+      "ordinal": 1,
+      "text": "For items that individually have both category_16 and category_25, moderately favor category_16. Keep items outside that intersection unchanged in my feed.",
+      "reasons": [],
+      "max_old_sequence": 0.40414507772020725,
+      "max_old_bigram": 0.16129032258064516
+    },
+    {
+      "id": "q_27ae524c4e38",
+      "round": 1,
+      "ordinal": 2,
+      "text": "Give a moderate increase to category_16 only on a recommendation that itself also has category_25; leave every other recommendation at its current treatment.",
+      "reasons": [],
+      "max_old_sequence": 0.5214007782101168,
+      "max_old_bigram": 0.06451612903225806
+    },
+    {
+      "id": "q_27ae524c4e38",
+      "round": 1,
+      "ordinal": 3,
+      "text": "I only want moderately more category_16 when category_25 also belongs to the same item. Please don't change any items outside that combination.",
+      "reasons": [],
+      "max_old_sequence": 0.43,
+      "max_old_bigram": 0.058823529411764705
+    },
+    {
+      "id": "q_f2ea0292a3dd",
+      "round": 1,
+      "ordinal": 1,
+      "text": "Please moderately increase category_18 on each item also bearing category_16 itself, while keeping all other recommendations as they currently are.",
+      "reasons": [],
+      "max_old_sequence": 0.44554455445544555,
+      "max_old_bigram": 0.043478260869565216
+    },
+    {
+      "id": "q_f2ea0292a3dd",
+      "round": 1,
+      "ordinal": 2,
+      "text": "A moderate lift for category_18 should apply only when the same individual item also carries category_16. Leave every item outside that overlap unchanged.",
+      "reasons": [],
+      "max_old_sequence": 0.5065502183406113,
+      "max_old_bigram": 0.08571428571428572
+    },
+    {
+      "id": "q_f2ea0292a3dd",
+      "round": 1,
+      "ordinal": 3,
+      "text": "I'd like category_18 boosted moderately for recommendations with both category_18 and category_16 on them, without altering any other recommendations in the feed.",
+      "reasons": [],
+      "max_old_sequence": 0.5350877192982456,
+      "max_old_bigram": 0.08823529411764706
+    },
+    {
+      "id": "q_7938973e0de5",
+      "round": 1,
+      "ordinal": 1,
+      "text": "Give category_15 moderately more weight only on individual recommendations also carrying category_9; the same recommendation must have both, and all others should remain unchanged.",
+      "reasons": [],
+      "max_old_sequence": 0.4928571428571429,
+      "max_old_bigram": 0.058823529411764705
+    },
+    {
+      "id": "q_7938973e0de5",
+      "round": 1,
+      "ordinal": 2,
+      "text": "I want a moderate increase for category_15 where an item itself also bears category_9. Keep every other item in the feed untouched.",
+      "reasons": [],
+      "max_old_sequence": 0.5,
+      "max_old_bigram": 0.08333333333333333
+    },
+    {
+      "id": "q_7938973e0de5",
+      "round": 1,
+      "ordinal": 3,
+      "text": "Please favor category_15 moderately only when that particular item also belongs to category_9; don't adjust recommendations outside that same-item overlap.",
+      "reasons": [],
+      "max_old_sequence": 0.4669603524229075,
+      "max_old_bigram": 0.20689655172413793
+    },
+    {
+      "id": "q_6c05d1f02c75",
+      "round": 1,
+      "ordinal": 1,
+      "text": "An item bearing category_4 should receive a moderate lift only if it also bears category_0. All other items should be left unchanged.",
+      "reasons": [],
+      "max_old_sequence": 0.5989304812834224,
+      "max_old_bigram": 0.1935483870967742
+    },
+    {
+      "id": "q_6c05d1f02c75",
+      "round": 1,
+      "ordinal": 2,
+      "text": "I'd like moderately more category_4 only from recommendations that carry category_0 on the same recommendation, with no changes to any other items.",
+      "reasons": [],
+      "max_old_sequence": 0.5267857142857143,
+      "max_old_bigram": 0.05555555555555555
+    },
+    {
+      "id": "q_6c05d1f02c75",
+      "round": 1,
+      "ordinal": 3,
+      "text": "Please moderately boost category_4 on the items carrying both category_4 and category_0, and preserve the current treatment of every item outside that intersection.",
+      "reasons": [],
+      "max_old_sequence": 0.47619047619047616,
+      "max_old_bigram": 0.11764705882352941
+    },
+    {
+      "id": "q_f881bf669f95",
+      "round": 1,
+      "ordinal": 1,
+      "text": "Where an individual recommendation has category_24 as well as category_9, give category_24 a moderate increase. Don't modify any other recommendations for me.",
+      "reasons": [],
+      "max_old_sequence": 0.4909090909090909,
+      "max_old_bigram": 0.058823529411764705
+    },
+    {
+      "id": "q_f881bf669f95",
+      "round": 1,
+      "ordinal": 2,
+      "text": "Please moderately favor category_24 only for an item that itself also carries category_9; leave items outside that combination as they are.",
+      "reasons": [],
+      "max_old_sequence": 0.53,
+      "max_old_bigram": 0.06451612903225806
+    },
+    {
+      "id": "q_f881bf669f95",
+      "round": 1,
+      "ordinal": 3,
+      "text": "I want category_24 moderately increased on recommendations whose own categories also include category_9, while every other recommendation remains unchanged.",
+      "reasons": [],
+      "max_old_sequence": 0.47470817120622566,
+      "max_old_bigram": 0.14285714285714285
+    },
+    {
+      "id": "q_57c352672634",
+      "round": 1,
+      "ordinal": 1,
+      "text": "I'd like a moderate boost for category_21 limited to items that also bear category_24 themselves. Keep the rest of the feed unchanged.",
+      "reasons": [],
+      "max_old_sequence": 0.5230769230769231,
+      "max_old_bigram": 0.11428571428571428
+    },
+    {
+      "id": "q_57c352672634",
+      "round": 1,
+      "ordinal": 2,
+      "text": "Only recommendations with category_21 and category_24 on the same item should receive a moderate increase for category_21. Leave all other recommendations alone.",
+      "reasons": [],
+      "max_old_sequence": 0.5213675213675214,
+      "max_old_bigram": 0.11428571428571428
+    },
+    {
+      "id": "q_57c352672634",
+      "round": 1,
+      "ordinal": 3,
+      "text": "Please increase category_21 moderately when a given item also carries category_24, making no change to items that lack that same-item overlap.",
+      "reasons": [],
+      "max_old_sequence": 0.43137254901960786,
+      "max_old_bigram": 0.08333333333333333
+    },
+    {
+      "id": "q_ed8f4321731b",
+      "round": 1,
+      "ordinal": 1,
+      "text": "Moderately favor category_5 only on a recommendation that also bears category_18 itself. Every recommendation outside that overlap should keep its current treatment.",
+      "reasons": [],
+      "max_old_sequence": 0.48120300751879697,
+      "max_old_bigram": 0.06060606060606061
+    },
+    {
+      "id": "q_ed8f4321731b",
+      "round": 1,
+      "ordinal": 2,
+      "text": "Please give category_5 a moderate boost for items individually carrying both category_5 and category_18; keep all other items untouched.",
+      "reasons": [],
+      "max_old_sequence": 0.5291005291005291,
+      "max_old_bigram": 0.10344827586206896
+    },
+    {
+      "id": "q_ed8f4321731b",
+      "round": 1,
+      "ordinal": 3,
+      "text": "I would like moderately more category_5 where category_18 belongs to the same item, with no adjustments to any items outside that intersection.",
+      "reasons": [],
+      "max_old_sequence": 0.42786069651741293,
+      "max_old_bigram": 0.12
+    },
+    {
+      "id": "q_e1a728379397",
+      "round": 1,
+      "ordinal": 1,
+      "text": "For any individual item also carrying category_28, moderately increase its category_17 content. Items without both categories on them should remain unchanged.",
+      "reasons": [],
+      "max_old_sequence": 0.39814814814814814,
+      "max_old_bigram": 0.03225806451612903
+    },
+    {
+      "id": "q_e1a728379397",
+      "round": 1,
+      "ordinal": 2,
+      "text": "I'd like category_17 moderately boosted only when the recommendation itself also bears category_28; don't alter how any other recommendations are treated.",
+      "reasons": [],
+      "max_old_sequence": 0.47257383966244726,
+      "max_old_bigram": 0.05555555555555555
+    },
+    {
+      "id": "q_e1a728379397",
+      "round": 1,
+      "ordinal": 3,
+      "text": "Please give a moderate lift to category_17 on items that each have both category_17 and category_28, leaving the rest of my feed alone.",
+      "reasons": [],
+      "max_old_sequence": 0.5056179775280899,
+      "max_old_bigram": 0.15151515151515152
+    },
+    {
+      "id": "q_b16034107b31",
+      "round": 1,
+      "ordinal": 1,
+      "text": "Boost category_23 moderately only if the very same item also carries category_0. Leave all recommendations outside that overlap unchanged for me.",
+      "reasons": [],
+      "max_old_sequence": 0.45248868778280543,
+      "max_old_bigram": 0.125
+    },
+    {
+      "id": "q_b16034107b31",
+      "round": 1,
+      "ordinal": 2,
+      "text": "An individual recommendation with both category_23 and category_0 should get a moderate increase for category_23; keep every other recommendation at its current treatment.",
+      "reasons": [],
+      "max_old_sequence": 0.4714828897338403,
+      "max_old_bigram": 0.1111111111111111
+    },
+    {
+      "id": "q_b16034107b31",
+      "round": 1,
+      "ordinal": 3,
+      "text": "I'd like moderately more category_23 only on items also belonging to category_0 themselves, without changing any items lacking that combination.",
+      "reasons": [],
+      "max_old_sequence": 0.44541484716157204,
+      "max_old_bigram": 0.0967741935483871
+    },
+    {
+      "id": "q_9605bd2052d3",
+      "round": 1,
+      "ordinal": 1,
+      "text": "Please moderately raise category_9 for recommendations that also have category_27 on the same recommendation. Don't change any other items in the feed.",
+      "reasons": [],
+      "max_old_sequence": 0.5550660792951542,
+      "max_old_bigram": 0.06060606060606061
+    },
+    {
+      "id": "q_9605bd2052d3",
+      "round": 1,
+      "ordinal": 2,
+      "text": "Give a moderate boost to category_9 only where the item itself bears category_27 too; all items outside that intersection should stay untouched.",
+      "reasons": [],
+      "max_old_sequence": 0.5177664974619289,
+      "max_old_bigram": 0.2413793103448276
+    },
+    {
+      "id": "q_9605bd2052d3",
+      "round": 1,
+      "ordinal": 3,
+      "text": "I want category_9 moderately favored on an item only when that particular item also carries category_27. Leave the remaining recommendations as they are.",
+      "reasons": [],
+      "max_old_sequence": 0.5764192139737991,
+      "max_old_bigram": 0.07894736842105263
+    },
+    {
+      "id": "q_f738bfc5929c",
+      "round": 1,
+      "ordinal": 1,
+      "text": "Only individual items bearing category_26 as well as category_1 should get a moderate lift for category_1. Keep every other item unchanged.",
+      "reasons": [],
+      "max_old_sequence": 0.411214953271028,
+      "max_old_bigram": 0.037037037037037035
+    },
+    {
+      "id": "q_f738bfc5929c",
+      "round": 1,
+      "ordinal": 2,
+      "text": "I'd prefer a moderate increase in category_1 for a recommendation that itself also has category_26, with no adjustment to recommendations outside that overlap.",
+      "reasons": [],
+      "max_old_sequence": 0.5153846153846153,
+      "max_old_bigram": 0.07407407407407407
+    },
+    {
+      "id": "q_f738bfc5929c",
+      "round": 1,
+      "ordinal": 3,
+      "text": "Please boost category_1 moderately when both category_1 and category_26 occur on the same item; do not change the treatment of any other items.",
+      "reasons": [],
+      "max_old_sequence": 0.43434343434343436,
+      "max_old_bigram": 0.08823529411764706
+    },
+    {
+      "id": "q_46c980bd57bf",
+      "round": 1,
+      "ordinal": 1,
+      "text": "Give category_13 a moderate increase for items that themselves also belong to category_18; every item outside that same-item intersection should remain unchanged.",
+      "reasons": [],
+      "max_old_sequence": 0.4634146341463415,
+      "max_old_bigram": 0.10714285714285714
+    },
+    {
+      "id": "q_46c980bd57bf",
+      "round": 1,
+      "ordinal": 2,
+      "text": "I only want category_13 moderately favored when the item carrying it also carries category_18. Leave all the other recommendations alone.",
+      "reasons": [],
+      "max_old_sequence": 0.48484848484848486,
+      "max_old_bigram": 0.038461538461538464
+    },
+    {
+      "id": "q_46c980bd57bf",
+      "round": 1,
+      "ordinal": 3,
+      "text": "Please moderately boost category_13 on each recommendation individually bearing both category_13 and category_18, retaining the current treatment for everything else in my feed.",
+      "reasons": [],
+      "max_old_sequence": 0.45267489711934156,
+      "max_old_bigram": 0.08823529411764706
+    },
+    {
+      "id": "q_bae5eb471886",
+      "round": 1,
+      "ordinal": 1,
+      "text": "I'd like moderately more category_2 only for an item that also bears category_29 itself; the other items should remain as they are.",
+      "reasons": [],
+      "max_old_sequence": 0.538860103626943,
+      "max_old_bigram": 0.06060606060606061
+    },
+    {
+      "id": "q_bae5eb471886",
+      "round": 1,
+      "ordinal": 2,
+      "text": "Please give category_2 a moderate lift on recommendations where that same recommendation also has category_29, without changing anything outside that overlap.",
+      "reasons": [],
+      "max_old_sequence": 0.5304347826086957,
+      "max_old_bigram": 0.08695652173913043
+    },
+    {
+      "id": "q_bae5eb471886",
+      "round": 1,
+      "ordinal": 3,
+      "text": "When category_2 and category_29 both belong to one item, moderately increase its category_2 presence. Leave all other recommendations unchanged.",
+      "reasons": [],
+      "max_old_sequence": 0.44036697247706424,
+      "max_old_bigram": 0.0967741935483871
+    },
+    {
+      "id": "q_b7c5e7df52c2",
+      "round": 1,
+      "ordinal": 1,
+      "text": "Please moderately favor category_30 on an item only if that item also carries category_21. Keep all items outside that intersection at their current treatment.",
+      "reasons": [],
+      "max_old_sequence": 0.47863247863247865,
+      "max_old_bigram": 0.10526315789473684
+    },
+    {
+      "id": "q_b7c5e7df52c2",
+      "round": 1,
+      "ordinal": 2,
+      "text": "A recommendation should receive a moderate increase for category_30 only when it itself also bears category_21; leave every other recommendation unchanged.",
+      "reasons": [],
+      "max_old_sequence": 0.5333333333333333,
+      "max_old_bigram": 0.0967741935483871
+    },
+    {
+      "id": "q_b7c5e7df52c2",
+      "round": 1,
+      "ordinal": 3,
+      "text": "I'd like a moderate lift for category_30 restricted to items bearing both category_30 and category_21 themselves, with the rest of my feed left alone.",
+      "reasons": [],
+      "max_old_sequence": 0.45643153526970953,
+      "max_old_bigram": 0.08333333333333333
+    },
+    {
+      "id": "q_42580b1aa779",
+      "round": 1,
+      "ordinal": 1,
+      "text": "For a recommendation that itself carries both category_28 and category_6, moderately boost category_28. Please leave every other recommendation as it currently is.",
+      "reasons": [],
+      "max_old_sequence": 0.5065502183406113,
+      "max_old_bigram": 0.09090909090909091
+    },
+    {
+      "id": "q_42580b1aa779",
+      "round": 1,
+      "ordinal": 2,
+      "text": "I want category_28 moderately increased only where category_6 also appears on that same item; don't change any items lacking that combination.",
+      "reasons": [],
+      "max_old_sequence": 0.4339622641509434,
+      "max_old_bigram": 0.07407407407407407
+    },
+    {
+      "id": "q_42580b1aa779",
+      "round": 1,
+      "ordinal": 3,
+      "text": "Please give category_28 moderately greater emphasis on items also bearing category_6 themselves, preserving the current treatment of all items outside that overlap.",
+      "reasons": [],
+      "max_old_sequence": 0.43171806167400884,
+      "max_old_bigram": 0.08333333333333333
+    },
+    {
+      "id": "q_92a107ca725b",
+      "round": 1,
+      "ordinal": 1,
+      "text": "Only when an item itself has category_7 too should its category_0 content get a moderate boost. All other items should remain untouched.",
+      "reasons": [],
+      "max_old_sequence": 0.4088397790055249,
+      "max_old_bigram": 0.058823529411764705
+    },
+    {
+      "id": "q_92a107ca725b",
+      "round": 1,
+      "ordinal": 2,
+      "text": "I'd like a moderate increase for category_0 on recommendations individually carrying both category_0 and category_7; please leave the remaining recommendations unchanged.",
+      "reasons": [],
+      "max_old_sequence": 0.5303030303030303,
+      "max_old_bigram": 0.11764705882352941
+    },
+    {
+      "id": "q_92a107ca725b",
+      "round": 1,
+      "ordinal": 3,
+      "text": "Moderately favor category_0 for each item that also bears category_7 on that very item, without adjusting any other recommendations in my feed.",
+      "reasons": [],
+      "max_old_sequence": 0.4368932038834951,
+      "max_old_bigram": 0.038461538461538464
+    }
+  ],
+  "selected_count": 100,
+  "missing_count": 0
+}

@@ -1,0 +1,60 @@
+{
+  "study_id": "AIREF-E2-20261014-v1",
+  "custody_attempt_version": 2,
+  "created_utc": "2026-10-14T21:33:17.0474944Z",
+  "status": "passed",
+  "reviewer": {
+    "kind": "separate AI reviewer",
+    "task_identity": "/root/ai_reference_reviewer",
+    "model_id": "gpt-6.1-sol",
+    "reasoning_effort": "xhigh",
+    "exact_serving_weights": "unavailable",
+    "metadata_source": "Inherited session metadata supplied by coordinator; no override."
+  },
+  "checks": {
+    "observed_utc": "2026-10-14T21:32:39.2851615Z",
+    "v1_abort_hash_matches": true,
+    "v1_opening_absent": true,
+    "v1_inference_still_question_only": true,
+    "unchanged_copy_mismatches": [],
+    "fresh_role_checks": [
+      {
+        "role": "tanishq",
+        "distinct_from_v1_task": true,
+        "fresh_context": true,
+        "new_receipt_after_attempt_freeze": true,
+        "new_receipt_after_independent_amendment_review": true
+      },
+      {
+        "role": "khushi",
+        "distinct_from_v1_task": true,
+        "fresh_context": true,
+        "new_receipt_after_attempt_freeze": true,
+        "new_receipt_after_independent_amendment_review": true
+      }
+    ],
+    "amendment_review_passed": true,
+    "amendment_precedes_opening": true,
+    "metadata_members": [
+      {
+        "relative_path": "protocol\\custody-attempt-2-freeze.json",
+        "sha256": "7ecdccfa08b2c81f86a35f6f05746a50dc1cb0276303db53fe00ca866a1f0558",
+        "full_freeze_member": true
+      },
+      {
+        "relative_path": "protocol\\amendment-01-reference-custody.md",
+        "sha256": "9599f6e11712e96a280d1e308efad62be0f70d62290de0f8b1a77e8dce94c798",
+        "full_freeze_member": true
+      },
+      {
+        "relative_path": "audit\\custody-attempt-2-independent-review.json",
+        "sha256": "54944f1c71edc99df1b9bdfb6c4d662ad98f8b87164df2f57847009b5e5b69d3",
+        "full_freeze_member": true
+      }
+    ],
+    "amendment_freeze_sha256": "7ecdccfa08b2c81f86a35f6f05746a50dc1cb0276303db53fe00ca866a1f0558",
+    "full_freeze_sha256": "063d4dbd1a92dbcd62152449f7f8461f6deb483f61a1d335fef7906451e28750",
+    "prediction_manifest_sha256": "9b936c5e4e6b386da4360b9f9ba70a61d8e3fdd1ff6c762b07e91ea680b35bd7"
+  },
+  "scope": "Post-prediction metadata/hash recheck. Prior label content and case text were not read for this provenance check. Receipt declarations/timestamps provide consistency evidence; no human authority, independent model training or host-forensic certainty is asserted. The computational audit is a separate report."
+}

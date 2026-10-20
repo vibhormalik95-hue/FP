@@ -1,0 +1,25 @@
+{
+  "verified_utc": "2026-10-14T18:29:33.682378+00:00",
+  "status": "passed",
+  "zip": "C:\\Users\\vs981\\Documents\\COMP9500\\2026-10-14\\delivered\\COMP9500-Execution-and-Audit-Evidence-2026-10-14.zip",
+  "bytes": 102743825,
+  "sha256": "1f16dcaf2b849b19028e1a3cbfb72f299ace01b31c94a473ff529a0e581ac1d9",
+  "payload_members_verified": 3266,
+  "zip_crc": "passed",
+  "member_sha256": "all matched",
+  "public_git_scope": "Full evidence ZIP and pseudonymous score/ranking files retained locally; aggregate reproducibility evidence pushed.",
+  "large_local_assets": {
+    "score_vectors": {
+      "files": 2595,
+      "bytes": 245516828
+    },
+    "ranking_rows_json_bytes": 47968297,
+    "complete_practice_directory_bytes": 301569909
+  },
+  "original_input_location": "C:\\Users\\vs981\\Downloads\\COMP9500-Research-Project-Recovered (2)\\cmp9500-recommender",
+  "model_weights_included": false,
+  "formal_unseen_bank_created": false,
+  "normal_github_per_file_limit_bytes": 104857600,
+  "zip_exceeds_that_limit": false,
+  "large_artifact_note": "ZIP is below the normal per-file limit but remains local under the established partial-public-review scope. Complete score vectors total 245,516,828 bytes. No intended public file requires LFS or an omitted oversized push."
+}

@@ -1,0 +1,21 @@
+{"backend": "rule_compound", "completed": 10, "errors_so_far": 0}
+{"backend": "rule_compound", "completed": 20, "errors_so_far": 0}
+{"backend": "rule_compound", "completed": 30, "errors_so_far": 0}
+{"backend": "rule_compound", "completed": 40, "errors_so_far": 0}
+{"backend": "rule_compound", "completed": 50, "errors_so_far": 0}
+{"backend": "rule_compound", "completed": 60, "errors_so_far": 0}
+{"backend": "rule_compound", "completed": 70, "errors_so_far": 0}
+{"backend": "rule_compound", "completed": 80, "errors_so_far": 0}
+{"backend": "rule_compound", "completed": 90, "errors_so_far": 0}
+{"backend": "rule_compound", "completed": 100, "errors_so_far": 0}
+{"backend": "ollama_compound", "completed": 10, "errors_so_far": 5}
+{"backend": "ollama_compound", "completed": 20, "errors_so_far": 7}
+{"backend": "ollama_compound", "completed": 30, "errors_so_far": 9}
+{"backend": "ollama_compound", "completed": 40, "errors_so_far": 10}
+{"backend": "ollama_compound", "completed": 50, "errors_so_far": 12}
+{"backend": "ollama_compound", "completed": 60, "errors_so_far": 15}
+{"backend": "ollama_compound", "completed": 70, "errors_so_far": 16}
+{"backend": "ollama_compound", "completed": 80, "errors_so_far": 19}
+{"backend": "ollama_compound", "completed": 90, "errors_so_far": 21}
+{"backend": "ollama_compound", "completed": 100, "errors_so_far": 23}
+{"started_utc": "2026-10-14T21:17:17.521582+00:00", "study_id": "AIREF-E2-20261014-v1", "status": "predictions_complete", "scope": "predictions only; no reference access or scoring", "prediction_count": 200, "raw_response_count": 100, "failures": 23, "completed_utc": "2026-10-14T21:20:45.752244+00:00", "files": 502}

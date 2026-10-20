@@ -1,0 +1,276 @@
+{
+  "started_utc": "2026-10-14T20:41:41.990677+00:00",
+  "computer": "AI_WORK",
+  "user": "vs981",
+  "platform": "Windows-11-10.0.26200-SP0",
+  "python_executable": "C:\\Python314\\python.exe",
+  "project_root": "C:\\Users\\vs981\\Documents\\Codex\\2026-10-13\\task\\FP",
+  "archive_root": "C:\\Users\\vs981\\Downloads\\COMP9500-Research-Project-Recovered (2)\\cmp9500-recommender",
+  "commands": [
+    {
+      "argv": [
+        "git",
+        "status",
+        "--short",
+        "--branch"
+      ],
+      "started_utc": "2026-10-14T20:41:42.248688+00:00",
+      "exit_code": 0,
+      "stdout": "## codex/oct13-safe-engineering...origin/codex/oct13-safe-engineering\n?? docs/ai-reference-e2-protocol-2026-10-14.md\n?? docs/ai-reference-e2-role-prompts-2026-10-14.json\n?? docs/ai-reference-e2-rubric-2026-10-14.md\n?? scripts/ai_e2_bank.py\n?? scripts/ai_e2_inference_worker.py\n?? scripts/ai_e2_protocol_freeze.py\n?? scripts/test_ai_e2_boundary.py\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "remote",
+        "-v"
+      ],
+      "started_utc": "2026-10-14T20:41:42.400461+00:00",
+      "exit_code": 0,
+      "stdout": "origin\thttps://github.com/vibhormalik95-hue/FP.git (fetch)\norigin\thttps://github.com/vibhormalik95-hue/FP.git (push)\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "rev-parse",
+        "HEAD"
+      ],
+      "started_utc": "2026-10-14T20:41:42.520185+00:00",
+      "exit_code": 0,
+      "stdout": "00bf622f688bac61bafa770cbbf4394c1ef7331d\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "branch",
+        "--show-current"
+      ],
+      "started_utc": "2026-10-14T20:41:42.640088+00:00",
+      "exit_code": 0,
+      "stdout": "codex/oct13-safe-engineering\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "git",
+        "ls-remote",
+        "origin",
+        "refs/heads/main",
+        "refs/heads/codex/oct13-safe-engineering"
+      ],
+      "started_utc": "2026-10-14T20:41:42.759981+00:00",
+      "exit_code": 0,
+      "stdout": "00bf622f688bac61bafa770cbbf4394c1ef7331d\trefs/heads/codex/oct13-safe-engineering\ne3070020271baaf64a3e5b1fd0fe6d91f280261b\trefs/heads/main\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "gh",
+        "api",
+        "user",
+        "--jq",
+        "{login: .login, id: .id, email: .email}"
+      ],
+      "started_utc": "2026-10-14T20:41:43.430342+00:00",
+      "exit_code": 0,
+      "stdout": "{\"email\":null,\"id\":327272429,\"login\":\"vibhormalik95-hue\"}\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "ollama",
+        "--version"
+      ],
+      "started_utc": "2026-10-14T20:41:44.185808+00:00",
+      "exit_code": 0,
+      "stdout": "ollama version is 0.34.0\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "ollama",
+        "list"
+      ],
+      "started_utc": "2026-10-14T20:41:44.348403+00:00",
+      "exit_code": 0,
+      "stdout": "NAME                         ID              SIZE      MODIFIED      \nllama3.1:8b                  46e0c10c039e    4.9 GB    3 hours ago      \ngemma4:31b                   6316f0629137    19 GB     5 months ago     \nllama3:latest                365c0bd3c000    4.7 GB    5 months ago     \nnomic-embed-text:latest      0a109f422b47    274 MB    7 months ago     \nqwen2.5-coder:7b-instruct    dae161e27b0e    4.7 GB    11 months ago    \n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "ollama",
+        "ps"
+      ],
+      "started_utc": "2026-10-14T20:41:44.513624+00:00",
+      "exit_code": 0,
+      "stdout": "NAME    ID    SIZE    PROCESSOR    CONTEXT    UNTIL \n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "powershell",
+        "-NoProfile",
+        "-Command",
+        "Get-Process *ollama* | Select-Object Id,ProcessName,Path | ConvertTo-Json"
+      ],
+      "started_utc": "2026-10-14T20:41:44.667860+00:00",
+      "exit_code": 0,
+      "stdout": "[\n    {\n        \"Id\":  83572,\n        \"ProcessName\":  \"ollama\",\n        \"Path\":  \"C:\\\\Users\\\\vs981\\\\AppData\\\\Local\\\\Programs\\\\Ollama\\\\ollama.exe\"\n    },\n    {\n        \"Id\":  81124,\n        \"ProcessName\":  \"ollama app\",\n        \"Path\":  \"C:\\\\Users\\\\vs981\\\\AppData\\\\Local\\\\Programs\\\\Ollama\\\\ollama app.exe\"\n    }\n]\n",
+      "stderr": ""
+    },
+    {
+      "argv": [
+        "C:\\Python314\\python.exe",
+        "C:\\Users\\vs981\\Documents\\Codex\\2026-10-13\\task\\FP\\scripts\\verify_frozen_e1.py",
+        "C:\\Users\\vs981\\Downloads\\COMP9500-Research-Project-Recovered (2)\\cmp9500-recommender"
+      ],
+      "started_utc": "2026-10-14T20:41:45.325944+00:00",
+      "exit_code": 0,
+      "stdout": "{\n  \"status\": \"passed\",\n  \"manifest_sha256\": \"80ff8138e6ad7abd3e8482bc59fcaa044dfe7f7ca507edabdd569d217635e595\",\n  \"expected\": 288,\n  \"matched\": 288,\n  \"missing\": 0,\n  \"mismatched\": 0,\n  \"scope\": \"E1 byte hashes only; no evidence parsing or experiment execution\"\n}\n",
+      "stderr": ""
+    }
+  ],
+  "api": {
+    "version": {
+      "url": "http://127.0.0.1:11434/api/version",
+      "http_status": 200,
+      "body": {
+        "version": "0.34.0"
+      },
+      "body_sha256": "cbbd2a2c13be65b0385e402793f5729e13a775708174064e16f549dbed468b54"
+    },
+    "tags": {
+      "url": "http://127.0.0.1:11434/api/tags",
+      "http_status": 200,
+      "body": {
+        "models": [
+          {
+            "name": "llama3.1:8b",
+            "model": "llama3.1:8b",
+            "modified_at": "2026-10-14T10:33:04.8300758-07:00",
+            "size": 4920753328,
+            "digest": "46e0c10c039e019119339687c3c1757cc81b9da49709a3b3924863ba87ca666e",
+            "details": {
+              "parent_model": "",
+              "format": "gguf",
+              "family": "llama",
+              "families": [
+                "llama"
+              ],
+              "parameter_size": "8.0B",
+              "quantization_level": "Q4_K_M",
+              "context_length": 131072,
+              "embedding_length": 4096
+            },
+            "capabilities": [
+              "completion",
+              "tools"
+            ]
+          },
+          {
+            "name": "gemma4:31b",
+            "model": "gemma4:31b",
+            "modified_at": "2026-04-29T15:22:27.5321207-07:00",
+            "size": 19868981791,
+            "digest": "6316f0629137b426c9d9b853ffc4c8209589f30ee39aebede6285096c0ff47e7",
+            "details": {
+              "parent_model": "",
+              "format": "gguf",
+              "family": "gemma4",
+              "families": [
+                "gemma4"
+              ],
+              "parameter_size": "31.3B",
+              "quantization_level": "Q4_K_M"
+            },
+            "capabilities": [
+              "completion",
+              "tools",
+              "thinking"
+            ]
+          },
+          {
+            "name": "llama3:latest",
+            "model": "llama3:latest",
+            "modified_at": "2026-04-25T03:10:04.7134113-07:00",
+            "size": 4661224676,
+            "digest": "365c0bd3c000a25d28ddbf732fe1c6add414de7275464c4e4d1c3b5fcb5d8ad1",
+            "details": {
+              "parent_model": "",
+              "format": "gguf",
+              "family": "llama",
+              "families": [
+                "llama"
+              ],
+              "parameter_size": "8.0B",
+              "quantization_level": "Q4_0",
+              "context_length": 8192,
+              "embedding_length": 4096
+            },
+            "capabilities": [
+              "completion"
+            ]
+          },
+          {
+            "name": "nomic-embed-text:latest",
+            "model": "nomic-embed-text:latest",
+            "modified_at": "2026-02-19T16:42:28.0054752-08:00",
+            "size": 274302450,
+            "digest": "0a109f422b47e3a30ba2b10eca18548e944e8a23073ee3f3e947efcf3c45e59f",
+            "details": {
+              "parent_model": "",
+              "format": "gguf",
+              "family": "nomic-bert",
+              "families": [
+                "nomic-bert"
+              ],
+              "parameter_size": "137M",
+              "quantization_level": "F16",
+              "context_length": 2048,
+              "embedding_length": 768
+            },
+            "capabilities": [
+              "embedding"
+            ]
+          },
+          {
+            "name": "qwen2.5-coder:7b-instruct",
+            "model": "qwen2.5-coder:7b-instruct",
+            "modified_at": "2025-11-16T18:58:37.8598131-08:00",
+            "size": 4683087561,
+            "digest": "dae161e27b0e90dd1856c8bb3209201fd6736d8eb66298e75ed87571486f4364",
+            "details": {
+              "parent_model": "",
+              "format": "gguf",
+              "family": "qwen2",
+              "families": [
+                "qwen2"
+              ],
+              "parameter_size": "7.6B",
+              "quantization_level": "Q4_K_M",
+              "context_length": 32768,
+              "embedding_length": 3584
+            },
+            "capabilities": [
+              "completion",
+              "tools",
+              "insert"
+            ]
+          }
+        ]
+      },
+      "body_sha256": "026bceb0161cf5df12d1c5860b91daff02f58f41c31c2413b131b1ac138c6dbc"
+    },
+    "ps": {
+      "url": "http://127.0.0.1:11434/api/ps",
+      "http_status": 200,
+      "body": {
+        "models": []
+      },
+      "body_sha256": "a6fe9ec6e26a38d99fca418b69826e0238b7a2bb319ff05eb153a6fcfd1fa28d"
+    }
+  },
+  "completed_utc": "2026-10-14T20:41:45.949820+00:00"
+}

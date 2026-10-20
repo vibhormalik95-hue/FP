@@ -1,0 +1,11 @@
+# Preserve byte hashes for the saved model-reference E2 evidence and sources.
+/docs/ai-reference-e2-evidence/** -text whitespace=cr-at-eol
+/docs/ai-reference-e2-* -text whitespace=cr-at-eol
+/presentation-bcit/ai-reference-main.tex -text whitespace=cr-at-eol
+/scripts/ai_e2_* -text whitespace=cr-at-eol
+/scripts/audit_ai_e2.py -text whitespace=cr-at-eol
+/scripts/publish_ai_e2_evidence.py -text whitespace=cr-at-eol
+/scripts/test_ai_e2_boundary.py -text whitespace=cr-at-eol
+*.pdf binary
+*.docx binary
+*.zip binary

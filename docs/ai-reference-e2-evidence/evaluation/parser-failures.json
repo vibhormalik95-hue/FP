@@ -1,0 +1,1960 @@
+[
+  {
+    "id": "q_27ae524c4e38",
+    "text": "For items that individually have both category_16 and category_25, moderately favor category_16. Keep items outside that intersection unchanged in my feed.",
+    "backend": "ollama_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": null,
+    "error": "ParserOperationalError: Compound condition is not explicitly grounded in the request",
+    "completed_utc": "2026-10-14T21:20:36.976899+00:00",
+    "wall_seconds": 1.7336866001132876,
+    "class": "conditional"
+  },
+  {
+    "id": "q_42580b1aa779",
+    "text": "For a recommendation that itself carries both category_28 and category_6, moderately boost category_28. Please leave every other recommendation as it currently is.",
+    "backend": "ollama_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": null,
+    "error": "ParserOperationalError: Compound condition is not explicitly grounded in the request",
+    "completed_utc": "2026-10-14T21:18:10.986274+00:00",
+    "wall_seconds": 1.7587104998528957,
+    "class": "conditional"
+  },
+  {
+    "id": "q_46c980bd57bf",
+    "text": "Give category_13 a moderate increase for items that themselves also belong to category_18; every item outside that same-item intersection should remain unchanged.",
+    "backend": "ollama_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": null,
+    "error": "ParserOperationalError: Compound condition is not explicitly grounded in the request",
+    "completed_utc": "2026-10-14T21:17:37.764088+00:00",
+    "wall_seconds": 1.7796866002026945,
+    "class": "conditional"
+  },
+  {
+    "id": "q_57c352672634",
+    "text": "I'd like a moderate boost for category_21 limited to items that also bear category_24 themselves. Keep the rest of the feed unchanged.",
+    "backend": "ollama_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": null,
+    "error": "ParserOperationalError: Compound condition is not explicitly grounded in the request",
+    "completed_utc": "2026-10-14T21:17:35.982538+00:00",
+    "wall_seconds": 1.7662820001132786,
+    "class": "conditional"
+  },
+  {
+    "id": "q_5b2d81df92b2",
+    "text": "Moderately increase category_27 for an item only when category_9 is also attached to that item. Make no change to any other items.",
+    "backend": "ollama_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": null,
+    "error": "ParserOperationalError: Compound condition is not explicitly grounded in the request",
+    "completed_utc": "2026-10-14T21:19:54.004249+00:00",
+    "wall_seconds": 1.8319847001694143,
+    "class": "conditional"
+  },
+  {
+    "id": "q_614cd281c5aa",
+    "text": "Only when category_27 is on the very same item should its category_10 content receive a moderate lift. Leave all other items alone.",
+    "backend": "ollama_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": null,
+    "error": "ParserOperationalError: Compound condition is not explicitly grounded in the request",
+    "completed_utc": "2026-10-14T21:18:30.090361+00:00",
+    "wall_seconds": 1.7650643000379205,
+    "class": "conditional"
+  },
+  {
+    "id": "q_6c05d1f02c75",
+    "text": "An item bearing category_4 should receive a moderate lift only if it also bears category_0. All other items should be left unchanged.",
+    "backend": "ollama_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": null,
+    "error": "ParserOperationalError: Compound condition is not explicitly grounded in the request",
+    "completed_utc": "2026-10-14T21:17:46.639156+00:00",
+    "wall_seconds": 1.7627536999061704,
+    "class": "conditional"
+  },
+  {
+    "id": "q_7938973e0de5",
+    "text": "Give category_15 moderately more weight only on individual recommendations also carrying category_9; the same recommendation must have both, and all others should remain unchanged.",
+    "backend": "ollama_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": null,
+    "error": "ParserOperationalError: Compound condition is not explicitly grounded in the request",
+    "completed_utc": "2026-10-14T21:19:32.966901+00:00",
+    "wall_seconds": 1.7517834999598563,
+    "class": "conditional"
+  },
+  {
+    "id": "q_7a63e331f3af",
+    "text": "Please give category_11 a moderate lift exclusively on items that themselves also carry category_2. Leave all other items in my feed as they are.",
+    "backend": "ollama_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": null,
+    "error": "ParserOperationalError: Compound condition is not explicitly grounded in the request",
+    "completed_utc": "2026-10-14T21:18:23.920533+00:00",
+    "wall_seconds": 1.7620085999369621,
+    "class": "conditional"
+  },
+  {
+    "id": "q_92a107ca725b",
+    "text": "Only when an item itself has category_7 too should its category_0 content get a moderate boost. All other items should remain untouched.",
+    "backend": "ollama_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": null,
+    "error": "ParserOperationalError: Compound condition is not explicitly grounded in the request",
+    "completed_utc": "2026-10-14T21:18:36.875304+00:00",
+    "wall_seconds": 1.7892929001245648,
+    "class": "conditional"
+  },
+  {
+    "id": "q_9605bd2052d3",
+    "text": "Please moderately raise category_9 for recommendations that also have category_27 on the same recommendation. Don't change any other items in the feed.",
+    "backend": "ollama_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": null,
+    "error": "ParserOperationalError: Compound condition is not explicitly grounded in the request",
+    "completed_utc": "2026-10-14T21:17:48.384315+00:00",
+    "wall_seconds": 1.7429804999846965,
+    "class": "conditional"
+  },
+  {
+    "id": "q_98524224cd51",
+    "text": "For category_22, give a moderate increase only to items that also have category_29 on the same item; leave the rest untouched.",
+    "backend": "ollama_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": null,
+    "error": "ParserOperationalError: Compound condition is not explicitly grounded in the request",
+    "completed_utc": "2026-10-14T21:18:55.811217+00:00",
+    "wall_seconds": 1.7908916999585927,
+    "class": "conditional"
+  },
+  {
+    "id": "q_9a31203cdd81",
+    "text": "Only a recommendation carrying category_26 itself should receive a moderate increase for its category_25 content. Leave all other recommendations unchanged.",
+    "backend": "ollama_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": null,
+    "error": "ParserOperationalError: Compound condition is not explicitly grounded in the request",
+    "completed_utc": "2026-10-14T21:19:04.613302+00:00",
+    "wall_seconds": 1.7631240000482649,
+    "class": "conditional"
+  },
+  {
+    "id": "q_a73a03abc964",
+    "text": "If an individual item carries category_20 together with category_4, moderately increase its category_20 presence. Please keep all other items unchanged.",
+    "backend": "ollama_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": null,
+    "error": "ParserOperationalError: Compound condition is not explicitly grounded in the request",
+    "completed_utc": "2026-10-14T21:18:02.135973+00:00",
+    "wall_seconds": 1.769302299944684,
+    "class": "conditional"
+  },
+  {
+    "id": "q_a7d1d8341e23",
+    "text": "Please moderately increase category_8 only for items that themselves also carry category_2; leave every other item in my feed unchanged.",
+    "backend": "ollama_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": null,
+    "error": "ParserOperationalError: Compound condition is not explicitly grounded in the request",
+    "completed_utc": "2026-10-14T21:20:20.882847+00:00",
+    "wall_seconds": 1.7596315999981016,
+    "class": "conditional"
+  },
+  {
+    "id": "q_b16034107b31",
+    "text": "Boost category_23 moderately only if the very same item also carries category_0. Leave all recommendations outside that overlap unchanged for me.",
+    "backend": "ollama_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": null,
+    "error": "ParserOperationalError: Compound condition is not explicitly grounded in the request",
+    "completed_utc": "2026-10-14T21:20:29.227663+00:00",
+    "wall_seconds": 1.7284079000819474,
+    "class": "conditional"
+  },
+  {
+    "id": "q_bae5eb471886",
+    "text": "I'd like moderately more category_2 only for an item that also bears category_29 itself; the other items should remain as they are.",
+    "backend": "ollama_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": null,
+    "error": "ParserOperationalError: Compound condition is not explicitly grounded in the request",
+    "completed_utc": "2026-10-14T21:20:03.469066+00:00",
+    "wall_seconds": 1.769393199821934,
+    "class": "conditional"
+  },
+  {
+    "id": "q_bde4b8f06ad8",
+    "text": "I'd like you to cut the presence of category_12 dramatically in the recommendations you show me.",
+    "backend": "ollama_compound",
+    "command": {
+      "operation": "set",
+      "directives": [
+        {
+          "operation": "reduce",
+          "category": "category_12",
+          "strength": "strong",
+          "floor": 1,
+          "condition_category": null
+        }
+      ]
+    },
+    "raw_result": {
+      "operation": "set",
+      "directives": [
+        {
+          "operation": "reduce",
+          "category": "category_12",
+          "strength": "strong",
+          "floor": 1,
+          "condition_category": null
+        }
+      ],
+      "source": "ollama_compound:llama3.1:8b:46e0c10c039e019119339687c3c1757cc81b9da49709a3b3924863ba87ca666e"
+    },
+    "error": null,
+    "completed_utc": "2026-10-14T21:19:57.337705+00:00",
+    "wall_seconds": 1.6337252999655902,
+    "class": "graded"
+  },
+  {
+    "id": "q_d02d631b3451",
+    "text": "When an item has both category_14 and category_24, moderately boost its category_14 presence; items without that exact combination should remain unchanged.",
+    "backend": "ollama_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": null,
+    "error": "ParserOperationalError: Compound condition is not explicitly grounded in the request",
+    "completed_utc": "2026-10-14T21:19:14.661565+00:00",
+    "wall_seconds": 1.7639604997821152,
+    "class": "conditional"
+  },
+  {
+    "id": "q_e1a728379397",
+    "text": "For any individual item also carrying category_28, moderately increase its category_17 content. Items without both categories on them should remain unchanged.",
+    "backend": "ollama_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": null,
+    "error": "ParserOperationalError: Compound condition is not explicitly grounded in the request",
+    "completed_utc": "2026-10-14T21:17:34.213665+00:00",
+    "wall_seconds": 1.7599839000031352,
+    "class": "conditional"
+  },
+  {
+    "id": "q_ed8f4321731b",
+    "text": "Moderately favor category_5 only on a recommendation that also bears category_18 itself. Every recommendation outside that overlap should keep its current treatment.",
+    "backend": "ollama_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": null,
+    "error": "ParserOperationalError: Compound condition is not explicitly grounded in the request",
+    "completed_utc": "2026-10-14T21:19:20.875572+00:00",
+    "wall_seconds": 1.7549762001726776,
+    "class": "conditional"
+  },
+  {
+    "id": "q_f2ea0292a3dd",
+    "text": "Please moderately increase category_18 on each item also bearing category_16 itself, while keeping all other recommendations as they currently are.",
+    "backend": "ollama_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": null,
+    "error": "ParserOperationalError: Compound condition is not explicitly grounded in the request",
+    "completed_utc": "2026-10-14T21:20:05.248134+00:00",
+    "wall_seconds": 1.7760840998962522,
+    "class": "conditional"
+  },
+  {
+    "id": "q_f738bfc5929c",
+    "text": "Only individual items bearing category_26 as well as category_1 should get a moderate lift for category_1. Keep every other item unchanged.",
+    "backend": "ollama_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": null,
+    "error": "ParserOperationalError: Compound condition is not explicitly grounded in the request",
+    "completed_utc": "2026-10-14T21:19:19.116784+00:00",
+    "wall_seconds": 1.7701361998915672,
+    "class": "conditional"
+  },
+  {
+    "id": "q_f881bf669f95",
+    "text": "Where an individual recommendation has category_24 as well as category_9, give category_24 a moderate increase. Don't modify any other recommendations for me.",
+    "backend": "ollama_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": null,
+    "error": "ParserOperationalError: Compound condition is not explicitly grounded in the request",
+    "completed_utc": "2026-10-14T21:20:11.397268+00:00",
+    "wall_seconds": 1.7837414001114666,
+    "class": "conditional"
+  },
+  {
+    "id": "q_03efb7901048",
+    "text": "A moderate cut to category_10 would suit me, as long as at least one item stays in my feed.",
+    "backend": "rule_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": {
+      "operation": "clarify",
+      "directives": [],
+      "source": "rule_compound"
+    },
+    "error": null,
+    "completed_utc": "2026-10-14T21:17:17.715221+00:00",
+    "wall_seconds": 0.0024600999895483255,
+    "class": "floor"
+  },
+  {
+    "id": "q_08d3fb4c1608",
+    "text": "I want a substantial decrease in category_19 recommendations. Please make the amount in my feed much smaller.",
+    "backend": "rule_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": {
+      "operation": "clarify",
+      "directives": [],
+      "source": "rule_compound"
+    },
+    "error": null,
+    "completed_utc": "2026-10-14T21:17:17.585643+00:00",
+    "wall_seconds": 0.0023482998367398977,
+    "class": "graded"
+  },
+  {
+    "id": "q_0d0b5a5a41a6",
+    "text": "A little more category_2 in my feed would be welcome; please make just a slight increase.",
+    "backend": "rule_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": {
+      "operation": "clarify",
+      "directives": [],
+      "source": "rule_compound"
+    },
+    "error": null,
+    "completed_utc": "2026-10-14T21:17:17.603334+00:00",
+    "wall_seconds": 0.0021790999453514814,
+    "class": "graded"
+  },
+  {
+    "id": "q_17aa284bfbd3",
+    "text": "I want moderately more recommendations from category_15. As an independent preference, please reduce recommendations from category_18 by a moderate amount.",
+    "backend": "rule_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": {
+      "operation": "clarify",
+      "directives": [],
+      "source": "rule_compound"
+    },
+    "error": null,
+    "completed_utc": "2026-10-14T21:17:17.786420+00:00",
+    "wall_seconds": 0.0023114001378417015,
+    "class": "compound"
+  },
+  {
+    "id": "q_18e516bd49cb",
+    "text": "For category_6, I'd like a moderate increase; for category_9, I'd like a moderate decrease, with the two preferences applied independently.",
+    "backend": "rule_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": {
+      "operation": "clarify",
+      "directives": [],
+      "source": "rule_compound"
+    },
+    "error": null,
+    "completed_utc": "2026-10-14T21:17:17.612816+00:00",
+    "wall_seconds": 0.00220920005813241,
+    "class": "compound"
+  },
+  {
+    "id": "q_1eefe7b28579",
+    "text": "Everything carrying category_6 should be excluded from my feed; please don't show any of those items.",
+    "backend": "rule_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": {
+      "operation": "clarify",
+      "directives": [],
+      "source": "rule_compound"
+    },
+    "error": null,
+    "completed_utc": "2026-10-14T21:17:17.630265+00:00",
+    "wall_seconds": 0.0023825999815016985,
+    "class": "graded"
+  },
+  {
+    "id": "q_1fde2ca1245d",
+    "text": "Moderately reduce how much category_18 I see, but retain at least one item belonging to that category.",
+    "backend": "rule_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": {
+      "operation": "clarify",
+      "directives": [],
+      "source": "rule_compound"
+    },
+    "error": null,
+    "completed_utc": "2026-10-14T21:17:17.744152+00:00",
+    "wall_seconds": 0.0020800000056624413,
+    "class": "floor"
+  },
+  {
+    "id": "q_20d7615f7dbf",
+    "text": "Keep at least one item from category_16 in my recommendations while reducing that category by a moderate amount.",
+    "backend": "rule_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": {
+      "operation": "clarify",
+      "directives": [],
+      "source": "rule_compound"
+    },
+    "error": null,
+    "completed_utc": "2026-10-14T21:17:17.753102+00:00",
+    "wall_seconds": 0.002278300002217293,
+    "class": "floor"
+  },
+  {
+    "id": "q_272de8fe345c",
+    "text": "I'd like you to increase category_26 moderately. Independently of that request, please decrease category_27 moderately in my feed.",
+    "backend": "rule_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": {
+      "operation": "clarify",
+      "directives": [],
+      "source": "rule_compound"
+    },
+    "error": null,
+    "completed_utc": "2026-10-14T21:17:17.878435+00:00",
+    "wall_seconds": 0.002804099814966321,
+    "class": "compound"
+  },
+  {
+    "id": "q_2794cce69539",
+    "text": "Make a moderate upward adjustment to category_10 content, alongside a separate moderate downward adjustment to category_4 content in my feed.",
+    "backend": "rule_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": {
+      "operation": "clarify",
+      "directives": [],
+      "source": "rule_compound"
+    },
+    "error": null,
+    "completed_utc": "2026-10-14T21:17:17.799215+00:00",
+    "wall_seconds": 0.0024297998752444983,
+    "class": "compound"
+  },
+  {
+    "id": "q_27ae524c4e38",
+    "text": "For items that individually have both category_16 and category_25, moderately favor category_16. Keep items outside that intersection unchanged in my feed.",
+    "backend": "rule_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": {
+      "operation": "clarify",
+      "directives": [],
+      "source": "rule_compound"
+    },
+    "error": null,
+    "completed_utc": "2026-10-14T21:17:17.949667+00:00",
+    "wall_seconds": 0.0021611000411212444,
+    "class": "conditional"
+  },
+  {
+    "id": "q_27bb4fa475fe",
+    "text": "A moderate increase in content from category_12 would be welcome; please also make an independent moderate reduction in category_7.",
+    "backend": "rule_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": {
+      "operation": "clarify",
+      "directives": [],
+      "source": "rule_compound"
+    },
+    "error": null,
+    "completed_utc": "2026-10-14T21:17:17.643649+00:00",
+    "wall_seconds": 0.0025579999200999737,
+    "class": "compound"
+  },
+  {
+    "id": "q_2927edb56d67",
+    "text": "I'd like moderately fewer recommendations carrying category_2, though at least one of those items should stay included.",
+    "backend": "rule_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": {
+      "operation": "clarify",
+      "directives": [],
+      "source": "rule_compound"
+    },
+    "error": null,
+    "completed_utc": "2026-10-14T21:17:17.895240+00:00",
+    "wall_seconds": 0.002230799989774823,
+    "class": "floor"
+  },
+  {
+    "id": "q_34377c30ad4a",
+    "text": "Show me slightly more content from category_30; only a small increase would suit my preferences.",
+    "backend": "rule_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": {
+      "operation": "clarify",
+      "directives": [],
+      "source": "rule_compound"
+    },
+    "error": null,
+    "completed_utc": "2026-10-14T21:17:17.972029+00:00",
+    "wall_seconds": 0.002668699948117137,
+    "class": "graded"
+  },
+  {
+    "id": "q_34cef4c95963",
+    "text": "Sharply lower how much category_27 you recommend to me; I would prefer a much smaller amount.",
+    "backend": "rule_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": {
+      "operation": "clarify",
+      "directives": [],
+      "source": "rule_compound"
+    },
+    "error": null,
+    "completed_utc": "2026-10-14T21:17:17.782350+00:00",
+    "wall_seconds": 0.0023709998931735754,
+    "class": "graded"
+  },
+  {
+    "id": "q_3585a501d1ba",
+    "text": "Give me a little more category_7 content in the feed, please, with just a slight increase.",
+    "backend": "rule_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": {
+      "operation": "clarify",
+      "directives": [],
+      "source": "rule_compound"
+    },
+    "error": null,
+    "completed_utc": "2026-10-14T21:17:17.833383+00:00",
+    "wall_seconds": 0.0022305999882519245,
+    "class": "graded"
+  },
+  {
+    "id": "q_39cdfb589e99",
+    "text": "Give category_15 a moderate reduction in my feed, with a minimum of one item from it still included.",
+    "backend": "rule_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": {
+      "operation": "clarify",
+      "directives": [],
+      "source": "rule_compound"
+    },
+    "error": null,
+    "completed_utc": "2026-10-14T21:17:17.638743+00:00",
+    "wall_seconds": 0.002365000080317259,
+    "class": "floor"
+  },
+  {
+    "id": "q_40d86402753d",
+    "text": "Please let category_4 appear moderately less often, without taking away the last item from that category.",
+    "backend": "rule_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": {
+      "operation": "clarify",
+      "directives": [],
+      "source": "rule_compound"
+    },
+    "error": null,
+    "completed_utc": "2026-10-14T21:17:17.961525+00:00",
+    "wall_seconds": 0.002291700104251504,
+    "class": "floor"
+  },
+  {
+    "id": "q_42580b1aa779",
+    "text": "For a recommendation that itself carries both category_28 and category_6, moderately boost category_28. Please leave every other recommendation as it currently is.",
+    "backend": "rule_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": {
+      "operation": "clarify",
+      "directives": [],
+      "source": "rule_compound"
+    },
+    "error": null,
+    "completed_utc": "2026-10-14T21:17:17.617123+00:00",
+    "wall_seconds": 0.0022915999870747328,
+    "class": "conditional"
+  },
+  {
+    "id": "q_448d5fce29de",
+    "text": "Don't include anything associated with category_26 in my recommendations; I want that content excluded entirely.",
+    "backend": "rule_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": {
+      "operation": "clarify",
+      "directives": [],
+      "source": "rule_compound"
+    },
+    "error": null,
+    "completed_utc": "2026-10-14T21:17:17.913315+00:00",
+    "wall_seconds": 0.0028832999523729086,
+    "class": "graded"
+  },
+  {
+    "id": "q_45c4b89214e1",
+    "text": "Give category_28 a moderate lift in my feed; make an independent moderate reduction for category_30 at the same time.",
+    "backend": "rule_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": {
+      "operation": "clarify",
+      "directives": [],
+      "source": "rule_compound"
+    },
+    "error": null,
+    "completed_utc": "2026-10-14T21:17:17.608395+00:00",
+    "wall_seconds": 0.0028644998092204332,
+    "class": "compound"
+  },
+  {
+    "id": "q_46c980bd57bf",
+    "text": "Give category_13 a moderate increase for items that themselves also belong to category_18; every item outside that same-item intersection should remain unchanged.",
+    "backend": "rule_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": {
+      "operation": "clarify",
+      "directives": [],
+      "source": "rule_compound"
+    },
+    "error": null,
+    "completed_utc": "2026-10-14T21:17:17.544132+00:00",
+    "wall_seconds": 0.002406700048595667,
+    "class": "conditional"
+  },
+  {
+    "id": "q_4faca4358715",
+    "text": "Moderately reduce the frequency of category_23, and make sure at least one item from it still appears.",
+    "backend": "rule_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": {
+      "operation": "clarify",
+      "directives": [],
+      "source": "rule_compound"
+    },
+    "error": null,
+    "completed_utc": "2026-10-14T21:17:17.899168+00:00",
+    "wall_seconds": 0.002209099940955639,
+    "class": "floor"
+  },
+  {
+    "id": "q_505d17995e34",
+    "text": "Bring down category_3 moderately in my recommendations, but don't take away the last item from that category.",
+    "backend": "rule_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": {
+      "operation": "clarify",
+      "directives": [],
+      "source": "rule_compound"
+    },
+    "error": null,
+    "completed_utc": "2026-10-14T21:17:17.810521+00:00",
+    "wall_seconds": 0.0019706999883055687,
+    "class": "floor"
+  },
+  {
+    "id": "q_50ff5587f36b",
+    "text": "Reduce the amount of category_30 moderately, but please make sure its last item is not removed from my feed.",
+    "backend": "rule_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": {
+      "operation": "clarify",
+      "directives": [],
+      "source": "rule_compound"
+    },
+    "error": null,
+    "completed_utc": "2026-10-14T21:17:17.927894+00:00",
+    "wall_seconds": 0.003075700020417571,
+    "class": "floor"
+  },
+  {
+    "id": "q_55815c3d7187",
+    "text": "Apply a moderate increase to category_19 only on individual items also tagged category_9; don't change how any other items are treated.",
+    "backend": "rule_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": {
+      "operation": "clarify",
+      "directives": [],
+      "source": "rule_compound"
+    },
+    "error": null,
+    "completed_utc": "2026-10-14T21:17:17.829051+00:00",
+    "wall_seconds": 0.002139299875125289,
+    "class": "conditional"
+  },
+  {
+    "id": "q_57c352672634",
+    "text": "I'd like a moderate boost for category_21 limited to items that also bear category_24 themselves. Keep the rest of the feed unchanged.",
+    "backend": "rule_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": {
+      "operation": "clarify",
+      "directives": [],
+      "source": "rule_compound"
+    },
+    "error": null,
+    "completed_utc": "2026-10-14T21:17:17.539089+00:00",
+    "wall_seconds": 0.0021186000667512417,
+    "class": "conditional"
+  },
+  {
+    "id": "q_5b2d81df92b2",
+    "text": "Moderately increase category_27 for an item only when category_9 is also attached to that item. Make no change to any other items.",
+    "backend": "rule_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": {
+      "operation": "clarify",
+      "directives": [],
+      "source": "rule_compound"
+    },
+    "error": null,
+    "completed_utc": "2026-10-14T21:17:17.848058+00:00",
+    "wall_seconds": 0.00223280000500381,
+    "class": "conditional"
+  },
+  {
+    "id": "q_5f5be5b17b24",
+    "text": "A bit more category_14 would be nice in my feed; please nudge its presence up slightly.",
+    "backend": "rule_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": {
+      "operation": "clarify",
+      "directives": [],
+      "source": "rule_compound"
+    },
+    "error": null,
+    "completed_utc": "2026-10-14T21:17:17.530218+00:00",
+    "wall_seconds": 0.004946300061419606,
+    "class": "graded"
+  },
+  {
+    "id": "q_60bf4378a101",
+    "text": "I'd prefer a moderate drop in category_17 content, with at least one item from it left in the feed.",
+    "backend": "rule_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": {
+      "operation": "clarify",
+      "directives": [],
+      "source": "rule_compound"
+    },
+    "error": null,
+    "completed_utc": "2026-10-14T21:17:17.625796+00:00",
+    "wall_seconds": 0.0022322998847812414,
+    "class": "floor"
+  },
+  {
+    "id": "q_614cd281c5aa",
+    "text": "Only when category_27 is on the very same item should its category_10 content receive a moderate lift. Leave all other items alone.",
+    "backend": "rule_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": {
+      "operation": "clarify",
+      "directives": [],
+      "source": "rule_compound"
+    },
+    "error": null,
+    "completed_utc": "2026-10-14T21:17:17.660644+00:00",
+    "wall_seconds": 0.002425700193271041,
+    "class": "conditional"
+  },
+  {
+    "id": "q_6581039152cc",
+    "text": "I want much less category_17 in my feed, so please make a strong reduction in that content.",
+    "backend": "rule_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": {
+      "operation": "clarify",
+      "directives": [],
+      "source": "rule_compound"
+    },
+    "error": null,
+    "completed_utc": "2026-10-14T21:17:17.669668+00:00",
+    "wall_seconds": 0.002405300037935376,
+    "class": "graded"
+  },
+  {
+    "id": "q_6925478c6a53",
+    "text": "Moderately favor category_11 when adjusting my feed, and independently make a moderate cut to the amount of category_22.",
+    "backend": "rule_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": {
+      "operation": "clarify",
+      "directives": [],
+      "source": "rule_compound"
+    },
+    "error": null,
+    "completed_utc": "2026-10-14T21:17:17.769154+00:00",
+    "wall_seconds": 0.0022127998527139425,
+    "class": "compound"
+  },
+  {
+    "id": "q_69420dbe5d79",
+    "text": "Please reduce category_11 moderately in my feed, but make sure at least one item from it remains.",
+    "backend": "rule_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": {
+      "operation": "clarify",
+      "directives": [],
+      "source": "rule_compound"
+    },
+    "error": null,
+    "completed_utc": "2026-10-14T21:17:17.891164+00:00",
+    "wall_seconds": 0.0019039001781493425,
+    "class": "floor"
+  },
+  {
+    "id": "q_6bf93bf04386",
+    "text": "I'd enjoy seeing a bit more category_3 in my recommendations, with a small increase in its presence.",
+    "backend": "rule_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": {
+      "operation": "clarify",
+      "directives": [],
+      "source": "rule_compound"
+    },
+    "error": null,
+    "completed_utc": "2026-10-14T21:17:17.665215+00:00",
+    "wall_seconds": 0.002476800000295043,
+    "class": "graded"
+  },
+  {
+    "id": "q_6c05d1f02c75",
+    "text": "An item bearing category_4 should receive a moderate lift only if it also bears category_0. All other items should be left unchanged.",
+    "backend": "rule_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": {
+      "operation": "clarify",
+      "directives": [],
+      "source": "rule_compound"
+    },
+    "error": null,
+    "completed_utc": "2026-10-14T21:17:17.562610+00:00",
+    "wall_seconds": 0.0024757999926805496,
+    "class": "conditional"
+  },
+  {
+    "id": "q_6cd46dd643fd",
+    "text": "Please bring up category_25 moderately in my feed. Separately, bring down category_29 moderately in the recommendations I receive.",
+    "backend": "rule_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": {
+      "operation": "clarify",
+      "directives": [],
+      "source": "rule_compound"
+    },
+    "error": null,
+    "completed_utc": "2026-10-14T21:17:17.945666+00:00",
+    "wall_seconds": 0.0025472999550402164,
+    "class": "compound"
+  },
+  {
+    "id": "q_772b63303773",
+    "text": "Could category_0 have moderately greater representation in my feed? Independently, I want category_1 to have moderately less representation.",
+    "backend": "rule_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": {
+      "operation": "clarify",
+      "directives": [],
+      "source": "rule_compound"
+    },
+    "error": null,
+    "completed_utc": "2026-10-14T21:17:17.548601+00:00",
+    "wall_seconds": 0.0026442999951541424,
+    "class": "compound"
+  },
+  {
+    "id": "q_7938973e0de5",
+    "text": "Give category_15 moderately more weight only on individual recommendations also carrying category_9; the same recommendation must have both, and all others should remain unchanged.",
+    "backend": "rule_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": {
+      "operation": "clarify",
+      "directives": [],
+      "source": "rule_compound"
+    },
+    "error": null,
+    "completed_utc": "2026-10-14T21:17:17.803341+00:00",
+    "wall_seconds": 0.002146800048649311,
+    "class": "conditional"
+  },
+  {
+    "id": "q_79b1ca5143e7",
+    "text": "Please lower category_1 moderately in my feed. At least one item from that category should still be included.",
+    "backend": "rule_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": {
+      "operation": "clarify",
+      "directives": [],
+      "source": "rule_compound"
+    },
+    "error": null,
+    "completed_utc": "2026-10-14T21:17:17.687109+00:00",
+    "wall_seconds": 0.0022342000156641006,
+    "class": "floor"
+  },
+  {
+    "id": "q_7a62b0b6fc98",
+    "text": "I want more category_27 and less category_26 in my feed, with moderate, independent adjustments to each category.",
+    "backend": "rule_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": {
+      "operation": "clarify",
+      "directives": [],
+      "source": "rule_compound"
+    },
+    "error": null,
+    "completed_utc": "2026-10-14T21:17:17.696081+00:00",
+    "wall_seconds": 0.002294400008395314,
+    "class": "compound"
+  },
+  {
+    "id": "q_7a63e331f3af",
+    "text": "Please give category_11 a moderate lift exclusively on items that themselves also carry category_2. Leave all other items in my feed as they are.",
+    "backend": "rule_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": {
+      "operation": "clarify",
+      "directives": [],
+      "source": "rule_compound"
+    },
+    "error": null,
+    "completed_utc": "2026-10-14T21:17:17.647767+00:00",
+    "wall_seconds": 0.002055400051176548,
+    "class": "conditional"
+  },
+  {
+    "id": "q_7e56b03cee83",
+    "text": "Could you make category_22 slightly more common in my feed? I only want a small increase.",
+    "backend": "rule_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": {
+      "operation": "clarify",
+      "directives": [],
+      "source": "rule_compound"
+    },
+    "error": null,
+    "completed_utc": "2026-10-14T21:17:17.806894+00:00",
+    "wall_seconds": 0.0017620001453906298,
+    "class": "graded"
+  },
+  {
+    "id": "q_82266a5bb0e9",
+    "text": "Please moderately favor category_30 content in my recommendations. In a separate change, moderately reduce the amount of category_18 content.",
+    "backend": "rule_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": {
+      "operation": "clarify",
+      "directives": [],
+      "source": "rule_compound"
+    },
+    "error": null,
+    "completed_utc": "2026-10-14T21:17:17.735577+00:00",
+    "wall_seconds": 0.002165100071579218,
+    "class": "compound"
+  },
+  {
+    "id": "q_85c0c20e0a1e",
+    "text": "Please reduce category_0 heavily in what you recommend, making the amount I see much smaller.",
+    "backend": "rule_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": {
+      "operation": "clarify",
+      "directives": [],
+      "source": "rule_compound"
+    },
+    "error": null,
+    "completed_utc": "2026-10-14T21:17:17.691442+00:00",
+    "wall_seconds": 0.002468300051987171,
+    "class": "graded"
+  },
+  {
+    "id": "q_892dea037c71",
+    "text": "Remove category_23 from my recommendations entirely. I don't want any content from that category showing up.",
+    "backend": "rule_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": {
+      "operation": "clarify",
+      "directives": [],
+      "source": "rule_compound"
+    },
+    "error": null,
+    "completed_utc": "2026-10-14T21:17:17.621019+00:00",
+    "wall_seconds": 0.0019990000873804092,
+    "class": "graded"
+  },
+  {
+    "id": "q_89cf31ba3110",
+    "text": "Could you moderately expand the presence of category_8, and independently reduce how much category_9 appears in my feed by a moderate amount?",
+    "backend": "rule_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": {
+      "operation": "clarify",
+      "directives": [],
+      "source": "rule_compound"
+    },
+    "error": null,
+    "completed_utc": "2026-10-14T21:17:17.652201+00:00",
+    "wall_seconds": 0.0021800000686198473,
+    "class": "compound"
+  },
+  {
+    "id": "q_8a0781ce23ac",
+    "text": "Please retain at least one category_6 item, but reduce how much of that category I see moderately.",
+    "backend": "rule_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": {
+      "operation": "clarify",
+      "directives": [],
+      "source": "rule_compound"
+    },
+    "error": null,
+    "completed_utc": "2026-10-14T21:17:17.581223+00:00",
+    "wall_seconds": 0.0021738000214099884,
+    "class": "floor"
+  },
+  {
+    "id": "q_8c3e47a53e8c",
+    "text": "For my feed, moderately raise the presence of category_13 and make a separate moderate cut in the presence of category_6.",
+    "backend": "rule_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": {
+      "operation": "clarify",
+      "directives": [],
+      "source": "rule_compound"
+    },
+    "error": null,
+    "completed_utc": "2026-10-14T21:17:17.700265+00:00",
+    "wall_seconds": 0.0023364999797195196,
+    "class": "compound"
+  },
+  {
+    "id": "q_91a6dcd75be3",
+    "text": "Please sharply reduce how much category_21 content you recommend; I want to see far less of it.",
+    "backend": "rule_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": {
+      "operation": "clarify",
+      "directives": [],
+      "source": "rule_compound"
+    },
+    "error": null,
+    "completed_utc": "2026-10-14T21:17:17.748723+00:00",
+    "wall_seconds": 0.0022180001251399517,
+    "class": "graded"
+  },
+  {
+    "id": "q_92a107ca725b",
+    "text": "Only when an item itself has category_7 too should its category_0 content get a moderate boost. All other items should remain untouched.",
+    "backend": "rule_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": {
+      "operation": "clarify",
+      "directives": [],
+      "source": "rule_compound"
+    },
+    "error": null,
+    "completed_utc": "2026-10-14T21:17:17.678920+00:00",
+    "wall_seconds": 0.002614599885419011,
+    "class": "conditional"
+  },
+  {
+    "id": "q_9605bd2052d3",
+    "text": "Please moderately raise category_9 for recommendations that also have category_27 on the same recommendation. Don't change any other items in the feed.",
+    "backend": "rule_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": {
+      "operation": "clarify",
+      "directives": [],
+      "source": "rule_compound"
+    },
+    "error": null,
+    "completed_utc": "2026-10-14T21:17:17.567718+00:00",
+    "wall_seconds": 0.0023785000666975975,
+    "class": "conditional"
+  },
+  {
+    "id": "q_979d195f2e49",
+    "text": "Please moderately decrease how much category_29 I see and make sure at least one item from it remains.",
+    "backend": "rule_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": {
+      "operation": "clarify",
+      "directives": [],
+      "source": "rule_compound"
+    },
+    "error": null,
+    "completed_utc": "2026-10-14T21:17:17.918484+00:00",
+    "wall_seconds": 0.002326600020751357,
+    "class": "floor"
+  },
+  {
+    "id": "q_98524224cd51",
+    "text": "For category_22, give a moderate increase only to items that also have category_29 on the same item; leave the rest untouched.",
+    "backend": "rule_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": {
+      "operation": "clarify",
+      "directives": [],
+      "source": "rule_compound"
+    },
+    "error": null,
+    "completed_utc": "2026-10-14T21:17:17.724558+00:00",
+    "wall_seconds": 0.001964000053703785,
+    "class": "conditional"
+  },
+  {
+    "id": "q_9a31203cdd81",
+    "text": "Only a recommendation carrying category_26 itself should receive a moderate increase for its category_25 content. Leave all other recommendations unchanged.",
+    "backend": "rule_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": {
+      "operation": "clarify",
+      "directives": [],
+      "source": "rule_compound"
+    },
+    "error": null,
+    "completed_utc": "2026-10-14T21:17:17.739819+00:00",
+    "wall_seconds": 0.0024943999014794827,
+    "class": "conditional"
+  },
+  {
+    "id": "q_9cf2e27ad4d6",
+    "text": "I'd like moderately greater emphasis on category_14, plus a separate moderate reduction in the emphasis given to category_21.",
+    "backend": "rule_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": {
+      "operation": "clarify",
+      "directives": [],
+      "source": "rule_compound"
+    },
+    "error": null,
+    "completed_utc": "2026-10-14T21:17:17.553051+00:00",
+    "wall_seconds": 0.0023558998946100473,
+    "class": "compound"
+  },
+  {
+    "id": "q_a625b3f9fdb9",
+    "text": "I'd like you to moderately cut back on category_5, making sure that at least one item remains included.",
+    "backend": "rule_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": {
+      "operation": "clarify",
+      "directives": [],
+      "source": "rule_compound"
+    },
+    "error": null,
+    "completed_utc": "2026-10-14T21:17:17.674214+00:00",
+    "wall_seconds": 0.00240470003336668,
+    "class": "floor"
+  },
+  {
+    "id": "q_a673d42def7b",
+    "text": "The feed has more category_9 than I want. Please reduce it by a large amount.",
+    "backend": "rule_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": {
+      "operation": "clarify",
+      "directives": [],
+      "source": "rule_compound"
+    },
+    "error": null,
+    "completed_utc": "2026-10-14T21:17:17.795068+00:00",
+    "wall_seconds": 0.002334000077098608,
+    "class": "graded"
+  },
+  {
+    "id": "q_a73a03abc964",
+    "text": "If an individual item carries category_20 together with category_4, moderately increase its category_20 presence. Please keep all other items unchanged.",
+    "backend": "rule_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": {
+      "operation": "clarify",
+      "directives": [],
+      "source": "rule_compound"
+    },
+    "error": null,
+    "completed_utc": "2026-10-14T21:17:17.598855+00:00",
+    "wall_seconds": 0.0022416000720113516,
+    "class": "conditional"
+  },
+  {
+    "id": "q_a7d1d8341e23",
+    "text": "Please moderately increase category_8 only for items that themselves also carry category_2; leave every other item in my feed unchanged.",
+    "backend": "rule_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": {
+      "operation": "clarify",
+      "directives": [],
+      "source": "rule_compound"
+    },
+    "error": null,
+    "completed_utc": "2026-10-14T21:17:17.908189+00:00",
+    "wall_seconds": 0.0025711997877806425,
+    "class": "conditional"
+  },
+  {
+    "id": "q_afc44e54a4dc",
+    "text": "A moderate decrease in category_28 would help, provided my feed retains at least one item from the category.",
+    "backend": "rule_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": {
+      "operation": "clarify",
+      "directives": [],
+      "source": "rule_compound"
+    },
+    "error": null,
+    "completed_utc": "2026-10-14T21:17:17.936510+00:00",
+    "wall_seconds": 0.002217700006440282,
+    "class": "floor"
+  },
+  {
+    "id": "q_b00553cd5e08",
+    "text": "Please exclude category_25 completely from what you show me. I don't want any items from it.",
+    "backend": "rule_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": {
+      "operation": "clarify",
+      "directives": [],
+      "source": "rule_compound"
+    },
+    "error": null,
+    "completed_utc": "2026-10-14T21:17:17.815935+00:00",
+    "wall_seconds": 0.002903799992054701,
+    "class": "graded"
+  },
+  {
+    "id": "q_b16034107b31",
+    "text": "Boost category_23 moderately only if the very same item also carries category_0. Leave all recommendations outside that overlap unchanged for me.",
+    "backend": "rule_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": {
+      "operation": "clarify",
+      "directives": [],
+      "source": "rule_compound"
+    },
+    "error": null,
+    "completed_utc": "2026-10-14T21:17:17.932200+00:00",
+    "wall_seconds": 0.0021935999393463135,
+    "class": "conditional"
+  },
+  {
+    "id": "q_b4c4e97e0401",
+    "text": "Reduce how often category_7 appears by a moderate amount, and keep at least one of its items in my feed.",
+    "backend": "rule_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": {
+      "operation": "clarify",
+      "directives": [],
+      "source": "rule_compound"
+    },
+    "error": null,
+    "completed_utc": "2026-10-14T21:17:17.883673+00:00",
+    "wall_seconds": 0.0024429000914096832,
+    "class": "floor"
+  },
+  {
+    "id": "q_b7c5e7df52c2",
+    "text": "Please moderately favor category_30 on an item only if that item also carries category_21. Keep all items outside that intersection at their current treatment.",
+    "backend": "rule_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": {
+      "operation": "clarify",
+      "directives": [],
+      "source": "rule_compound"
+    },
+    "error": null,
+    "completed_utc": "2026-10-14T21:17:17.683088+00:00",
+    "wall_seconds": 0.002404300030320883,
+    "class": "conditional"
+  },
+  {
+    "id": "q_b8ffe0466a50",
+    "text": "In my recommendations, please raise category_29 moderately and separately lower category_9 moderately; both preferences should apply on their own.",
+    "backend": "rule_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": {
+      "operation": "clarify",
+      "directives": [],
+      "source": "rule_compound"
+    },
+    "error": null,
+    "completed_utc": "2026-10-14T21:17:17.731690+00:00",
+    "wall_seconds": 0.0018273000605404377,
+    "class": "compound"
+  },
+  {
+    "id": "q_bae5eb471886",
+    "text": "I'd like moderately more category_2 only for an item that also bears category_29 itself; the other items should remain as they are.",
+    "backend": "rule_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": {
+      "operation": "clarify",
+      "directives": [],
+      "source": "rule_compound"
+    },
+    "error": null,
+    "completed_utc": "2026-10-14T21:17:17.868478+00:00",
+    "wall_seconds": 0.0021343000698834658,
+    "class": "conditional"
+  },
+  {
+    "id": "q_bb27e09c385f",
+    "text": "I want moderately less category_26 in my recommendations, but at least one item from it should remain.",
+    "backend": "rule_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": {
+      "operation": "clarify",
+      "directives": [],
+      "source": "rule_compound"
+    },
+    "error": null,
+    "completed_utc": "2026-10-14T21:17:17.790875+00:00",
+    "wall_seconds": 0.0021395001094788313,
+    "class": "floor"
+  },
+  {
+    "id": "q_bc0ed136ee03",
+    "text": "I would welcome moderately more material from category_20. Independently, I would like a moderate reduction in material from category_18.",
+    "backend": "rule_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": {
+      "operation": "clarify",
+      "directives": [],
+      "source": "rule_compound"
+    },
+    "error": null,
+    "completed_utc": "2026-10-14T21:17:17.864252+00:00",
+    "wall_seconds": 0.0019805999472737312,
+    "class": "compound"
+  },
+  {
+    "id": "q_bd75588b208e",
+    "text": "Leave category_28 out completely when preparing my feed; no items from that category should appear.",
+    "backend": "rule_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": {
+      "operation": "clarify",
+      "directives": [],
+      "source": "rule_compound"
+    },
+    "error": null,
+    "completed_utc": "2026-10-14T21:17:17.728265+00:00",
+    "wall_seconds": 0.002176400041207671,
+    "class": "graded"
+  },
+  {
+    "id": "q_bde4b8f06ad8",
+    "text": "I'd like you to cut the presence of category_12 dramatically in the recommendations you show me.",
+    "backend": "rule_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": {
+      "operation": "clarify",
+      "directives": [],
+      "source": "rule_compound"
+    },
+    "error": null,
+    "completed_utc": "2026-10-14T21:17:17.856581+00:00",
+    "wall_seconds": 0.0021242001093924046,
+    "class": "graded"
+  },
+  {
+    "id": "q_c1900ae649f9",
+    "text": "Please give category_9 moderately more space in my feed and, separately, dial back category_6 by a moderate amount.",
+    "backend": "rule_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": {
+      "operation": "clarify",
+      "directives": [],
+      "source": "rule_compound"
+    },
+    "error": null,
+    "completed_utc": "2026-10-14T21:17:17.838590+00:00",
+    "wall_seconds": 0.003189999843016267,
+    "class": "compound"
+  },
+  {
+    "id": "q_c24670e81fb1",
+    "text": "I'd like category_9 reduced moderately, without removing every item from it; at least one should remain.",
+    "backend": "rule_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": {
+      "operation": "clarify",
+      "directives": [],
+      "source": "rule_compound"
+    },
+    "error": null,
+    "completed_utc": "2026-10-14T21:17:17.940854+00:00",
+    "wall_seconds": 0.002315100049600005,
+    "class": "floor"
+  },
+  {
+    "id": "q_c78625ba8b33",
+    "text": "In what you recommend, give category_22 a moderate increase and give category_13 an independent moderate decrease for me.",
+    "backend": "rule_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": {
+      "operation": "clarify",
+      "directives": [],
+      "source": "rule_compound"
+    },
+    "error": null,
+    "completed_utc": "2026-10-14T21:17:17.843825+00:00",
+    "wall_seconds": 0.0026750999968498945,
+    "class": "compound"
+  },
+  {
+    "id": "q_c815e2d65553",
+    "text": "I'd like a moderate decrease for category_12, with a minimum of one item from it kept in my feed.",
+    "backend": "rule_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": {
+      "operation": "clarify",
+      "directives": [],
+      "source": "rule_compound"
+    },
+    "error": null,
+    "completed_utc": "2026-10-14T21:17:17.922955+00:00",
+    "wall_seconds": 0.002512299921363592,
+    "class": "floor"
+  },
+  {
+    "id": "q_cc0bf876b7b1",
+    "text": "I'd prefer category_2 to appear moderately more often and category_5 moderately less often; apply both changes independently across my feed.",
+    "backend": "rule_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": {
+      "operation": "clarify",
+      "directives": [],
+      "source": "rule_compound"
+    },
+    "error": null,
+    "completed_utc": "2026-10-14T21:17:17.966247+00:00",
+    "wall_seconds": 0.0023392001166939735,
+    "class": "compound"
+  },
+  {
+    "id": "q_d02d631b3451",
+    "text": "When an item has both category_14 and category_24, moderately boost its category_14 presence; items without that exact combination should remain unchanged.",
+    "backend": "rule_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": {
+      "operation": "clarify",
+      "directives": [],
+      "source": "rule_compound"
+    },
+    "error": null,
+    "completed_utc": "2026-10-14T21:17:17.764779+00:00",
+    "wall_seconds": 0.0019221999682486057,
+    "class": "conditional"
+  },
+  {
+    "id": "q_d33b0485bf69",
+    "text": "My feed could use a moderate reduction in category_21, provided at least one item from it stays.",
+    "backend": "rule_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": {
+      "operation": "clarify",
+      "directives": [],
+      "source": "rule_compound"
+    },
+    "error": null,
+    "completed_utc": "2026-10-14T21:17:17.705570+00:00",
+    "wall_seconds": 0.002520199865102768,
+    "class": "floor"
+  },
+  {
+    "id": "q_d4887e7b1959",
+    "text": "I'd like a small increase in category_8 content, so let it appear slightly more in my recommendations.",
+    "backend": "rule_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": {
+      "operation": "clarify",
+      "directives": [],
+      "source": "rule_compound"
+    },
+    "error": null,
+    "completed_utc": "2026-10-14T21:17:17.720547+00:00",
+    "wall_seconds": 0.0025736000388860703,
+    "class": "graded"
+  },
+  {
+    "id": "q_dcde8e00345b",
+    "text": "Keep a minimum of one category_13 item in the feed, even as you reduce that category moderately.",
+    "backend": "rule_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": {
+      "operation": "clarify",
+      "directives": [],
+      "source": "rule_compound"
+    },
+    "error": null,
+    "completed_utc": "2026-10-14T21:17:17.656131+00:00",
+    "wall_seconds": 0.002246999880298972,
+    "class": "floor"
+  },
+  {
+    "id": "q_e0b488f0ca19",
+    "text": "I want my recommendations to exclude category_24 altogether; please remove every item in that category.",
+    "backend": "rule_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": {
+      "operation": "clarify",
+      "directives": [],
+      "source": "rule_compound"
+    },
+    "error": null,
+    "completed_utc": "2026-10-14T21:17:17.710228+00:00",
+    "wall_seconds": 0.0023690001107752323,
+    "class": "graded"
+  },
+  {
+    "id": "q_e1a728379397",
+    "text": "For any individual item also carrying category_28, moderately increase its category_17 content. Items without both categories on them should remain unchanged.",
+    "backend": "rule_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": {
+      "operation": "clarify",
+      "directives": [],
+      "source": "rule_compound"
+    },
+    "error": null,
+    "completed_utc": "2026-10-14T21:17:17.535174+00:00",
+    "wall_seconds": 0.0025246997829526663,
+    "class": "conditional"
+  },
+  {
+    "id": "q_ed8f4321731b",
+    "text": "Moderately favor category_5 only on a recommendation that also bears category_18 itself. Every recommendation outside that overlap should keep its current treatment.",
+    "backend": "rule_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": {
+      "operation": "clarify",
+      "directives": [],
+      "source": "rule_compound"
+    },
+    "error": null,
+    "completed_utc": "2026-10-14T21:17:17.778094+00:00",
+    "wall_seconds": 0.0024646001402288675,
+    "class": "conditional"
+  },
+  {
+    "id": "q_f2ea0292a3dd",
+    "text": "Please moderately increase category_18 on each item also bearing category_16 itself, while keeping all other recommendations as they currently are.",
+    "backend": "rule_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": {
+      "operation": "clarify",
+      "directives": [],
+      "source": "rule_compound"
+    },
+    "error": null,
+    "completed_utc": "2026-10-14T21:17:17.872802+00:00",
+    "wall_seconds": 0.0022464999929070473,
+    "class": "conditional"
+  },
+  {
+    "id": "q_f38f8e045ddf",
+    "text": "I'd like a moderate reduction in the presence of category_0; keep at least one item from it, please.",
+    "backend": "rule_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": {
+      "operation": "clarify",
+      "directives": [],
+      "source": "rule_compound"
+    },
+    "error": null,
+    "completed_utc": "2026-10-14T21:17:17.761075+00:00",
+    "wall_seconds": 0.0021295000333338976,
+    "class": "floor"
+  },
+  {
+    "id": "q_f50a68d5011b",
+    "text": "I'd like moderately less material from category_24, but make sure at least one item is kept in my feed.",
+    "backend": "rule_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": {
+      "operation": "clarify",
+      "directives": [],
+      "source": "rule_compound"
+    },
+    "error": null,
+    "completed_utc": "2026-10-14T21:17:17.852372+00:00",
+    "wall_seconds": 0.002089599845930934,
+    "class": "floor"
+  },
+  {
+    "id": "q_f6aa2dd91076",
+    "text": "Show me moderately less category_20, with at least one item from that category kept in the feed.",
+    "backend": "rule_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": {
+      "operation": "clarify",
+      "directives": [],
+      "source": "rule_compound"
+    },
+    "error": null,
+    "completed_utc": "2026-10-14T21:17:17.572219+00:00",
+    "wall_seconds": 0.002280299784615636,
+    "class": "floor"
+  },
+  {
+    "id": "q_f738bfc5929c",
+    "text": "Only individual items bearing category_26 as well as category_1 should get a moderate lift for category_1. Keep every other item unchanged.",
+    "backend": "rule_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": {
+      "operation": "clarify",
+      "directives": [],
+      "source": "rule_compound"
+    },
+    "error": null,
+    "completed_utc": "2026-10-14T21:17:17.773089+00:00",
+    "wall_seconds": 0.002009199932217598,
+    "class": "conditional"
+  },
+  {
+    "id": "q_f881bf669f95",
+    "text": "Where an individual recommendation has category_24 as well as category_9, give category_24 a moderate increase. Don't modify any other recommendations for me.",
+    "backend": "rule_compound",
+    "command": {
+      "operation": "clarify",
+      "directives": []
+    },
+    "raw_result": {
+      "operation": "clarify",
+      "directives": [],
+      "source": "rule_compound"
+    },
+    "error": null,
+    "completed_utc": "2026-10-14T21:17:17.887580+00:00",
+    "wall_seconds": 0.0021901000291109085,
+    "class": "conditional"
+  }
+]

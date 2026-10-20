@@ -1,0 +1,95 @@
+{
+  "study_id": "AIREF-E2-20261014-v1",
+  "locked_utc": "2026-10-14T21:15:36.482786+00:00",
+  "status": "both_initial_AI_label_and_receipt_bytes_locked_before_comparison",
+  "custodian": {
+    "is_ai": true,
+    "agent_name": "Vibhor",
+    "task_identity": "/root/vibhor_custodian",
+    "model_id": "gpt-6.1-sol",
+    "reasoning_effort": "xhigh",
+    "model_metadata_source": "inherited parent session model; no override",
+    "exact_backend_weights": "unavailable"
+  },
+  "inputs": {
+    "protocol_freeze": {
+      "path": "C:\\Users\\vs981\\Documents\\COMP9500\\ai-reference-e2-2026-10-14-v1-r2\\protocol\\protocol-freeze.json",
+      "sha256": "1c0eb05eb54887bc52f23051b53a774dab0dde1f2f10c29ae4adc2ddcfe606d5",
+      "bytes": 5464
+    },
+    "protocol": {
+      "path": "C:\\Users\\vs981\\Documents\\Codex\\2026-10-13\\task\\FP\\docs\\ai-reference-e2-protocol-2026-10-14.md",
+      "sha256": "b026eb39adfe590f699088d790d83b1b04b2556dffe03dfaddfb21681e341d10",
+      "bytes": 18879
+    },
+    "rubric": {
+      "path": "C:\\Users\\vs981\\Documents\\Codex\\2026-10-13\\task\\FP\\docs\\ai-reference-e2-rubric-2026-10-14.md",
+      "sha256": "ef238627a68f4c8308bd8c641a281f5ca3de585dcfc9f3fe04683d462e24f275",
+      "bytes": 2741
+    },
+    "role_prompts": {
+      "path": "C:\\Users\\vs981\\Documents\\Codex\\2026-10-13\\task\\FP\\docs\\ai-reference-e2-role-prompts-2026-10-14.json",
+      "sha256": "1ec3b29e4ab2b8ea29e184ae3cee4b44d434cb181a0e0044bb07dabcf20da073",
+      "bytes": 3833
+    },
+    "bank_code": {
+      "path": "C:\\Users\\vs981\\Documents\\Codex\\2026-10-13\\task\\FP\\scripts\\ai_e2_bank.py",
+      "sha256": "5d05a572843a6a70b7252e19726ddb29b90ac9c3226698b47ae6789ffa71e817",
+      "bytes": 8217
+    },
+    "custodian_code": {
+      "path": "C:\\Users\\vs981\\Documents\\Codex\\2026-10-13\\task\\FP\\scripts\\ai_e2_references.py",
+      "sha256": "4b3de3255df76f21339d8c6d6120b50e868be87841512b948adc3b375df5baa6",
+      "bytes": 33453
+    },
+    "bank_lock": {
+      "path": "C:\\Users\\vs981\\Documents\\COMP9500\\ai-reference-e2-2026-10-14-v1-r2\\custody\\bank-lock.json",
+      "sha256": "a51a98697cc28306156dad170a33ffa8149cb43d84aa96ea1d94d5d75b07a6e3",
+      "bytes": 1212
+    },
+    "master": {
+      "path": "C:\\Users\\vs981\\Documents\\COMP9500\\ai-reference-e2-2026-10-14-v1-r2\\custody\\questions-master.json",
+      "sha256": "18ea5b4e7e74500031a92b24a32b05d107c7054a8935ac4ea0808fa3d79bbc9b",
+      "bytes": 18936
+    },
+    "intent_plan": {
+      "path": "C:\\Users\\vs981\\Documents\\COMP9500\\ai-reference-e2-2026-10-14-v1-r2\\custody\\intent-plan.json",
+      "sha256": "e5759ad26055fd2868d2828af29caff30dc2a5a2e468f1ba373edbeeb98d3faa",
+      "bytes": 18580
+    },
+    "tanishq_sheet": {
+      "path": "C:\\Users\\vs981\\Documents\\COMP9500\\ai-reference-e2-2026-10-14-v1-r2\\annotations\\tanishq\\questions.json",
+      "sha256": "4d1e9e34c480acf52faa5e06d260dfe898c78ce839970ac8de37b992ac204991",
+      "bytes": 18936
+    },
+    "tanishq_labels": {
+      "path": "C:\\Users\\vs981\\Documents\\COMP9500\\ai-reference-e2-2026-10-14-v1-r2\\annotations\\tanishq\\labels.json",
+      "sha256": "90d99dfee55254ff5a3e69e17b9bd358979118ff4f0b8113d4d4ee7be6f33a0f",
+      "bytes": 46195,
+      "snapshot_path": "C:\\Users\\vs981\\Documents\\COMP9500\\ai-reference-e2-2026-10-14-v1-r2\\custody\\initial-originals\\tanishq-labels.json"
+    },
+    "tanishq_receipt": {
+      "path": "C:\\Users\\vs981\\Documents\\COMP9500\\ai-reference-e2-2026-10-14-v1-r2\\annotations\\tanishq\\receipt.json",
+      "sha256": "1aca69d797e51bf45f01935ca6f99a858d01b0d5270156bb0eb56de4aee2afc8",
+      "bytes": 1333,
+      "snapshot_path": "C:\\Users\\vs981\\Documents\\COMP9500\\ai-reference-e2-2026-10-14-v1-r2\\custody\\initial-originals\\tanishq-receipt.json"
+    },
+    "khushi_sheet": {
+      "path": "C:\\Users\\vs981\\Documents\\COMP9500\\ai-reference-e2-2026-10-14-v1-r2\\annotations\\khushi\\questions.json",
+      "sha256": "d489a246d544877a46609dda359d4c1b035fab92bd431507d6a923df361ee43d",
+      "bytes": 18936
+    },
+    "khushi_labels": {
+      "path": "C:\\Users\\vs981\\Documents\\COMP9500\\ai-reference-e2-2026-10-14-v1-r2\\annotations\\khushi\\labels.json",
+      "sha256": "40e015114b35ae9e96f6177f79decd8fb9236a44bfb454b273acc8df702dee1f",
+      "bytes": 43707,
+      "snapshot_path": "C:\\Users\\vs981\\Documents\\COMP9500\\ai-reference-e2-2026-10-14-v1-r2\\custody\\initial-originals\\khushi-labels.json"
+    },
+    "khushi_receipt": {
+      "path": "C:\\Users\\vs981\\Documents\\COMP9500\\ai-reference-e2-2026-10-14-v1-r2\\annotations\\khushi\\receipt.json",
+      "sha256": "881a50d535f8077cba729d828e9d143b44aa5d5538ef6f8838144af0ca80ee57",
+      "bytes": 1257,
+      "snapshot_path": "C:\\Users\\vs981\\Documents\\COMP9500\\ai-reference-e2-2026-10-14-v1-r2\\custody\\initial-originals\\khushi-receipt.json"
+    }
+  }
+}

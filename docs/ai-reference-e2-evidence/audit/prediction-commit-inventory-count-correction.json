@@ -1,0 +1,9 @@
+{
+  "corrected_utc": "2026-10-14T21:21:03.335500+00:00",
+  "status": "administrative_receipt_field_correction_before_reference_join",
+  "original_receipt_sha256": "451a067a76f339dca7c7ade8c41d6d9c2ea25d11eb2f3cee3e1e31908850a68d",
+  "original_manifest_sha256": "9b936c5e4e6b386da4360b9f9ba70a61d8e3fdd1ff6c762b07e91ea680b35bd7",
+  "explanation": "PowerShell property enumeration wrote a list of 1s rather than a scalar file_inventory_count; original receipt preserved unchanged.",
+  "file_inventory_count": 502,
+  "reference_join_started": false
+}

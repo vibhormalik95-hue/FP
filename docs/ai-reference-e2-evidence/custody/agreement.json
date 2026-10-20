@@ -1,0 +1,66 @@
+{
+  "study_id": "AIREF-E2-20261014-v1",
+  "computed_utc": "2026-10-14T21:15:41.918882+00:00",
+  "status": "actual_independent_AI_context_reference_annotations",
+  "provenance": {
+    "tanishq": {
+      "is_ai": true,
+      "agent_name": "Tanishq",
+      "task_identity": "/root/tanishq_r2",
+      "fresh_context": true,
+      "model_id": "gpt-6.1-sol",
+      "reasoning_effort": "xhigh",
+      "model_metadata_source": "inherited parent session model; no override",
+      "exact_backend_weights": "unavailable"
+    },
+    "khushi": {
+      "is_ai": true,
+      "agent_name": "Khushi",
+      "task_identity": "/root/khushi_r2",
+      "fresh_context": true,
+      "model_id": "gpt-6.1-sol",
+      "reasoning_effort": "xhigh",
+      "model_metadata_source": "inherited parent session model; no override",
+      "exact_backend_weights": "unavailable"
+    }
+  },
+  "interpretation": "Descriptive rubric agreement among separate AI contexts sharing a model family; not human ground truth or independent model training.",
+  "n": 100,
+  "full_command_exact_agreement": 1.0,
+  "full_command_exact_agreement_numerator": 100,
+  "full_command_exact_agreement_denominator": 100,
+  "cohens_kappa": 1.0,
+  "full_command_expected_chance_agreement": 0.01,
+  "kappa_undefined_reason": null,
+  "directive_count_agreement": 1.0,
+  "directive_count_agreement_numerator": 100,
+  "directive_count_agreement_denominator": 100,
+  "directive_count_cohens_kappa": 1.0,
+  "directive_count_expected_chance_agreement": 0.625,
+  "directive_count_kappa_undefined_reason": null,
+  "field_agreement": {
+    "operation": 1.0,
+    "category": 1.0,
+    "strength": 1.0,
+    "floor": 1.0,
+    "condition_category": 1.0
+  },
+  "field_agreement_counts": {
+    "operation": 125,
+    "category": 125,
+    "strength": 125,
+    "floor": 125,
+    "condition_category": 125
+  },
+  "field_comparison_count": 125,
+  "field_alignment": "union of target category IDs per case; a missing directive disagrees on every field",
+  "category_field_interpretation": "Target-aligned category agreement is partly tautological, not semantic accuracy.",
+  "request_operation_agreement": 1.0,
+  "request_operation_agreement_numerator": 100,
+  "request_operation_agreement_denominator": 100,
+  "target_category_set_agreement": 1.0,
+  "target_category_set_agreement_numerator": 100,
+  "target_category_set_agreement_denominator": 100,
+  "disagreement_ids": [],
+  "acceptance_cutoff": null
+}

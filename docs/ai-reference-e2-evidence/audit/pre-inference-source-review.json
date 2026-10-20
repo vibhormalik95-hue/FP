@@ -1,0 +1,59 @@
+{
+  "study_id": "AIREF-E2-20261014-v1",
+  "receipt_type": "separate_ai_pre_inference_source_review",
+  "created_utc": "2026-10-14T20:59:27.5587487Z",
+  "status": "passed",
+  "verdict": "source_ready_for_full_freeze_metadata_check",
+  "reviewer": {
+    "kind": "AI agent",
+    "role": "separate protocol/evidence reviewer",
+    "canonical_task_name": "/root/ai_reference_reviewer",
+    "model_identifier": "gpt-6.1-sol",
+    "reasoning_effort": "xhigh",
+    "model_metadata_source": "Inherited parent session metadata reported by coordinator; no model override.",
+    "exact_serving_weight_snapshot": "unavailable",
+    "human": false
+  },
+  "reviewed_source_files": [
+    {
+      "path": "C:\\Users\\vs981\\Documents\\Codex\\2026-10-13\\task\\FP\\scripts\\ai_e2_full_freeze.py",
+      "sha256": "8dadb7eb1d8169954169396201c14e7de86be900dd3dda56f7bfb84991fb8b05"
+    },
+    {
+      "path": "C:\\Users\\vs981\\Documents\\Codex\\2026-10-13\\task\\FP\\scripts\\ai_e2_score.py",
+      "sha256": "bdba1b5f33b9960415af8ac9515690f62c1bbf8ee2c5a038a3db7fede7974c12"
+    },
+    {
+      "path": "C:\\Users\\vs981\\Documents\\Codex\\2026-10-13\\task\\FP\\scripts\\ai_e2_references.py",
+      "sha256": "4b3de3255df76f21339d8c6d6120b50e868be87841512b948adc3b375df5baa6"
+    }
+  ],
+  "open_material_issues": [],
+  "findings": [
+    "ai_e2_full_freeze.py verifies every pre-authoring source/input digest, reference source_hashes/final_hashes, compatibility status and locked inference-sheet hash before assembling the reference-free bundle.",
+    "The release contains only the approved model/options/timeout/source/question/freeze metadata and denied-read probe path strings. Private reference contents, labels, slot plans and ranking data are not copied into the six-file bundle.",
+    "The full-freeze file map pins source/input evidence, reference custody and reviewable wrappers before opening. An existing global opening marker or existing bundle prevents silent refreezing.",
+    "ai_e2_references.py locks original label/receipt bytes before decoding/comparing labels, validates complete independent annotation receipts and strict rubric schema, retains original byte snapshots and computes the specified agreement measures.",
+    "Disputes alone are released for separate adjudication; agreed/adjudicated labels are retained. Clarify or a mismatch to the already frozen subtype/category roles aborts the reference version without coercion or selective replacement.",
+    "ai_e2_score.py checks prediction status, 200 unique terminal backend/ID pairs, 200 exact journal pairs, exact question texts, required journal/prediction manifest membership and every listed evidence digest before loading protected references.",
+    "Scoring then verifies the full freeze and reference-question correspondence, reuses the unchanged evaluation functions/checkpoints and preserves failures and denominators. No new sampling, prompt, model, band or statistical choice was introduced in this review."
+  ],
+  "scope_and_remaining_gates": [
+    "This is source-only consistency review, not a statement that actual annotation meanings, agreement values, provenance declarations or output arithmetic have been independently audited.",
+    "No fresh case, label, annotation receipt, agreement, dispute, reference-freeze or prediction artifact was opened for this review.",
+    "The assembled full-freeze/release metadata and byte-hash correspondence remain to be checked after custody finalization and before the model run, as the coordinator specified.",
+    "Reference-content and independent computational audits remain restricted to after immutable predictions and protected scoring; this review does not execute them.",
+    "Application file/network checks remain a trusted-code boundary, not an OS sandbox or hostile-host defense. Shared model-family and absence of human-ground-truth limitations remain in force."
+  ],
+  "exposure_attestation": {
+    "current_phase_file_text_inputs": "Only scripts/ai_e2_full_freeze.py, scripts/ai_e2_score.py and scripts/ai_e2_references.py.",
+    "retained_context": "Previously authorized source-only protocol review and audit-wrapper preparation; internal coordinator messages and metadata-only path/schema instructions.",
+    "cases_labels_or_predictions_opened": false,
+    "reference_artifact_contents_opened": false,
+    "source_or_data_mutations": false,
+    "inference_or_scoring_executed": false,
+    "git_commands_performed": false,
+    "external_messages_sent": false,
+    "only_current_phase_file_write": "study/audit/pre-inference-source-review.json"
+  }
+}

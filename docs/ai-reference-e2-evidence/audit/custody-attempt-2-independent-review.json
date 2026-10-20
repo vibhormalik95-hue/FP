@@ -1,0 +1,80 @@
+{
+  "study_id": "AIREF-E2-20261014-v1",
+  "custody_attempt_version": 2,
+  "created_utc": "2026-10-14T21:11:24.1736302Z",
+  "status": "passed",
+  "verdict": "Amendment satisfies the frozen repair rule; ready for new independent annotation in custody attempt 2.",
+  "reviewer": {
+    "kind": "AI",
+    "task_identity": "/root/ai_reference_reviewer",
+    "model_id": "gpt-6.1-sol",
+    "reasoning_effort": "xhigh",
+    "provenance": "Inherited parent-session metadata supplied by coordinator; no override; exact serving weights unavailable. No human or supervisor authority claimed."
+  },
+  "checks": {
+    "frozen_repair_rule": "A malformed/incomplete annotation or receipt aborts the version; repair requires a separately recorded pre-inference bank/protocol version and new independent annotation.",
+    "prior_abort": {
+      "pass": true,
+      "stage": "compare",
+      "error": "receipt finalized_utc: ISO 8601 timestamp required",
+      "sha256": "24c8194a39d5c9c6abee8cd319914b48f2108103ae1b5fd527189ace2ab9b192"
+    },
+    "prior_and_new_no_inference": {
+      "pass": true,
+      "evidence": "Both roots have no opened.json and their inference directories contain only the question sheet; no reference/full freeze or prediction artifacts exist at observation."
+    },
+    "copied_bank_and_protocol_identity": {
+      "pass": true,
+      "files_checked": 41,
+      "detail": "Every listed copied artifact matches both the preserved v1 bytes and the amendment freeze digest; bank-lock/master/intent/two annotator sheets/inference-sheet links all match."
+    },
+    "unchanged_semantic_sources": {
+      "pass": true,
+      "files_checked": 13
+    },
+    "prior_originals_preserved": {
+      "pass": true,
+      "files_checked": 4,
+      "detail": "Original labels and annotation receipts match their initial-lock hashes, snapshots and attempt-2 preservation digests; checked by hashing only."
+    },
+    "no_prior_annotation_outputs_in_r2": {
+      "pass": true,
+      "detail": "No labels.json or receipt.json exists under r2 annotations. No file anywhere in r2 equals any of the four preserved v1 annotation/receipt hashes."
+    },
+    "new_version_and_chronology": {
+      "pass": true,
+      "detail": "Separate r2 root, explicit custody_attempt_version=2, amendment and new freeze precede fresh annotation; original bank/design identifier remains unchanged.",
+      "times_utc": {
+        "original_protocol_frozen_utc": "2026-10-14T20:44:17.557Z",
+        "original_bank_locked_utc": "2026-10-14T20:54:31.06Z",
+        "prior_abort_utc": "2026-10-14T20:58:29.426Z",
+        "attempt_2_frozen_utc": "2026-10-14T21:08:59.309Z"
+      }
+    },
+    "hash_links": {
+      "pass": true
+    }
+  },
+  "methodological_assessment": "Pass. This is an administrative receipt-schema failure before agreement or model inference. Reusing the identical prospectively selected bank avoids reselection, while a separately recorded amended custody version and entirely new independent annotations meet the frozen repair requirement. The original failed labels/receipts remain preserved and must remain unavailable to the new annotator contexts. No case wording, rubric, parser, ranking/statistical choice, model or threshold is changed.",
+  "key_hashes": {
+    "attempt_2_freeze": "7ecdccfa08b2c81f86a35f6f05746a50dc1cb0276303db53fe00ca866a1f0558",
+    "amendment": "9599f6e11712e96a280d1e308efad62be0f70d62290de0f8b1a77e8dce94c798",
+    "prior_abort": "24c8194a39d5c9c6abee8cd319914b48f2108103ae1b5fd527189ace2ab9b192",
+    "protocol_freeze": "1c0eb05eb54887bc52f23051b53a774dab0dde1f2f10c29ae4adc2ddcfe606d5",
+    "unchanged_bank_and_protocol": {
+      "annotations/khushi/questions.json": "d489a246d544877a46609dda359d4c1b035fab92bd431507d6a923df361ee43d",
+      "annotations/tanishq/questions.json": "4d1e9e34c480acf52faa5e06d260dfe898c78ce839970ac8de37b992ac204991",
+      "custody/bank-lock.json": "a51a98697cc28306156dad170a33ffa8149cb43d84aa96ea1d94d5d75b07a6e3",
+      "custody/intent-plan.json": "e5759ad26055fd2868d2828af29caff30dc2a5a2e468f1ba373edbeeb98d3faa",
+      "custody/questions-master.json": "18ea5b4e7e74500031a92b24a32b05d107c7054a8935ac4ea0808fa3d79bbc9b",
+      "custody/selection-round-1.json": "3ef73227fcb0a1cb78f4d5027b6a33da2c36034ad1d4f2852b90c02416a1b34e",
+      "inference/questions.json": "7729226103bf7453423ceee75d4fb6979607bf3d5cf12c16edf88f17e3ee2f7c",
+      "protocol/ai-reference-e2-protocol-2026-10-14.md": "b026eb39adfe590f699088d790d83b1b04b2556dffe03dfaddfb21681e341d10",
+      "protocol/ai-reference-e2-role-prompts-2026-10-14.json": "1ec3b29e4ab2b8ea29e184ae3cee4b44d434cb181a0e0044bb07dabcf20da073",
+      "protocol/ai-reference-e2-rubric-2026-10-14.md": "ef238627a68f4c8308bd8c641a281f5ca3de585dcfc9f3fe04683d462e24f275",
+      "protocol/protocol-freeze.json": "1c0eb05eb54887bc52f23051b53a774dab0dde1f2f10c29ae4adc2ddcfe606d5"
+    }
+  },
+  "observation_utc": "2026-10-14T21:10:41.1969364Z",
+  "scope": "Metadata, directory inventory, frozen repair/amendment text and SHA-256 checks only. No case text, annotation label content or model predictions were viewed. No inference, protocol edit or Git command was performed. Fresh annotation independence remains a prospective requirement to verify from new task/exposure receipts. Current files/records support no prior study inference; this is not host-forensic proof of every historical process."
+}

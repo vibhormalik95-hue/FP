@@ -1,0 +1,96 @@
+{
+  "started_utc": "2026-10-14T17:33:28.622617+00:00",
+  "scope": "EXPOSED_PRACTICE_DIAGNOSTIC",
+  "original_reserved_E2": "not_run",
+  "H1": "not_assessed",
+  "H2": "not_assessed",
+  "formal_H3": "not_run",
+  "ranking_status": "practice_only_completed",
+  "student_hours": "not_recorded_by_this_run",
+  "status": "practice_diagnostic_completed",
+  "parser_outcomes": 200,
+  "ranking_rows": 41508,
+  "assigned_requests": 3459,
+  "parser_agreement": {
+    "rule_compound": {
+      "total": 100,
+      "correct": 18,
+      "accuracy": 0.18,
+      "operational_errors": 0,
+      "clarifications": 75,
+      "by_class": {
+        "compound": {
+          "total": 25,
+          "correct": 6,
+          "accuracy": 0.24,
+          "operational_errors": 0,
+          "clarifications": 17
+        },
+        "conditional": {
+          "total": 25,
+          "correct": 1,
+          "accuracy": 0.04,
+          "operational_errors": 0,
+          "clarifications": 23
+        },
+        "floor": {
+          "total": 25,
+          "correct": 1,
+          "accuracy": 0.04,
+          "operational_errors": 0,
+          "clarifications": 22
+        },
+        "graded": {
+          "total": 25,
+          "correct": 10,
+          "accuracy": 0.4,
+          "operational_errors": 0,
+          "clarifications": 13
+        }
+      }
+    },
+    "ollama_compound": {
+      "total": 100,
+      "correct": 73,
+      "accuracy": 0.73,
+      "operational_errors": 24,
+      "clarifications": 0,
+      "by_class": {
+        "compound": {
+          "total": 25,
+          "correct": 25,
+          "accuracy": 1.0,
+          "operational_errors": 0,
+          "clarifications": 0
+        },
+        "conditional": {
+          "total": 25,
+          "correct": 2,
+          "accuracy": 0.08,
+          "operational_errors": 23,
+          "clarifications": 0
+        },
+        "floor": {
+          "total": 25,
+          "correct": 22,
+          "accuracy": 0.88,
+          "operational_errors": 1,
+          "clarifications": 0
+        },
+        "graded": {
+          "total": 25,
+          "correct": 24,
+          "accuracy": 0.96,
+          "operational_errors": 0,
+          "clarifications": 0
+        }
+      }
+    }
+  },
+  "completed_utc": "2026-10-14T17:48:53.766442+00:00",
+  "wall_seconds": 925.1438659001142,
+  "exit_code": 0,
+  "full_local_manifest_sha256": "ab5ee56a139e39e55dc8913534456ad535b1c28123e98e0ca2c242f899f68595",
+  "evidence_scope": "Aggregate public review record. Full pseudonymous request-level evidence and score vectors remain in the local evidence bundle.",
+  "local_receipt_final_review_sha256": "6e4a372343f68c0b7bd215dd57434ffed7efda42e7b63b1ffc410b5f313de4fd"
+}

@@ -1,0 +1,133 @@
+{
+  "study_id": "AIREF-E2-20261014-v1",
+  "receipt_type": "independent_ai_protocol_review_before_authoring",
+  "created_utc": "2026-10-14T20:44:03.0449556Z",
+  "status": "passed",
+  "verdict": "ready_for_pre_authoring_freeze",
+  "scope": "Pre-authoring protocol/source consistency review. This is not an inference release, publication approval, or an independent recount of outputs.",
+  "reviewer": {
+    "kind": "AI agent",
+    "role": "separate protocol/evidence reviewer",
+    "canonical_task_name": "/root/ai_reference_reviewer",
+    "platform": "Codex",
+    "model_identifier": "gpt-6.1-sol",
+    "reasoning_effort": "xhigh",
+    "model_metadata_source": "Parent task instructions report verified inherited session metadata; no model override was requested.",
+    "exact_serving_weight_snapshot": null,
+    "serving_temperature": null,
+    "serving_seed": null,
+    "context_declaration": "The initial reviewer task began with fresh task context and no cases or labels. This follow-up retains only the assigned review instructions, earlier permitted protocol/rubric versions, my review findings, coordinator messages and the permitted source texts. I am not either initial annotator or the inference process."
+  },
+  "reviewed_files": [
+    {
+      "path": "C:\\Users\\vs981\\Documents\\Codex\\2026-10-13\\task\\FP\\docs\\ai-reference-e2-protocol-2026-10-14.md",
+      "sha256": "b026eb39adfe590f699088d790d83b1b04b2556dffe03dfaddfb21681e341d10"
+    },
+    {
+      "path": "C:\\Users\\vs981\\Documents\\Codex\\2026-10-13\\task\\FP\\docs\\ai-reference-e2-rubric-2026-10-14.md",
+      "sha256": "ef238627a68f4c8308bd8c641a281f5ca3de585dcfc9f3fe04683d462e24f275"
+    },
+    {
+      "path": "C:\\Users\\vs981\\Documents\\Codex\\2026-10-13\\task\\FP\\docs\\ai-reference-e2-role-prompts-2026-10-14.json",
+      "sha256": "1ec3b29e4ab2b8ea29e184ae3cee4b44d434cb181a0e0044bb07dabcf20da073"
+    },
+    {
+      "path": "C:\\Users\\vs981\\Documents\\Codex\\2026-10-13\\task\\FP\\scripts\\ai_e2_bank.py",
+      "sha256": "5d05a572843a6a70b7252e19726ddb29b90ac9c3226698b47ae6789ffa71e817"
+    },
+    {
+      "path": "C:\\Users\\vs981\\Documents\\Codex\\2026-10-13\\task\\FP\\scripts\\ai_e2_inference_worker.py",
+      "sha256": "6f8536bbfd67b853618dac715716a9dabf71bdfbec19bb7667f5fd7b8aa020fa"
+    },
+    {
+      "path": "C:\\Users\\vs981\\Documents\\Codex\\2026-10-13\\task\\FP\\scripts\\test_ai_e2_boundary.py",
+      "sha256": "c63447ba84bb92d237c98d89fc207da65c68c21bee580bb6b4ff42d5b64db924"
+    },
+    {
+      "path": "C:\\Users\\vs981\\Documents\\Codex\\2026-10-13\\task\\FP\\scripts\\ai_e2_protocol_freeze.py",
+      "sha256": "2123b6768694c9215d97fc5a1191db7d5e02bf9ba5c8231b7cb8af208d94ddc8"
+    },
+    {
+      "path": "C:\\Users\\vs981\\Documents\\Codex\\2026-10-13\\task\\FP\\scripts\\ai_e2_score.py",
+      "sha256": "4b22eb7ace2438236b060e137e105235e89d3c3ddbb00a578f0068de962f497b"
+    }
+  ],
+  "hash_observation_utc": "2026-10-14T20:43:25.400745Z",
+  "findings": {
+    "open_pre_authoring_blockers": [],
+    "resolved": [
+      {
+        "issue": "Deterministic sampling and lexical screening",
+        "resolution": "The protocol pins ai_e2_bank.py, RNG order, category/subtype allocation, normalization, set-bigram similarity, thresholds and first-passing selection."
+      },
+      {
+        "issue": "Frozen comparison corpora and bounded generation",
+        "resolution": "screen now checks frozen absolute-path/hash membership and 100/48 text counts, enforces rounds 1 through 5, and detects case-insensitive category tokens while rejecting noncanonical or unknown IDs."
+      },
+      {
+        "issue": "Independent labels, compatibility and statistics",
+        "resolution": "The protocol preserves independently finalized originals, aborts malformed/incompatible versions before inference, specifies final command forms and reference-derived ranking semantics, and fixes agreement alignment, bootstrap choices and the eleven-test BH family."
+      },
+      {
+        "issue": "Reference-free trusted worker contract",
+        "resolution": "The worker checks exact release fields, four source-path keys, six-file bundle inventory, fixed bundle input filenames, source hashes, runtime/options, timeout and no-bytecode policy before question loading. Denied protected-path probes and network/file audit checks remain application-level protections over trusted code."
+      },
+      {
+        "issue": "Attempts and interrupted runs",
+        "resolution": "Exclusive durable attempt and terminal-output writes, a global opening marker, a new output directory, aborted interrupted versions and complete 200-record prediction coverage are specified."
+      },
+      {
+        "issue": "Protected path-string exception",
+        "resolution": "The role custodian prompt now permits only denied probe path strings outside allowed roots and forbids reference contents and probe paths in the Ollama payload."
+      }
+    ],
+    "pre_authoring_result": "No remaining concrete blocker identified in the reviewed protocol, bank and worker versions.",
+    "publication_and_inference_limits": [
+      "Exact corpus contents, historical evidence, E1 inputs, baseline semantic parser/evaluator sources, model files and runtime state were outside this permitted review; actual freeze manifests and verification receipts must pin and validate them as specified.",
+      "The freezer and scoring wrapper were read for consistency and reference-join ordering. This receipt does not independently verify the underlying ranking, statistical or relevance arithmetic. The planned pre-inference wrapper review and post-commit output recount remain required.",
+      "Procedural AI context separation does not provide independent training or human ground truth. Application audit hooks are not an OS sandbox or a defense against a compromised host or administrator.",
+      "The coordinator reported that no formal cases exist. I did not enumerate the filesystem to verify their absence."
+    ]
+  },
+  "verification": {
+    "reviewer_actions": "Static reading and SHA-256 hashing of only the permitted files; no bank generation, annotation, inference, or test execution by this reviewer.",
+    "boundary_test": "Coordinator reported a passed no-case subprocess test. I inspected test_ai_e2_boundary.py but did not independently execute the test or read its result artifact.",
+    "required_before_authoring": "Create the protocol freeze receipt with these reviewed versions, the actual exclusion/input/source hashes, no-case preflight evidence and available agent/runtime identity. The coordinator must check this verdict and exact hash correspondence before invoking the freezer.",
+    "required_before_inference": "Complete the specified bank/reference locks, semantic-wrapper review and full immutable release. Commit/hash terminal predictions before any scoring join."
+  },
+  "exposure_attestation": {
+    "file_text_inputs_read": "Only the eight current files listed in reviewed_files and earlier versions of the permitted protocol/rubric/role-prompt/bank/worker files during this same review.",
+    "nonfile_inputs": "Parent role/task instructions, stated model metadata and internal coordinator messages.",
+    "not_opened": [
+      "Old practice/development bank contents",
+      "Formal case texts or candidate outputs",
+      "Initial or final reference labels",
+      "Annotation journals",
+      "Predictions or historical raw model responses",
+      "Baseline feedctrl parser/evaluator/model source contents",
+      "Historical practice artifacts, E1 data or checkpoints"
+    ],
+    "not_performed": [
+      "Case or label generation",
+      "Model inference",
+      "Git commands or changes",
+      "Edits to reviewed source files",
+      "External account messages or email"
+    ],
+    "only_file_write": "This newly created review receipt.",
+    "prior_protocol_rubric_versions": [
+      {
+        "path": "docs/ai-reference-e2-protocol-2026-10-14.md",
+        "sha256": "3400f2ea0f63e647796a3b16e227ab94820a01bc737df2d90d2f1ae0eb24aff1"
+      },
+      {
+        "path": "docs/ai-reference-e2-protocol-2026-10-14.md",
+        "sha256": "54ff313ec2b24d117bdd5977534ad1557b40e63256a13437eaf41e92157ee99c"
+      },
+      {
+        "path": "docs/ai-reference-e2-rubric-2026-10-14.md",
+        "sha256": "ef238627a68f4c8308bd8c641a281f5ca3de585dcfc9f3fe04683d462e24f275"
+      }
+    ]
+  }
+}
