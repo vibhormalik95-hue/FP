@@ -1,14 +1,11 @@
 /* Run: FEEDCTRL_PYTHON=.venv/bin/python node tests/browser_acceptance.cjs
    Install optional browser runner first: npm --prefix web install --no-save playwright
-   Then: npx --prefix web playwright install chromium
-   Runtime-owned Playwright is used when CODEX_PRIMARY_RUNTIME_NODE_MODULES exists. */
+   Then: npx --prefix web playwright install chromium */
 const fs = require('node:fs');
 const path = require('node:path');
 const assert = require('node:assert/strict');
 const { spawn } = require('node:child_process');
-const { chromium } = require(process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES
-  ? path.join(process.env.CODEX_PRIMARY_RUNTIME_NODE_MODULES, 'playwright')
-  : path.join(__dirname, '../web/node_modules/playwright'));
+const { chromium } = require(path.join(__dirname, '../web/node_modules/playwright'));
 const root = path.resolve(__dirname, '..');
 const out = path.resolve(root, process.env.FEEDCTRL_VERIFICATION_DIR || 'results/verification');
 fs.mkdirSync(out, { recursive: true });
