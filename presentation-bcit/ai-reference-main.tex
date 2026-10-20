@@ -42,7 +42,7 @@
 \title[COMP 9500: Natural-language controls]{Natural-Language Controls for\\Short-Video Recommenders}
 \subtitle{An offline study of controllability}
 \author{Vibhor Malik}
-\date{19 October 2026}
+\date{20 October 2026}
 \institute{COMP 9500, M.Sc. Research Project\\British Columbia Institute of Technology\\Supervisor: Borna Noureddin}
 \begin{document}
 
@@ -62,11 +62,11 @@
 Llama: 76 exact, 23 rejected, one accepted mismatch.\\
 Rules: 11/100 exact matches.
 
-Control success requires requested category counts and\\
-position-weighted exposure movement.\\
+Intended-control success combines requested counts\\
+with a change in ranked category exposure.\\
 Llama: 20.145\%; item feedback: 3.815\%.\\
 Conditional requests: no control successes.\\
-NDCG@10: 0.02580 versus 0.03184.
+NDCG@10: 0.02580 Llama versus 0.03184 item feedback.
 \vfill
 \tiny The earlier exposed practice score of 73/100 is separate. Model-generated references are not human validation.
 \end{frame}
@@ -121,7 +121,7 @@ A correct hard exclusion comes from the enforcement code. It does not demonstrat
 \end{itemize}
 \vspace{0.2cm}
 Synthetic requests and numeric category labels limit claims about real preferences and language.
-\src{Filtered cohort counts, not the upstream KuaiRec matrix size. Frozen candidate policy permits seen items.}
+\src{Filtered cohort counts, not the upstream KuaiRec matrix size. The candidate list could include items users had already seen.}
 \end{frame}
 
 \begin{frame}{Five matched configurations}
@@ -157,7 +157,7 @@ Adversarial subset & 2/10 & Major weakness\\\bottomrule
 \src{The adversarial subset belongs to the 100 cases. These finite synthetic sets do not establish general language reliability.}
 \end{frame}
 
-\begin{frame}{Category enforcement works under the policy}
+\begin{frame}{Experiment 1: category enforcement}
 \begin{tabular}{@{}lrr@{}}
 \toprule
 Top-10 exposure & A & C, D and E\\\midrule
@@ -168,7 +168,7 @@ Muted target share, TCER & 6.1\% & 0.0\%\\\bottomrule
 \begin{itemize}
 \item Hard exclusion guarantees zero exposure when parsed correctly.
 \item Category-wide boosts affect more items than A's single-item adjustment.
-\item Rule and LLM paths produce identical feeds for this task.
+\item Rule and LLM paths produce identical feeds for these canonical Experiment 1 requests.
 \end{itemize}
 \src{Averages over 865 users and three seeds. This is enforcement evidence, not an LLM advantage.}
 \end{frame}
@@ -225,7 +225,7 @@ The absolute 10 percentage point non-inferiority margin is uninformative at this
 \item Control success versus rules and item feedback.
 \item Requested exposure movement versus item feedback.
 \item Historical next-item accuracy as a separate outcome.
-\item The 73/100 practice bank was already exposed.
+\item Earlier practice results were used during development and are separate from the fresh test.
 \item Synthetic requests do not measure human experience.
 \end{itemize}
 \vfill
@@ -245,7 +245,7 @@ Conditional & More X only if also Y & $n(X\cap Y)\geq2$ and no increase in $X\se
 \end{tabular}\par
 \vspace{0.25cm}
 Success also requires a full list and positive intended movement. Bands are operational conventions.
-\src{X and Y denote opaque categories. Conditional means the same item carries both labels. These are illustrative wording forms, not reserved cases.}
+\src{X and Y denote opaque categories. Conditional means the same item carries both labels. These are examples, not test requests.}
 \end{frame}
 
 \begin{frame}{A matched interaction budget}
@@ -261,18 +261,18 @@ The budget matches interaction count. It does not equalize semantic content, use
 
 \begin{frame}{Prospective design}
 \small
-Protocol and source frozen before fresh requests.
+The evaluation procedure was fixed before the 100 new requests were created.
 
 100 balanced requests across four classes.\\
 Two separate model annotation passes.\\
-Original labels locked before comparison.
+Reference labels saved before comparison.
 
 Agreement measures model consistency, not human validity.
 \vfill
 \tiny Both passes used the same reported model family.
 \end{frame}
 
-\begin{frame}{Fresh bank and reference provenance}
+\begin{frame}{Fresh requests and reference labels}
 \small
 100 selected requests, 25 in each of four classes.\\
 31 target category IDs covered by the fixed plan.
@@ -280,14 +280,15 @@ Agreement measures model consistency, not human validity.
 Screened against 100 exposed and 48 development texts.\\
 No duplicate or frozen close-paraphrase flags selected.
 
-Initial model-label agreement: 100/100.\\
-Cohen kappa: 1.0000. Adjudicated disputes: 0.
+Two passes with the same model family agreed\\
+on all 100 initial commands.\\
+No human adjudication was performed.
 \vfill
 \tiny Lexical screening does not prove semantic or pretraining novelty. Model agreement is not human ground truth.
 \end{frame}
 
 
-\begin{frame}{Preserved exposed practice execution}
+\begin{frame}{Earlier development results}
 \small
 Validated model-reference agreement: Llama 73/100; rules 18/100.\\
 All 24 Llama validation errors remain counted.
@@ -296,9 +297,9 @@ Induced success: Llama 23.81\%; rules 8.40\%;\\
 item feedback 3.92\%.\\
 NDCG@10: Llama 0.02461; item feedback 0.03128.
 
-41,508 ranking rows; separate recount passed.
+41,508 ranking records were checked.
 \vfill
-\tiny Original c6ebda0 practice run is intact and was not rerun. These exposed questions do not supply an unseen test.
+\tiny These earlier questions had been seen during development and do not supply an unseen test.
 \end{frame}
 
 \begin{frame}{Prespecified analysis}
@@ -312,7 +313,7 @@ Pratt one-sided Wilcoxon with joint BH over 11 tests.
 Keep failures, infeasibility and exclusions visible.\\
 Report control, HR@1 and NDCG@10 together.
 \vfill
-\tiny Frozen prompts, validators, model digest, ranking inputs, seeds and metrics precede inference. No outcome tuning.
+\tiny Analysis choices were fixed before reviewing results and were not tuned to them.
 \end{frame}
 
 \section{Results and limitations}
@@ -332,11 +333,12 @@ NDCG@10: Llama 0.02580; item feedback 0.03184.
 
 \begin{frame}{Contribution and limits}
 \small
-H1\_AI: supported. H2\_AI: supported.\\
-Decisions apply only to the prospective model-reference revision.
+Under model-generated reference labels, language control\\
+exceeded the rule parser and single-item feedback on\\
+the prespecified control measures.
 
 Translation, enforcement and quality remain observable.\\
-The current bank and all recorded failures are auditable.
+Failures remained in every reported comparison.
 
 Human experience, naturalistic language and other\\
 LLM models require separate evidence.
@@ -357,18 +359,28 @@ LLM models require separate evidence.
 \tiny Category control and historical next-item prediction are separate outcomes.
 \end{frame}
 
-\begin{frame}{Evidence boundaries}
+\begin{frame}{What these results can establish}
 \small
 \begin{itemize}
-\item 100 unique request texts were reused across 865 users.
-\item References came from two model annotation contexts.
-\item Public screening receipts include all candidate request texts.
-\item Complete structured cases and ranking rows remain in the local archive.
+\item The 100 synthetic requests were evaluated across 865 users.
+\item Reference commands came from two passes using the same model family.
 \item Human understanding and satisfaction were not measured.
-\item Full Windows and Colab replay remains unverified.
+\item Full E1 replay on Windows and Colab remains unverified.
 \end{itemize}
 \vfill
-\tiny The compact evidence index retains protocol, result and audit receipts.
+\tiny The separate research archive retains the full study records.
+\end{frame}
+
+\begin{frame}{Student response check, 20 October}
+\small
+Vibhor reports completing the original 100-question\\
+worksheet himself without seeing reference answers.\\[0.2cm]
+Under the study's stated annotation rules, his responses\\
+matched 99 of 100 initial AI-authored labels.\\[0.2cm]
+This is a descriptive student-versus-AI comparison,\\
+not agreement between independent human annotators.\\[0.2cm]
+The original human-reference evaluation still needs\\
+adjudication and separate parser and ranking analysis.
 \end{frame}
 
 \pdfstringdefDisableCommands{\def\translate#1{#1}}
@@ -435,16 +447,14 @@ Conditional & $\Delta D(X\cap Y)-\max(0,\Delta D(X\setminus Y))$\\\bottomrule
 Induced satisfaction requires a full list, the class band and $M>10^{-12}$. This operational measure is not Shannon information.
 \end{frame}
 
-\begin{frame}{Backup: reproducibility evidence}
+\begin{frame}{Backup: study records}
 \small
-100 requests and 200 retained parser predictions.\\
+100 requests and 200 retained parser responses.\\
 3,460 assigned user/request pairs.\\
-41,520 ranking rows; 2,595 score vectors.
-
-Fixed prompt, model digest, seeds and input hashes.\\
-Saved audit: 1,666,140 checks, no discrepancies.
-\vfill
-\tiny Full Windows and Colab replay remain open.
+41,520 ranking rows; 2,595 score vectors.\\[0.3cm]
+The study saved its prompts, model settings, inputs\\
+and calculations before the result comparison.\\[0.3cm]
+Full E1 replay on Windows and Colab remains open.
 \end{frame}
 
 \begin{frame}{Backup: selected references}

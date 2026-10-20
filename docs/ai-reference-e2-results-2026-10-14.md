@@ -4,9 +4,9 @@ On the fresh synthetic bank, validated whole-command agreement with model-genera
 
 User-averaged induced control success is 20.145% for Llama, 3.854% for rules and 3.815% for item feedback. NDCG@10 is 0.02580 for Llama versus 0.03184 for item feedback. Control and next-item ranking quality must be interpreted together.
 
-Two separately contextualized model annotation passes produced the references. Their initial whole-command agreement is 100/100, Cohen kappa 1.000000. Both label sets were hash-locked before comparison and no disagreements needed adjudication. They shared a reported model family; this is not independent human accuracy.
+Two passes using the same model family produced the reference labels and agreed on all 100 initial commands (Cohen kappa 1.000000). Both sets were saved before comparison. No model disagreement needed adjudication; this does not measure independent human accuracy.
 
-The completed run retains 200 terminal parser records and 200 pre-call attempt journals, 41,520 ranking rows, 3,460 assigned user/class requests and 2,595 full score vectors. It covers 865 users and three fixed recommender seeds. An independent computational recount checks the saved calculations; the audit receipt states its scope and limitations.
+The completed run retains 200 parser responses, 41,520 ranking rows, 3,460 assigned user/class requests and 2,595 full score vectors. It covers 865 users and three fixed recommender seeds. A separate calculation checked the saved results; its technical record states the scope and limitations.
 
 Under this revision only, H1_AI is supported and H2_AI is supported by the prespecified directional tests with joint BH correction across 11 contrasts. H3_AI reports predictive quality descriptively. These decisions do not complete the archived human-reference design.
 
@@ -14,4 +14,4 @@ The earlier exposed-practice run at c6ebda06008c92e4141aa2d91991ac2c0328a1de sco
 
 Synthetic requests, opaque category IDs and a historical next-item proxy limit what the result says about human understanding or experience. A human study would need its own design.
 
-The [current review packet](../deliverables/2026-10-19/README-2026-10-19.md) contains the updated paper and presentation. Full E1 Windows replay, Colab execution and older score-hash differences remain open checks.
+The [current review files](../deliverables/2026-10-19/README-2026-10-19.md) contain the updated paper and presentation. Full E1 reproduction on Windows and Colab, and reconciliation of earlier score-file hashes, remain outstanding.

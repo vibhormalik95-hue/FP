@@ -16,25 +16,23 @@ User-averaged induced-success proportions: A 0.0392, rule 0.0840, llm 0.2381, re
 
 All 288 frozen Experiment 1 files match the pinned manifest before and after execution; zero missing or mismatched. The September 29 parser commitment and original E2 protocol remain unchanged. No recommender was retrained or prompt tuned.
 
-A fresh-process audit independently recomputed all 41,508 rows' control and relevance metrics and pooled means from saved score vectors, top-10 lists and exposed references, with no discrepancies. The same AI agent performed this computational audit; it is not a second human or blinded review. Bootstrap intervals and signed-rank calculations were not independently reimplemented.
+A separate calculation from saved score vectors, top-10 lists and references reproduced the control and relevance metrics and pooled means for all 41,508 rows without differences. It was a computational check, not a second human or blinded review. Bootstrap intervals and signed-rank calculations were not independently reimplemented.
 
-## Original human-reference execution blocker
+## Original human-reference study
 
-Under the original human-reference E2 design, a replacement unseen bank and valid annotation route still require a recorded eligibility and custody decision, genuine independent labels, pre-adjudication agreement, blinded adjudication and full freeze. The current 100 worked questions cannot supply that unseen bank. These original-route gates are separate from the completed 14 October [model-reference evaluation](ai-reference-e2-results-2026-10-14.md).
+The original design called for a new unseen request bank, independent human annotations, agreement checks and adjudication. These steps have not been completed. The earlier practice questions had already been seen, so they cannot serve as an unseen test set. This work is separate from the completed 14 October [model-reference evaluation](ai-reference-e2-results-2026-10-14.md).
 
 ## Reproducibility record
 
 The methods bundle includes protocol-before-inference.json with the complete literal prompt, schema, fixed options, source and input hashes, source snapshots, actual model/API provenance, raw responses, parse records, full ranking score vectors, per-request metrics, all failures and excluded user/class pairs. It also retains the aborted wrong-model attempt, its preflight error and interruption receipt; no result from that attempt is used. The original AI label timestamp strings are preserved as supplied, with their timezone-format limitation disclosed in the protocol.
 
-The completed run and audit use scripts/run_exposed_practice.py and scripts/audit_exposed_practice.py. The original scripts/run_experiment2.py, parser source, models, reserved bank, human gates and September 29 receipt are unchanged. No model is trained, no response is invented, and no new student hours are recorded.
+The completed run and check use scripts/run_exposed_practice.py and scripts/audit_exposed_practice.py. The original scripts/run_experiment2.py, parser source, models, reserved bank and September 29 record are unchanged.
 
-## Scope of review
-
-The independent computational audit checks parser denominators, immutable file hashes, exact questions and reference provenance, fixed runtime and prompt, every ranking metric and user aggregate. The same AI agent conducted it in a fresh process with a separate stdlib implementation; this is not an independent human study or blinded review. Historical E1 score/full-ranking hash discrepancies and full Colab reproduction remain unresolved.
+Historical E1 score and full-ranking differences and full Colab reproduction remain unresolved.
 
 ## Windows source byte provenance
 
-The existing Git checkout uses CRLF while the original archive uses LF. The parser, evaluator and protocol are identical after LF normalization, but their raw SHA-256 values differ. The run snapshot pins the actual Windows bytes, and source-line-ending-comparison.json records both identities. No normalization or historical commitment replacement was performed.
+The Git checkout uses CRLF line endings while the original archive uses LF. The parser, evaluator and protocol are otherwise identical, so their raw SHA-256 values differ. The run snapshot and source-line-ending-comparison.json identify the bytes used on Windows.
 
 ## Descriptive practice quality
 
