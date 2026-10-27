@@ -27,7 +27,7 @@ Use [the current 30-page BCIT review deck](../2026-10-19/COMP9500-Presentation-2
 | 21 Contribution | 16:30-17:15 | Claim a bounded control gain under this model-reference benchmark. Failed outputs stay in the denominator. Do not generalize to human agency or all models. |
 | 22 Interpretation | 17:15-18:10 | Pooled control gain coexists with conditional failure and lower historical next-item quality. The weak ranker limits usefulness claims. |
 | 23 Limits | 18:10-18:55 | Reiterate 100 language cases, 865 users and shared model-family references. Full E1 Windows/Colab replay and earlier full-score hash reconciliation remain open; 288/288 proves byte preservation only. |
-| 24 Student check | 18:55-20:00 | The 20 October worksheet is one reported student pass, 99/100 versus AI initial labels under later rubric encoding. It is not two-human agreement. A separate exploratory parser-only check on exposed wording scored Llama 73/100 and rules 18/100, without ranking. The original human-reference route remains gated. |
+| 24 Student check | 18:55-20:00 | The completed 20 October worksheet is one reported student pass, 99/100 versus AI initial labels under later rubric encoding. It is not human-human agreement. A separate exploratory parser-only check on exposed wording scored Llama 73/100 and rules 18/100, without ranking. The archived human-reference route had a no-go; it is not required by the completed AI-reference revision. |
 | Close | 20:00-22:00 | Summarize the fixed-setting gain, zero conditional successes and lower NDCG. Invite questions. Use extra time for a brief A/B/C app example only if the talk slot permits it. |
 
 ## Backup slides and 10-15 minutes of questions
@@ -38,7 +38,7 @@ Pages 25-30 contain definitions, settings, non-inferiority, direction, records a
 2. **Why is E1 category gain not an LLM gain?** The enforcer is shared, and canonical rule and Llama feeds match. E2 separately tests translation with model references.
 3. **Does H2 prove quality preservation?** No. H2 concerns intended control movement. NDCG falls, and the old absolute non-inferiority margin dwarfs baseline HR@1; relative sensitivity fails.
 4. **What happened to parser failures?** They remain failures, with no silent rule fallback. Full-list and movement gates apply. The three feasibility counts are diagnostics that may overlap; use saved definitions before adding or comparing them.
-5. **Where is human validation?** It is absent from the AI-reference study. The later worksheet is one student pass compared with AI labels. The original human-reference reserved study lacks final adjudication and ranking analysis.
+5. **Where is human validation?** The AI-reference study used model-generated references, so it cannot establish human accuracy or satisfaction. The completed student worksheet is one pass compared with AI labels; it did not change the revised study's references. The original reserved route was not run and is not a pending step in that revision.
 6. **Is it reproducible?** A 27 October isolated archive check verified 1,613 manifest files and opened the saved-data, saved-model app. The complete 278-test Python suite passed in an isolated Windows copy. Earlier full-score hash differences and clean Colab replay remain unresolved. Do not call archive verification a fresh scientific rerun.
 
-Finish by asking the supervisor to confirm accepted scope, disposition of the original human-reference route, paper feedback timing and course deadline. Record only answers actually given.
+Summarize the completed revised study. Ask for paper feedback timing, the course deadline and the expected submission package. Record only answers actually given.
