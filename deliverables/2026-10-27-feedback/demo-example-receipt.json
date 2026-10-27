@@ -1,0 +1,150 @@
+{
+  "scope": "In-process demonstration only; saved processed data and seed-42 model, rule parser; not a scientific evaluation, browser check or LLM inference",
+  "user_id": 14,
+  "users": 865,
+  "items": 2593,
+  "baseline_history_only_top10": [
+    8958,
+    7383,
+    1116,
+    2894,
+    4367,
+    6001,
+    2687,
+    4506,
+    10217,
+    6090
+  ],
+  "baseline_target_count_category_1": 0,
+  "baseline_target_count_category_28": 6,
+  "condition_inputs": {
+    "A_B": "like item 1116",
+    "C": "Show me more category_1 via rule parser",
+    "D": "Show me more category_1. via rule profile parser",
+    "E": "same C command and D profile; explicit command wins, no doubling"
+  },
+  "conditions": {
+    "A": {
+      "top10": [
+        1116,
+        8958,
+        7383,
+        2894,
+        4367,
+        6001,
+        2687,
+        4506,
+        10217,
+        6090
+      ],
+      "fill_rate": 1.0,
+      "target_count_category_1": 0,
+      "explanations_enabled": false,
+      "feedback_count": 1
+    },
+    "B": {
+      "top10": [
+        1116,
+        8958,
+        7383,
+        2894,
+        4367,
+        6001,
+        2687,
+        4506,
+        10217,
+        6090
+      ],
+      "fill_rate": 1.0,
+      "target_count_category_1": 0,
+      "explanations_enabled": true,
+      "feedback_count": 1
+    },
+    "C": {
+      "top10": [
+        10138,
+        2666,
+        937,
+        4363,
+        10172,
+        5826,
+        10083,
+        7531,
+        8958,
+        6052
+      ],
+      "fill_rate": 1.0,
+      "target_count_category_1": 9,
+      "explanations_enabled": false,
+      "feedback_count": 1
+    },
+    "D": {
+      "top10": [
+        10138,
+        2666,
+        937,
+        4363,
+        10172,
+        5826,
+        10083,
+        7531,
+        8958,
+        6052
+      ],
+      "fill_rate": 1.0,
+      "target_count_category_1": 9,
+      "explanations_enabled": false,
+      "feedback_count": 1
+    },
+    "E": {
+      "top10": [
+        10138,
+        2666,
+        937,
+        4363,
+        10172,
+        5826,
+        10083,
+        7531,
+        8958,
+        6052
+      ],
+      "fill_rate": 1.0,
+      "target_count_category_1": 9,
+      "explanations_enabled": true,
+      "feedback_count": 1
+    }
+  },
+  "mute_category_28_C": {
+    "top10": [
+      7383,
+      2894,
+      2687,
+      4506,
+      1146,
+      5993,
+      2882,
+      10184,
+      8777,
+      10095
+    ],
+    "target_count": 0,
+    "fill_rate": 1.0
+  },
+  "conflict_E_explicit_mute_profile_boost_category_1": {
+    "top10": [
+      8958,
+      7383,
+      1116,
+      2894,
+      4367,
+      6001,
+      2687,
+      4506,
+      10217,
+      6090
+    ],
+    "target_count": 0,
+    "fill_rate": 1.0
+  }
+}

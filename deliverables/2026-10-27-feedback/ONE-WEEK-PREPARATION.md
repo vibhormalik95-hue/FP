@@ -1,0 +1,15 @@
+# One-week preparation before the next meeting
+
+Working dates: 28 October to 3 November 2026. The automated 27 October transcript proposes **next Wednesday at 3:30 p.m.**; 4 November is a planning inference, not a confirmed invitation. Shift this sequence if the invitation differs. These are prospective student review and decision tasks, not hours already worked. The related technical packet was prepared on 27 October and is indexed in [NEXT-MEETING-CHECKLIST.md](NEXT-MEETING-CHECKLIST.md).
+
+| Day | Focus | Existing material to use | Completion evidence to record |
+| --- | --- | --- | --- |
+| 28 Oct | Confirm proposal version, meeting date and scope; read the original draft beside the implemented protocol. | `PROPOSAL-ALIGNMENT.md`, original May proposal, 4 Oct plan. | Student-checked objective table and actual invitation; record any professor clarification rather than inferring approval. |
+| 29 Oct | Walk the three paths from diagram to code. | `PIPELINE-DIAGRAM.pdf`, `PIPELINE-AND-CODE-WALKTHROUGH.md`, `CODE-MAP-AND-AI-ASSISTANCE.md`. | Student explains each block, including exactly where Llama enters, which code was AI-assisted, and the neutral-versus-A distinction. Unknown personal ownership remains unknown until confirmed. |
+| 30 Oct | Reproduce matched A-E examples and correct mute wording. | `FIVE-CONDITION-EXAMPLES.md`, rule-mode script and receipt; existing live app. | Note actual run mode, inputs, top lists, list fill, hard mute and E conflict. A browser demonstration is separate from the in-process receipt. |
+| 31 Oct | Explain TCP/TCER validity and quality trade-off. | `EVALUATION-EXPLAINED.md`, frozen E1 protocol and evaluator. | Student computes one `t/10` example, shows fill and NDCG, and can explain why exposure is not human satisfaction. |
+| 1 Nov | Present bounded results and decide whether any new comparison is required. | `RESULTS-AND-LIMITATIONS.md`, fresh AI-reference E2 results, 20 Oct student-label record. | Decision record: existing evidence sufficient for intended claim, or separately scoped prospective human-intent study. Do not open frozen test data or tune from it. |
+| 2 Nov | Rehearse diagram, code, A-E, results and likely questions. | Entire local packet plus current paper and BCIT deck. | Actual student rehearsal duration and questions attempted, recorded only if performed. Correct any unsupported claim. |
+| 3 Nov | Freeze review copy and prepare one supervisor packet. | `NEXT-MEETING-CHECKLIST.md`, verified links and source versions. | Final checked file list, hashes/links, explicit unresolved questions, and the student's own sign-off. If the invitation is 4 Nov 3:30 p.m., target readiness by 3 Nov 3:30 p.m. local time. |
+
+The original 135-hour weekly budget remains in [the dated proposed reconciliation](135-HOUR-PLAN-2026-10-27-PROPOSED.md). This one-week sequence does not add hours to that budget. It prioritizes the professor's requests; it does not assume a new participant study, new category semantics or a software redesign.
