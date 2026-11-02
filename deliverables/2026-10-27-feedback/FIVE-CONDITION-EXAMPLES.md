@@ -14,6 +14,12 @@ The untouched history-only top ten is `8958, 7383, 1116, 2894, 4367, 6001, 2687,
 
 All five lists contain ten items. The receipt's `feedback_count=1` remains displayed in C/D/E because the user session stores the like, but `api.py:150-157` applies it only to A/B. Likewise, C does not silently inherit the editable profile and D does not silently inherit the latest free-text instruction. A separate clean-session UI run should reset user 14 before a professor-facing replay; do not treat these in-process results as proof that the browser was clicked in this check.
 
+## Manual known-intent reference, without language interpretation
+
+The same reproducer also supplies two investigator-specified structured actions directly to the validator, bypassing both the rule and Llama text parsers. For a known `boost category_1` action, the manual-reference top ten has nine target items, full 10/10 fill, and exactly matches the rule-parsed C boost list above. For a known `mute category_28` action, it has zero target items, full fill, and exactly matches the rule-parsed C mute list below. `demo-example-receipt.json` contains both full lists and equality checks.
+
+This is the requested **manual path mechanism demonstration**: known intended command, same frozen scores, same validator and policy, then a counted feed. The investigator chose the actions; no participant supplied a preference, no human parser backend was added, and this is not a new held-out experiment. It isolates the interpretation boundary for teaching, while the existing E1 and revised E2 results remain the only scientific evidence here. Equality in these two simple examples cannot establish a general LLM benefit.
+
 ## Mute and conflict examples
 
 - With the command `Mute category_28` in C, the resulting top three are `7383, 2894, 2687`, the list remains 10/10, and target category_28 appears 0/10. The original neutral top ten contains six category_28 items. Current `controls.rerank` removes muted-category items; it does not merely lower their scores. The meeting's spoken description of mute as a graded decrease was inaccurate for this code.

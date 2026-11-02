@@ -12,7 +12,7 @@ ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
 
 from feedctrl.api import DemoState  # noqa: E402
-from feedctrl.controls import parse_control, parse_profile  # noqa: E402
+from feedctrl.controls import _validate_control, parse_control, parse_profile  # noqa: E402
 
 
 def ids(feed):
@@ -50,6 +50,18 @@ def main():
     state["profile"] = {"category_1": 0.25}
     conflict = demo.rank(user_id, state, "E", 10)
 
+    # A known intended action is supplied as structured input without a language
+    # parser. This is a manual-reference mechanism check, not human annotation.
+    manual = demo.user_state(demo.create_session(), user_id)
+    manual["command"] = _validate_control(
+        {"operation": "boost", "category": "category_1", "strength": 0.25},
+        demo.categories, "manual_reference")
+    manual_boost = demo.rank(user_id, manual, "C", 10)
+    manual["command"] = _validate_control(
+        {"operation": "mute", "category": "category_28", "strength": 1.0},
+        demo.categories, "manual_reference")
+    manual_mute = demo.rank(user_id, manual, "C", 10)
+
     result = {
         "scope": "In-process demonstration only; saved processed data and seed-42 model, rule parser; not a scientific evaluation, browser check or LLM inference",
         "user_id": user_id,
@@ -80,6 +92,21 @@ def main():
             "top10": ids(conflict),
             "target_count": conflict["category_exposure"].get("category_1", 0),
             "fill_rate": conflict["fill_rate"],
+        },
+        "manual_known_intent_reference": {
+            "scope": "Investigator-specified structured commands, validated without a text parser; not a human participant or new held-out evaluation",
+            "boost_category_1": {
+                "top10": ids(manual_boost),
+                "target_count": manual_boost["category_exposure"].get("category_1", 0),
+                "fill_rate": manual_boost["fill_rate"],
+                "equals_rule_C_boost": ids(manual_boost) == ids(feeds["C"]),
+            },
+            "mute_category_28": {
+                "top10": ids(manual_mute),
+                "target_count": manual_mute["category_exposure"].get("category_28", 0),
+                "fill_rate": manual_mute["fill_rate"],
+                "equals_rule_C_mute": ids(manual_mute) == ids(mute),
+            },
         },
     }
     print(json.dumps(result, indent=2))

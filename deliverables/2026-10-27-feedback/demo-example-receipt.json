@@ -146,5 +146,42 @@
     ],
     "target_count": 0,
     "fill_rate": 1.0
+  },
+  "manual_known_intent_reference": {
+    "scope": "Investigator-specified structured commands, validated without a text parser; not a human participant or new held-out evaluation",
+    "boost_category_1": {
+      "top10": [
+        10138,
+        2666,
+        937,
+        4363,
+        10172,
+        5826,
+        10083,
+        7531,
+        8958,
+        6052
+      ],
+      "target_count": 9,
+      "fill_rate": 1.0,
+      "equals_rule_C_boost": true
+    },
+    "mute_category_28": {
+      "top10": [
+        7383,
+        2894,
+        2687,
+        4506,
+        1146,
+        5993,
+        2882,
+        10184,
+        8777,
+        10095
+      ],
+      "target_count": 0,
+      "fill_rate": 1.0,
+      "equals_rule_C_mute": true
+    }
   }
 }

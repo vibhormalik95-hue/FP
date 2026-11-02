@@ -16,12 +16,12 @@ Prepared 27 October 2026. The automated meeting transcript says **next Wednesday
 
 | # | Request | Status now and evidence | Remaining action |
 | ---: | --- | --- | --- |
-| 1 | Manual intended control and feed response | Ready as explicit category_1 boost/category_28 mute in `FIVE-CONDITION-EXAMPLES.md`. | Professor may request a human-intent reference beyond this explicit scenario. |
+| 1 | Manual intended control and feed response | Verified in-process with investigator-specified structured category_1 boost and category_28 mute in `demo-example-receipt.json`; this bypasses the language parsers and matches the rule-mode feed under the same actions. | This mechanism check is not participant intent or a new held-out study. |
 | 2 | LLM benefit against history-only, downstream | Partial: `RESULTS-AND-LIMITATIONS.md` separates neutral history-only, E1 A proxy and fresh E2 model-reference gains. | No matched independent-human-reference downstream comparison is claimed. Scope decision first. |
 | 3 | Core code attribution | Worksheet prepared. | Student confirms personal authorship from records. |
 | 4 | Explain AI-assisted code and checks | Function map and `docs/academic-use.md` available. | Student explains and verifies personally. |
 | 5 | Original history-based pipeline | Mermaid R0 path ready. | Student walks through score example. |
-| 6 | Human/manual interpretation path | Conceptual H0 reference shown separately. | No dedicated human backend is claimed. |
+| 6 | Human/manual interpretation path | H0 is explained in the diagram; the separate manual known-intent receipt exercises the existing validator and ranking policy without text parsing. | No dedicated human backend or participant annotation is claimed. |
 | 7 | Exact LLM boundary | P1 parser and V1 validator shown. | Demonstrate real Ollama only if available and label its mode. |
 | 8 | Diagram-to-code mapping | Same IDs in diagram and code table. | Recheck against final presentation commit if it changes. |
 | 9 | Explain each block | Inputs, outputs, errors and one trace provided. | Student rehearsal, not agent attestation. |
