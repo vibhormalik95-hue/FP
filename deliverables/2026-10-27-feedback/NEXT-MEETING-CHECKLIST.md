@@ -40,6 +40,12 @@ Prepared 27 October 2026. The automated meeting transcript says **next Wednesday
 
 Start with the research question: "What does the LLM add beyond an item thumb or an explicit rule?" Show R0 history-only, A/B item feedback, then the parser branch into the **same** reranking policy. Walk through user 14's category_1 boost and category_28 mute with mode badges visible. Explain why A/B share rank, C/D/E can share rank, and the rule demo alone cannot prove LLM necessity. Then show the completed fresh E2 parser comparison, zero conditional success and lower NDCG. Work through TCP and TCER as counts over ten, and state why offline exposure is not a real person's satisfaction. Close with the proposed decision: does the professor accept bounded synthetic/model-reference evidence for the final scope, or want a separately prospective human-intent comparison?
 
+## 2 November verification
+
+The saved-data, saved-seed-42-model reproducer was run again after adding the manual known-intent path. Its structured boost and mute bypass the text parser and match the corresponding rule-mode top-ten lists, with full fill. This is a mechanism receipt, not a new experiment or participant observation. All relative links in this packet resolve.
+
+The current checkout's full Python suite completed with `python -m pytest -q`: **277 passed, 1 skipped** in 31.50 seconds. The skip requires private parser development and reserved test banks absent from this review checkout. A first sandboxed attempt had hung while Windows asyncio created its loopback socket for FastAPI `TestClient`; the same API test and full suite passed when that local socket was permitted. No project-code fix was required. These test results verify software behavior, not scientific replay or human benefit.
+
 ## Before any premeeting delivery
 
 - Student reviews the code contribution worksheet and signs off only claims they can explain. Do not infer personal work from a commit.
