@@ -15,6 +15,8 @@ function App() {
   const [user, setUser] = useState(null), [condition, setCondition] = useState('E');
   const [backend, setBackend] = useState('rule'), [feed, setFeed] = useState(null), [comparison, setComparison] = useState(null);
   const [control, setControl] = useState(''), [profileText, setProfileText] = useState('');
+  const [topicText, setTopicText] = useState(''), [topicBackend, setTopicBackend] = useState('manual');
+  const [topicOperation, setTopicOperation] = useState('boost'), [topicResult, setTopicResult] = useState(null);
   const [busy, setBusy] = useState(true), [error, setError] = useState(''), [notice, setNotice] = useState('');
   const [showSignals, setShowSignals] = useState(true), [view, setView] = useState('feed');
   const token = useRef(null), requestId = useRef(0);
@@ -42,17 +44,26 @@ function App() {
   })(); }, []);
 
   async function act(work, success, loadProfile=false) {
-    setBusy(true); setError(''); setNotice('');
+    setBusy(true); setError(''); setNotice(''); setTopicResult(null);
     try { const result = await work(); await refresh(user, condition, loadProfile); setNotice(typeof success === 'function' ? success(result) : success); }
     catch (e) {setError(e.message);} finally {setBusy(false);}
   }
   async function selectUser(value) {
-    setUser(Number(value)); setControl(''); setProfileText(''); setNotice(''); setError(''); setBusy(true);
+    setUser(Number(value)); setControl(''); setProfileText(''); setTopicResult(null); setNotice(''); setError(''); setBusy(true);
     try {await refresh(Number(value), condition, true);} catch (e) {setError(e.message);} finally {setBusy(false);}
   }
   async function selectCondition(value) {
-    setCondition(value); setBusy(true); setError('');
+    setCondition(value); setTopicResult(null); setBusy(true); setError('');
     try {await refresh(user, value);} catch(e) {setError(e.message);} finally {setBusy(false);}
+  }
+  async function previewTopic() {
+    setBusy(true); setError(''); setNotice(''); setTopicResult(null);
+    try {
+      const result = await api('topic/preview', {user_id:user, text:topicText,
+        backend:topicBackend, operation:topicOperation, condition:condition === 'E' ? 'E' : 'C'});
+      setTopicResult(result);
+      setNotice(result.applied ? `Exploratory topic preview: ${result.candidate_matches} catalog items matched source text.` : result.message);
+    } catch(e) {setError(e.message);} finally {setBusy(false);}
   }
   const profile = feed?.profile || {};
   const profileWords = profileText.trim() ? profileText.trim().split(/\s+/).length : 0;
@@ -73,6 +84,34 @@ function App() {
           <section className="panel"><div className="section-heading"><span className="step">01</span><h2>Choose a condition</h2></div><div className="conditions">{Object.entries(conditions).map(([key, [label]]) => <button key={key} aria-pressed={condition === key} className={`condition ${condition === key ? 'selected' : ''}`} disabled={busy || user === null} onClick={() => selectCondition(key)}><b>{key}</b><span>{label}</span><span className="radio-dot"/></button>)}</div><p className="help">{conditions[condition][1]}</p></section>
           <section className="panel"><div className="section-heading"><span className="step">02</span><h2>Steer the feed</h2></div><label className="field-label" htmlFor="parser">Interpretation backend</label><select id="parser" value={backend} disabled={busy} onChange={e => {setBackend(e.target.value); setNotice('');}}><option value="rule">Rule parser (diagnostic)</option><option value="ollama">Ollama (local LLM)</option></select><p className="help">{backend === 'rule' ? 'Matches explicit category instructions. It is not an LLM.' : `Uses ${status?.ollama_model || 'the configured model'}. Backend errors are shown; no silent fallback.`}</p><form onSubmit={e => {e.preventDefault(); act(() => api('control', {user_id:user, text:control, backend}), r => r.applied ? `${r.command.operation} ${r.command.category || ''} applied via ${r.command.source}.` : 'Please clarify: name one category and ask for more, less, mute or reset.');}}><label className="field-label" htmlFor="control">What would you like to change?</label><textarea id="control" aria-describedby="control-shortcut" onKeyDown={e => {if ((e.ctrlKey || e.metaKey) && e.key === 'Enter' && !e.nativeEvent.isComposing) {e.preventDefault(); if (!busy && control.trim() && user !== null) e.currentTarget.form.requestSubmit();}}} maxLength={500} value={control} onChange={e => setControl(e.target.value)} placeholder={`Show me more ${cats[0] || 'category_0'}`} rows={3}/><div className="suggestions"><button type="button" onClick={() => setControl(`Show me more ${cats[0]}`)} disabled={!cats.length}>More {cats[0]}</button><button type="button" onClick={() => setControl(`Mute ${cats[1]}`)} disabled={cats.length < 2}>Mute {cats[1]}</button></div><button className="primary" disabled={busy || !control.trim() || user === null}>Apply instruction <span>↗</span></button></form><p className="help">Used by C and E. <span id="control-shortcut">Ctrl/Cmd+Enter applies the instruction.</span> One category per instruction; the latest replaces the previous one. Less/fewer means hard mute.</p></section>
           <section className="panel"><div className="section-heading"><span className="step">03</span><h2>Your editable profile</h2></div><form onSubmit={e => {e.preventDefault(); act(() => api('profile/text', {user_id:user, text:profileText, backend}), r => r.applied ? `Profile saved via ${r.source}.` : 'Profile was ambiguous. State explicit category preferences and try again.');}}><label className="field-label" htmlFor="profile">History context + your current preferences</label><textarea id="profile" maxLength={2000} rows={4} value={profileText} onChange={e => setProfileText(e.target.value)} placeholder={`More ${cats[0] || 'category_0'}. Mute ${cats[1] || 'category_1'}.`}/><div className="word-count">{profileWords}/200 words · Used by D and E</div><button className="secondary" disabled={busy || !profileText.trim() || profileWords > 200 || user === null}>Save profile</button></form><div className="saved-profile"><span className="field-label">Parsed current preferences</span>{Object.keys(profile).length ? Object.entries(profile).map(([c,v]) => <div className="preference" key={c}><span><i style={{background:color(c)}}/>{c}</span><b>{v < 0 ? 'Muted' : `+${v.toFixed(2)}`}</b><button aria-label={`Remove ${c} preference`} disabled={busy} onClick={() => {const next={...profile}; delete next[c]; act(() => api('profile', {user_id:user,profile:next}, 'PUT'), `Removed ${c} from profile.`, true);}}>×</button></div>) : <p className="help">No saved category preferences.</p>}</div></section>
+          <section className="panel" aria-label="Exploratory semantic topic control">
+            <div className="section-heading"><span className="step">04</span><h2>Explore a new topic</h2></div>
+            <p className="help">Optional source-text preview outside the frozen A-E study. It uses the official KuaiRec caption sidecar when configured. No new video or ground-truth category is created.</p>
+            <p className="help">{status?.semantic_topic}</p>
+            <form onSubmit={e => {e.preventDefault(); previewTopic();}}>
+              <label className="field-label" htmlFor="topic-backend">Interpretation</label>
+              <select id="topic-backend" value={topicBackend} disabled={busy} onChange={e => setTopicBackend(e.target.value)}>
+                <option value="manual">Literal source-text topic (no LLM)</option>
+                <option value="ollama">Local Ollama (real inference)</option>
+              </select>
+              {topicBackend === 'manual' && <><label className="field-label" htmlFor="topic-operation">Action</label>
+                <select id="topic-operation" value={topicOperation} disabled={busy} onChange={e => setTopicOperation(e.target.value)}>
+                  <option value="boost">Show more</option><option value="reduce">Show somewhat less</option>
+                  <option value="exclude">Hide completely</option>
+                </select></>}
+              <label className="field-label" htmlFor="topic-text">{topicBackend === 'manual' ? 'Exact source-text topic' : 'Natural-language request'}</label>
+              <textarea id="topic-text" maxLength={500} rows={3} value={topicText}
+                onChange={e => setTopicText(e.target.value)}
+                placeholder={topicBackend === 'manual' ? '美食' : 'Show me more cooking videos'}/>
+              <button className="secondary" disabled={busy || !topicText.trim() || user === null || !status?.semantic_topic?.startsWith('Official')}>Preview topic feed</button>
+            </form>
+            {topicResult?.applied && <div className="saved-profile" role="status">
+              <strong>{topicResult.command.operation} {topicResult.command.topic}</strong>
+              <p className="help">{topicResult.command.source} | {topicResult.candidate_matches} catalog matches | {topicResult.top_k_match_count}/10 text matches shown | {topicResult.available_items} eligible items | {Math.round(topicResult.fill_rate*100)}% fill</p>
+              <p className="help">Top ten: {topicResult.items.map(item => `${item.item_id}${item.topic_text_match ? '*' : ''}`).join(', ')}</p>
+              <p className="help">* matches supplied source text. This preview is not human relevance or A-E evaluation evidence.</p>
+            </div>}
+          </section>
         </aside>
         <section className="results" aria-busy={busy}>
           <div className="results-header"><div><p className="eyebrow">{view === 'feed' ? `CONDITION ${condition} · LIVE LOCAL PREVIEW` : 'WITHIN-SESSION COMPARISON'}</p><h2>{view === 'feed' ? 'Your recommendation list' : 'One input. Five conditions.'}</h2></div>{view === 'feed' && <label className="signal-toggle"><input type="checkbox" checked={showSignals} onChange={e => setShowSignals(e.target.checked)}/> Show signals</label>}</div>

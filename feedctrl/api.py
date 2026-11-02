@@ -18,6 +18,8 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from feedctrl.controls import DEFAULT_MODEL, normalize_scores, parse_control, parse_profile, rerank
 from feedctrl.explanations import cached_explanation
+from feedctrl.semantic_controls import (load_topic_index, manual_topic_command, match_topic,
+                                        parse_topic_request, rerank_topic)
 
 ROOT = Path(__file__).resolve().parents[1]
 SESSION_TTL = 12 * 60 * 60
@@ -78,8 +80,15 @@ class FeedbackRequest(Request):
     direction: Literal["like", "dislike", "clear"]
 
 
+class TopicRequest(Request):
+    text: str = Field(min_length=1, max_length=500)
+    backend: Literal["manual", "ollama"] = "manual"
+    operation: Literal["boost", "reduce", "exclude"] = "boost"
+    condition: Literal["C", "E"] = "C"
+
+
 class DemoState:
-    def __init__(self, data_path=None, model_path=None, fixture=False):
+    def __init__(self, data_path=None, model_path=None, fixture=False, semantic_path=None):
         data_path = Path(data_path or os.getenv("FEEDCTRL_DATA", ROOT / "data/processed.json"))
         model_path = Path(model_path or os.getenv("FEEDCTRL_MODEL", ROOT / "results/models/seed_42"))
         self.data = fixture_data() if fixture or not data_path.exists() else json.loads(data_path.read_text(encoding="utf-8"))
@@ -95,6 +104,8 @@ class DemoState:
             self.model = load_model(model_path)
         self.sessions = {}
         self.lock = threading.RLock()
+        sidecar = semantic_path or os.getenv("FEEDCTRL_CAPTION_SIDECAR")
+        self.topic_index = load_topic_index(sidecar, set(self.items)) if sidecar else None
 
     def create_session(self):
         now = time.monotonic()
@@ -186,10 +197,45 @@ class DemoState:
                 "profile_text": state["profile_text"],
                 "command": state["command"], "feedback_count": len(state["feedback"])}
 
+    def topic_preview(self, user_id, state, command, condition, limit):
+        if self.topic_index is None:
+            raise ValueError("Official caption sidecar is not configured")
+        matched, evidence = match_topic(self.topic_index, command)
+        user = self.users[user_id]
+        history = list(user["train"]) + list(user["request_history"])
+        ids = sorted(self.items)
+        if self.model is not None:
+            raw = self.model.score(history, ids)
+        else:
+            counts = Counter(c for item in history for c in self.items.get(item, []))
+            raw = [sum(counts[c] for c in self.items[item]) + ((item * 17 + user_id * 7) % 19) / 100
+                   for item in ids]
+        scores = normalize_scores(raw)
+        profile = state["profile"] if condition == "E" else {}
+        order = rerank_topic(ids, scores, self.items, profile, matched, command["operation"])
+        top = order[:limit]
+        return {"mode": "exploratory semantic topic preview; not A-E study evidence",
+                "condition_context": condition,
+                "data_mode": "fixture" if self.fixture else "processed dataset",
+                "model_mode": "trained model" if self.model else "deterministic diagnostic scorer",
+                "command": command, "candidate_matches": len(matched),
+                "match_fraction": len(matched) / len(ids), "match_evidence": evidence,
+                "items": [{"item_id": item, "categories": self.items[item], "rank": position,
+                           "topic_text_match": item in matched,
+                           "base_score": round(scores[ids.index(item)], 4)}
+                          for position, item in enumerate(top, 1)],
+                "top_k_match_count": sum(item in matched for item in top),
+                "available_items": len(order),
+                "fill_rate": len(top) / limit,
+                "sidecar": {key: self.topic_index[key] for key in
+                            ("source", "sha256", "candidate_items", "items_with_caption",
+                             "ignored_non_item_rows")},
+                "research_note": "Text-match exposure is not a human relevance label or experimental result."}
 
-def create_app(data_path=None, model_path=None, fixture=False):
+
+def create_app(data_path=None, model_path=None, fixture=False, semantic_path=None):
     app = FastAPI(title="Feed Control Lab", version="1.0.0")
-    demo = DemoState(data_path, model_path, fixture)
+    demo = DemoState(data_path, model_path, fixture, semantic_path)
     app.state.demo = demo
 
     @app.middleware("http")
@@ -211,6 +257,8 @@ def create_app(data_path=None, model_path=None, fixture=False):
                 "ollama_status": "Not checked; selecting Ollama makes a real request. Failures remain visible.",
                 "research_note": "Synthetic category controls measure offline behavior; this demo does not establish human agency or satisfaction.",
                 "category_note": "Opaque dataset category IDs; no invented topic names.",
+                "semantic_topic": ("Official caption sidecar loaded; exploratory preview only"
+                                   if demo.topic_index else "Unavailable until FEEDCTRL_CAPTION_SIDECAR is configured"),
                 "asset_note": "Metadata cards only; no original video assets are distributed."}
 
     @app.post("/api/session", status_code=201)
@@ -239,6 +287,26 @@ def create_app(data_path=None, model_path=None, fixture=False):
         with demo.lock:
             state = demo.user_state(x_session_id, user_id)
             return {c: demo.rank(user_id, state, c, limit) for c in CONDITIONS}
+
+    @app.post("/api/topic/preview")
+    def topic_preview(body: TopicRequest, x_session_id: str | None = Header(default=None)):
+        with demo.lock:
+            demo.user_state(x_session_id, body.user_id)
+        if demo.topic_index is None:
+            raise HTTPException(503, "Official caption sidecar is not configured; no topic preview was run.")
+        try:
+            command = (manual_topic_command(body.operation, body.text) if body.backend == "manual"
+                       else parse_topic_request(body.text, model=os.getenv("FEEDCTRL_OLLAMA_MODEL", DEFAULT_MODEL)))
+            if command["operation"] == "clarify":
+                return {"applied": False, "command": command,
+                        "message": "Request needs one clear current topic and action; no preview was changed."}
+            with demo.lock:
+                state = demo.user_state(x_session_id, body.user_id)
+                return {"applied": True,
+                        **demo.topic_preview(body.user_id, state, command, body.condition, 10)}
+        except Exception as exc:
+            code = 422 if body.backend == "manual" else 502
+            raise HTTPException(code, f"{body.backend} topic preview failed ({type(exc).__name__}); previous A-E state is preserved.") from exc
 
     @app.post("/api/control")
     def control(body: ControlRequest, x_session_id: str | None = Header(default=None)):

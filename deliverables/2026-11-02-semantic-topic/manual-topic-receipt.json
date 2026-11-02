@@ -1,0 +1,131 @@
+{
+  "scope": "Opt-in in-process semantic source-text preview, not E1/E2 or live LLM inference",
+  "user_id": 14,
+  "topic": "Θ¥Æσ▓¢",
+  "source": "https://github.com/chongminggao/KuaiRec/blob/main/kuairec_caption_category.csv",
+  "sidecar_sha256": "7ccf10f348da6041742222f107da32e1be8b1c8c7b710d65963fa10d56a014f5",
+  "candidate_items": 2593,
+  "items_with_caption": 2460,
+  "ignored_non_item_rows": 4,
+  "matched_candidate_count": 5,
+  "sample_evidence": [
+    {
+      "item_id": 1990,
+      "matched_terms": [
+        "Θ¥Æσ▓¢"
+      ],
+      "source_fields": [
+        "manual_cover_text",
+        "caption"
+      ]
+    },
+    {
+      "item_id": 3940,
+      "matched_terms": [
+        "Θ¥Æσ▓¢"
+      ],
+      "source_fields": [
+        "manual_cover_text",
+        "caption"
+      ]
+    },
+    {
+      "item_id": 4335,
+      "matched_terms": [
+        "Θ¥Æσ▓¢"
+      ],
+      "source_fields": [
+        "manual_cover_text",
+        "caption"
+      ]
+    },
+    {
+      "item_id": 7314,
+      "matched_terms": [
+        "Θ¥Æσ▓¢"
+      ],
+      "source_fields": [
+        "caption"
+      ]
+    },
+    {
+      "item_id": 8958,
+      "matched_terms": [
+        "Θ¥Æσ▓¢"
+      ],
+      "source_fields": [
+        "caption",
+        "topic_tag"
+      ]
+    }
+  ],
+  "neutral_top10": [
+    8958,
+    7383,
+    1116,
+    2894,
+    4367,
+    6001,
+    2687,
+    4506,
+    10217,
+    6090
+  ],
+  "neutral_top10_matches": 1,
+  "operations": {
+    "boost": {
+      "top10": [
+        8958,
+        7383,
+        4335,
+        1116,
+        2894,
+        4367,
+        6001,
+        2687,
+        4506,
+        10217
+      ],
+      "top10_text_matches": 2,
+      "available_items": 2593,
+      "fill_rate": 1.0,
+      "source": "manual_literal"
+    },
+    "reduce": {
+      "top10": [
+        7383,
+        1116,
+        2894,
+        4367,
+        6001,
+        2687,
+        4506,
+        10217,
+        6090,
+        7594
+      ],
+      "top10_text_matches": 0,
+      "available_items": 2593,
+      "fill_rate": 1.0,
+      "source": "manual_literal"
+    },
+    "exclude": {
+      "top10": [
+        7383,
+        1116,
+        2894,
+        4367,
+        6001,
+        2687,
+        4506,
+        10217,
+        6090,
+        7594
+      ],
+      "top10_text_matches": 0,
+      "available_items": 2588,
+      "fill_rate": 1.0,
+      "source": "manual_literal"
+    }
+  }
+}
