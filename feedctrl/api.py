@@ -18,7 +18,7 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from feedctrl.controls import DEFAULT_MODEL, normalize_scores, parse_control, parse_profile, rerank
 from feedctrl.explanations import cached_explanation
-from feedctrl.semantic_controls import (load_topic_index, manual_topic_command, match_topic,
+from feedctrl.semantic_controls import (TopicGroundingError, load_topic_index, manual_topic_command, match_topic,
                                         parse_topic_request, rerank_topic)
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -298,7 +298,8 @@ def create_app(data_path=None, model_path=None, fixture=False, semantic_path=Non
             raise HTTPException(503, "Official caption sidecar is not configured; no topic preview was run.")
         try:
             command = (manual_topic_command(body.operation, body.text, body.strength) if body.backend == "manual"
-                       else parse_topic_request(body.text, model=os.getenv("FEEDCTRL_OLLAMA_MODEL", DEFAULT_MODEL)))
+                       else parse_topic_request(body.text, model=os.getenv("FEEDCTRL_OLLAMA_MODEL", DEFAULT_MODEL),
+                                                topic_index=demo.topic_index))
             if command["operation"] == "clarify":
                 return {"applied": False, "command": command,
                         "message": "Request needs one clear current topic and action; no preview was changed."}
@@ -306,6 +307,9 @@ def create_app(data_path=None, model_path=None, fixture=False, semantic_path=Non
                 state = demo.user_state(x_session_id, body.user_id)
                 return {"applied": True,
                         **demo.topic_preview(body.user_id, state, command, body.condition, 10)}
+        except TopicGroundingError as exc:
+            return {"applied": False,
+                    "message": f"{exc}. No topic preview was applied; A-E state is unchanged."}
         except Exception as exc:
             code = 422 if body.backend == "manual" else 502
             raise HTTPException(code, f"{body.backend} topic preview failed ({type(exc).__name__}); previous A-E state is preserved.") from exc

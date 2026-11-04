@@ -114,6 +114,7 @@ function App() {
             {topicResult?.applied && <div className="saved-profile" role="status">
               <strong>{topicResult.command.operation} {topicResult.command.topic}</strong>
               <p className="help">{topicResult.command.source} | {topicResult.command.strength} strength ({topicResult.command.adjustment > 0 ? '+' : ''}{topicResult.command.adjustment.toFixed(2)}) | {topicResult.candidate_matches} catalog matches | {topicResult.top_k_match_count}/10 text matches shown | {topicResult.available_items} eligible items | {Math.round(topicResult.fill_rate*100)}% fill</p>
+              {topicResult.command.rejected_terms?.length > 0 && <p className="help">Ignored unsupported model terms: {topicResult.command.rejected_terms.join(', ')}</p>}
               <p className="help">Top ten: {topicResult.items.map(item => `${item.item_id}${item.topic_text_match ? '*' : ''}`).join(', ')}</p>
               <p className="help">* matches supplied source text. This preview is not human relevance or A-E evaluation evidence.</p>
             </div>}
