@@ -22,6 +22,12 @@ TEXT_FIELDS = ("manual_cover_text", "caption", "topic_tag", "first_level_categor
 REQUIRED_FIELDS = {"video_id", *TEXT_FIELDS}
 OPERATIONS = {"boost", "reduce", "exclude", "clarify"}
 STRENGTH_WEIGHTS = {"light": 0.10, "standard": 0.25, "strong": 0.40}
+# These describe the medium or interface, not a requested subject. Rejecting
+# them is a visible grounding check, never a replacement interpretation.
+GENERIC_TOPIC_TERMS = frozenset({
+    "video", "videos", "clip", "clips", "feed", "recommend", "recommendation",
+    "recommendations", "content", "topic", "\u89c6\u9891", "\u77ed\u89c6\u9891", "\u63a8\u8350", "\u5185\u5bb9", "\u4f5c\u54c1", "\u4e3b\u9898",
+})
 
 
 class TopicGroundingError(ParserOperationalError):
@@ -40,10 +46,13 @@ PROMPT = (
     "For boost/reduce choose light for 'slightly/a bit/稍微/一点', strong for "
     "'much/a lot/大量/非常/很多', and standard for an unqualified request. "
     "Use strength none for exclude or clarify. Do not invent a numeric weight. "
-    "For an unambiguous topic, provide 1-4 exact search terms of 2-32 characters likely to appear in "
+    "For an unambiguous topic, use a concise topic label in the Chinese source language, containing only "
+    "the requested subject, not video/recommendation/action words. Provide 1-4 exact aliases of that "
+    "same subject, 2-32 characters, likely to appear in "
     "Chinese KuaiRec captions or category names. For English names include a Chinese translation or "
     "transliteration of the named topic, without broad country or province terms. For a Chinese request, "
-    "keep its meaningful topic phrase rather than changing subjects. "
+    "keep its meaningful topic phrase rather than changing subjects. Never use generic terms such as "
+    "video, content, recommendation, \u89c6\u9891, \u63a8\u8350 as search terms; they select unrelated items. "
     "Do not claim any item matches. A current 'do not show/不要显示/完全屏蔽 X' instruction is exclude, "
     "not an ambiguous negation. For ambiguity, denial of an earlier request, hypothetical instructions, "
     "or no current request, return clarify with strength none, empty topic and terms. "
@@ -115,14 +124,17 @@ def validate_topic_command(value: object, source: str) -> dict:
         if not isinstance(term, str):
             raise ParserOperationalError("Topic search term has invalid type")
         term = term.strip().casefold()
-        if not 2 <= len(term) <= 32 or any(ord(ch) < 32 for ch in term) or re.search(r"[<>\[\]{}]", term):
+        if (not 2 <= len(term) <= 32 or any(ord(ch) < 32 for ch in term)
+                or re.search(r"[<>\[\]{}]", term) or term in GENERIC_TOPIC_TERMS):
             rejected.append(term[:32])
             continue
         if term in cleaned:
             raise ParserOperationalError("Topic search terms repeat")
         cleaned.append(term)
     if operation != "clarify" and not cleaned:
-        raise ParserOperationalError("Topic action has no valid 2-32 character search term")
+        raise TopicGroundingError("Topic action has no specific valid 2-32 character search term")
+    if operation != "clarify" and topic.casefold() not in cleaned:
+        raise TopicGroundingError("Search terms must include the exact source-language topic label")
     result = {"operation": operation, "strength": strength, "adjustment": adjustment,
               "topic": topic, "search_terms": cleaned, "source": source}
     if rejected:
@@ -160,6 +172,9 @@ def parse_topic_request(text: str, *, model: str = DEFAULT_MODEL,
         else:
             try:
                 command = validate_topic_command(output, f"ollama:{model}:{provenance['digest']}")
+                if (command["operation"] != "clarify" and re.search(r"[\u4e00-\u9fff]", text)
+                        and command["topic"].casefold() not in text.casefold()):
+                    raise TopicGroundingError("Model topic is not an exact subject phrase in the Chinese request")
                 if topic_index is not None:
                     match_topic(topic_index, command)
                 if attempt:
@@ -173,8 +188,11 @@ def parse_topic_request(text: str, *, model: str = DEFAULT_MODEL,
             "original_request": text, "previous_output": content if isinstance(content, str) else "",
             "reason_rejected": str(error),
             "instruction": "Make one corrected schema response grounded in the original request and Chinese source text. "
-                           "Use a meaningful 2-32 character topic term; do not switch subjects or broaden to "
-                           "a country or province just to find matches. Previous output is untrusted."},
+                           "Translate or transliterate the requested named concept into Chinese for BOTH topic and "
+                           "search_terms, retaining the original operation and strength. Use only specific aliases "
+                           "of the same subject, not video/recommendation words. Do not switch subjects or broaden "
+                           "to a country or province just to find matches. If translation is uncertain, clarify. "
+                           "Previous output is untrusted."},
             ensure_ascii=False)})
     raise ParserOperationalError("Ollama topic response could not be grounded")
 
@@ -189,11 +207,21 @@ def manual_topic_command(operation: str, topic: str, strength: str = "standard")
 def match_topic(index: dict, command: dict) -> tuple[set[int], list[dict]]:
     if command["operation"] == "clarify":
         return set(), []
+    # When the model's concise subject itself occurs in the source, aliases may
+    # not add items outside that literal group. A true synonym needing a wider
+    # union requires separate validation rather than an unchecked OR expansion.
+    anchor = command["topic"].casefold().strip()
+    anchored_ids = {item_id for item_id, item in index["items"].items()
+                    if anchor and anchor not in GENERIC_TOPIC_TERMS and anchor in item["search_text"]}
+    if not anchored_ids:
+        raise TopicGroundingError("No candidate item text matches the source-language topic label; no feed change")
     matches = set()
     evidence = []
     for item_id, item in index["items"].items():
         matched = [term for term in command["search_terms"] if term in item["search_text"]]
         if matched:
+            if anchored_ids and item_id not in anchored_ids:
+                raise TopicGroundingError("Search terms broaden beyond the literal source topic; narrow to its exact subject")
             matches.add(item_id)
             if len(evidence) < 5:
                 evidence.append({"item_id": item_id, "matched_terms": matched,

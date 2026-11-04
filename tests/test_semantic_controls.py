@@ -68,7 +68,7 @@ def test_source_coverage_and_command_validation(tmp_path):
                                       "search_terms": ["美食"]}, "test")
     assert topic.manual_topic_command("reduce", "美食", "strong")["adjustment"] == -0.4
     assert topic.manual_topic_command("exclude", "美食")["strength"] == "none"
-    mixed = topic.validate_topic_command({"operation": "boost", "strength": "light", "topic": "food",
+    mixed = topic.validate_topic_command({"operation": "boost", "strength": "light", "topic": "美食",
                                           "search_terms": ["美食", "多"]}, "ollama:test")
     assert mixed["search_terms"] == ["美食"]
     assert mixed["rejected_terms"] == ["多"]
@@ -77,11 +77,11 @@ def test_source_coverage_and_command_validation(tmp_path):
 def test_llm_output_is_validated_and_never_silently_replaced(monkeypatch):
     monkeypatch.setattr(topic, "ollama_provenance", lambda *args, **kwargs: {"digest": "test-digest"})
     monkeypatch.setattr(topic, "_request", lambda *args, **kwargs: {
-        "done": True, "message": {"content": json.dumps({"operation": "boost", "strength": "light", "topic": "food",
+        "done": True, "message": {"content": json.dumps({"operation": "boost", "strength": "light", "topic": "美食",
                                                           "search_terms": ["美食", "做饭"]})}})
     result = topic.parse_topic_request("Show me more cooking videos")
     assert result == {"operation": "boost", "strength": "light", "adjustment": 0.1,
-                      "topic": "food", "search_terms": ["美食", "做饭"],
+                      "topic": "美食", "search_terms": ["美食", "做饭"],
                       "source": "ollama:llama3.1:8b:test-digest"}
     monkeypatch.setattr(topic, "_request", lambda *args, **kwargs: {
         "done": True, "message": {"content": json.dumps({"operation": "boost", "strength": "strong", "topic": "food",
@@ -95,9 +95,9 @@ def test_llm_repairs_one_ungrounded_term_with_model_only(monkeypatch):
                            "search_text": "topic_zh" if i == 1 else "other"}
                        for i in range(1, 5)}, "candidate_items": 4}
     outputs = iter([
-        {"operation": "boost", "strength": "light", "topic": "topic",
+        {"operation": "boost", "strength": "light", "topic": "qingdao",
          "search_terms": ["qingdao"]},
-        {"operation": "boost", "strength": "light", "topic": "topic",
+        {"operation": "boost", "strength": "light", "topic": "topic_zh",
          "search_terms": ["topic_zh"]}])
     requests = []
     def fake_request(base, endpoint, payload, timeout):
@@ -114,16 +114,16 @@ def test_llm_repairs_one_ungrounded_term_with_model_only(monkeypatch):
 
 def test_llm_repairs_one_invalid_term_then_stops(monkeypatch):
     outputs = iter([
-        {"operation": "boost", "strength": "light", "topic": "topic", "search_terms": ["x"]},
-        {"operation": "boost", "strength": "light", "topic": "topic", "search_terms": ["topic"]}])
+        {"operation": "boost", "strength": "light", "topic": "cooking", "search_terms": ["x"]},
+        {"operation": "boost", "strength": "light", "topic": "cooking", "search_terms": ["cooking"]}])
     calls = []
     def fake_request(base, endpoint, payload, timeout):
         calls.append(payload)
         return {"done": True, "message": {"content": json.dumps(next(outputs))}}
     monkeypatch.setattr(topic, "ollama_provenance", lambda *args, **kwargs: {"digest": "test-digest"})
     monkeypatch.setattr(topic, "_request", fake_request)
-    result = topic.parse_topic_request("A little more topic")
-    assert result["search_terms"] == ["topic"]
+    result = topic.parse_topic_request("A little more cooking")
+    assert result["search_terms"] == ["cooking"]
     assert result["source"].endswith(":repair1")
     assert len(calls) == 2
 
@@ -187,7 +187,7 @@ def test_mocked_english_llm_request_reaches_source_text_preview(tmp_path, monkey
     path = tmp_path / "captions.csv"
     sidecar(path, range(1, 37))
     monkeypatch.setattr("feedctrl.api.parse_topic_request", lambda text, **kwargs:
-                        topic.validate_topic_command({"operation": "boost", "strength": "strong", "topic": "cooking",
+                        topic.validate_topic_command({"operation": "boost", "strength": "strong", "topic": "美食",
                                                       "search_terms": ["美食", "做饭"]},
                                                      "ollama:mock-digest"))
     with TestClient(create_app(fixture=True, semantic_path=path)) as client:
@@ -205,9 +205,9 @@ def test_llm_grounding_repair_reaches_api_and_preserves_ae(tmp_path, monkeypatch
     path = tmp_path / "captions.csv"
     sidecar(path, range(1, 37))
     outputs = iter([
-        {"operation": "boost", "strength": "light", "topic": "cooking",
+        {"operation": "boost", "strength": "light", "topic": "unmatched",
          "search_terms": ["unmatched"]},
-        {"operation": "boost", "strength": "light", "topic": "cooking",
+        {"operation": "boost", "strength": "light", "topic": "美食",
          "search_terms": ["美食", "多"]}])
     monkeypatch.setattr(topic, "ollama_provenance", lambda *args, **kwargs: {"digest": "test-digest"})
     monkeypatch.setattr(topic, "_request", lambda *args, **kwargs: {
@@ -225,3 +225,73 @@ def test_llm_grounding_repair_reaches_api_and_preserves_ae(tmp_path, monkeypatch
         assert result["command"]["rejected_terms"] == ["多"]
         assert result["command"]["source"].endswith(":repair1")
         assert client.get("/api/feed?user_id=1&condition=C", headers=headers).json() == before
+
+
+def test_generic_medium_terms_cannot_expand_a_specific_subject():
+    command = topic.validate_topic_command({"operation": "reduce", "strength": "light",
+        "topic": "\u4eac\u90fd", "search_terms": ["\u4eac\u90fd", "\u89c6\u9891", "\u63a8\u8350", "videos"]}, "ollama:test")
+    assert command["search_terms"] == ["\u4eac\u90fd"]
+    assert command["rejected_terms"] == ["\u89c6\u9891", "\u63a8\u8350", "videos"]
+    index = {"candidate_items": 4, "items": {
+        1: {"search_text": "\u4eac\u90fd \u89c6\u9891", "fields": {"caption": "\u4eac\u90fd \u89c6\u9891"}},
+        2: {"search_text": "\u89c6\u9891 \u63a8\u8350", "fields": {"caption": "\u89c6\u9891 \u63a8\u8350"}},
+        3: {"search_text": "videos", "fields": {"caption": "videos"}},
+        4: {"search_text": "other", "fields": {"caption": "other"}}}}
+    assert topic.match_topic(index, command)[0] == {1}
+    with pytest.raises(topic.TopicGroundingError, match="specific"):
+        topic.manual_topic_command("boost", "\u89c6\u9891")
+
+
+def test_alias_cannot_broaden_literal_subject_to_a_country():
+    command = topic.validate_topic_command({"operation": "exclude", "strength": "none",
+        "topic": "\u4eac\u90fd", "search_terms": ["\u4eac\u90fd", "\u65e5\u672c"]}, "ollama:test")
+    index = {"candidate_items": 4, "items": {
+        1: {"search_text": "\u4eac\u90fd", "fields": {"caption": "\u4eac\u90fd"}},
+        2: {"search_text": "\u65e5\u672c", "fields": {"caption": "\u65e5\u672c"}},
+        3: {"search_text": "other", "fields": {"caption": "other"}},
+        4: {"search_text": "other", "fields": {"caption": "other"}}}}
+    with pytest.raises(topic.TopicGroundingError, match="broaden beyond"):
+        topic.match_topic(index, command)
+
+
+def test_english_no_match_repair_requests_translation_without_a_topic_dictionary(monkeypatch):
+    index = {"candidate_items": 4, "items": {
+        i: {"search_text": "\u4eac\u90fd" if i == 1 else "other",
+            "fields": {"caption": "\u4eac\u90fd" if i == 1 else "other"}} for i in range(1, 5)}}
+    outputs = iter([
+        {"operation": "boost", "strength": "light", "topic": "Kyoto", "search_terms": ["kyoto"]},
+        {"operation": "boost", "strength": "light", "topic": "\u4eac\u90fd", "search_terms": ["\u4eac\u90fd"]}])
+    calls = []
+    def request(base, endpoint, payload, timeout):
+        calls.append(json.loads(json.dumps(payload)))
+        return {"done": True, "message": {"content": json.dumps(next(outputs))}}
+    monkeypatch.setattr(topic, "ollama_provenance", lambda *args, **kwargs: {"digest": "test-digest"})
+    monkeypatch.setattr(topic, "_request", request)
+    command = topic.parse_topic_request("A little more Kyoto videos", topic_index=index)
+    assert len(calls) == 2 and command["source"].endswith(":repair1")
+    assert "Translate or transliterate" in calls[1]["messages"][-1]["content"]
+    assert command["search_terms"] == ["\u4eac\u90fd"]
+    assert topic.match_topic(index, command)[0] == {1}
+
+
+def test_alias_cannot_bypass_an_unmatched_topic_label():
+    command = topic.validate_topic_command({"operation": "boost", "strength": "standard",
+        "topic": "absent", "search_terms": ["absent", "cooking"]}, "ollama:test")
+    index = {"candidate_items": 4, "items": {
+        i: {"search_text": "cooking" if i == 1 else "other", "fields": {}}
+        for i in range(1, 5)}}
+    with pytest.raises(topic.TopicGroundingError, match="topic label"):
+        topic.match_topic(index, command)
+
+
+def test_chinese_topic_cannot_silently_change_subject(monkeypatch):
+    monkeypatch.setattr(topic, "ollama_provenance", lambda *args, **kwargs: {"digest": "test-digest"})
+    calls = []
+    def unrelated(*args):
+        calls.append(1)
+        return {"done": True, "message": {"content": json.dumps({"operation": "boost",
+            "strength": "light", "topic": "\u4eac\u90fd", "search_terms": ["\u4eac\u90fd"]})}}
+    monkeypatch.setattr(topic, "_request", unrelated)
+    with pytest.raises(topic.TopicGroundingError, match="exact subject phrase"):
+        topic.parse_topic_request("\u8bf7\u591a\u63a8\u8350\u4e00\u4e9b\u70f9\u996a\u89c6\u9891")
+    assert len(calls) == 2
