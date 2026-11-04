@@ -16,10 +16,11 @@ from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
-from feedctrl.controls import DEFAULT_MODEL, normalize_scores, parse_control, parse_profile, rerank
+from feedctrl.controls import DEFAULT_MODEL, ParserOperationalError, normalize_scores, parse_control, parse_profile, rerank
 from feedctrl.explanations import cached_explanation
 from feedctrl.semantic_controls import (TopicGroundingError, load_topic_index, manual_topic_command, match_topic,
                                         parse_topic_request, rerank_topic)
+from feedctrl import semantic_workflow as steering
 
 ROOT = Path(__file__).resolve().parents[1]
 SESSION_TTL = 12 * 60 * 60
@@ -88,6 +89,21 @@ class TopicRequest(Request):
     condition: Literal["C", "E"] = "C"
 
 
+class SteeringPreviewRequest(Request):
+    text: str = Field(default="", max_length=2000)
+    backend: Literal["manual", "ollama"] = "ollama"
+    mode: Literal["merge", "replace"] = "merge"
+    actions: list[dict] | None = Field(default=None, max_length=8)
+
+
+class SteeringApplyRequest(Request):
+    plan_id: str = Field(min_length=1, max_length=100)
+
+
+class SteeringRemoveRequest(Request):
+    topic: str = Field(min_length=2, max_length=80)
+
+
 class DemoState:
     def __init__(self, data_path=None, model_path=None, fixture=False, semantic_path=None):
         data_path = Path(data_path or os.getenv("FEEDCTRL_DATA", ROOT / "data/processed.json"))
@@ -144,6 +160,44 @@ class DemoState:
         return (f"My observed interaction history contains {len(history)} items. "
                 f"The most frequent category IDs in that history are {top}. "
                 "These are historical observations, not stated current preferences.")
+
+    def steering_state(self, token, user_id):
+        if self.topic_index is None:
+            raise HTTPException(503, "Official caption sidecar is required for catalogue steering")
+        state = self.user_state(token, user_id)
+        for key, value in (("steering_commands", []), ("steering_revision", 0),
+                           ("steering_pending", None), ("steering_text", "")):
+            state.setdefault(key, value)
+        return state
+
+    def steering_feed(self, user_id, commands):
+        user = self.users[user_id]
+        history = list(user["train"]) + list(user["request_history"])
+        ids = sorted(self.items)
+        if self.model is not None:
+            raw = self.model.score(history, ids)
+        else:
+            counts = Counter(c for item in history for c in self.items.get(item, []))
+            raw = [sum(counts[c] for c in self.items[item]) + ((item * 17 + user_id * 7) % 19) / 100 for item in ids]
+        result = steering.rank(ids, raw, commands, self.topic_index)
+        neutral = steering.rank(ids, raw, [], self.topic_index)
+        neutral_ids = {item["item_id"] for item in neutral["items"]}
+        score_map = dict(zip(ids, normalize_scores(raw)))
+        groups = [match_topic(self.topic_index, command)[0] for command in commands]
+        for command, exposure in zip(commands, result["topic_exposure"]):
+            exposure["baseline_top_k_match_count"] = len(match_topic(self.topic_index, command)[0] & neutral_ids)
+        for position, item in enumerate(result["items"], 1):
+            signals = [f"Source text matches {c['topic']}: {c['operation']} ({c['strength']})."
+                       for c, group in zip(commands, groups) if item["item_id"] in group]
+            item.update(rank=position, categories=self.items[item["item_id"]],
+                        base_score=float(score_map[item["item_id"]]),
+                        explanation=signals or ["No saved subject phrase matches this item's supplied text."],
+                        explanation_source="source_text_policy")
+        return {"mode": "Reviewed catalogue steering; separate from frozen A-E",
+                "data_mode": "fixture" if self.fixture else "processed dataset",
+                "model_mode": "trained model" if self.model else "deterministic diagnostic scorer",
+                "category_exposure": dict(Counter(c for item in result["items"] for c in item["categories"])),
+                "commands_count": len(commands), "baseline_items": neutral["items"], **result}
 
     def profile_description(self, user_id, profile):
         clauses = [f"{'Mute' if v < 0 else 'Show me more'} {c}." for c,v in sorted(profile.items())]
@@ -290,6 +344,88 @@ def create_app(data_path=None, model_path=None, fixture=False, semantic_path=Non
             state = demo.user_state(x_session_id, user_id)
             return {c: demo.rank(user_id, state, c, limit) for c in CONDITIONS}
 
+    @app.get("/api/steering")
+    def steering_profile(user_id: int = Query(ge=0), x_session_id: str | None = Header(default=None)):
+        with demo.lock:
+            state = demo.steering_state(x_session_id, user_id)
+            return {"commands": state["steering_commands"], "text": state["steering_text"],
+                    "configured_model": os.getenv("FEEDCTRL_STEERING_MODEL", steering.DEFAULT_STEERING_MODEL),
+                    "revision": state["steering_revision"],
+                    "feed": demo.steering_feed(user_id, state["steering_commands"])}
+
+    @app.post("/api/steering/preview")
+    def steering_preview(body: SteeringPreviewRequest, x_session_id: str | None = Header(default=None)):
+        with demo.lock:
+            state = demo.steering_state(x_session_id, body.user_id)
+            revision = state["steering_revision"]
+            existing = list(state["steering_commands"])
+            state["steering_pending"] = None
+        try:
+            if body.backend == "manual":
+                commands = steering.ground_actions(body.actions, demo.topic_index, "manual_structured")
+                interpretation = {"needs_clarification": False, "question": "", "commands": commands}
+            else:
+                if body.actions is not None:
+                    raise ValueError("LLM interpretation takes text, not preselected actions")
+                interpretation = steering.interpret(body.text, demo.topic_index,
+                    model=os.getenv("FEEDCTRL_STEERING_MODEL", steering.DEFAULT_STEERING_MODEL))
+                if interpretation["needs_clarification"]:
+                    return {"ready": False, "applied": False, **interpretation}
+                commands = interpretation["commands"]
+            proposed = steering.compose(existing, commands, body.mode)
+            with demo.lock:
+                state = demo.steering_state(x_session_id, body.user_id)
+                if state["steering_revision"] != revision:
+                    raise HTTPException(409, "Preferences changed while interpreting; review again")
+                plan_id = secrets.token_urlsafe(24)
+                state["steering_pending"] = {"id": plan_id, "revision": revision,
+                    "created": time.monotonic(), "commands": proposed}
+                return {"ready": True, "applied": False, "plan_id": plan_id,
+                    "interpretation": interpretation, "commands": proposed,
+                    "baseline": demo.steering_feed(body.user_id, []),
+                    "preview": demo.steering_feed(body.user_id, proposed),
+                    "message": "Review the source subjects and effects, then apply explicitly. Active preferences are unchanged."}
+        except steering.GroundingClarification as error:
+            return {"ready": False, "applied": False, "needs_clarification": True,
+                "question": str(error), "commands": [], "clarification": {
+                    "requested_topic": error.requested_topic, "suggested_topic": error.suggested_topic}}
+        except TopicGroundingError as error:
+            return {"ready": False, "applied": False, "needs_clarification": True,
+                    "question": str(error), "commands": []}
+        except (ValueError, ParserOperationalError) as error:
+            # Structural/model errors never become a rule interpretation or a partial apply.
+            raise HTTPException(422 if body.backend == "manual" else 502,
+                f"{body.backend} steering failed ({type(error).__name__}); active preferences are unchanged") from error
+
+    @app.post("/api/steering/apply")
+    def steering_apply(body: SteeringApplyRequest, x_session_id: str | None = Header(default=None)):
+        with demo.lock:
+            state = demo.steering_state(x_session_id, body.user_id)
+            pending = state["steering_pending"]
+            if (not pending or pending["id"] != body.plan_id or pending["revision"] != state["steering_revision"]
+                    or time.monotonic() - pending["created"] > 300):
+                raise HTTPException(409, "This review expired or was replaced; review the current request again")
+            state["steering_commands"] = pending["commands"]
+            state["steering_text"] = steering.profile_text(pending["commands"])
+            state["steering_revision"] += 1
+            state["steering_pending"] = None
+            return {"applied": True, "commands": state["steering_commands"], "text": state["steering_text"],
+                    "revision": state["steering_revision"],
+                    "feed": demo.steering_feed(body.user_id, state["steering_commands"])}
+
+    @app.post("/api/steering/remove")
+    def steering_remove(body: SteeringRemoveRequest, x_session_id: str | None = Header(default=None)):
+        with demo.lock:
+            state = demo.steering_state(x_session_id, body.user_id)
+            state["steering_commands"] = [c for c in state["steering_commands"]
+                                         if c["topic"].casefold() != body.topic.casefold()]
+            state["steering_text"] = steering.profile_text(state["steering_commands"])
+            state["steering_revision"] += 1
+            state["steering_pending"] = None
+            return {"removed": True, "commands": state["steering_commands"],
+                    "text": state["steering_text"], "revision": state["steering_revision"],
+                    "feed": demo.steering_feed(body.user_id, state["steering_commands"])}
+
     @app.post("/api/topic/preview")
     def topic_preview(body: TopicRequest, x_session_id: str | None = Header(default=None)):
         with demo.lock:
@@ -383,6 +519,8 @@ def create_app(data_path=None, model_path=None, fixture=False, semantic_path=Non
         with demo.lock:
             state = demo.user_state(x_session_id, body.user_id)
             state.update(profile={}, profile_text=demo.initial_profile(body.user_id), command={"operation": "clarify", "category": None, "strength": 0, "source": "none"}, feedback={})
+            state.update(steering_commands=[], steering_pending=None, steering_text="",
+                         steering_revision=state.get("steering_revision", 0) + 1)
         return {"reset": True}
 
     dist = ROOT / "web/dist"

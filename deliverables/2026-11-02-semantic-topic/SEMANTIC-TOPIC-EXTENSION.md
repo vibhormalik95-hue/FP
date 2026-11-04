@@ -1,5 +1,7 @@
 # Optional semantic-topic control, 2 November 2026
 
+The [4 November reviewed catalogue workflow](../2026-11-04-reviewed-workflow/README.md) adds composed instructions, editable topic profiles and explicit review/apply using a separately labelled installed Qwen model. The readiness observations below describe the earlier single-topic Llama path and remain historical; the new served receipt preserves successes, clarification and the English/manual travel mismatch.
+
 **Current readiness, final 4 November check:** the latest grounding safeguards and results below supersede the earlier broadened smoke groups. Live topic interpretation is only partly working; increase, decrease and English translation are not ready to present as reliable.
 
 This is an **exploratory extension**, separate from the frozen Experiment 1, revised AI-reference Experiment 2 and original A-E condition results. It responds to the 27 October discussion about control requests beyond opaque `category_N` IDs. It creates an ad-hoc set of existing catalog items from source text; it does **not** create videos, certify a new ground-truth taxonomy or establish that an LLM improved human satisfaction.

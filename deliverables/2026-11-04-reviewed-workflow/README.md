@@ -1,0 +1,93 @@
+# Reviewed natural-language catalogue steering, 4 November 2026
+
+The new **Reviewed topic feed** view supports several topic instructions, three increase/decrease strengths, hard exclusion and an editable topic profile. It uses the real saved-model catalogue and official caption sidecar. It has no YouTube connection and does not change frozen A-E experiments.
+
+An installed local Qwen 2.5 Coder 7B model interprets requests. The model proposes a plan; the user reviews the exact source subjects and proposed feed before applying it. Choosing a source phrase is not a validated new ontology or evidence of human relevance.
+
+## Pipeline and code
+
+```mermaid
+flowchart TD
+  N[Natural-language instruction or profile] --> P[Local model: operations, strengths, subjects]
+  P --> G[Literal source phrase or separate model translation]
+  G --> V[Validate against real catalogue text]
+  G --> Q[Uncertain catalogue suggestion: ask for clarification]
+  M[Manual structured source controls] --> V
+  V --> C[Merge or replace proposed topic profile]
+  C --> R[Saved SASRec scores plus bounded topic policy]
+  R --> B[Show baseline, proposed exposure and item order]
+  B --> A[User explicitly applies reviewed plan]
+  A --> S[Session/user topic profile and controlled feed]
+```
+
+| Block | Actual implementation |
+| --- | --- |
+| Real source text and coverage/hash checks | `feedctrl/semantic_controls.py:load_topic_index` |
+| Bounded multi-topic plan and strict validation | `feedctrl/semantic_workflow.py:interpret`, `validate_plan` |
+| Separate translation and source membership | `ground_actions`, `catalogue_labels`; one canonical phrase per group |
+| Composition and score policy | `compose`, `rank` |
+| Review, apply, remove and session isolation | `feedctrl/api.py`, `/api/steering*`, `DemoState.steering_feed` |
+| Natural-language/profile editor and confirmation | `web/src/SteeringPanel.jsx` |
+| Actual controlled feed cards | `web/src/main.jsx`, Reviewed topic feed view |
+
+The original [pipeline/code walkthrough](../2026-10-27-feedback/PIPELINE-AND-CODE-WALKTHROUGH.md) remains the guide to the original history/manual/LLM A-E prototype. This is a later optional workflow, not a reinterpretation of its results.
+
+## What the controls mean
+
+Up to eight saved subjects are supported. Light, standard and strong mean fixed score offsets of 0.10, 0.25 and 0.40, not percentages or learned preference intensities. Increase adds an offset; decrease subtracts it while keeping items eligible. Hard exclusion removes the matched items. Overlapping offsets add, capped at +/-1.0 per item; exclusion wins an overlap. Ties use ascending item ID. Empty or underfilled lists are not filled by relaxing exclusions.
+
+An instruction merges or replaces settings by the resolved source subject. Replace-profile mode replaces the entire reviewed topic profile. Individual subjects can be removed. Reset this user clears topic controls and the original demo controls. Profiles are temporary and isolated by session and dataset user; reloading creates a fresh session.
+
+Review does not change active preferences. Apply accepts only the most recent server-held plan for that user/session, for five minutes, and rejects a changed revision. An unresolved clause prevents the entire proposed update. Duplicate/conflicting subjects, generic medium words, missing source text and unsupported constraints ask for clarification. Operational model errors remain visible; no rule parser is silently substituted.
+
+The model's source-label suggestion is **not automatically accepted** merely because the label exists or the model calls it equivalent. If the label is not explicitly in the request, the interface asks for confirmation of its scope. The user may insert that exact phrase and review again, refine the request, or use manual source controls.
+
+## Executed evidence
+
+The [served receipt](served-smoke-receipt.json) records development examples on the processed dataset, saved seed-42 scorer and official sidecar. It contains no session/review tokens or raw captions. These are mechanism checks, not an unseen benchmark or participant study.
+
+| Check | Observed result |
+| --- | --- |
+| English: much more Qingdao, slightly less gaming, hide travel | Three controls interpreted and explicitly applied; Qingdao `+0.40` matched 5 items and showed 4/10; gaming `-0.10` matched 11 and showed 0/10; travel resolved to `旅行`, matching 60 items |
+| Chinese: the corresponding three controls | Three controls interpreted; source `旅游` matched 69 items; complete proposed feed equalled the predeclared manual three-control feed |
+| English/manual comparison | **Not equal**: English `旅行` and manual `旅游` define different source groups. This remains a semantic-scope limitation, not a pass |
+| Light English Qingdao increase | `+0.10`, 5 source matches, 1/10 shown |
+| Light English Qingdao decrease | `-0.10`, 5 source matches, 1/10 shown; items remain eligible |
+| Strong Chinese Qingdao decrease | `-0.40`, 5 source matches, 0/10 shown; items remain eligible |
+| English hard Qingdao exclusion | Exactly 5 matches removed, 0/10 shown, full fill |
+| Editable profile | Replacement reviewed and applied; individual removal and reset completed |
+| Ambiguity and unsupported quota | Explicit clarification, no active change |
+| Cooking scope | Catalogue suggested `美食` (food), which may broaden cooking; clarification required and no controls applied |
+| Isolation | Every A-E feed response stayed equal; another session had no saved topic controls; final reset left the topic profile empty |
+
+The Qwen model digest in these calls is `dae161e27b0e90dd1856c8bb3209201fd6736d8eb66298e75ed87571486f4364`, Ollama 0.34.0. The new workflow's default is `qwen2.5-coder:7b-instruct`, overridable with `FEEDCTRL_STEERING_MODEL`. The original A-E and earlier single-topic paths retain their separate Llama configuration. No model was downloaded or trained for this change.
+
+Checks completed: **305 Python tests passed, 1 private-bank skip, 2 dependency deprecation warnings; 13 new workflow tests passed; Vite build passed.** The skip requires private parser banks absent from this review checkout. The focused tests cover composition, atomic review/apply, profile replacement/removal/reset, expiry, session/user isolation, state-preserving errors, clarification, source selection and matched-intent manual/model equality.
+
+The rendered browser was also exercised. A two-topic English request produced a review with five Qingdao matches and eleven gaming matches; applying it displayed four Qingdao matches in the top ten and two saved controls. A cooking request showed the scope clarification while preserving those controls. Inserting the suggested exact source phrase required a second review and did not apply it automatically. Reset/reload returned user 14 to zero topic controls and baseline 8958, 7383, 1116; switching to user 19 and back kept profiles isolated. This was a technical walkthrough, not a student's personal rehearsal or a human-intent evaluation.
+
+## Reproduce and demonstrate
+
+Set `FEEDCTRL_DATA`, `FEEDCTRL_MODEL` and `FEEDCTRL_CAPTION_SIDECAR` to the unchanged processed JSON, saved model directory and official CSV. In separate terminals, run the already installed local runtime and the app:
+
+```powershell
+ollama serve
+$env:FEEDCTRL_STEERING_MODEL='qwen2.5-coder:7b-instruct'
+python -m uvicorn feedctrl.api:app --host 127.0.0.1 --port 8771
+```
+
+Build the frontend with `npm ci` and `npm run build` in `web/` if needed. Do not start a second runtime if one already owns its port. No software/model download is automatic. Open the local app, check processed-data/trained-model badges, choose user 14 and **Reviewed topic feed**, enter the English composed request above, review the subjects/counts and apply. Use replacement mode to edit the profile; show removal, clarification and reset. Read the source names aloud rather than treating every translation as the same semantic group.
+
+With the configured server running, save a new receipt path:
+
+```powershell
+python scripts/reproduce_reviewed_steering.py http://127.0.0.1:8771 NEW_RECEIPT.json
+```
+
+The script refuses to overwrite a receipt. It uses a fresh session, records both successes and limitations, and ends by resetting that test user. Saved receipts are the offline fallback; present them as saved execution evidence when a runtime is unavailable.
+
+## Remaining boundaries
+
+Source matching can miss synonyms or select a poor interpretation. The travel mismatch above demonstrates this directly. English and Chinese examples ran; general multilingual reliability was not measured. Numeric quotas, conditional/exception rules, include-only filters, retraining, new catalogue items and arbitrary access to a real platform are outside this workflow and require clarification rather than an invented action. Other model suggestions can still be wrong and must be reviewed.
+
+The manual policy has the same ranking as the model path when their grounded commands match. The LLM contribution is language interpretation and composition, not a better reranker. A changed feed, fixed strengths and source-text counts do not establish human satisfaction or superiority. The completed revised AI-reference study and its negative findings remain separate. No frozen prompts, data, labels, models, results or reserved tests were edited. AI assistance was used for this extension's implementation, tests and documentation; the existing contribution worksheet retains personal entries for student confirmation.

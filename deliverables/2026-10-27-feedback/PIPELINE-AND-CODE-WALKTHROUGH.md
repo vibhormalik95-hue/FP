@@ -1,5 +1,7 @@
 # Pipeline and code walkthrough
 
+For the later compositional instruction/profile workflow, use the [4 November reviewed catalogue steering addendum](../2026-11-04-reviewed-workflow/README.md). It maps the new model interpretation, source grounding, clarification, review/apply and controlled-feed code separately from the original A-E pipeline below.
+
 Prepared 27 October 2026 from FP checkout `bec8442dd7fbd43535ded943f886add2cb50cd8d`. The diagram is editable Mermaid. It traces the implemented local app and separates an **uncontrolled history-only score path**, **a conceptual human interpretation reference**, and **the implemented LLM parser path**. The app has no dedicated human-interpreter backend, and this diagram does not claim one was evaluated.
 
 ```mermaid

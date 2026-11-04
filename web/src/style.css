@@ -6,3 +6,6 @@
 .help,.signals{color:#65735b}.item-footer,.item-title>span,.word-count,.category-pills>span,.table-category,footer{color:#647159}
 
 .active-instruction span,.alert{overflow-wrap:anywhere}.active-instruction span{max-width:100%;min-width:0}
+.steering-review{padding:10px 0;border-bottom:1px solid #dce1cf;overflow-wrap:anywhere}
+#steering-manual-topic{width:100%;padding:10px;border:1px solid #cbd3c1;border-radius:4px;background:#fff}
+.view-tabs{flex-wrap:wrap}.saved-profile .help{overflow-wrap:anywhere}
