@@ -343,8 +343,14 @@ def interpret(text, index, model=DEFAULT_STEERING_MODEL, timeout=90, context=Non
         reference = action.get("reference_id", -1)
         # A user-confirmed name is a stable scope key. Model-generated array
         # indices are only hints; they cannot redirect a named saved subject.
-        named_target = scope_bindings.get(action["topic"].strip().casefold())
-        named_aliases = [alias for alias,target in scope_bindings.items() if target == named_target]
+        topic_key = action["topic"].strip().casefold()
+        named_target = scope_bindings.get(topic_key) or next(
+            (target for target in scope_bindings.values() if target.casefold() == topic_key), None)
+        # Scope selection replaces the textbox subject with its literal source
+        # phrase. Both that phrase and the confirmed name identify the same
+        # scope, including before any preference row has been saved.
+        named_aliases = ([named_target] + [alias for alias,target in scope_bindings.items()
+                                          if target == named_target]) if named_target else []
         if named_target and any(mentions(alias, text) for alias in named_aliases):
             reference = next((i for i,c in enumerate(saved) if c["topic"] == named_target), -1)
         if reference >= 0:

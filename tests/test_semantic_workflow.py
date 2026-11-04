@@ -297,3 +297,23 @@ def test_replacement_language_plan_has_no_old_row_references_but_retains_confirm
     result=wf.interpret('A little more Kyoto.',index,context={'commands':saved,'focus':'\u4eac\u90fd','mode':'replace'},
         bindings={'kyoto':'\u4eac\u90fd'})
     assert result['commands'][0]['topic']=='\u4eac\u90fd' and result['commands'][0]['adjustment']==.1
+
+
+@pytest.mark.parametrize('model_topic',['Kyoto','\u4eac\u90fd'])
+def test_confirmed_source_on_empty_profile_ignores_invented_model_row(client,monkeypatch,model_topic):
+    # The UI replaces an English subject with its confirmed literal phrase.
+    # Mock model interpretation only; this is not live inference evidence.
+    h=headers(client)
+    before=client.get('/api/compare?user_id=1',headers=h).json()
+    oracle=preview(client,h,[control('\u4eac\u90fd',strength='strong')]).json()['preview']
+    monkeypatch.setattr(wf,'ollama_provenance',lambda *a:{'digest':'unit-test-only'})
+    plan={'needs_clarification':False,'question':'','history_action':'none','actions':[
+        {'topic':model_topic,'operation':'boost','strength':'strong','reference_id':0}]}
+    monkeypatch.setattr(wf,'_chat',lambda *a,**k:json.dumps(plan))
+    proposal=client.post('/api/steering/preview',headers=h,json={
+        'user_id':1,'text':'A lot more \u4eac\u90fd.','mode':'merge',
+        'bindings':[{'requested_topic':'Kyoto','source_topic':'\u4eac\u90fd'}]}).json()
+    assert proposal['ready'],proposal
+    assert client.get('/api/steering?user_id=1',headers=h).json()['commands']==[]
+    assert apply(client,h,proposal).json()['feed']==oracle
+    assert client.get('/api/compare?user_id=1',headers=h).json()==before
