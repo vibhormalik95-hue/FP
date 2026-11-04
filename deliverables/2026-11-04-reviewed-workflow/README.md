@@ -1,5 +1,15 @@
 # Reviewed natural-language catalogue steering, 4 November 2026
 
+## Complete project review
+
+The [33-clause proposal audit](../2026-11-04-completion-review/PROJECT-COMPLETION-AUDIT.md) assesses the actual supplied five-page proposal, the later professor feedback and all five course assessment components. It supersedes treating software readiness as fulfillment of every original research promise. The prototype and recorded evaluations exist; method departures, the missed 85% parser target, ranking-quality costs and unestablished independent channel/LLM benefits remain explicit. The original human-reference route and completed hours reconciliation are not reopened.
+
+The [current seven-page paper review](../2026-11-04-completion-review/COMP9500-Current-Paper-Review.pdf) matches the current paper source; the older dated PDF remains a historical publication. Personal presentation, supervisor acceptance and submission are not claimed completed by these files.
+
+Current cache preparation restored the original ten records without modification and added fifteen local Llama selections in a separate dated prototype directory. The [served coverage receipt](../2026-11-04-completion-review/CACHE-COVERAGE-RECEIPT.json) verifies all 25 declared worked-case items, ten cached-model cards in each tested B/E case and unchanged rankings. This is worked-case coverage, not all catalogue/user contexts or a new scientific experiment. Other contexts retain labelled template explanations. The optional configuration and preparation command are below.
+
+After that backend configuration change, the full suite completed **314 passed, one private-bank skip and two dependency warnings**. The skip is the static split check for private parser banks absent from this public review checkout. No frontend source changed in this pass; the previous successful Vite build remains the applicable frontend check.
+
 The new **Reviewed topic feed** view supports several topic instructions, three increase/decrease strengths, hard exclusion and an editable topic profile. It uses the real saved-model catalogue and official caption sidecar. It has no YouTube connection and does not change frozen A-E experiments.
 
 An installed local Qwen 2.5 Coder 7B model interprets requests. The model proposes a plan; the user reviews the exact source subjects and proposed feed before applying it. Choosing a source phrase is not a validated new ontology or evidence of human relevance.
@@ -50,7 +60,7 @@ See the [19-row transcript and capability audit](CAPABILITY-AND-TRANSCRIPT-AUDIT
 
 The rendered browser also verified scope confirmation, review/apply, contextual light-to-strong increase, actual changed item cards, reviewed undo, reset and the original A-E comparison. The complete API run retained nonempty original A-E preferences until its explicit global reset. This is a bounded local prototype, not universal language understanding or evidence of recommendation benefit. Earlier failures and the travel-scope mismatch below remain historical evidence.
 
-Final checks: **313 Python tests passed, 1 private-bank skip, 2 dependency warnings; Vite build passed.** The focused workflow suite now contains 21 checks. The final local served port was **8772**. Start from a fresh server process after source updates; a cached page or occupied older port does not prove the current backend is loaded.
+The pre-cache dialogue checks completed **313 Python tests passed, 1 private-bank skip, 2 dependency warnings; Vite build passed**. The focused workflow suite contains 21 checks. The latest backend regression is reported above. The local served port is **8772**. Start from a fresh server process after source updates; a cached page or occupied older port does not prove the current backend is loaded.
 
 ```mermaid
 flowchart TD
@@ -99,15 +109,23 @@ Set `FEEDCTRL_DATA`, `FEEDCTRL_MODEL` and `FEEDCTRL_CAPTION_SIDECAR` to the unch
 ```powershell
 ollama serve
 $env:FEEDCTRL_STEERING_MODEL='qwen2.5-coder:7b-instruct'
-python -m uvicorn feedctrl.api:app --host 127.0.0.1 --port 8771
+python -m uvicorn feedctrl.api:app --host 127.0.0.1 --port 8772
 ```
+
+For the new worked-case explanation cache, set `FEEDCTRL_EXPLANATION_INDEX` to the prepared `results/experiment2/prototype-explanation-cache-20261104/index.json` before starting the app. If that private generated cache is unavailable, prepare a new directory using the existing processed data, installed Llama model and original explanation index:
+
+```powershell
+python scripts/prepare_demo_explanations.py --data "$env:FEEDCTRL_DATA" --reference-cache results/explanations.json --output results/experiment2/NEW-WORKED-CASE-CACHE
+```
+
+The command refuses an existing destination, records a manifest and retains failures. It never overwrites the reference cache or frozen study outputs. Assign the resulting `index.json` to `FEEDCTRL_EXPLANATION_INDEX`. Without the override, the original cache path remains the default. An absent or incompatible cache entry is visibly labelled as a verified template; it is not represented as fresh LLM inference.
 
 Build the frontend with `npm ci` and `npm run build` in `web/` if needed. Do not start a second runtime if one already owns its port. No software/model download is automatic. Open the local app, check processed-data/trained-model badges, choose user 14 and **Reviewed topic feed**, enter the English composed request above, review the subjects/counts and apply. Use replacement mode to edit the profile; show removal, clarification and reset. Read the source names aloud rather than treating every translation as the same semantic group.
 
 With the configured server running, save a new receipt path:
 
 ```powershell
-python scripts/reproduce_reviewed_steering.py http://127.0.0.1:8771 NEW_RECEIPT.json
+python scripts/reproduce_reviewed_steering.py http://127.0.0.1:8772 NEW_RECEIPT.json
 ```
 
 The script refuses to overwrite a receipt. It uses a fresh session, records both successes and limitations, and ends by resetting that test user. Saved receipts are the offline fallback; present them as saved execution evidence when a runtime is unavailable.

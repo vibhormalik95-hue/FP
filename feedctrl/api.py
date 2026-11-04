@@ -243,7 +243,7 @@ class DemoState:
         cards = []
         for position, item_id in enumerate(order[:limit], 1):
             explanation = cached_explanation(item_id, self.items[item_id], history, self.items,
-                                             index_path=ROOT / "results/explanations.json") if explain else None
+                                             index_path=Path(os.getenv("FEEDCTRL_EXPLANATION_INDEX", ROOT / "results/explanations.json"))) if explain else None
             signals = list(explanation["statements"]) if explanation else []
             if condition in "AB" and state["feedback"].get(item_id):
                 signals.append("Direct item feedback changes this item's base score.")

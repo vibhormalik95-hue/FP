@@ -32,6 +32,27 @@ def test_status_explicit_fixture_and_rule(client):
     assert 'no original video' in s['asset_note']
 
 
+def test_configured_nonfrozen_explanation_index_preserves_rankings(client,tmp_path,monkeypatch):
+    from feedctrl.explanations import generate_explanation
+    h=session(client)
+    demo=client.app.state.demo
+    user=demo.users[1]
+    history=user['train']+user['request_history']
+    baseline=feed(client,h,'A')
+    item=baseline['items'][0]['item_id']
+    record=generate_explanation(item,demo.items[item],history,demo.items)
+    # Synthetic cache fixture, not an actual model response.
+    record.update(source='ollama_constrained_fact_selection',provenance={'digest':'unit-test-only'})
+    path=tmp_path/'prototype-index.json'
+    path.write_text(json.dumps({'explanations':[record]}),encoding='utf-8')
+    monkeypatch.setenv('FEEDCTRL_EXPLANATION_INDEX',str(path))
+    b=feed(client,h,'B')
+    assert [x['item_id']for x in b['items']]==[x['item_id']for x in baseline['items']]
+    assert b['items'][0]['explanation_source']=='ollama_constrained_fact_selection'
+    monkeypatch.setenv('FEEDCTRL_EXPLANATION_INDEX',str(tmp_path/'absent.json'))
+    assert feed(client,h,'B')['items'][0]['explanation_source']=='verified_template'
+
+
 def test_missing_and_unknown_sessions_rejected(client):
     assert client.get('/api/feed?user_id=1').status_code == 401
     assert client.get('/api/feed?user_id=1', headers={'X-Session-ID':'invented'}).status_code == 401

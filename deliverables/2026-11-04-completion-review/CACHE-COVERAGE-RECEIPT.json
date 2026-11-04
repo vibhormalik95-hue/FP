@@ -1,0 +1,26 @@
+{
+  "checked_utc": "2026-11-04T08:30:32.185423+00:00",
+  "scope": "Served prototype cache coverage, not a ranking or language benchmark",
+  "cache_records": 25,
+  "reused_original": 10,
+  "new_local_model_records": 15,
+  "generation_errors": [],
+  "cache_index_sha256": "8dc2b335c85f188cfdb1e0ccae5ee6cc07e25e2bdd935395d80300827ac9f4bc",
+  "original_cache_sha256_after": "c1f675d3b8fb8187d2dc0918fbecc34360243301386de9e290583ce2f8c29136",
+  "checks": {
+    "A_ranking_matches_frozen_example": true,
+    "B_ranking_matches_frozen_example": true,
+    "C_ranking_matches_frozen_example": true,
+    "D_ranking_matches_frozen_example": true,
+    "E_ranking_matches_frozen_example": true,
+    "baseline_B_ten_cached_model_cards": true,
+    "matched_B_ten_cached_model_cards": true,
+    "boost_E_ten_cached_model_cards": true,
+    "conflict_E_ten_cached_model_cards": true,
+    "conflict_ranking_unchanged": true
+  },
+  "all_pass": true,
+  "coverage_limit": "25 distinct items in the specified user-14 worked cases; not all user/item contexts",
+  "model": "llama3.1:8b",
+  "purpose": "Prototype artifact coverage; not an experiment or accuracy estimate"
+}
