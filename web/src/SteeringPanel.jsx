@@ -8,9 +8,10 @@ export default function SteeringPanel({api, user, resetKey, onFeed, onApplied}) 
   const [working,setWorking]=useState(false);
   const [modelName,setModelName]=useState('configured local model');
   const [clarification,setClarification]=useState(null);
+  const [subjectBindings,setSubjectBindings]=useState([]);
   const generation=useRef(0);
   useEffect(()=>{
-    const id=++generation.current; setWorking(false);setPending(null);setQuestion('');setClarification(null);setError('');setManual([]);setText('');setSaved(null);
+    const id=++generation.current; setWorking(false);setPending(null);setQuestion('');setClarification(null);setSubjectBindings([]);setError('');setManual([]);setText('');setSaved(null);
     if(user===null)return;
     api(`steering?user_id=${user}`).then(r=>{if(id===generation.current){setSaved(r);setModelName(r.configured_model);onFeed(r.feed);}})
       .catch(e=>{if(id===generation.current)setError(e.message);});
@@ -22,7 +23,7 @@ export default function SteeringPanel({api, user, resetKey, onFeed, onApplied}) 
   }
   function review(){run(async id=>{
     setPending(null);
-    const r=await api('steering/preview',{user_id:user,backend,mode,
+    const r=await api('steering/preview',{user_id:user,backend,mode,bindings:subjectBindings,
       ...(backend==='manual'?{actions:manual}:{text})});
     if(id!==generation.current)return;
     if(r.ready)setPending(r);else {setQuestion(r.question||'Please clarify the requested subjects.');setClarification(r.clarification||null);}
@@ -30,13 +31,30 @@ export default function SteeringPanel({api, user, resetKey, onFeed, onApplied}) 
   function apply(){run(async id=>{
     const r=await api('steering/apply',{user_id:user,plan_id:pending.plan_id});
     if(id!==generation.current)return;
-    setSaved(r);setPending(null);setText(r.text);onFeed(r.feed);onApplied();
+    setSaved(r);setPending(null);setSubjectBindings([]);setText(r.text);onFeed(r.feed);onApplied();
   });}
   function remove(subject){run(async id=>{
     const r=await api('steering/remove',{user_id:user,topic:subject});
     if(id!==generation.current)return;
     setSaved(r);setPending(null);setText(r.text);onFeed(r.feed);
   });}
+  function history(action){run(async id=>{
+    setPending(null);
+    const r=await api('steering/history/preview',{user_id:user,action});
+    if(id!==generation.current)return;
+    if(r.ready)setPending(r);else setQuestion(r.question);
+  });}
+  function chooseSource(sourceTopic){
+    const requested=clarification.requested_topic;
+    const next=[...subjectBindings.filter(x=>x.requested_topic.toLowerCase()!==requested.toLowerCase()),
+      {requested_topic:requested,source_topic:sourceTopic}];
+    if(next.length>8){setQuestion('Remove a confirmed scope choice before adding another.');return;}
+    setSubjectBindings(next);
+    const start=text.toLowerCase().indexOf(requested.toLowerCase());
+    if(start>=0)setText(text.slice(0,start)+sourceTopic+text.slice(start+requested.length));
+    setQuestion('Source scope confirmed for this request. Review again; nothing is applied.');
+    setClarification(null);setPending(null);
+  }
   const disabled=working||user===null;
   return <section className="panel" aria-label="Reviewed catalogue steering">
     <div className="section-heading"><span className="step">04</span><h2>Talk to the local feed</h2></div>
@@ -53,7 +71,7 @@ export default function SteeringPanel({api, user, resetKey, onFeed, onApplied}) 
       <textarea id="steering-text" rows={4} maxLength={2000} value={text} disabled={disabled}
         onChange={e=>{setText(e.target.value);setPending(null);}}
         placeholder="A lot more Qingdao, slightly less gaming, and hide cooking completely."/>
-      <p className="help">The model extracts directions and strengths, then grounds subjects through literal source text, translation or a disclosed real catalogue label. Ambiguity asks for clarification. No silent rule fallback.</p></>:<>
+      <p className="help">The model uses your saved subjects for follow-ups. A single last-applied subject can be called "that"; otherwise name it. Directions, strengths and source scope are reviewed before applying. No silent rule fallback.</p></>:<>
       <label className="field-label" htmlFor="steering-manual-topic">Exact catalogue phrase</label>
       <input id="steering-manual-topic" value={topic} maxLength={32} disabled={disabled} onChange={e=>setTopic(e.target.value)}/>
       <label className="field-label" htmlFor="steering-operation">Manual direction</label>
@@ -73,12 +91,17 @@ export default function SteeringPanel({api, user, resetKey, onFeed, onApplied}) 
       {working?'Working locally...':'Review proposed changes'}</button>
     {error&&<p role="alert" className="alert error">{error}</p>}
     {question&&<p role="status" className="alert">Clarification needed: {question} Active preferences were kept.</p>}
-    {clarification&&text.toLowerCase().includes(clarification.requested_topic.toLowerCase())&&<button className="secondary" disabled={disabled}
-      onClick={()=>{const start=text.toLowerCase().indexOf(clarification.requested_topic.toLowerCase());
-        setText(text.slice(0,start)+clarification.suggested_topic+text.slice(start+clarification.requested_topic.length));
-        setQuestion('Source phrase inserted. Review the complete request again; nothing is applied.');setClarification(null);setPending(null);}}>
+    {clarification&&<button className="secondary" disabled={disabled} onClick={()=>chooseSource(clarification.suggested_topic)}>
       Use exact source phrase {clarification.suggested_topic} and review again</button>}
+    {clarification?.literal_topic&&clarification.literal_topic!==clarification.suggested_topic&&<button className="secondary" disabled={disabled}
+      onClick={()=>chooseSource(clarification.literal_topic)}>Keep literal source phrase {clarification.literal_topic}</button>}
+    {subjectBindings.map((b,i)=><p className="help" key={b.requested_topic}>Confirmed scope: {b.requested_topic} = {b.source_topic}. <button disabled={disabled}
+      onClick={()=>{setSubjectBindings(subjectBindings.filter((_,j)=>j!==i));setPending(null);}}>Forget choice</button></p>)}
     {pending&&<div className="saved-profile" role="status"><h3>Review before applying</h3>
+      {pending.interpretation?.history_action&&pending.interpretation.history_action!=='none'
+        ?<p className="help">Requested action: {pending.interpretation.history_action} the topic profile.</p>
+        :<p className="help">Requested changes: {pending.interpretation?.commands?.map(c=>`${c.operation} ${c.topic} (${c.strength})`).join('; ')}</p>}
+      <p className="help">The resulting profile has {pending.commands.length} subject controls.</p>
       {pending.commands.map(c=><div className="steering-review" key={c.topic}>
         <strong>{c.operation} {c.topic} ({c.strength}, {c.adjustment>0?'+':''}{c.adjustment.toFixed(2)})</strong>
         <p className="help">Requested subject: {c.requested_topic}; {c.grounding_method}; {c.candidate_matches} source matches.</p>
@@ -91,10 +114,13 @@ export default function SteeringPanel({api, user, resetKey, onFeed, onApplied}) 
       <button className="primary" disabled={disabled} onClick={apply}>Apply reviewed changes</button>
     </div>}
     <div className="saved-profile"><h3>Saved topic profile</h3>
+      <p className="help">{saved?.focus?`Follow-up focus: ${saved.focus}.`:'No unique follow-up focus; name a subject.'}</p>
       {saved?.commands?.length?saved.commands.map(c=><div className="preference" key={c.topic}>
         <span>{c.operation} {c.topic} ({c.strength})</span><button disabled={disabled} aria-label={`Remove saved topic ${c.topic}`} onClick={()=>remove(c.topic)}>Remove</button>
       </div>):<p className="help">No saved topic controls.</p>}
-      <p className="help">Saved within this session and research user. Reset this user clears these controls. Reloading starts a fresh session.</p>
+      <button className="secondary" disabled={disabled||!saved?.can_undo} onClick={()=>history('undo')}>Review undo last change</button>
+      <button className="secondary" disabled={disabled||!saved?.commands?.length} onClick={()=>history('clear')}>Review clearing topic profile</button>
+      <p className="help">Undo covers the last ten applied topic changes. Global Reset this user clears all controls and undo history. Reloading starts a fresh session.</p>
     </div>
   </section>;
 }

@@ -1,0 +1,3055 @@
+{
+  "scope": "development cases, no human relevance or universal accuracy claim",
+  "started_utc": "2026-11-04T06:23:28.204752+00:00",
+  "status": {
+    "data_mode": "processed dataset",
+    "source": "{'url': 'https://zenodo.org/records/18164998/files/KuaiRec.zip', 'sha256': 'c23f211cf109c7a060a25a4afe9e8c681b1ccbbc816cca921d87ad37dd11c70c', 'md5': '261550d472c48eff4990fb13c0e5bcf7', 'publisher_md5_verified': True, 'bytes': 431964858}",
+    "model_mode": "trained model",
+    "users": 865,
+    "items": 2593,
+    "categories": 31,
+    "default_parser": "rule",
+    "ollama_model": "llama3.1:8b",
+    "ollama_status": "Not checked; selecting Ollama makes a real request. Failures remain visible.",
+    "research_note": "Synthetic category controls measure offline behavior; this demo does not establish human agency or satisfaction.",
+    "category_note": "Opaque dataset category IDs; no invented topic names.",
+    "semantic_topic": "Official caption sidecar loaded; exploratory preview only",
+    "asset_note": "Metadata cards only; no original video assets are distributed."
+  },
+  "cases": [
+    {
+      "name": "manual_light_qingdao",
+      "status_code": 200,
+      "seconds": 0.233,
+      "request": {
+        "user_id": 14,
+        "backend": "manual",
+        "mode": "replace",
+        "actions": [
+          {
+            "topic": "\u9752\u5c9b",
+            "operation": "boost",
+            "strength": "light"
+          }
+        ]
+      },
+      "response": {
+        "ready": true,
+        "applied": false,
+        "commands": [
+          {
+            "topic": "\u9752\u5c9b",
+            "requested_topic": "\u9752\u5c9b",
+            "operation": "boost",
+            "strength": "light",
+            "adjustment": 0.1,
+            "aliases": [
+              "\u9752\u5c9b"
+            ],
+            "grounding_method": "literal_source_phrase",
+            "source": "manual_structured"
+          }
+        ],
+        "feed": {
+          "items": [
+            {
+              "item_id": 8958,
+              "score": 1.1
+            },
+            {
+              "item_id": 7383,
+              "score": 0.958278
+            },
+            {
+              "item_id": 1116,
+              "score": 0.948471
+            },
+            {
+              "item_id": 2894,
+              "score": 0.941415
+            },
+            {
+              "item_id": 4367,
+              "score": 0.918375
+            },
+            {
+              "item_id": 6001,
+              "score": 0.914543
+            },
+            {
+              "item_id": 2687,
+              "score": 0.90268
+            },
+            {
+              "item_id": 4506,
+              "score": 0.898926
+            },
+            {
+              "item_id": 10217,
+              "score": 0.894736
+            },
+            {
+              "item_id": 6090,
+              "score": 0.892925
+            }
+          ],
+          "fill_rate": 1.0,
+          "available_items": 2593,
+          "topic_exposure": [
+            {
+              "topic": "\u9752\u5c9b",
+              "operation": "boost",
+              "strength": "light",
+              "adjustment": 0.1,
+              "candidate_matches": 5,
+              "top_k_match_count": 1,
+              "baseline_top_k_match_count": 1
+            }
+          ]
+        },
+        "interpretation": {},
+        "interpreted_commands": [
+          {
+            "topic": "\u9752\u5c9b",
+            "operation": "boost",
+            "strength": "light"
+          }
+        ]
+      },
+      "fixed_ae_unchanged": true
+    },
+    {
+      "name": "unconfirmed_english_light_qingdao",
+      "status_code": 200,
+      "seconds": 12.594,
+      "request": {
+        "user_id": 14,
+        "text": "A little more Qingdao.",
+        "mode": "merge",
+        "bindings": []
+      },
+      "response": {
+        "ready": false,
+        "applied": false,
+        "question": "The catalogue suggestion '\u65c5\u6e38' for 'Qingdao' may change scope. Confirm an exact source phrase or refine the subject; no controls were applied",
+        "clarification": {
+          "requested_topic": "Qingdao",
+          "suggested_topic": "\u65c5\u6e38",
+          "literal_topic": "\u9752\u5c9b"
+        },
+        "commands": []
+      },
+      "fixed_ae_unchanged": true,
+      "review_did_not_change_active_profile": true
+    },
+    {
+      "name": "confirmed_english_light_qingdao",
+      "status_code": 200,
+      "seconds": 2.133,
+      "request": {
+        "user_id": 14,
+        "text": "A little more Qingdao.",
+        "mode": "merge",
+        "bindings": [
+          {
+            "requested_topic": "Qingdao",
+            "source_topic": "\u9752\u5c9b"
+          }
+        ]
+      },
+      "response": {
+        "ready": true,
+        "applied": false,
+        "commands": [
+          {
+            "topic": "\u9752\u5c9b",
+            "requested_topic": "qingdao",
+            "operation": "boost",
+            "strength": "light",
+            "adjustment": 0.1,
+            "aliases": [
+              "qingdao",
+              "\u9752\u5c9b"
+            ],
+            "grounding_method": "saved_or_confirmed_binding",
+            "source": "ollama:qwen2.5-coder:7b-instruct:dae161e27b0e90dd1856c8bb3209201fd6736d8eb66298e75ed87571486f4364:plan+source_translation"
+          }
+        ],
+        "feed": {
+          "items": [
+            {
+              "item_id": 8958,
+              "score": 1.1
+            },
+            {
+              "item_id": 7383,
+              "score": 0.958278
+            },
+            {
+              "item_id": 1116,
+              "score": 0.948471
+            },
+            {
+              "item_id": 2894,
+              "score": 0.941415
+            },
+            {
+              "item_id": 4367,
+              "score": 0.918375
+            },
+            {
+              "item_id": 6001,
+              "score": 0.914543
+            },
+            {
+              "item_id": 2687,
+              "score": 0.90268
+            },
+            {
+              "item_id": 4506,
+              "score": 0.898926
+            },
+            {
+              "item_id": 10217,
+              "score": 0.894736
+            },
+            {
+              "item_id": 6090,
+              "score": 0.892925
+            }
+          ],
+          "fill_rate": 1.0,
+          "available_items": 2593,
+          "topic_exposure": [
+            {
+              "topic": "\u9752\u5c9b",
+              "operation": "boost",
+              "strength": "light",
+              "adjustment": 0.1,
+              "candidate_matches": 5,
+              "top_k_match_count": 1,
+              "baseline_top_k_match_count": 1
+            }
+          ]
+        },
+        "interpretation": {
+          "provenance": {
+            "model": "qwen2.5-coder:7b-instruct",
+            "digest": "dae161e27b0e90dd1856c8bb3209201fd6736d8eb66298e75ed87571486f4364",
+            "ollama_version": "0.34.0",
+            "details": {
+              "parent_model": "",
+              "format": "gguf",
+              "family": "qwen2",
+              "families": [
+                "qwen2"
+              ],
+              "parameter_size": "7.6B",
+              "quantization_level": "Q4_K_M",
+              "context_length": 32768,
+              "embedding_length": 3584
+            }
+          }
+        },
+        "interpreted_commands": [
+          {
+            "topic": "\u9752\u5c9b",
+            "operation": "boost",
+            "strength": "light"
+          }
+        ]
+      },
+      "fixed_ae_unchanged": true,
+      "review_did_not_change_active_profile": true,
+      "expected_commands": [
+        [
+          "\u9752\u5c9b",
+          "boost",
+          "light"
+        ]
+      ],
+      "interpretation_matches_expected": true
+    },
+    {
+      "name": "confirmed_english_light_qingdao_apply",
+      "status_code": 200,
+      "seconds": 0.184,
+      "request": {
+        "user_id": 14
+      },
+      "response": {
+        "applied": true,
+        "can_undo": true,
+        "focus": "\u9752\u5c9b",
+        "commands": [
+          {
+            "topic": "\u9752\u5c9b",
+            "requested_topic": "qingdao",
+            "operation": "boost",
+            "strength": "light",
+            "adjustment": 0.1,
+            "aliases": [
+              "qingdao",
+              "\u9752\u5c9b"
+            ],
+            "grounding_method": "saved_or_confirmed_binding",
+            "source": "ollama:qwen2.5-coder:7b-instruct:dae161e27b0e90dd1856c8bb3209201fd6736d8eb66298e75ed87571486f4364:plan+source_translation"
+          }
+        ],
+        "feed": {
+          "items": [
+            {
+              "item_id": 8958,
+              "score": 1.1
+            },
+            {
+              "item_id": 7383,
+              "score": 0.958278
+            },
+            {
+              "item_id": 1116,
+              "score": 0.948471
+            },
+            {
+              "item_id": 2894,
+              "score": 0.941415
+            },
+            {
+              "item_id": 4367,
+              "score": 0.918375
+            },
+            {
+              "item_id": 6001,
+              "score": 0.914543
+            },
+            {
+              "item_id": 2687,
+              "score": 0.90268
+            },
+            {
+              "item_id": 4506,
+              "score": 0.898926
+            },
+            {
+              "item_id": 10217,
+              "score": 0.894736
+            },
+            {
+              "item_id": 6090,
+              "score": 0.892925
+            }
+          ],
+          "fill_rate": 1.0,
+          "available_items": 2593,
+          "topic_exposure": [
+            {
+              "topic": "\u9752\u5c9b",
+              "operation": "boost",
+              "strength": "light",
+              "adjustment": 0.1,
+              "candidate_matches": 5,
+              "top_k_match_count": 1,
+              "baseline_top_k_match_count": 1
+            }
+          ]
+        }
+      },
+      "fixed_ae_unchanged": true
+    },
+    {
+      "name": "context_stronger",
+      "status_code": 200,
+      "seconds": 2.046,
+      "request": {
+        "user_id": 14,
+        "text": "Make that stronger.",
+        "mode": "merge",
+        "bindings": []
+      },
+      "response": {
+        "ready": true,
+        "applied": false,
+        "commands": [
+          {
+            "topic": "\u9752\u5c9b",
+            "requested_topic": "\u9752\u5c9b",
+            "operation": "boost",
+            "strength": "standard",
+            "adjustment": 0.25,
+            "aliases": [
+              "qingdao",
+              "\u9752\u5c9b"
+            ],
+            "grounding_method": "saved_or_confirmed_binding",
+            "context_reference": 0,
+            "source": "ollama:qwen2.5-coder:7b-instruct:dae161e27b0e90dd1856c8bb3209201fd6736d8eb66298e75ed87571486f4364:context_reference"
+          }
+        ],
+        "feed": {
+          "items": [
+            {
+              "item_id": 8958,
+              "score": 1.25
+            },
+            {
+              "item_id": 7383,
+              "score": 0.958278
+            },
+            {
+              "item_id": 4335,
+              "score": 0.948502
+            },
+            {
+              "item_id": 1116,
+              "score": 0.948471
+            },
+            {
+              "item_id": 2894,
+              "score": 0.941415
+            },
+            {
+              "item_id": 4367,
+              "score": 0.918375
+            },
+            {
+              "item_id": 6001,
+              "score": 0.914543
+            },
+            {
+              "item_id": 2687,
+              "score": 0.90268
+            },
+            {
+              "item_id": 4506,
+              "score": 0.898926
+            },
+            {
+              "item_id": 10217,
+              "score": 0.894736
+            }
+          ],
+          "fill_rate": 1.0,
+          "available_items": 2593,
+          "topic_exposure": [
+            {
+              "topic": "\u9752\u5c9b",
+              "operation": "boost",
+              "strength": "standard",
+              "adjustment": 0.25,
+              "candidate_matches": 5,
+              "top_k_match_count": 2,
+              "baseline_top_k_match_count": 1
+            }
+          ]
+        },
+        "interpretation": {
+          "provenance": {
+            "model": "qwen2.5-coder:7b-instruct",
+            "digest": "dae161e27b0e90dd1856c8bb3209201fd6736d8eb66298e75ed87571486f4364",
+            "ollama_version": "0.34.0",
+            "details": {
+              "parent_model": "",
+              "format": "gguf",
+              "family": "qwen2",
+              "families": [
+                "qwen2"
+              ],
+              "parameter_size": "7.6B",
+              "quantization_level": "Q4_K_M",
+              "context_length": 32768,
+              "embedding_length": 3584
+            }
+          }
+        },
+        "interpreted_commands": [
+          {
+            "topic": "\u9752\u5c9b",
+            "operation": "boost",
+            "strength": "standard"
+          }
+        ]
+      },
+      "fixed_ae_unchanged": true,
+      "review_did_not_change_active_profile": true,
+      "expected_relative_strength": "Higher than light, preserving boost and scope",
+      "interpretation_matches_expected": true
+    },
+    {
+      "name": "context_stronger_apply",
+      "status_code": 200,
+      "seconds": 0.191,
+      "request": {
+        "user_id": 14
+      },
+      "response": {
+        "applied": true,
+        "can_undo": true,
+        "focus": "\u9752\u5c9b",
+        "commands": [
+          {
+            "topic": "\u9752\u5c9b",
+            "requested_topic": "\u9752\u5c9b",
+            "operation": "boost",
+            "strength": "standard",
+            "adjustment": 0.25,
+            "aliases": [
+              "qingdao",
+              "\u9752\u5c9b"
+            ],
+            "grounding_method": "saved_or_confirmed_binding",
+            "context_reference": 0,
+            "source": "ollama:qwen2.5-coder:7b-instruct:dae161e27b0e90dd1856c8bb3209201fd6736d8eb66298e75ed87571486f4364:context_reference"
+          }
+        ],
+        "feed": {
+          "items": [
+            {
+              "item_id": 8958,
+              "score": 1.25
+            },
+            {
+              "item_id": 7383,
+              "score": 0.958278
+            },
+            {
+              "item_id": 4335,
+              "score": 0.948502
+            },
+            {
+              "item_id": 1116,
+              "score": 0.948471
+            },
+            {
+              "item_id": 2894,
+              "score": 0.941415
+            },
+            {
+              "item_id": 4367,
+              "score": 0.918375
+            },
+            {
+              "item_id": 6001,
+              "score": 0.914543
+            },
+            {
+              "item_id": 2687,
+              "score": 0.90268
+            },
+            {
+              "item_id": 4506,
+              "score": 0.898926
+            },
+            {
+              "item_id": 10217,
+              "score": 0.894736
+            }
+          ],
+          "fill_rate": 1.0,
+          "available_items": 2593,
+          "topic_exposure": [
+            {
+              "topic": "\u9752\u5c9b",
+              "operation": "boost",
+              "strength": "standard",
+              "adjustment": 0.25,
+              "candidate_matches": 5,
+              "top_k_match_count": 2,
+              "baseline_top_k_match_count": 1
+            }
+          ]
+        }
+      },
+      "fixed_ae_unchanged": true
+    },
+    {
+      "name": "explicit_strong_qingdao",
+      "status_code": 200,
+      "seconds": 1.995,
+      "request": {
+        "user_id": 14,
+        "text": "A lot more Qingdao.",
+        "mode": "merge",
+        "bindings": []
+      },
+      "response": {
+        "ready": true,
+        "applied": false,
+        "commands": [
+          {
+            "topic": "\u9752\u5c9b",
+            "requested_topic": "\u9752\u5c9b",
+            "operation": "boost",
+            "strength": "strong",
+            "adjustment": 0.4,
+            "aliases": [
+              "qingdao",
+              "\u9752\u5c9b"
+            ],
+            "grounding_method": "saved_or_confirmed_binding",
+            "context_reference": 0,
+            "source": "ollama:qwen2.5-coder:7b-instruct:dae161e27b0e90dd1856c8bb3209201fd6736d8eb66298e75ed87571486f4364:context_reference"
+          }
+        ],
+        "feed": {
+          "items": [
+            {
+              "item_id": 8958,
+              "score": 1.4
+            },
+            {
+              "item_id": 4335,
+              "score": 1.098502
+            },
+            {
+              "item_id": 3940,
+              "score": 1.024891
+            },
+            {
+              "item_id": 7314,
+              "score": 1.00973
+            },
+            {
+              "item_id": 7383,
+              "score": 0.958278
+            },
+            {
+              "item_id": 1116,
+              "score": 0.948471
+            },
+            {
+              "item_id": 2894,
+              "score": 0.941415
+            },
+            {
+              "item_id": 4367,
+              "score": 0.918375
+            },
+            {
+              "item_id": 6001,
+              "score": 0.914543
+            },
+            {
+              "item_id": 2687,
+              "score": 0.90268
+            }
+          ],
+          "fill_rate": 1.0,
+          "available_items": 2593,
+          "topic_exposure": [
+            {
+              "topic": "\u9752\u5c9b",
+              "operation": "boost",
+              "strength": "strong",
+              "adjustment": 0.4,
+              "candidate_matches": 5,
+              "top_k_match_count": 4,
+              "baseline_top_k_match_count": 1
+            }
+          ]
+        },
+        "interpretation": {
+          "provenance": {
+            "model": "qwen2.5-coder:7b-instruct",
+            "digest": "dae161e27b0e90dd1856c8bb3209201fd6736d8eb66298e75ed87571486f4364",
+            "ollama_version": "0.34.0",
+            "details": {
+              "parent_model": "",
+              "format": "gguf",
+              "family": "qwen2",
+              "families": [
+                "qwen2"
+              ],
+              "parameter_size": "7.6B",
+              "quantization_level": "Q4_K_M",
+              "context_length": 32768,
+              "embedding_length": 3584
+            }
+          }
+        },
+        "interpreted_commands": [
+          {
+            "topic": "\u9752\u5c9b",
+            "operation": "boost",
+            "strength": "strong"
+          }
+        ]
+      },
+      "fixed_ae_unchanged": true,
+      "review_did_not_change_active_profile": true,
+      "expected_commands": [
+        [
+          "\u9752\u5c9b",
+          "boost",
+          "strong"
+        ]
+      ],
+      "interpretation_matches_expected": true
+    },
+    {
+      "name": "explicit_strong_qingdao_apply",
+      "status_code": 200,
+      "seconds": 0.223,
+      "request": {
+        "user_id": 14
+      },
+      "response": {
+        "applied": true,
+        "can_undo": true,
+        "focus": "\u9752\u5c9b",
+        "commands": [
+          {
+            "topic": "\u9752\u5c9b",
+            "requested_topic": "\u9752\u5c9b",
+            "operation": "boost",
+            "strength": "strong",
+            "adjustment": 0.4,
+            "aliases": [
+              "qingdao",
+              "\u9752\u5c9b"
+            ],
+            "grounding_method": "saved_or_confirmed_binding",
+            "context_reference": 0,
+            "source": "ollama:qwen2.5-coder:7b-instruct:dae161e27b0e90dd1856c8bb3209201fd6736d8eb66298e75ed87571486f4364:context_reference"
+          }
+        ],
+        "feed": {
+          "items": [
+            {
+              "item_id": 8958,
+              "score": 1.4
+            },
+            {
+              "item_id": 4335,
+              "score": 1.098502
+            },
+            {
+              "item_id": 3940,
+              "score": 1.024891
+            },
+            {
+              "item_id": 7314,
+              "score": 1.00973
+            },
+            {
+              "item_id": 7383,
+              "score": 0.958278
+            },
+            {
+              "item_id": 1116,
+              "score": 0.948471
+            },
+            {
+              "item_id": 2894,
+              "score": 0.941415
+            },
+            {
+              "item_id": 4367,
+              "score": 0.918375
+            },
+            {
+              "item_id": 6001,
+              "score": 0.914543
+            },
+            {
+              "item_id": 2687,
+              "score": 0.90268
+            }
+          ],
+          "fill_rate": 1.0,
+          "available_items": 2593,
+          "topic_exposure": [
+            {
+              "topic": "\u9752\u5c9b",
+              "operation": "boost",
+              "strength": "strong",
+              "adjustment": 0.4,
+              "candidate_matches": 5,
+              "top_k_match_count": 4,
+              "baseline_top_k_match_count": 1
+            }
+          ]
+        }
+      },
+      "fixed_ae_unchanged": true
+    },
+    {
+      "name": "context_change_direction",
+      "status_code": 200,
+      "seconds": 2.063,
+      "request": {
+        "user_id": 14,
+        "text": "A little less of that.",
+        "mode": "merge",
+        "bindings": []
+      },
+      "response": {
+        "ready": true,
+        "applied": false,
+        "commands": [
+          {
+            "topic": "\u9752\u5c9b",
+            "requested_topic": "\u9752\u5c9b",
+            "operation": "reduce",
+            "strength": "light",
+            "adjustment": -0.1,
+            "aliases": [
+              "qingdao",
+              "\u9752\u5c9b"
+            ],
+            "grounding_method": "saved_or_confirmed_binding",
+            "context_reference": 0,
+            "source": "ollama:qwen2.5-coder:7b-instruct:dae161e27b0e90dd1856c8bb3209201fd6736d8eb66298e75ed87571486f4364:context_reference"
+          }
+        ],
+        "feed": {
+          "items": [
+            {
+              "item_id": 7383,
+              "score": 0.958278
+            },
+            {
+              "item_id": 1116,
+              "score": 0.948471
+            },
+            {
+              "item_id": 2894,
+              "score": 0.941415
+            },
+            {
+              "item_id": 4367,
+              "score": 0.918375
+            },
+            {
+              "item_id": 6001,
+              "score": 0.914543
+            },
+            {
+              "item_id": 2687,
+              "score": 0.90268
+            },
+            {
+              "item_id": 8958,
+              "score": 0.9
+            },
+            {
+              "item_id": 4506,
+              "score": 0.898926
+            },
+            {
+              "item_id": 10217,
+              "score": 0.894736
+            },
+            {
+              "item_id": 6090,
+              "score": 0.892925
+            }
+          ],
+          "fill_rate": 1.0,
+          "available_items": 2593,
+          "topic_exposure": [
+            {
+              "topic": "\u9752\u5c9b",
+              "operation": "reduce",
+              "strength": "light",
+              "adjustment": -0.1,
+              "candidate_matches": 5,
+              "top_k_match_count": 1,
+              "baseline_top_k_match_count": 1
+            }
+          ]
+        },
+        "interpretation": {
+          "provenance": {
+            "model": "qwen2.5-coder:7b-instruct",
+            "digest": "dae161e27b0e90dd1856c8bb3209201fd6736d8eb66298e75ed87571486f4364",
+            "ollama_version": "0.34.0",
+            "details": {
+              "parent_model": "",
+              "format": "gguf",
+              "family": "qwen2",
+              "families": [
+                "qwen2"
+              ],
+              "parameter_size": "7.6B",
+              "quantization_level": "Q4_K_M",
+              "context_length": 32768,
+              "embedding_length": 3584
+            }
+          }
+        },
+        "interpreted_commands": [
+          {
+            "topic": "\u9752\u5c9b",
+            "operation": "reduce",
+            "strength": "light"
+          }
+        ]
+      },
+      "fixed_ae_unchanged": true,
+      "review_did_not_change_active_profile": true,
+      "expected_commands": [
+        [
+          "\u9752\u5c9b",
+          "reduce",
+          "light"
+        ]
+      ],
+      "interpretation_matches_expected": true
+    },
+    {
+      "name": "context_change_direction_apply",
+      "status_code": 200,
+      "seconds": 0.207,
+      "request": {
+        "user_id": 14
+      },
+      "response": {
+        "applied": true,
+        "can_undo": true,
+        "focus": "\u9752\u5c9b",
+        "commands": [
+          {
+            "topic": "\u9752\u5c9b",
+            "requested_topic": "\u9752\u5c9b",
+            "operation": "reduce",
+            "strength": "light",
+            "adjustment": -0.1,
+            "aliases": [
+              "qingdao",
+              "\u9752\u5c9b"
+            ],
+            "grounding_method": "saved_or_confirmed_binding",
+            "context_reference": 0,
+            "source": "ollama:qwen2.5-coder:7b-instruct:dae161e27b0e90dd1856c8bb3209201fd6736d8eb66298e75ed87571486f4364:context_reference"
+          }
+        ],
+        "feed": {
+          "items": [
+            {
+              "item_id": 7383,
+              "score": 0.958278
+            },
+            {
+              "item_id": 1116,
+              "score": 0.948471
+            },
+            {
+              "item_id": 2894,
+              "score": 0.941415
+            },
+            {
+              "item_id": 4367,
+              "score": 0.918375
+            },
+            {
+              "item_id": 6001,
+              "score": 0.914543
+            },
+            {
+              "item_id": 2687,
+              "score": 0.90268
+            },
+            {
+              "item_id": 8958,
+              "score": 0.9
+            },
+            {
+              "item_id": 4506,
+              "score": 0.898926
+            },
+            {
+              "item_id": 10217,
+              "score": 0.894736
+            },
+            {
+              "item_id": 6090,
+              "score": 0.892925
+            }
+          ],
+          "fill_rate": 1.0,
+          "available_items": 2593,
+          "topic_exposure": [
+            {
+              "topic": "\u9752\u5c9b",
+              "operation": "reduce",
+              "strength": "light",
+              "adjustment": -0.1,
+              "candidate_matches": 5,
+              "top_k_match_count": 1,
+              "baseline_top_k_match_count": 1
+            }
+          ]
+        }
+      },
+      "fixed_ae_unchanged": true
+    },
+    {
+      "name": "natural_language_undo",
+      "status_code": 200,
+      "seconds": 1.297,
+      "request": {
+        "user_id": 14,
+        "text": "Undo the last change.",
+        "mode": "merge",
+        "bindings": []
+      },
+      "response": {
+        "ready": true,
+        "applied": false,
+        "commands": [
+          {
+            "topic": "\u9752\u5c9b",
+            "requested_topic": "\u9752\u5c9b",
+            "operation": "boost",
+            "strength": "strong",
+            "adjustment": 0.4,
+            "aliases": [
+              "qingdao",
+              "\u9752\u5c9b"
+            ],
+            "grounding_method": "saved_or_confirmed_binding",
+            "context_reference": 0,
+            "source": "ollama:qwen2.5-coder:7b-instruct:dae161e27b0e90dd1856c8bb3209201fd6736d8eb66298e75ed87571486f4364:context_reference"
+          }
+        ],
+        "feed": {
+          "items": [
+            {
+              "item_id": 8958,
+              "score": 1.4
+            },
+            {
+              "item_id": 4335,
+              "score": 1.098502
+            },
+            {
+              "item_id": 3940,
+              "score": 1.024891
+            },
+            {
+              "item_id": 7314,
+              "score": 1.00973
+            },
+            {
+              "item_id": 7383,
+              "score": 0.958278
+            },
+            {
+              "item_id": 1116,
+              "score": 0.948471
+            },
+            {
+              "item_id": 2894,
+              "score": 0.941415
+            },
+            {
+              "item_id": 4367,
+              "score": 0.918375
+            },
+            {
+              "item_id": 6001,
+              "score": 0.914543
+            },
+            {
+              "item_id": 2687,
+              "score": 0.90268
+            }
+          ],
+          "fill_rate": 1.0,
+          "available_items": 2593,
+          "topic_exposure": [
+            {
+              "topic": "\u9752\u5c9b",
+              "operation": "boost",
+              "strength": "strong",
+              "adjustment": 0.4,
+              "candidate_matches": 5,
+              "top_k_match_count": 4,
+              "baseline_top_k_match_count": 1
+            }
+          ]
+        },
+        "interpretation": {
+          "history_action": "undo",
+          "provenance": {
+            "model": "qwen2.5-coder:7b-instruct",
+            "digest": "dae161e27b0e90dd1856c8bb3209201fd6736d8eb66298e75ed87571486f4364",
+            "ollama_version": "0.34.0",
+            "details": {
+              "parent_model": "",
+              "format": "gguf",
+              "family": "qwen2",
+              "families": [
+                "qwen2"
+              ],
+              "parameter_size": "7.6B",
+              "quantization_level": "Q4_K_M",
+              "context_length": 32768,
+              "embedding_length": 3584
+            }
+          }
+        },
+        "interpreted_commands": []
+      },
+      "fixed_ae_unchanged": true,
+      "review_did_not_change_active_profile": true
+    },
+    {
+      "name": "natural_language_undo_apply",
+      "status_code": 200,
+      "seconds": 0.19,
+      "request": {
+        "user_id": 14
+      },
+      "response": {
+        "applied": true,
+        "can_undo": true,
+        "focus": "\u9752\u5c9b",
+        "commands": [
+          {
+            "topic": "\u9752\u5c9b",
+            "requested_topic": "\u9752\u5c9b",
+            "operation": "boost",
+            "strength": "strong",
+            "adjustment": 0.4,
+            "aliases": [
+              "qingdao",
+              "\u9752\u5c9b"
+            ],
+            "grounding_method": "saved_or_confirmed_binding",
+            "context_reference": 0,
+            "source": "ollama:qwen2.5-coder:7b-instruct:dae161e27b0e90dd1856c8bb3209201fd6736d8eb66298e75ed87571486f4364:context_reference"
+          }
+        ],
+        "feed": {
+          "items": [
+            {
+              "item_id": 8958,
+              "score": 1.4
+            },
+            {
+              "item_id": 4335,
+              "score": 1.098502
+            },
+            {
+              "item_id": 3940,
+              "score": 1.024891
+            },
+            {
+              "item_id": 7314,
+              "score": 1.00973
+            },
+            {
+              "item_id": 7383,
+              "score": 0.958278
+            },
+            {
+              "item_id": 1116,
+              "score": 0.948471
+            },
+            {
+              "item_id": 2894,
+              "score": 0.941415
+            },
+            {
+              "item_id": 4367,
+              "score": 0.918375
+            },
+            {
+              "item_id": 6001,
+              "score": 0.914543
+            },
+            {
+              "item_id": 2687,
+              "score": 0.90268
+            }
+          ],
+          "fill_rate": 1.0,
+          "available_items": 2593,
+          "topic_exposure": [
+            {
+              "topic": "\u9752\u5c9b",
+              "operation": "boost",
+              "strength": "strong",
+              "adjustment": 0.4,
+              "candidate_matches": 5,
+              "top_k_match_count": 4,
+              "baseline_top_k_match_count": 1
+            }
+          ]
+        }
+      },
+      "fixed_ae_unchanged": true
+    },
+    {
+      "name": "hard_exclude",
+      "status_code": 200,
+      "seconds": 2.092,
+      "request": {
+        "user_id": 14,
+        "text": "Hide Qingdao completely.",
+        "mode": "merge",
+        "bindings": []
+      },
+      "response": {
+        "ready": true,
+        "applied": false,
+        "commands": [
+          {
+            "topic": "\u9752\u5c9b",
+            "requested_topic": "\u9752\u5c9b",
+            "operation": "exclude",
+            "strength": "none",
+            "adjustment": 0.0,
+            "aliases": [
+              "qingdao",
+              "\u9752\u5c9b"
+            ],
+            "grounding_method": "saved_or_confirmed_binding",
+            "context_reference": 0,
+            "source": "ollama:qwen2.5-coder:7b-instruct:dae161e27b0e90dd1856c8bb3209201fd6736d8eb66298e75ed87571486f4364:context_reference"
+          }
+        ],
+        "feed": {
+          "items": [
+            {
+              "item_id": 7383,
+              "score": 0.958278
+            },
+            {
+              "item_id": 1116,
+              "score": 0.948471
+            },
+            {
+              "item_id": 2894,
+              "score": 0.941415
+            },
+            {
+              "item_id": 4367,
+              "score": 0.918375
+            },
+            {
+              "item_id": 6001,
+              "score": 0.914543
+            },
+            {
+              "item_id": 2687,
+              "score": 0.90268
+            },
+            {
+              "item_id": 4506,
+              "score": 0.898926
+            },
+            {
+              "item_id": 10217,
+              "score": 0.894736
+            },
+            {
+              "item_id": 6090,
+              "score": 0.892925
+            },
+            {
+              "item_id": 7594,
+              "score": 0.8926
+            }
+          ],
+          "fill_rate": 1.0,
+          "available_items": 2588,
+          "topic_exposure": [
+            {
+              "topic": "\u9752\u5c9b",
+              "operation": "exclude",
+              "strength": "none",
+              "adjustment": 0.0,
+              "candidate_matches": 5,
+              "top_k_match_count": 0,
+              "baseline_top_k_match_count": 1
+            }
+          ]
+        },
+        "interpretation": {
+          "provenance": {
+            "model": "qwen2.5-coder:7b-instruct",
+            "digest": "dae161e27b0e90dd1856c8bb3209201fd6736d8eb66298e75ed87571486f4364",
+            "ollama_version": "0.34.0",
+            "details": {
+              "parent_model": "",
+              "format": "gguf",
+              "family": "qwen2",
+              "families": [
+                "qwen2"
+              ],
+              "parameter_size": "7.6B",
+              "quantization_level": "Q4_K_M",
+              "context_length": 32768,
+              "embedding_length": 3584
+            }
+          }
+        },
+        "interpreted_commands": [
+          {
+            "topic": "\u9752\u5c9b",
+            "operation": "exclude",
+            "strength": "none"
+          }
+        ]
+      },
+      "fixed_ae_unchanged": true,
+      "review_did_not_change_active_profile": true,
+      "expected_commands": [
+        [
+          "\u9752\u5c9b",
+          "exclude",
+          "none"
+        ]
+      ],
+      "interpretation_matches_expected": true
+    },
+    {
+      "name": "hard_exclude_apply",
+      "status_code": 200,
+      "seconds": 0.198,
+      "request": {
+        "user_id": 14
+      },
+      "response": {
+        "applied": true,
+        "can_undo": true,
+        "focus": "\u9752\u5c9b",
+        "commands": [
+          {
+            "topic": "\u9752\u5c9b",
+            "requested_topic": "\u9752\u5c9b",
+            "operation": "exclude",
+            "strength": "none",
+            "adjustment": 0.0,
+            "aliases": [
+              "qingdao",
+              "\u9752\u5c9b"
+            ],
+            "grounding_method": "saved_or_confirmed_binding",
+            "context_reference": 0,
+            "source": "ollama:qwen2.5-coder:7b-instruct:dae161e27b0e90dd1856c8bb3209201fd6736d8eb66298e75ed87571486f4364:context_reference"
+          }
+        ],
+        "feed": {
+          "items": [
+            {
+              "item_id": 7383,
+              "score": 0.958278
+            },
+            {
+              "item_id": 1116,
+              "score": 0.948471
+            },
+            {
+              "item_id": 2894,
+              "score": 0.941415
+            },
+            {
+              "item_id": 4367,
+              "score": 0.918375
+            },
+            {
+              "item_id": 6001,
+              "score": 0.914543
+            },
+            {
+              "item_id": 2687,
+              "score": 0.90268
+            },
+            {
+              "item_id": 4506,
+              "score": 0.898926
+            },
+            {
+              "item_id": 10217,
+              "score": 0.894736
+            },
+            {
+              "item_id": 6090,
+              "score": 0.892925
+            },
+            {
+              "item_id": 7594,
+              "score": 0.8926
+            }
+          ],
+          "fill_rate": 1.0,
+          "available_items": 2588,
+          "topic_exposure": [
+            {
+              "topic": "\u9752\u5c9b",
+              "operation": "exclude",
+              "strength": "none",
+              "adjustment": 0.0,
+              "candidate_matches": 5,
+              "top_k_match_count": 0,
+              "baseline_top_k_match_count": 1
+            }
+          ]
+        }
+      },
+      "fixed_ae_unchanged": true
+    },
+    {
+      "name": "cancel_exclusion",
+      "status_code": 200,
+      "seconds": 2.16,
+      "request": {
+        "user_id": 14,
+        "text": "Do not hide Qingdao anymore.",
+        "mode": "merge",
+        "bindings": []
+      },
+      "response": {
+        "ready": true,
+        "applied": false,
+        "commands": [],
+        "feed": {
+          "items": [
+            {
+              "item_id": 8958,
+              "score": 1.0
+            },
+            {
+              "item_id": 7383,
+              "score": 0.958278
+            },
+            {
+              "item_id": 1116,
+              "score": 0.948471
+            },
+            {
+              "item_id": 2894,
+              "score": 0.941415
+            },
+            {
+              "item_id": 4367,
+              "score": 0.918375
+            },
+            {
+              "item_id": 6001,
+              "score": 0.914543
+            },
+            {
+              "item_id": 2687,
+              "score": 0.90268
+            },
+            {
+              "item_id": 4506,
+              "score": 0.898926
+            },
+            {
+              "item_id": 10217,
+              "score": 0.894736
+            },
+            {
+              "item_id": 6090,
+              "score": 0.892925
+            }
+          ],
+          "fill_rate": 1.0,
+          "available_items": 2593,
+          "topic_exposure": []
+        },
+        "interpretation": {
+          "provenance": {
+            "model": "qwen2.5-coder:7b-instruct",
+            "digest": "dae161e27b0e90dd1856c8bb3209201fd6736d8eb66298e75ed87571486f4364",
+            "ollama_version": "0.34.0",
+            "details": {
+              "parent_model": "",
+              "format": "gguf",
+              "family": "qwen2",
+              "families": [
+                "qwen2"
+              ],
+              "parameter_size": "7.6B",
+              "quantization_level": "Q4_K_M",
+              "context_length": 32768,
+              "embedding_length": 3584
+            }
+          }
+        },
+        "interpreted_commands": [
+          {
+            "topic": "\u9752\u5c9b",
+            "operation": "remove",
+            "strength": "none"
+          }
+        ]
+      },
+      "fixed_ae_unchanged": true,
+      "review_did_not_change_active_profile": true,
+      "expected_commands": [
+        [
+          "\u9752\u5c9b",
+          "remove",
+          "none"
+        ]
+      ],
+      "interpretation_matches_expected": true
+    },
+    {
+      "name": "cancel_exclusion_apply",
+      "status_code": 200,
+      "seconds": 0.186,
+      "request": {
+        "user_id": 14
+      },
+      "response": {
+        "applied": true,
+        "can_undo": true,
+        "focus": null,
+        "commands": [],
+        "feed": {
+          "items": [
+            {
+              "item_id": 8958,
+              "score": 1.0
+            },
+            {
+              "item_id": 7383,
+              "score": 0.958278
+            },
+            {
+              "item_id": 1116,
+              "score": 0.948471
+            },
+            {
+              "item_id": 2894,
+              "score": 0.941415
+            },
+            {
+              "item_id": 4367,
+              "score": 0.918375
+            },
+            {
+              "item_id": 6001,
+              "score": 0.914543
+            },
+            {
+              "item_id": 2687,
+              "score": 0.90268
+            },
+            {
+              "item_id": 4506,
+              "score": 0.898926
+            },
+            {
+              "item_id": 10217,
+              "score": 0.894736
+            },
+            {
+              "item_id": 6090,
+              "score": 0.892925
+            }
+          ],
+          "fill_rate": 1.0,
+          "available_items": 2593,
+          "topic_exposure": []
+        }
+      },
+      "fixed_ae_unchanged": true
+    },
+    {
+      "name": "travel_scope_before_confirmation",
+      "status_code": 200,
+      "seconds": 2.964,
+      "request": {
+        "user_id": 14,
+        "text": "More travel.",
+        "mode": "merge",
+        "bindings": []
+      },
+      "response": {
+        "ready": false,
+        "applied": false,
+        "question": "The catalogue suggestion '\u65c5\u6e38' for 'travel' may change scope. Confirm an exact source phrase or refine the subject; no controls were applied",
+        "clarification": {
+          "requested_topic": "travel",
+          "suggested_topic": "\u65c5\u6e38",
+          "literal_topic": "\u65c5\u884c"
+        },
+        "commands": []
+      },
+      "fixed_ae_unchanged": true,
+      "review_did_not_change_active_profile": true
+    },
+    {
+      "name": "manual_confirmed_travel",
+      "status_code": 200,
+      "seconds": 0.253,
+      "request": {
+        "user_id": 14,
+        "backend": "manual",
+        "mode": "replace",
+        "actions": [
+          {
+            "topic": "\u65c5\u6e38",
+            "operation": "boost",
+            "strength": "standard"
+          }
+        ]
+      },
+      "response": {
+        "ready": true,
+        "applied": false,
+        "commands": [
+          {
+            "topic": "\u65c5\u6e38",
+            "requested_topic": "\u65c5\u6e38",
+            "operation": "boost",
+            "strength": "standard",
+            "adjustment": 0.25,
+            "aliases": [
+              "\u65c5\u6e38"
+            ],
+            "grounding_method": "literal_source_phrase",
+            "source": "manual_structured"
+          }
+        ],
+        "feed": {
+          "items": [
+            {
+              "item_id": 2894,
+              "score": 1.191415
+            },
+            {
+              "item_id": 10184,
+              "score": 1.105071
+            },
+            {
+              "item_id": 2631,
+              "score": 1.015017
+            },
+            {
+              "item_id": 2660,
+              "score": 1.011008
+            },
+            {
+              "item_id": 2591,
+              "score": 1.005081
+            },
+            {
+              "item_id": 8958,
+              "score": 1.0
+            },
+            {
+              "item_id": 2650,
+              "score": 0.990631
+            },
+            {
+              "item_id": 7285,
+              "score": 0.980407
+            },
+            {
+              "item_id": 4451,
+              "score": 0.963981
+            },
+            {
+              "item_id": 8667,
+              "score": 0.960988
+            }
+          ],
+          "fill_rate": 1.0,
+          "available_items": 2593,
+          "topic_exposure": [
+            {
+              "topic": "\u65c5\u6e38",
+              "operation": "boost",
+              "strength": "standard",
+              "adjustment": 0.25,
+              "candidate_matches": 69,
+              "top_k_match_count": 9,
+              "baseline_top_k_match_count": 1
+            }
+          ]
+        },
+        "interpretation": {},
+        "interpreted_commands": [
+          {
+            "topic": "\u65c5\u6e38",
+            "operation": "boost",
+            "strength": "standard"
+          }
+        ]
+      },
+      "fixed_ae_unchanged": true
+    },
+    {
+      "name": "confirmed_english_travel",
+      "status_code": 200,
+      "seconds": 2.247,
+      "request": {
+        "user_id": 14,
+        "text": "More travel.",
+        "mode": "replace",
+        "bindings": [
+          {
+            "requested_topic": "travel",
+            "source_topic": "\u65c5\u6e38"
+          }
+        ]
+      },
+      "response": {
+        "ready": true,
+        "applied": false,
+        "commands": [
+          {
+            "topic": "\u65c5\u6e38",
+            "requested_topic": "travel",
+            "operation": "boost",
+            "strength": "standard",
+            "adjustment": 0.25,
+            "aliases": [
+              "travel",
+              "\u65c5\u6e38"
+            ],
+            "grounding_method": "saved_or_confirmed_binding",
+            "source": "ollama:qwen2.5-coder:7b-instruct:dae161e27b0e90dd1856c8bb3209201fd6736d8eb66298e75ed87571486f4364:plan+source_translation"
+          }
+        ],
+        "feed": {
+          "items": [
+            {
+              "item_id": 2894,
+              "score": 1.191415
+            },
+            {
+              "item_id": 10184,
+              "score": 1.105071
+            },
+            {
+              "item_id": 2631,
+              "score": 1.015017
+            },
+            {
+              "item_id": 2660,
+              "score": 1.011008
+            },
+            {
+              "item_id": 2591,
+              "score": 1.005081
+            },
+            {
+              "item_id": 8958,
+              "score": 1.0
+            },
+            {
+              "item_id": 2650,
+              "score": 0.990631
+            },
+            {
+              "item_id": 7285,
+              "score": 0.980407
+            },
+            {
+              "item_id": 4451,
+              "score": 0.963981
+            },
+            {
+              "item_id": 8667,
+              "score": 0.960988
+            }
+          ],
+          "fill_rate": 1.0,
+          "available_items": 2593,
+          "topic_exposure": [
+            {
+              "topic": "\u65c5\u6e38",
+              "operation": "boost",
+              "strength": "standard",
+              "adjustment": 0.25,
+              "candidate_matches": 69,
+              "top_k_match_count": 9,
+              "baseline_top_k_match_count": 1
+            }
+          ]
+        },
+        "interpretation": {
+          "provenance": {
+            "model": "qwen2.5-coder:7b-instruct",
+            "digest": "dae161e27b0e90dd1856c8bb3209201fd6736d8eb66298e75ed87571486f4364",
+            "ollama_version": "0.34.0",
+            "details": {
+              "parent_model": "",
+              "format": "gguf",
+              "family": "qwen2",
+              "families": [
+                "qwen2"
+              ],
+              "parameter_size": "7.6B",
+              "quantization_level": "Q4_K_M",
+              "context_length": 32768,
+              "embedding_length": 3584
+            }
+          }
+        },
+        "interpreted_commands": [
+          {
+            "topic": "\u65c5\u6e38",
+            "operation": "boost",
+            "strength": "standard"
+          }
+        ]
+      },
+      "fixed_ae_unchanged": true,
+      "review_did_not_change_active_profile": true,
+      "expected_commands": [
+        [
+          "\u65c5\u6e38",
+          "boost",
+          "standard"
+        ]
+      ],
+      "interpretation_matches_expected": true
+    },
+    {
+      "name": "confirmed_english_travel_apply",
+      "status_code": 200,
+      "seconds": 0.205,
+      "request": {
+        "user_id": 14
+      },
+      "response": {
+        "applied": true,
+        "can_undo": true,
+        "focus": "\u65c5\u6e38",
+        "commands": [
+          {
+            "topic": "\u65c5\u6e38",
+            "requested_topic": "travel",
+            "operation": "boost",
+            "strength": "standard",
+            "adjustment": 0.25,
+            "aliases": [
+              "travel",
+              "\u65c5\u6e38"
+            ],
+            "grounding_method": "saved_or_confirmed_binding",
+            "source": "ollama:qwen2.5-coder:7b-instruct:dae161e27b0e90dd1856c8bb3209201fd6736d8eb66298e75ed87571486f4364:plan+source_translation"
+          }
+        ],
+        "feed": {
+          "items": [
+            {
+              "item_id": 2894,
+              "score": 1.191415
+            },
+            {
+              "item_id": 10184,
+              "score": 1.105071
+            },
+            {
+              "item_id": 2631,
+              "score": 1.015017
+            },
+            {
+              "item_id": 2660,
+              "score": 1.011008
+            },
+            {
+              "item_id": 2591,
+              "score": 1.005081
+            },
+            {
+              "item_id": 8958,
+              "score": 1.0
+            },
+            {
+              "item_id": 2650,
+              "score": 0.990631
+            },
+            {
+              "item_id": 7285,
+              "score": 0.980407
+            },
+            {
+              "item_id": 4451,
+              "score": 0.963981
+            },
+            {
+              "item_id": 8667,
+              "score": 0.960988
+            }
+          ],
+          "fill_rate": 1.0,
+          "available_items": 2593,
+          "topic_exposure": [
+            {
+              "topic": "\u65c5\u6e38",
+              "operation": "boost",
+              "strength": "standard",
+              "adjustment": 0.25,
+              "candidate_matches": 69,
+              "top_k_match_count": 9,
+              "baseline_top_k_match_count": 1
+            }
+          ]
+        }
+      },
+      "fixed_ae_unchanged": true
+    },
+    {
+      "name": "equivalent_chinese_travel",
+      "status_code": 200,
+      "seconds": 2.048,
+      "request": {
+        "user_id": 14,
+        "text": "\u591a\u63a8\u8350\u4e00\u4e9b\u65c5\u6e38\u89c6\u9891\u3002",
+        "mode": "replace",
+        "bindings": []
+      },
+      "response": {
+        "ready": true,
+        "applied": false,
+        "commands": [
+          {
+            "topic": "\u65c5\u6e38",
+            "requested_topic": "\u65c5\u6e38",
+            "operation": "boost",
+            "strength": "standard",
+            "adjustment": 0.25,
+            "aliases": [
+              "travel",
+              "\u65c5\u6e38"
+            ],
+            "grounding_method": "saved_or_confirmed_binding",
+            "context_reference": 0,
+            "source": "ollama:qwen2.5-coder:7b-instruct:dae161e27b0e90dd1856c8bb3209201fd6736d8eb66298e75ed87571486f4364:context_reference"
+          }
+        ],
+        "feed": {
+          "items": [
+            {
+              "item_id": 2894,
+              "score": 1.191415
+            },
+            {
+              "item_id": 10184,
+              "score": 1.105071
+            },
+            {
+              "item_id": 2631,
+              "score": 1.015017
+            },
+            {
+              "item_id": 2660,
+              "score": 1.011008
+            },
+            {
+              "item_id": 2591,
+              "score": 1.005081
+            },
+            {
+              "item_id": 8958,
+              "score": 1.0
+            },
+            {
+              "item_id": 2650,
+              "score": 0.990631
+            },
+            {
+              "item_id": 7285,
+              "score": 0.980407
+            },
+            {
+              "item_id": 4451,
+              "score": 0.963981
+            },
+            {
+              "item_id": 8667,
+              "score": 0.960988
+            }
+          ],
+          "fill_rate": 1.0,
+          "available_items": 2593,
+          "topic_exposure": [
+            {
+              "topic": "\u65c5\u6e38",
+              "operation": "boost",
+              "strength": "standard",
+              "adjustment": 0.25,
+              "candidate_matches": 69,
+              "top_k_match_count": 9,
+              "baseline_top_k_match_count": 1
+            }
+          ]
+        },
+        "interpretation": {
+          "provenance": {
+            "model": "qwen2.5-coder:7b-instruct",
+            "digest": "dae161e27b0e90dd1856c8bb3209201fd6736d8eb66298e75ed87571486f4364",
+            "ollama_version": "0.34.0",
+            "details": {
+              "parent_model": "",
+              "format": "gguf",
+              "family": "qwen2",
+              "families": [
+                "qwen2"
+              ],
+              "parameter_size": "7.6B",
+              "quantization_level": "Q4_K_M",
+              "context_length": 32768,
+              "embedding_length": 3584
+            }
+          }
+        },
+        "interpreted_commands": [
+          {
+            "topic": "\u65c5\u6e38",
+            "operation": "boost",
+            "strength": "standard"
+          }
+        ]
+      },
+      "fixed_ae_unchanged": true,
+      "review_did_not_change_active_profile": true,
+      "expected_commands": [
+        [
+          "\u65c5\u6e38",
+          "boost",
+          "standard"
+        ]
+      ],
+      "interpretation_matches_expected": true
+    },
+    {
+      "name": "composed_instruction",
+      "status_code": 200,
+      "seconds": 2.87,
+      "request": {
+        "user_id": 14,
+        "text": "A lot more Qingdao and slightly less gaming.",
+        "mode": "merge",
+        "bindings": [
+          {
+            "requested_topic": "Qingdao",
+            "source_topic": "\u9752\u5c9b"
+          },
+          {
+            "requested_topic": "gaming",
+            "source_topic": "\u6e38\u620f"
+          }
+        ]
+      },
+      "response": {
+        "ready": true,
+        "applied": false,
+        "commands": [
+          {
+            "topic": "\u65c5\u6e38",
+            "requested_topic": "travel",
+            "operation": "boost",
+            "strength": "standard",
+            "adjustment": 0.25,
+            "aliases": [
+              "travel",
+              "\u65c5\u6e38"
+            ],
+            "grounding_method": "saved_or_confirmed_binding",
+            "source": "ollama:qwen2.5-coder:7b-instruct:dae161e27b0e90dd1856c8bb3209201fd6736d8eb66298e75ed87571486f4364:plan+source_translation"
+          },
+          {
+            "topic": "\u9752\u5c9b",
+            "requested_topic": "qingdao",
+            "operation": "boost",
+            "strength": "strong",
+            "adjustment": 0.4,
+            "aliases": [
+              "qingdao",
+              "\u9752\u5c9b"
+            ],
+            "grounding_method": "saved_or_confirmed_binding",
+            "source": "ollama:qwen2.5-coder:7b-instruct:dae161e27b0e90dd1856c8bb3209201fd6736d8eb66298e75ed87571486f4364:plan+source_translation"
+          },
+          {
+            "topic": "\u6e38\u620f",
+            "requested_topic": "gaming",
+            "operation": "reduce",
+            "strength": "light",
+            "adjustment": -0.1,
+            "aliases": [
+              "gaming",
+              "\u6e38\u620f"
+            ],
+            "grounding_method": "saved_or_confirmed_binding",
+            "source": "ollama:qwen2.5-coder:7b-instruct:dae161e27b0e90dd1856c8bb3209201fd6736d8eb66298e75ed87571486f4364:plan+source_translation"
+          }
+        ],
+        "feed": {
+          "items": [
+            {
+              "item_id": 8958,
+              "score": 1.4
+            },
+            {
+              "item_id": 2894,
+              "score": 1.191415
+            },
+            {
+              "item_id": 10184,
+              "score": 1.105071
+            },
+            {
+              "item_id": 4335,
+              "score": 1.098502
+            },
+            {
+              "item_id": 3940,
+              "score": 1.024891
+            },
+            {
+              "item_id": 2631,
+              "score": 1.015017
+            },
+            {
+              "item_id": 2660,
+              "score": 1.011008
+            },
+            {
+              "item_id": 7314,
+              "score": 1.00973
+            },
+            {
+              "item_id": 2591,
+              "score": 1.005081
+            },
+            {
+              "item_id": 2650,
+              "score": 0.990631
+            }
+          ],
+          "fill_rate": 1.0,
+          "available_items": 2593,
+          "topic_exposure": [
+            {
+              "topic": "\u65c5\u6e38",
+              "operation": "boost",
+              "strength": "standard",
+              "adjustment": 0.25,
+              "candidate_matches": 69,
+              "top_k_match_count": 6,
+              "baseline_top_k_match_count": 1
+            },
+            {
+              "topic": "\u9752\u5c9b",
+              "operation": "boost",
+              "strength": "strong",
+              "adjustment": 0.4,
+              "candidate_matches": 5,
+              "top_k_match_count": 4,
+              "baseline_top_k_match_count": 1
+            },
+            {
+              "topic": "\u6e38\u620f",
+              "operation": "reduce",
+              "strength": "light",
+              "adjustment": -0.1,
+              "candidate_matches": 11,
+              "top_k_match_count": 0,
+              "baseline_top_k_match_count": 0
+            }
+          ]
+        },
+        "interpretation": {
+          "provenance": {
+            "model": "qwen2.5-coder:7b-instruct",
+            "digest": "dae161e27b0e90dd1856c8bb3209201fd6736d8eb66298e75ed87571486f4364",
+            "ollama_version": "0.34.0",
+            "details": {
+              "parent_model": "",
+              "format": "gguf",
+              "family": "qwen2",
+              "families": [
+                "qwen2"
+              ],
+              "parameter_size": "7.6B",
+              "quantization_level": "Q4_K_M",
+              "context_length": 32768,
+              "embedding_length": 3584
+            }
+          }
+        },
+        "interpreted_commands": [
+          {
+            "topic": "\u9752\u5c9b",
+            "operation": "boost",
+            "strength": "strong"
+          },
+          {
+            "topic": "\u6e38\u620f",
+            "operation": "reduce",
+            "strength": "light"
+          }
+        ]
+      },
+      "fixed_ae_unchanged": true,
+      "review_did_not_change_active_profile": true,
+      "expected_commands": [
+        [
+          "\u9752\u5c9b",
+          "boost",
+          "strong"
+        ],
+        [
+          "\u6e38\u620f",
+          "reduce",
+          "light"
+        ]
+      ],
+      "interpretation_matches_expected": true
+    },
+    {
+      "name": "composed_instruction_apply",
+      "status_code": 200,
+      "seconds": 0.211,
+      "request": {
+        "user_id": 14
+      },
+      "response": {
+        "applied": true,
+        "can_undo": true,
+        "focus": null,
+        "commands": [
+          {
+            "topic": "\u65c5\u6e38",
+            "requested_topic": "travel",
+            "operation": "boost",
+            "strength": "standard",
+            "adjustment": 0.25,
+            "aliases": [
+              "travel",
+              "\u65c5\u6e38"
+            ],
+            "grounding_method": "saved_or_confirmed_binding",
+            "source": "ollama:qwen2.5-coder:7b-instruct:dae161e27b0e90dd1856c8bb3209201fd6736d8eb66298e75ed87571486f4364:plan+source_translation"
+          },
+          {
+            "topic": "\u9752\u5c9b",
+            "requested_topic": "qingdao",
+            "operation": "boost",
+            "strength": "strong",
+            "adjustment": 0.4,
+            "aliases": [
+              "qingdao",
+              "\u9752\u5c9b"
+            ],
+            "grounding_method": "saved_or_confirmed_binding",
+            "source": "ollama:qwen2.5-coder:7b-instruct:dae161e27b0e90dd1856c8bb3209201fd6736d8eb66298e75ed87571486f4364:plan+source_translation"
+          },
+          {
+            "topic": "\u6e38\u620f",
+            "requested_topic": "gaming",
+            "operation": "reduce",
+            "strength": "light",
+            "adjustment": -0.1,
+            "aliases": [
+              "gaming",
+              "\u6e38\u620f"
+            ],
+            "grounding_method": "saved_or_confirmed_binding",
+            "source": "ollama:qwen2.5-coder:7b-instruct:dae161e27b0e90dd1856c8bb3209201fd6736d8eb66298e75ed87571486f4364:plan+source_translation"
+          }
+        ],
+        "feed": {
+          "items": [
+            {
+              "item_id": 8958,
+              "score": 1.4
+            },
+            {
+              "item_id": 2894,
+              "score": 1.191415
+            },
+            {
+              "item_id": 10184,
+              "score": 1.105071
+            },
+            {
+              "item_id": 4335,
+              "score": 1.098502
+            },
+            {
+              "item_id": 3940,
+              "score": 1.024891
+            },
+            {
+              "item_id": 2631,
+              "score": 1.015017
+            },
+            {
+              "item_id": 2660,
+              "score": 1.011008
+            },
+            {
+              "item_id": 7314,
+              "score": 1.00973
+            },
+            {
+              "item_id": 2591,
+              "score": 1.005081
+            },
+            {
+              "item_id": 2650,
+              "score": 0.990631
+            }
+          ],
+          "fill_rate": 1.0,
+          "available_items": 2593,
+          "topic_exposure": [
+            {
+              "topic": "\u65c5\u6e38",
+              "operation": "boost",
+              "strength": "standard",
+              "adjustment": 0.25,
+              "candidate_matches": 69,
+              "top_k_match_count": 6,
+              "baseline_top_k_match_count": 1
+            },
+            {
+              "topic": "\u9752\u5c9b",
+              "operation": "boost",
+              "strength": "strong",
+              "adjustment": 0.4,
+              "candidate_matches": 5,
+              "top_k_match_count": 4,
+              "baseline_top_k_match_count": 1
+            },
+            {
+              "topic": "\u6e38\u620f",
+              "operation": "reduce",
+              "strength": "light",
+              "adjustment": -0.1,
+              "candidate_matches": 11,
+              "top_k_match_count": 0,
+              "baseline_top_k_match_count": 0
+            }
+          ]
+        }
+      },
+      "fixed_ae_unchanged": true
+    },
+    {
+      "name": "ambiguous_reference",
+      "status_code": 200,
+      "seconds": 3.524,
+      "request": {
+        "user_id": 14,
+        "text": "Make that stronger.",
+        "mode": "merge",
+        "bindings": []
+      },
+      "response": {
+        "ready": false,
+        "applied": false,
+        "question": "Which saved subject do you mean? The last turn has no unique focus",
+        "commands": []
+      },
+      "fixed_ae_unchanged": true,
+      "review_did_not_change_active_profile": true,
+      "expected_clarification_received": true
+    },
+    {
+      "name": "editable_profile",
+      "status_code": 200,
+      "seconds": 3.482,
+      "request": {
+        "user_id": 14,
+        "text": "A little more Qingdao. Hide gaming completely.",
+        "mode": "replace",
+        "bindings": [
+          {
+            "requested_topic": "Qingdao",
+            "source_topic": "\u9752\u5c9b"
+          },
+          {
+            "requested_topic": "gaming",
+            "source_topic": "\u6e38\u620f"
+          }
+        ]
+      },
+      "response": {
+        "ready": false,
+        "applied": false,
+        "question": "Which saved subject do you mean? The last turn has no unique focus",
+        "commands": []
+      },
+      "fixed_ae_unchanged": true,
+      "review_did_not_change_active_profile": true,
+      "expected_commands": [
+        [
+          "\u9752\u5c9b",
+          "boost",
+          "light"
+        ],
+        [
+          "\u6e38\u620f",
+          "exclude",
+          "none"
+        ]
+      ],
+      "interpretation_matches_expected": false
+    },
+    {
+      "name": "unknown_subject",
+      "status_code": 200,
+      "seconds": 1.746,
+      "request": {
+        "user_id": 14,
+        "text": "More flarbblargoplanets.",
+        "mode": "merge",
+        "bindings": []
+      },
+      "response": {
+        "ready": false,
+        "applied": false,
+        "question": "Which subject do you mean by 'flarbblargoplanets'?",
+        "commands": []
+      },
+      "fixed_ae_unchanged": true,
+      "review_did_not_change_active_profile": true
+    },
+    {
+      "name": "unsupported_quota",
+      "status_code": 200,
+      "seconds": 0.151,
+      "request": {
+        "user_id": 14,
+        "text": "Exactly three gaming videos unless I watched them.",
+        "mode": "merge",
+        "bindings": []
+      },
+      "response": {
+        "ready": false,
+        "applied": false,
+        "question": "This workflow supports topic increase, decrease and exclusion with three strengths. Rephrase quotas, conditions or include-only rules as separate supported preferences.",
+        "commands": []
+      },
+      "fixed_ae_unchanged": true,
+      "review_did_not_change_active_profile": true
+    },
+    {
+      "name": "valid_only_a_little",
+      "status_code": 200,
+      "seconds": 2.15,
+      "request": {
+        "user_id": 14,
+        "text": "Only a little more Qingdao.",
+        "mode": "merge",
+        "bindings": []
+      },
+      "response": {
+        "ready": true,
+        "applied": false,
+        "commands": [
+          {
+            "topic": "\u65c5\u6e38",
+            "requested_topic": "travel",
+            "operation": "boost",
+            "strength": "standard",
+            "adjustment": 0.25,
+            "aliases": [
+              "travel",
+              "\u65c5\u6e38"
+            ],
+            "grounding_method": "saved_or_confirmed_binding",
+            "source": "ollama:qwen2.5-coder:7b-instruct:dae161e27b0e90dd1856c8bb3209201fd6736d8eb66298e75ed87571486f4364:plan+source_translation"
+          },
+          {
+            "topic": "\u9752\u5c9b",
+            "requested_topic": "\u9752\u5c9b",
+            "operation": "boost",
+            "strength": "light",
+            "adjustment": 0.1,
+            "aliases": [
+              "qingdao",
+              "\u9752\u5c9b"
+            ],
+            "grounding_method": "saved_or_confirmed_binding",
+            "context_reference": 1,
+            "source": "ollama:qwen2.5-coder:7b-instruct:dae161e27b0e90dd1856c8bb3209201fd6736d8eb66298e75ed87571486f4364:context_reference"
+          },
+          {
+            "topic": "\u6e38\u620f",
+            "requested_topic": "gaming",
+            "operation": "reduce",
+            "strength": "light",
+            "adjustment": -0.1,
+            "aliases": [
+              "gaming",
+              "\u6e38\u620f"
+            ],
+            "grounding_method": "saved_or_confirmed_binding",
+            "source": "ollama:qwen2.5-coder:7b-instruct:dae161e27b0e90dd1856c8bb3209201fd6736d8eb66298e75ed87571486f4364:plan+source_translation"
+          }
+        ],
+        "feed": {
+          "items": [
+            {
+              "item_id": 2894,
+              "score": 1.191415
+            },
+            {
+              "item_id": 10184,
+              "score": 1.105071
+            },
+            {
+              "item_id": 8958,
+              "score": 1.1
+            },
+            {
+              "item_id": 2631,
+              "score": 1.015017
+            },
+            {
+              "item_id": 2660,
+              "score": 1.011008
+            },
+            {
+              "item_id": 2591,
+              "score": 1.005081
+            },
+            {
+              "item_id": 2650,
+              "score": 0.990631
+            },
+            {
+              "item_id": 7285,
+              "score": 0.980407
+            },
+            {
+              "item_id": 4451,
+              "score": 0.963981
+            },
+            {
+              "item_id": 8667,
+              "score": 0.960988
+            }
+          ],
+          "fill_rate": 1.0,
+          "available_items": 2593,
+          "topic_exposure": [
+            {
+              "topic": "\u65c5\u6e38",
+              "operation": "boost",
+              "strength": "standard",
+              "adjustment": 0.25,
+              "candidate_matches": 69,
+              "top_k_match_count": 9,
+              "baseline_top_k_match_count": 1
+            },
+            {
+              "topic": "\u9752\u5c9b",
+              "operation": "boost",
+              "strength": "light",
+              "adjustment": 0.1,
+              "candidate_matches": 5,
+              "top_k_match_count": 1,
+              "baseline_top_k_match_count": 1
+            },
+            {
+              "topic": "\u6e38\u620f",
+              "operation": "reduce",
+              "strength": "light",
+              "adjustment": -0.1,
+              "candidate_matches": 11,
+              "top_k_match_count": 0,
+              "baseline_top_k_match_count": 0
+            }
+          ]
+        },
+        "interpretation": {
+          "provenance": {
+            "model": "qwen2.5-coder:7b-instruct",
+            "digest": "dae161e27b0e90dd1856c8bb3209201fd6736d8eb66298e75ed87571486f4364",
+            "ollama_version": "0.34.0",
+            "details": {
+              "parent_model": "",
+              "format": "gguf",
+              "family": "qwen2",
+              "families": [
+                "qwen2"
+              ],
+              "parameter_size": "7.6B",
+              "quantization_level": "Q4_K_M",
+              "context_length": 32768,
+              "embedding_length": 3584
+            }
+          }
+        },
+        "interpreted_commands": [
+          {
+            "topic": "\u9752\u5c9b",
+            "operation": "boost",
+            "strength": "light"
+          }
+        ]
+      },
+      "fixed_ae_unchanged": true,
+      "review_did_not_change_active_profile": true,
+      "expected_commands": [
+        [
+          "\u9752\u5c9b",
+          "boost",
+          "light"
+        ]
+      ],
+      "interpretation_matches_expected": true
+    },
+    {
+      "name": "clear_topic_profile",
+      "status_code": 200,
+      "seconds": 1.413,
+      "request": {
+        "user_id": 14,
+        "text": "Clear my topic profile.",
+        "mode": "merge",
+        "bindings": []
+      },
+      "response": {
+        "ready": true,
+        "applied": false,
+        "commands": [],
+        "feed": {
+          "items": [
+            {
+              "item_id": 8958,
+              "score": 1.0
+            },
+            {
+              "item_id": 7383,
+              "score": 0.958278
+            },
+            {
+              "item_id": 1116,
+              "score": 0.948471
+            },
+            {
+              "item_id": 2894,
+              "score": 0.941415
+            },
+            {
+              "item_id": 4367,
+              "score": 0.918375
+            },
+            {
+              "item_id": 6001,
+              "score": 0.914543
+            },
+            {
+              "item_id": 2687,
+              "score": 0.90268
+            },
+            {
+              "item_id": 4506,
+              "score": 0.898926
+            },
+            {
+              "item_id": 10217,
+              "score": 0.894736
+            },
+            {
+              "item_id": 6090,
+              "score": 0.892925
+            }
+          ],
+          "fill_rate": 1.0,
+          "available_items": 2593,
+          "topic_exposure": []
+        },
+        "interpretation": {
+          "history_action": "clear",
+          "provenance": {
+            "model": "qwen2.5-coder:7b-instruct",
+            "digest": "dae161e27b0e90dd1856c8bb3209201fd6736d8eb66298e75ed87571486f4364",
+            "ollama_version": "0.34.0",
+            "details": {
+              "parent_model": "",
+              "format": "gguf",
+              "family": "qwen2",
+              "families": [
+                "qwen2"
+              ],
+              "parameter_size": "7.6B",
+              "quantization_level": "Q4_K_M",
+              "context_length": 32768,
+              "embedding_length": 3584
+            }
+          }
+        },
+        "interpreted_commands": []
+      },
+      "fixed_ae_unchanged": true,
+      "review_did_not_change_active_profile": true
+    },
+    {
+      "name": "clear_topic_profile_apply",
+      "status_code": 200,
+      "seconds": 0.187,
+      "request": {
+        "user_id": 14
+      },
+      "response": {
+        "applied": true,
+        "can_undo": true,
+        "focus": null,
+        "commands": [],
+        "feed": {
+          "items": [
+            {
+              "item_id": 8958,
+              "score": 1.0
+            },
+            {
+              "item_id": 7383,
+              "score": 0.958278
+            },
+            {
+              "item_id": 1116,
+              "score": 0.948471
+            },
+            {
+              "item_id": 2894,
+              "score": 0.941415
+            },
+            {
+              "item_id": 4367,
+              "score": 0.918375
+            },
+            {
+              "item_id": 6001,
+              "score": 0.914543
+            },
+            {
+              "item_id": 2687,
+              "score": 0.90268
+            },
+            {
+              "item_id": 4506,
+              "score": 0.898926
+            },
+            {
+              "item_id": 10217,
+              "score": 0.894736
+            },
+            {
+              "item_id": 6090,
+              "score": 0.892925
+            }
+          ],
+          "fill_rate": 1.0,
+          "available_items": 2593,
+          "topic_exposure": []
+        }
+      },
+      "fixed_ae_unchanged": true
+    },
+    {
+      "name": "undo_clearing",
+      "status_code": 200,
+      "seconds": 1.319,
+      "request": {
+        "user_id": 14,
+        "text": "Undo the last change.",
+        "mode": "merge",
+        "bindings": []
+      },
+      "response": {
+        "ready": true,
+        "applied": false,
+        "commands": [
+          {
+            "topic": "\u65c5\u6e38",
+            "requested_topic": "travel",
+            "operation": "boost",
+            "strength": "standard",
+            "adjustment": 0.25,
+            "aliases": [
+              "travel",
+              "\u65c5\u6e38"
+            ],
+            "grounding_method": "saved_or_confirmed_binding",
+            "source": "ollama:qwen2.5-coder:7b-instruct:dae161e27b0e90dd1856c8bb3209201fd6736d8eb66298e75ed87571486f4364:plan+source_translation"
+          },
+          {
+            "topic": "\u9752\u5c9b",
+            "requested_topic": "qingdao",
+            "operation": "boost",
+            "strength": "strong",
+            "adjustment": 0.4,
+            "aliases": [
+              "qingdao",
+              "\u9752\u5c9b"
+            ],
+            "grounding_method": "saved_or_confirmed_binding",
+            "source": "ollama:qwen2.5-coder:7b-instruct:dae161e27b0e90dd1856c8bb3209201fd6736d8eb66298e75ed87571486f4364:plan+source_translation"
+          },
+          {
+            "topic": "\u6e38\u620f",
+            "requested_topic": "gaming",
+            "operation": "reduce",
+            "strength": "light",
+            "adjustment": -0.1,
+            "aliases": [
+              "gaming",
+              "\u6e38\u620f"
+            ],
+            "grounding_method": "saved_or_confirmed_binding",
+            "source": "ollama:qwen2.5-coder:7b-instruct:dae161e27b0e90dd1856c8bb3209201fd6736d8eb66298e75ed87571486f4364:plan+source_translation"
+          }
+        ],
+        "feed": {
+          "items": [
+            {
+              "item_id": 8958,
+              "score": 1.4
+            },
+            {
+              "item_id": 2894,
+              "score": 1.191415
+            },
+            {
+              "item_id": 10184,
+              "score": 1.105071
+            },
+            {
+              "item_id": 4335,
+              "score": 1.098502
+            },
+            {
+              "item_id": 3940,
+              "score": 1.024891
+            },
+            {
+              "item_id": 2631,
+              "score": 1.015017
+            },
+            {
+              "item_id": 2660,
+              "score": 1.011008
+            },
+            {
+              "item_id": 7314,
+              "score": 1.00973
+            },
+            {
+              "item_id": 2591,
+              "score": 1.005081
+            },
+            {
+              "item_id": 2650,
+              "score": 0.990631
+            }
+          ],
+          "fill_rate": 1.0,
+          "available_items": 2593,
+          "topic_exposure": [
+            {
+              "topic": "\u65c5\u6e38",
+              "operation": "boost",
+              "strength": "standard",
+              "adjustment": 0.25,
+              "candidate_matches": 69,
+              "top_k_match_count": 6,
+              "baseline_top_k_match_count": 1
+            },
+            {
+              "topic": "\u9752\u5c9b",
+              "operation": "boost",
+              "strength": "strong",
+              "adjustment": 0.4,
+              "candidate_matches": 5,
+              "top_k_match_count": 4,
+              "baseline_top_k_match_count": 1
+            },
+            {
+              "topic": "\u6e38\u620f",
+              "operation": "reduce",
+              "strength": "light",
+              "adjustment": -0.1,
+              "candidate_matches": 11,
+              "top_k_match_count": 0,
+              "baseline_top_k_match_count": 0
+            }
+          ]
+        },
+        "interpretation": {
+          "history_action": "undo",
+          "provenance": {
+            "model": "qwen2.5-coder:7b-instruct",
+            "digest": "dae161e27b0e90dd1856c8bb3209201fd6736d8eb66298e75ed87571486f4364",
+            "ollama_version": "0.34.0",
+            "details": {
+              "parent_model": "",
+              "format": "gguf",
+              "family": "qwen2",
+              "families": [
+                "qwen2"
+              ],
+              "parameter_size": "7.6B",
+              "quantization_level": "Q4_K_M",
+              "context_length": 32768,
+              "embedding_length": 3584
+            }
+          }
+        },
+        "interpreted_commands": []
+      },
+      "fixed_ae_unchanged": true,
+      "review_did_not_change_active_profile": true
+    },
+    {
+      "name": "undo_clearing_apply",
+      "status_code": 200,
+      "seconds": 0.195,
+      "request": {
+        "user_id": 14
+      },
+      "response": {
+        "applied": true,
+        "can_undo": true,
+        "focus": null,
+        "commands": [
+          {
+            "topic": "\u65c5\u6e38",
+            "requested_topic": "travel",
+            "operation": "boost",
+            "strength": "standard",
+            "adjustment": 0.25,
+            "aliases": [
+              "travel",
+              "\u65c5\u6e38"
+            ],
+            "grounding_method": "saved_or_confirmed_binding",
+            "source": "ollama:qwen2.5-coder:7b-instruct:dae161e27b0e90dd1856c8bb3209201fd6736d8eb66298e75ed87571486f4364:plan+source_translation"
+          },
+          {
+            "topic": "\u9752\u5c9b",
+            "requested_topic": "qingdao",
+            "operation": "boost",
+            "strength": "strong",
+            "adjustment": 0.4,
+            "aliases": [
+              "qingdao",
+              "\u9752\u5c9b"
+            ],
+            "grounding_method": "saved_or_confirmed_binding",
+            "source": "ollama:qwen2.5-coder:7b-instruct:dae161e27b0e90dd1856c8bb3209201fd6736d8eb66298e75ed87571486f4364:plan+source_translation"
+          },
+          {
+            "topic": "\u6e38\u620f",
+            "requested_topic": "gaming",
+            "operation": "reduce",
+            "strength": "light",
+            "adjustment": -0.1,
+            "aliases": [
+              "gaming",
+              "\u6e38\u620f"
+            ],
+            "grounding_method": "saved_or_confirmed_binding",
+            "source": "ollama:qwen2.5-coder:7b-instruct:dae161e27b0e90dd1856c8bb3209201fd6736d8eb66298e75ed87571486f4364:plan+source_translation"
+          }
+        ],
+        "feed": {
+          "items": [
+            {
+              "item_id": 8958,
+              "score": 1.4
+            },
+            {
+              "item_id": 2894,
+              "score": 1.191415
+            },
+            {
+              "item_id": 10184,
+              "score": 1.105071
+            },
+            {
+              "item_id": 4335,
+              "score": 1.098502
+            },
+            {
+              "item_id": 3940,
+              "score": 1.024891
+            },
+            {
+              "item_id": 2631,
+              "score": 1.015017
+            },
+            {
+              "item_id": 2660,
+              "score": 1.011008
+            },
+            {
+              "item_id": 7314,
+              "score": 1.00973
+            },
+            {
+              "item_id": 2591,
+              "score": 1.005081
+            },
+            {
+              "item_id": 2650,
+              "score": 0.990631
+            }
+          ],
+          "fill_rate": 1.0,
+          "available_items": 2593,
+          "topic_exposure": [
+            {
+              "topic": "\u65c5\u6e38",
+              "operation": "boost",
+              "strength": "standard",
+              "adjustment": 0.25,
+              "candidate_matches": 69,
+              "top_k_match_count": 6,
+              "baseline_top_k_match_count": 1
+            },
+            {
+              "topic": "\u9752\u5c9b",
+              "operation": "boost",
+              "strength": "strong",
+              "adjustment": 0.4,
+              "candidate_matches": 5,
+              "top_k_match_count": 4,
+              "baseline_top_k_match_count": 1
+            },
+            {
+              "topic": "\u6e38\u620f",
+              "operation": "reduce",
+              "strength": "light",
+              "adjustment": -0.1,
+              "candidate_matches": 11,
+              "top_k_match_count": 0,
+              "baseline_top_k_match_count": 0
+            }
+          ]
+        }
+      },
+      "fixed_ae_unchanged": true
+    },
+    {
+      "name": "global_reset",
+      "status_code": 200,
+      "seconds": 0.148,
+      "request": {
+        "user_id": 14
+      },
+      "response": {}
+    }
+  ],
+  "comparisons": {
+    "manual_light_equals_english": true,
+    "undo_restores_strong_feed": true,
+    "confirmed_english_equals_manual": true,
+    "confirmed_english_equals_chinese": true,
+    "other_session_empty": true,
+    "other_user_empty": true,
+    "global_reset_restores_clean_ae": true,
+    "global_reset_clears_profile_and_history": true
+  },
+  "finished_utc": "2026-11-04T06:24:24.006038+00:00"
+}

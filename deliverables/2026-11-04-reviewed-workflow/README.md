@@ -24,9 +24,9 @@ flowchart TD
 | --- | --- |
 | Real source text and coverage/hash checks | `feedctrl/semantic_controls.py:load_topic_index` |
 | Bounded multi-topic plan and strict validation | `feedctrl/semantic_workflow.py:interpret`, `validate_plan` |
-| Separate translation and source membership | `ground_actions`, `catalogue_labels`; one canonical phrase per group |
+| Separate translation, stable subject names and source membership | `ground_actions`, `catalogue_labels`, `known_bindings`, `confirmed_bindings`; one canonical phrase per group |
 | Composition and score policy | `compose`, `rank` |
-| Review, apply, remove and session isolation | `feedctrl/api.py`, `/api/steering*`, `DemoState.steering_feed` |
+| Review, apply, remove, undo and session isolation | `feedctrl/api.py`, `/api/steering*`, `DemoState.steering_feed`, `steering_snapshot`, `steering_remember` |
 | Natural-language/profile editor and confirmation | `web/src/SteeringPanel.jsx` |
 | Actual controlled feed cards | `web/src/main.jsx`, Reviewed topic feed view |
 
@@ -42,7 +42,33 @@ Review does not change active preferences. Apply accepts only the most recent se
 
 The model's source-label suggestion is **not automatically accepted** merely because the label exists or the model calls it equivalent. If the label is not explicitly in the request, the interface asks for confirmation of its scope. The user may insert that exact phrase and review again, refine the request, or use manual source controls.
 
-## Executed evidence
+## Current dialogue, scope and undo update
+
+See the [19-row transcript and capability audit](CAPABILITY-AND-TRANSCRIPT-AUDIT.md) and [final served receipt](dialogue-final-receipt.json). The current workflow adds saved-subject context, explicit source-scope bindings, removal distinct from exclusion, and reviewed undo/clear. A single last-applied subject can be called “that”; multiple subjects require a name. User-confirmed source scope is retained across languages and follow-ups. A model direction contradicting a clear named English clause is rejected, without creating a rule command.
+
+10/11 predeclared topic/direction/strength checks matched; failures: editable_profile. The replacement-profile failure is retained in that receipt. After the confirmed-alias correction, the separate profile/undo audit passed: True; it compared complete feeds with a predeclared manual profile.
+
+The rendered browser also verified scope confirmation, review/apply, contextual light-to-strong increase, actual changed item cards, reviewed undo, reset and the original A-E comparison. The complete API run retained nonempty original A-E preferences until its explicit global reset. This is a bounded local prototype, not universal language understanding or evidence of recommendation benefit. Earlier failures and the travel-scope mismatch below remain historical evidence.
+
+Final checks: **313 Python tests passed, 1 private-bank skip, 2 dependency warnings; Vite build passed.** The focused workflow suite now contains 21 checks. The final local served port was **8772**. Start from a fresh server process after source updates; a cached page or occupied older port does not prove the current backend is loaded.
+
+```mermaid
+flowchart TD
+  T[Instruction or edited profile] --> L[Local LLM: subjects, directions, strengths]
+  C[Saved subjects and unique focus] --> L
+  L --> G[Canonical source group or explicit scope question]
+  U[User confirms source scope] --> G
+  G --> R[Review complete profile and proposed ranking]
+  R --> A[Explicit apply to session and user]
+  A --> F[Rendered reviewed topic feed]
+  A --> H[Ten applied profile snapshots]
+  H --> N[Review undo or clear]
+  N --> R
+```
+
+The original launch commands below remain usable on a fresh chosen port. To reproduce the dialogue checks, use `python scripts/reproduce_dialogue_steering.py http://127.0.0.1:8772 NEW_RECEIPT.json`. Add `--profile-only` for the final corrected replacement/undo check. The script refuses an existing output path and records rejected/failed cases rather than silently substituting a rule parser.
+
+## Earlier same-day evidence, before the dialogue update
 
 The [served receipt](served-smoke-receipt.json) records development examples on the processed dataset, saved seed-42 scorer and official sidecar. It contains no session/review tokens or raw captions. These are mechanism checks, not an unseen benchmark or participant study.
 
@@ -62,7 +88,7 @@ The [served receipt](served-smoke-receipt.json) records development examples on 
 
 The Qwen model digest in these calls is `dae161e27b0e90dd1856c8bb3209201fd6736d8eb66298e75ed87571486f4364`, Ollama 0.34.0. The new workflow's default is `qwen2.5-coder:7b-instruct`, overridable with `FEEDCTRL_STEERING_MODEL`. The original A-E and earlier single-topic paths retain their separate Llama configuration. No model was downloaded or trained for this change.
 
-Checks completed: **305 Python tests passed, 1 private-bank skip, 2 dependency deprecation warnings; 13 new workflow tests passed; Vite build passed.** The skip requires private parser banks absent from this review checkout. The focused tests cover composition, atomic review/apply, profile replacement/removal/reset, expiry, session/user isolation, state-preserving errors, clarification, source selection and matched-intent manual/model equality.
+Earlier checks completed: **305 Python tests passed, 1 private-bank skip, 2 dependency deprecation warnings; 13 new workflow tests passed; Vite build passed.** The skip requires private parser banks absent from this review checkout. The focused tests cover composition, atomic review/apply, profile replacement/removal/reset, expiry, session/user isolation, state-preserving errors, clarification, source selection and matched-intent manual/model equality.
 
 The rendered browser was also exercised. A two-topic English request produced a review with five Qingdao matches and eleven gaming matches; applying it displayed four Qingdao matches in the top ten and two saved controls. A cooking request showed the scope clarification while preserving those controls. Inserting the suggested exact source phrase required a second review and did not apply it automatically. Reset/reload returned user 14 to zero topic controls and baseline 8958, 7383, 1116; switching to user 19 and back kept profiles isolated. This was a technical walkthrough, not a student's personal rehearsal or a human-intent evaluation.
 

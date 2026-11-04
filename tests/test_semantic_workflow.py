@@ -126,6 +126,15 @@ def test_model_ambiguity_and_operational_error_preserve_active_controls(client, 
     assert client.get("/api/steering?user_id=1", headers=h).json() == before
 
 
+def test_explicit_clause_guard_rejects_reversed_model_direction():
+    with pytest.raises(TopicGroundingError, match="direction conflicts"):
+        wf.check_explicit_direction("Much more guitar and slightly less jazz.", ["jazz"], "boost")
+    wf.check_explicit_direction("Much more guitar and slightly less jazz.", ["jazz"], "reduce")
+    wf.check_explicit_direction("Do not hide jazz anymore.", ["jazz"], "remove")
+    with pytest.raises(TopicGroundingError):
+        wf.check_explicit_direction("Do not hide jazz anymore.", ["jazz"], "exclude")
+
+
 def test_manual_and_model_with_same_grounded_intent_have_equal_rankings(client, monkeypatch):
     h = headers(client)
     actions = [control(), control("\u6e38\u620f", "exclude", "none")]
@@ -161,14 +170,12 @@ def test_overlap_exclusion_wins_and_strength_moves_an_eligible_item():
     assert not {1, 5} & {x["item_id"] for x in wf.rank(ids, scores, alpha + beta, index)["items"]}
 
 
-def test_translated_compound_uses_unique_longest_real_label_not_invented_id(client):
+def test_translated_compound_cannot_silently_shorten_to_a_parent_label(client):
     index = client.app.state.demo.topic_index
     index["items"][5]["fields"]["first_level_category_name"] = "\u6e38\u620f"
-    commands = wf.ground_actions([control("gaming", "reduce", "light")], index, "ollama:test",
-                                translator=lambda text: "\u7535\u5b50\u6e38\u620f")
-    assert commands[0]["topic"] == "\u6e38\u620f"
-    assert commands[0]["candidate_matches"] == 2
-    assert commands[0]["grounding_method"] == "source_label_in_translation"
+    with pytest.raises(wf.GroundingClarification):
+        wf.ground_actions([control("gaming", "reduce", "light")], index, "ollama:test",
+                          translator=lambda text: "\u7535\u5b50\u6e38\u620f")
 
 
 def test_model_catalogue_choice_needs_explicit_source_confirmation(client, monkeypatch):
@@ -196,3 +203,97 @@ def test_model_cannot_replace_named_english_subject_with_unrelated_topic(client,
         "question": "", "actions": [control("travel")]}))
     with pytest.raises(TopicGroundingError, match="not in the English request"):
         wf.interpret("More cooking", client.app.state.demo.topic_index)
+
+
+def test_reviewed_undo_restores_exact_profile_and_source_aliases(client):
+    h=headers(client)
+    original=apply(client,h,preview(client,h,[control()]).json()).json()
+    second=apply(client,h,preview(client,h,[control(operation="reduce",strength="light")]).json()).json()
+    assert second["commands"][0]["operation"]=="reduce"
+    undo=client.post('/api/steering/history/preview',headers=h,json={"user_id":1,"action":"undo"}).json()
+    assert undo["ready"] and not undo["applied"]
+    assert client.get('/api/steering?user_id=1',headers=h).json()["commands"]==second["commands"]
+    restored=apply(client,h,undo).json()
+    assert restored["commands"]==original["commands"] and restored["feed"]==original["feed"]
+    assert restored["focus"]==original["focus"]
+
+
+def test_single_focus_followup_reuses_grounding_and_ambiguous_focus_is_rejected(client,monkeypatch):
+    index=client.app.state.demo.topic_index
+    saved=wf.ground_actions([control()],index,'manual')
+    saved[0]['aliases'].append('Kyoto')
+    monkeypatch.setattr(wf,'ollama_provenance',lambda *args:{'digest':'test'})
+    def chat(*args):
+        return json.dumps({'needs_clarification':False,'question':'','history_action':'none',
+            'actions':[dict(control('Kyoto','reduce','light'),reference_id=0)]})
+    monkeypatch.setattr(wf,'_chat',chat)
+    result=wf.interpret('A little less of that.',index,context={'commands':saved,'focus':'\u4eac\u90fd'})
+    assert result['commands'][0]['topic']=='\u4eac\u90fd'
+    assert result['commands'][0]['context_reference']==0
+    with pytest.raises(TopicGroundingError,match='no unique focus'):
+        wf.interpret('A little less of that.',index,context={'commands':saved,'focus':None})
+
+
+def test_confirmed_bilingual_scope_is_reused_without_retranslation(client,monkeypatch):
+    index=client.app.state.demo.topic_index
+    bindings=wf.confirmed_bindings([{'requested_topic':'Kyoto','source_topic':'\u4eac\u90fd'}],index)
+    def never(subject):
+        raise AssertionError('A confirmed scope must not drift through a new translation')
+    commands=wf.ground_actions([control('Kyoto')],index,'ollama:test',translator=never,bindings=bindings)
+    assert commands[0]['topic']=='\u4eac\u90fd' and 'kyoto' in commands[0]['aliases']
+    chinese=wf.ground_actions([control('\u4eac\u90fd')],index,'ollama:test')
+    ids=list(range(1,37));scores=list(range(36))
+    assert wf.rank(ids,scores,commands,index)==wf.rank(ids,scores,chinese,index)
+
+
+def test_removing_a_saved_control_is_not_exclusion_and_can_be_undone(client):
+    h=headers(client)
+    hidden=apply(client,h,preview(client,h,[control(operation='exclude',strength='none')]).json()).json()
+    restored=apply(client,h,preview(client,h,[control(operation='remove',strength='none')]).json()).json()
+    assert restored['commands']==[] and restored['feed']['available_items']==36
+    undo=client.post('/api/steering/history/preview',headers=h,json={'user_id':1,'action':'undo'}).json()
+    assert apply(client,h,undo).json()['feed']==hidden['feed']
+
+
+def test_topic_clear_and_undo_preserve_nonempty_original_ae_state(client):
+    h=headers(client)
+    client.post('/api/feedback',headers=h,json={'user_id':1,'item_id':1,'direction':'like'})
+    client.post('/api/control',headers=h,json={'user_id':1,'text':'Show me more category_1','backend':'rule'})
+    client.put('/api/profile',headers=h,json={'user_id':1,'profile':{'category_2':-1}})
+    before=client.get('/api/compare?user_id=1',headers=h).json()
+    apply(client,h,preview(client,h,[control()]).json())
+    cleared=client.post('/api/steering/history/preview',headers=h,json={'user_id':1,'action':'clear'}).json()
+    assert apply(client,h,cleared).json()['commands']==[]
+    undo=client.post('/api/steering/history/preview',headers=h,json={'user_id':1,'action':'undo'}).json()
+    assert apply(client,h,undo).json()['commands']
+    assert client.get('/api/compare?user_id=1',headers=h).json()==before
+
+
+def test_confirmed_subject_name_resolves_wrong_model_index_and_relative_strength_is_bounded(client,monkeypatch):
+    index=client.app.state.demo.topic_index
+    saved=wf.ground_actions([control('Kyoto',strength='light'),control('gaming',strength='light')],index,
+        'manual',bindings={'kyoto':'\u4eac\u90fd','gaming':'\u6e38\u620f'})
+    monkeypatch.setattr(wf,'ollama_provenance',lambda *a:{'digest':'test'})
+    plan={'needs_clarification':False,'question':'','actions':[
+        {'topic':'Kyoto','operation':'boost','strength':'strong','reference_id':1}]}
+    monkeypatch.setattr(wf,'_chat',lambda *a,**k:json.dumps(plan))
+    result=wf.interpret('A lot more Kyoto.',index,context={'commands':saved,'focus':None})
+    assert result['commands'][0]['topic']=='\u4eac\u90fd' and result['commands'][0]['context_reference']==0
+    plan['actions'][0]={'topic':'Kyoto','operation':'boost','strength':'light','reference_id':0}
+    with pytest.raises(TopicGroundingError,match='higher supported strength'):
+        wf.interpret('Make that stronger.',index,context={'commands':saved,'focus':'\u4eac\u90fd'})
+
+
+def test_replacement_language_plan_has_no_old_row_references_but_retains_confirmed_scope(client,monkeypatch):
+    index=client.app.state.demo.topic_index
+    saved=wf.ground_actions([control('\u4eac\u90fd')],index,'manual')
+    monkeypatch.setattr(wf,'ollama_provenance',lambda *a:{'digest':'test'})
+    def chat(messages,*a,**k):
+        prompt=json.loads(messages[-1]['content'])
+        assert prompt['saved_controls']==[] and prompt['focus_id'] is None
+        assert prompt['confirmed_subject_bindings']['kyoto']=='\u4eac\u90fd'
+        return json.dumps({'needs_clarification':False,'question':'','actions':[control('Kyoto',strength='light')]})
+    monkeypatch.setattr(wf,'_chat',chat)
+    result=wf.interpret('A little more Kyoto.',index,context={'commands':saved,'focus':'\u4eac\u90fd','mode':'replace'},
+        bindings={'kyoto':'\u4eac\u90fd'})
+    assert result['commands'][0]['topic']=='\u4eac\u90fd' and result['commands'][0]['adjustment']==.1
