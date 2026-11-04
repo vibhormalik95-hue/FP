@@ -2,6 +2,8 @@
 
 Prepared 27 October 2026. This is a review packet, not an approved scope change or a new experiment. The inspected checkout is `bec8442dd7fbd43535ded943f886add2cb50cd8d` on `codex/comp9500-professor-demo-20261027`. No frozen input or result was edited.
 
+**Source addendum, 4 November 2026:** the historical inventory below reflects the files located on 27 October. The subsequently recovered, student-supplied five-page `COMP9080_Research_Proposal_Approval_Form_vm (1).docx` has SHA-256 `1bc68ff097d7f5d00794c39bf223d4e3e810500acf861d0b64a5112a62fa27bd`. The [complete clause-by-clause review](../2026-11-04-completion-review/PROJECT-COMPLETION-AUDIT.md) uses that supplied proposal and supersedes this earlier source inventory for the current acceptance assessment. It does not combine older participant-study drafts into new requirements or establish an approval receipt.
+
 ## Source identity
 
 - The most recently modified local proposal copy found is `Downloads/COMP9080_Research_Proposal_Vibhor.docx` (19 May 2026; SHA-256 `58CDF962D2CCBECC9FB58C0E6E6E5B64F7B3AEE84067EF207C875D9033A29BFA`). It marks COMP 9500 but its supervisor, program-head and associate-dean signature fields are blank. It is not proof of formal approval.

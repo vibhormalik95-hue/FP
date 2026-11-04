@@ -2,6 +2,8 @@
 
 Review date: 4 November 2026. This assesses the complete project, not just whether a demonstration runs.
 
+The seven-file completion packet was published at [`ec776410049b83018afee0f68bf618738a58bc84`](https://github.com/vibhormalik95-hue/FP/commit/ec776410049b83018afee0f68bf618738a58bc84). The remote branch and all seven changed files were verified byte-for-byte. Earlier statements that this cache configuration or paper copy awaited publication are superseded by that verified publication.
+
 ## Judgment
 
 **The project is not fully fulfilled against every literal promise in the original proposal.** The web implementation, trained recommender, original parser evaluation, five-condition offline analysis, revised AI-reference study, source repository, paper draft and BCIT presentation exist. The later language-control implementation and its actual execution evidence also exist. Several original method statements were changed, two numerical targets were not meaningfully achieved, and final course assessment events are not evidenced. These are distinct from missing software files.
@@ -49,10 +51,10 @@ Status meanings: **implemented** means working software; **executed** means an e
 | R25 | Wilcoxon, BH, alpha .05, P025/P037/P116 | User-level paired analysis and statistics tests | Six primary contrast family; seed/request averaging within user; intervals and adjusted tests | Executed under the documented conventions. Correlated contrasts and finite-cohort assumptions remain limits. |
 | R26 | Primary directional hypothesis and falsification, P116 | Frozen E1 and separate revised E2 analyses | Directional E1 criterion passes; shared policy/rule equality and quality decline retained | Numerically supported for the finite assigned-control comparison. Unique LLM benefit does not follow. Negative parser/conditional/quality findings remain visible. |
 | R27 | LLM only parses requests during offline evaluation, P025 | Cached display-only explanations; shared frozen scorer | Original harness separates parsing from ranking and display | Implemented in that study. New cache preparation is outside evaluation and is labelled prototype artifact preparation. |
-| R28 | Reusable harness and analysis scripts, P118d/P119 | Evaluation/ranking/statistics CLIs and release checks | Archive integrity checks and successful top-ten replay; disclosed full-ranking/hash discrepancies | Artifacts exist and selected reproduction checks executed. Full bit-identical E1 Windows/Colab scientific replay remains unresolved, rather than universally claimed. |
-| R29 | 6-8 page IEEE/ACM paper, P039/P118e | Current TeX/bibliography; seven-page corrected review PDF | Review TeX SHA equals current published TeX SHA; PDF copied without modification | Prepared and within page range. Current matching PDF is in the private completion packet; the older dated public PDF remains historical. Final scholarly acceptance/submission is not recorded. |
+| R28 | Reusable harness and analysis scripts, P118d/P119 | Evaluation/ranking/statistics CLIs and release checks | Archive integrity checks and successful top-ten replay; disclosed full-ranking/hash discrepancies | Artifacts exist and selected reproduction checks executed. The [read-only diagnosis](E1-REPLAY-DISCREPANCY.md) verifies the discrepancy against saved audit records without rescoring. Full bit-identical E1 Windows/Colab scientific replay remains unresolved. |
+| R29 | 6-8 page IEEE/ACM paper, P039/P118e | Current TeX/bibliography; seven-page corrected review PDF | Review TeX SHA equals current published TeX SHA; PDF copied without modification | Prepared, publicly available in the [completion packet](COMP9500-Current-Paper-Review.pdf), and within page range. The older dated public PDF remains historical. Final scholarly acceptance/submission is not recorded. |
 | R30 | Official BCIT presentation, P039/P118e | 30-page BCIT deck and full-talk notes | Previously rendered/inspected; 22-minute notes plus 10-15 minute Q&A material | Prepared. Actual student delivery and committee assessment are separate events. |
-| R31 | Share source with supervisor/program, P118 | Public FP review branch and artifact links | Remote SHA and all 32 existing public deliverables verified byte-for-byte | Public availability established. Supervisor receipt/access acknowledgment is not fabricated; pending new local changes need publication review. |
+| R31 | Share source with supervisor/program, P118 | Public FP review branch and artifact links | Original 32 public deliverables verified at the earlier commit; remote SHA and all seven completion-packet changes verified at ec77641 | Public availability established, including the cache configuration and current paper copy. Supervisor receipt/access acknowledgment is not fabricated. |
 | R32 | Six-month phases and contingency, P042-P112 | Later original 135-hour dated plan and preserved reconciliation | All 39 work items plus supervision allocations mapped in the earlier plan acceptance audit | Schedule replaced by dated course plan. Original proposal wording is preserved; actual 135 completed hours are not inferred from agent activity. |
 | R33 | Applied artifact, empirical comparison and reusable protocol, P119 | Prototype, recorded studies, paper and harness | Evidence above plus later scope revisions | Applied artifact and narrower empirical evidence exist. The original like-for-like, isolable-channel and real-intent interpretations are not fully delivered by those studies. |
 
@@ -65,7 +67,7 @@ The [39-item original-plan audit](../2026-10-27-demo/PLAN-ACCEPTANCE-AUDIT-2026-
 1. Meetings/progress: actual October 27 feedback is available; templates do not establish every planned meeting or sent update. No invented minutes or hours.
 2. Implementation/solution review: code, working application, source walkthrough and executed checks exist; scientific limits above remain.
 3. Report: seven-page source-matched review paper prepared; final supervisor feedback/acceptance has not been recorded.
-4. Repository/artifacts: published code and checked private assets exist; new local cache configuration and completion files await publication review; full scientific replay limitations are disclosed.
+4. Repository/artifacts: code, the cache configuration, completion audit and current paper copy were published in the verified seven-file commit; checked private assets remain separate. Full scientific replay limitations are disclosed.
 5. Presentation: BCIT deck, notes, questions and technical demonstration prepared; personal timed delivery and final submission/assessment are not agent-completed events.
 
 ## Work completed in this pass
@@ -77,10 +79,11 @@ The [39-item original-plan audit](../2026-10-27-demo/PLAN-ACCEPTANCE-AUDIT-2026-
 - Added a configurable explanation-index path so the app can use that new cache while the original frozen result remains untouched. A portable preparation script, regression test and served coverage check accompany it.
 - Verified the corrected seven-page review PDF's source is byte-identical to the current published source and prepared an unchanged delivery copy. Confirmed the BCIT deck has 30 pages.
 - Full regression: 314 passed, one private-bank skip, two dependency warnings. Served cache coverage preserved all five original rankings and supplied ten cached-model cards in each declared B/E case. Frontend code did not change; prior build verification remains applicable.
+- A later read-only reconciliation matched all 7,199 discrepancy records to the original saved request hashes and verified paired score-vector accounting. It did not run checkpoints, recompute experimental metrics or resolve the missing original numerical vectors.
 
 ## Remaining work classified
 
-**Agent-preparable artifacts now prepared:** the complete clause map, source fingerprints, current paper copy, working cache/index configuration, portable cache preparation and verified execution receipts. Local publication scope is listed separately; private raw forms, annotations, model responses, data and weights are excluded.
+**Agent-preparable artifacts now prepared:** the complete clause map, source fingerprints, current paper copy, working cache/index configuration, portable cache preparation and verified execution receipts. The seven-file completion packet is published at the pinned commit above. Private raw forms, annotations, model responses, data and weights are excluded.
 
 **Research conclusions not achieved:** 85% parser accuracy, meaningful non-inferior ranking quality, unique LLM gain on the canonical E1 task, independent channel attribution, and validated real human intent. The executed studies' negative results and method departures should be assessed as findings. Any additional study must have its own prospective design and fresh, eligible evidence; this review neither reruns a frozen bank nor imposes a new human study.
 
