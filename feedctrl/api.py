@@ -516,6 +516,13 @@ def create_app(data_path=None, model_path=None, fixture=False, semantic_path=Non
             kwargs = {"model": os.getenv("FEEDCTRL_OLLAMA_MODEL", DEFAULT_MODEL),
                       "cache_dir": ROOT / os.getenv("FEEDCTRL_PARSER_CACHE", "results/parser_cache")} if body.backend == "ollama" else {}
             command = parse_control(body.text, demo.categories, backend=body.backend, **kwargs)
+        except ParserOperationalError as exc:
+            if str(exc) == "LLM action is not grounded in exactly one explicit allowed category":
+                raise HTTPException(422,
+                    "The model proposed an unsupported category for this instruction. "
+                    "Original A-E controls require one explicit existing category_N; "
+                    "use Reviewed topic feed for named catalogue subjects. Previous state is preserved.") from exc
+            raise HTTPException(502, f"{body.backend} parser failed ({type(exc).__name__}). Check the backend and retry; previous state is preserved.") from exc
         except Exception as exc:
             # Operational failure must never turn into an apparent successful rule result.
             raise HTTPException(502, f"{body.backend} parser failed ({type(exc).__name__}). Check the backend and retry; previous state is preserved.") from exc

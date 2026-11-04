@@ -135,6 +135,22 @@ def test_ollama_failure_visible_preserves_state(client, monkeypatch):
     assert feed(client,h) == before
 
 
+def test_ungrounded_llm_category_is_distinct_from_backend_outage(client, monkeypatch):
+    from feedctrl.controls import ParserOperationalError
+    h = session(client)
+    client.post('/api/control', headers=h, json={'user_id':1,'text':'Mute category_0'})
+    before = feed(client,h)
+    def ungrounded(*args, **kwargs):
+        raise ParserOperationalError('LLM action is not grounded in exactly one explicit allowed category')
+    monkeypatch.setattr('feedctrl.api.parse_control', ungrounded)
+    result = client.post('/api/control', headers=h,
+        json={'user_id':1,'text':'new item X i want to see the most','backend':'ollama'})
+    assert result.status_code == 422
+    assert 'unsupported category' in result.json()['detail']
+    assert 'Reviewed topic feed' in result.json()['detail']
+    assert feed(client,h) == before
+
+
 def test_hard_mutes_allow_empty_feed_and_reset_restores(client):
     h = session(client)
     baseline = feed(client,h)
