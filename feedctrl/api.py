@@ -84,6 +84,7 @@ class TopicRequest(Request):
     text: str = Field(min_length=1, max_length=500)
     backend: Literal["manual", "ollama"] = "manual"
     operation: Literal["boost", "reduce", "exclude"] = "boost"
+    strength: Literal["light", "standard", "strong"] = "standard"
     condition: Literal["C", "E"] = "C"
 
 
@@ -212,7 +213,8 @@ class DemoState:
                    for item in ids]
         scores = normalize_scores(raw)
         profile = state["profile"] if condition == "E" else {}
-        order = rerank_topic(ids, scores, self.items, profile, matched, command["operation"])
+        order = rerank_topic(ids, scores, self.items, profile, matched,
+                             command["operation"], command["strength"])
         top = order[:limit]
         return {"mode": "exploratory semantic topic preview; not A-E study evidence",
                 "condition_context": condition,
@@ -295,7 +297,7 @@ def create_app(data_path=None, model_path=None, fixture=False, semantic_path=Non
         if demo.topic_index is None:
             raise HTTPException(503, "Official caption sidecar is not configured; no topic preview was run.")
         try:
-            command = (manual_topic_command(body.operation, body.text) if body.backend == "manual"
+            command = (manual_topic_command(body.operation, body.text, body.strength) if body.backend == "manual"
                        else parse_topic_request(body.text, model=os.getenv("FEEDCTRL_OLLAMA_MODEL", DEFAULT_MODEL)))
             if command["operation"] == "clarify":
                 return {"applied": False, "command": command,

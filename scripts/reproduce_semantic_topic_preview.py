@@ -37,7 +37,7 @@ def main():
               "matched_candidate_count": len(matched), "sample_evidence": evidence,
               "neutral_top10": [card["item_id"] for card in original["items"]],
               "neutral_top10_matches": sum(card["item_id"] in matched for card in original["items"]),
-              "operations": {}}
+              "operations": {}, "strength_examples": {}}
     for operation in ("boost", "reduce", "exclude"):
         command = manual_topic_command(operation, topic)
         preview = demo.topic_preview(user_id, state, command, "C", 10)
@@ -47,7 +47,19 @@ def main():
             "available_items": preview["available_items"],
             "fill_rate": preview["fill_rate"],
             "source": command["source"]}
-    print(json.dumps(result, ensure_ascii=False, indent=2))
+    for operation, strength in (("boost", "light"), ("boost", "strong"),
+                                ("reduce", "light"), ("reduce", "strong")):
+        command = manual_topic_command(operation, topic, strength)
+        preview = demo.topic_preview(user_id, state, command, "C", 10)
+        result["strength_examples"][f"{operation}_{strength}"] = {
+            "adjustment": command["adjustment"],
+            "top10": [card["item_id"] for card in preview["items"]],
+            "top10_text_matches": preview["top_k_match_count"],
+            "available_items": preview["available_items"],
+            "fill_rate": preview["fill_rate"]}
+    # ASCII escapes keep the receipt readable even on Windows consoles using
+    # legacy encodings; JSON consumers recover the original Unicode text.
+    print(json.dumps(result, ensure_ascii=True, indent=2))
 
 
 if __name__ == "__main__":

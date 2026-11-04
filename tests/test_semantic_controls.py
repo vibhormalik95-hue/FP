@@ -42,8 +42,9 @@ def test_source_text_grounding_and_three_distinct_actions(tmp_path):
     ids, scores = [1, 2, 3, 4], [0.1, 0.2, 0.21, 0.22]
     cats = {item: ["category_0"] for item in ids}
     assert topic.rerank_topic(ids, scores, cats, {}, matched, "boost") == [2, 4, 3, 1]
+    assert topic.rerank_topic(ids, scores, cats, {}, matched, "boost", "light") == [4, 2, 3, 1]
     assert topic.rerank_topic(ids, scores, cats, {}, matched, "reduce") == [4, 3, 2, 1]
-    assert topic.rerank_topic(ids, scores, cats, {}, matched, "exclude") == [4, 3]
+    assert topic.rerank_topic(ids, scores, cats, {}, matched, "exclude", "none") == [4, 3]
     assert topic.rerank_topic(ids, scores, cats, {"category_0": -1}, matched, "boost") == []
     with pytest.raises(topic.ParserOperationalError, match="No candidate"):
         topic.match_topic(index, topic.manual_topic_command("boost", "宠物"))
@@ -55,22 +56,31 @@ def test_source_coverage_and_command_validation(tmp_path):
     with pytest.raises(ValueError, match="covers 2 of 3"):
         topic.load_topic_index(path, {1, 2, 3})
     with pytest.raises(topic.ParserOperationalError, match="fields conflict"):
-        topic.validate_topic_command({"operation": "boost", "topic": "", "search_terms": []}, "test")
+        topic.validate_topic_command({"operation": "boost", "strength": "standard", "topic": "", "search_terms": []}, "test")
     with pytest.raises(topic.ParserOperationalError, match="invalid keys"):
-        topic.validate_topic_command({"operation": "boost", "topic": "food", "search_terms": ["美食"],
+        topic.validate_topic_command({"operation": "boost", "strength": "standard", "topic": "food", "search_terms": ["美食"],
                                       "matched_items": [1]}, "test")
+    with pytest.raises(topic.ParserOperationalError, match="bounded strength"):
+        topic.validate_topic_command({"operation": "boost", "strength": "none", "topic": "food",
+                                      "search_terms": ["美食"]}, "test")
+    with pytest.raises(topic.ParserOperationalError, match="cannot have"):
+        topic.validate_topic_command({"operation": "exclude", "strength": "strong", "topic": "food",
+                                      "search_terms": ["美食"]}, "test")
+    assert topic.manual_topic_command("reduce", "美食", "strong")["adjustment"] == -0.4
+    assert topic.manual_topic_command("exclude", "美食")["strength"] == "none"
 
 
 def test_llm_output_is_validated_and_never_silently_replaced(monkeypatch):
     monkeypatch.setattr(topic, "ollama_provenance", lambda *args, **kwargs: {"digest": "test-digest"})
     monkeypatch.setattr(topic, "_request", lambda *args, **kwargs: {
-        "done": True, "message": {"content": json.dumps({"operation": "boost", "topic": "food",
+        "done": True, "message": {"content": json.dumps({"operation": "boost", "strength": "light", "topic": "food",
                                                           "search_terms": ["美食", "做饭"]})}})
     result = topic.parse_topic_request("Show me more cooking videos")
-    assert result == {"operation": "boost", "topic": "food", "search_terms": ["美食", "做饭"],
+    assert result == {"operation": "boost", "strength": "light", "adjustment": 0.1,
+                      "topic": "food", "search_terms": ["美食", "做饭"],
                       "source": "ollama:llama3.1:8b:test-digest"}
     monkeypatch.setattr(topic, "_request", lambda *args, **kwargs: {
-        "done": True, "message": {"content": json.dumps({"operation": "boost", "topic": "food",
+        "done": True, "message": {"content": json.dumps({"operation": "boost", "strength": "strong", "topic": "food",
                                                           "search_terms": []})}})
     with pytest.raises(topic.ParserOperationalError):
         topic.parse_topic_request("Show me more cooking videos")
@@ -92,6 +102,7 @@ def test_preview_is_opt_in_and_does_not_mutate_ae_state(tmp_path):
         assert preview["top_k_match_count"] == 0 and preview["fill_rate"] == 1
         assert preview["available_items"] == 34
         assert preview["command"]["source"] == "manual_literal"
+        assert preview["command"]["strength"] == "none"
         assert client.get("/api/feed?user_id=1&condition=C", headers=headers).json() == before
 
 
@@ -116,7 +127,7 @@ def test_mocked_english_llm_request_reaches_source_text_preview(tmp_path, monkey
     path = tmp_path / "captions.csv"
     sidecar(path, range(1, 37))
     monkeypatch.setattr("feedctrl.api.parse_topic_request", lambda text, **kwargs:
-                        topic.validate_topic_command({"operation": "boost", "topic": "cooking",
+                        topic.validate_topic_command({"operation": "boost", "strength": "strong", "topic": "cooking",
                                                       "search_terms": ["美食", "做饭"]},
                                                      "ollama:mock-digest"))
     with TestClient(create_app(fixture=True, semantic_path=path)) as client:
@@ -126,4 +137,5 @@ def test_mocked_english_llm_request_reaches_source_text_preview(tmp_path, monkey
                                      "backend": "ollama", "condition": "C"})
         assert response.status_code == 200, response.text
         assert response.json()["command"]["source"] == "ollama:mock-digest"
+        assert response.json()["command"]["adjustment"] == 0.4
         assert response.json()["candidate_matches"] == 2

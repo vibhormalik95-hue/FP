@@ -16,7 +16,8 @@ function App() {
   const [backend, setBackend] = useState('rule'), [feed, setFeed] = useState(null), [comparison, setComparison] = useState(null);
   const [control, setControl] = useState(''), [profileText, setProfileText] = useState('');
   const [topicText, setTopicText] = useState(''), [topicBackend, setTopicBackend] = useState('manual');
-  const [topicOperation, setTopicOperation] = useState('boost'), [topicResult, setTopicResult] = useState(null);
+  const [topicOperation, setTopicOperation] = useState('boost'), [topicStrength, setTopicStrength] = useState('standard');
+  const [topicResult, setTopicResult] = useState(null);
   const [busy, setBusy] = useState(true), [error, setError] = useState(''), [notice, setNotice] = useState('');
   const [showSignals, setShowSignals] = useState(true), [view, setView] = useState('feed');
   const token = useRef(null), requestId = useRef(0);
@@ -60,7 +61,8 @@ function App() {
     setBusy(true); setError(''); setNotice(''); setTopicResult(null);
     try {
       const result = await api('topic/preview', {user_id:user, text:topicText,
-        backend:topicBackend, operation:topicOperation, condition:condition === 'E' ? 'E' : 'C'});
+        backend:topicBackend, operation:topicOperation, strength:topicStrength,
+        condition:condition === 'E' ? 'E' : 'C'});
       setTopicResult(result);
       setNotice(result.applied ? `Exploratory topic preview: ${result.candidate_matches} catalog items matched source text.` : result.message);
     } catch(e) {setError(e.message);} finally {setBusy(false);}
@@ -98,7 +100,11 @@ function App() {
                 <select id="topic-operation" value={topicOperation} disabled={busy} onChange={e => setTopicOperation(e.target.value)}>
                   <option value="boost">Show more</option><option value="reduce">Show somewhat less</option>
                   <option value="exclude">Hide completely</option>
-                </select></>}
+                </select>{topicOperation !== 'exclude' && <><label className="field-label" htmlFor="topic-strength">Strength</label>
+                  <select id="topic-strength" value={topicStrength} disabled={busy} onChange={e => setTopicStrength(e.target.value)}>
+                    <option value="light">A little (0.10)</option><option value="standard">Standard (0.25)</option>
+                    <option value="strong">A lot (0.40)</option>
+                  </select></>}</>}
               <label className="field-label" htmlFor="topic-text">{topicBackend === 'manual' ? 'Exact source-text topic' : 'Natural-language request'}</label>
               <textarea id="topic-text" maxLength={500} rows={3} value={topicText}
                 onChange={e => setTopicText(e.target.value)}
@@ -107,7 +113,7 @@ function App() {
             </form>
             {topicResult?.applied && <div className="saved-profile" role="status">
               <strong>{topicResult.command.operation} {topicResult.command.topic}</strong>
-              <p className="help">{topicResult.command.source} | {topicResult.candidate_matches} catalog matches | {topicResult.top_k_match_count}/10 text matches shown | {topicResult.available_items} eligible items | {Math.round(topicResult.fill_rate*100)}% fill</p>
+              <p className="help">{topicResult.command.source} | {topicResult.command.strength} strength ({topicResult.command.adjustment > 0 ? '+' : ''}{topicResult.command.adjustment.toFixed(2)}) | {topicResult.candidate_matches} catalog matches | {topicResult.top_k_match_count}/10 text matches shown | {topicResult.available_items} eligible items | {Math.round(topicResult.fill_rate*100)}% fill</p>
               <p className="help">Top ten: {topicResult.items.map(item => `${item.item_id}${item.topic_text_match ? '*' : ''}`).join(', ')}</p>
               <p className="help">* matches supplied source text. This preview is not human relevance or A-E evaluation evidence.</p>
             </div>}
