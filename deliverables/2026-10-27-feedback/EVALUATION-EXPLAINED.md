@@ -1,6 +1,6 @@
 # TCP, TCER and the offline-validity question
 
-Prepared 27 October 2026. This explains **existing** metrics and a new demonstration arithmetic check; it is not a rerun of a frozen scientific test. Source of code definitions: `feedctrl/evaluation.py:51-72` and `docs/evaluation-protocol.md:77-98` at FP `bec8442dd7fbd43535ded943f886add2cb50cd8d`. The original May proposal mentions a target-category-proportion measure related to Lu et al. and proposes held-out watch behavior as ground truth. It does not specify TCER by name. The project uses TCER for the same target exposure fraction on mute requests; the project documents do not establish a longer formal expansion of those letters.
+Prepared 27 October 2026, with a source clarification on 4 November. This explains **existing** metrics and a demonstration arithmetic check; it is not a rerun of a frozen scientific test. Source of code definitions: `feedctrl/evaluation.py:51-72` and `docs/evaluation-protocol.md:77-98` at FP `bec8442dd7fbd43535ded943f886add2cb50cd8d`. The May proposal inspected for this earlier note mentions target-category proportion and held-out watch behavior, without naming TCER. The subsequently recovered five-page `COMP9080_Research_Proposal_Approval_Form_vm (1).docx` explicitly names both TCP and TCER; see the [current source audit](../2026-11-04-completion-review/PROJECT-COMPLETION-AUDIT.md). The project uses TCER for the same target exposure fraction on mute requests; the records do not establish a longer formal expansion of those letters.
 
 ## What is calculated
 

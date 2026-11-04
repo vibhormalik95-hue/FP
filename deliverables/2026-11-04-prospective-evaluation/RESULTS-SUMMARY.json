@@ -1,0 +1,117 @@
+{
+  "study_id": "comp9500-reviewed-topic-20261104-v1",
+  "source_commit": "ef1bf2950e9e67882c20f394f4b179a7d72327a2",
+  "freeze_sha256": "c16d5215edf32fb233a5525a691df7ef143b1bcca80acd75be47f13d752e7d20",
+  "predictions_sha256": "83097deb3792f7c0f29f7edd72e0f2b8d78da154db03e9047b9a393fa9f2cb70",
+  "command": {
+    "supported_correct": 48,
+    "supported_total": 100,
+    "diagnostic_correct": 19,
+    "diagnostic_total": 20,
+    "status_counts": {
+      "clarify": 61,
+      "ready": 49,
+      "grounding_error": 5,
+      "operational_error": 5
+    },
+    "clarification_origins": {
+      "model": 58,
+      "precheck": 3
+    },
+    "pipeline_invocations": 120,
+    "internal_model_calls": 117,
+    "scope": "Finite AI-authored bank census; no intervals, p-values, human reference or behavioral generalization"
+  },
+  "supported_strata": {
+    "single_boost": {
+      "total": 20,
+      "correct": 11
+    },
+    "single_reduce": {
+      "total": 20,
+      "correct": 7
+    },
+    "single_exclude": {
+      "total": 20,
+      "correct": 8
+    },
+    "two_topic": {
+      "total": 20,
+      "correct": 15
+    },
+    "profile_replacement": {
+      "total": 10,
+      "correct": 1
+    },
+    "single_subject_context": {
+      "total": 10,
+      "correct": 6
+    }
+  },
+  "ranking": {
+    "finished_utc": "2026-11-04T20:34:39.142923+00:00",
+    "case_user_seed_rows": 7200,
+    "users": 24,
+    "seeds": [
+      42,
+      43,
+      44
+    ],
+    "supported_cases": 100,
+    "aggregate": {
+      "reference_delta": 0.053578703703703705,
+      "actual_delta": 0.029291666666666667,
+      "actual_minus_reference": -0.024287037037037038,
+      "neutral_fill_rate": 1.0,
+      "neutral_hr1": 0.027777777777777776,
+      "neutral_ndcg10": 0.0686974460187262,
+      "initial_fill_rate": 1.0,
+      "initial_hr1": 0.025416666666666667,
+      "initial_ndcg10": 0.06498146707400568,
+      "manual_fill_rate": 1.0,
+      "manual_hr1": 0.02333333333333333,
+      "manual_ndcg10": 0.061120081662345886,
+      "llm_proposed_fill_rate": 1.0,
+      "llm_proposed_hr1": 0.022916666666666665,
+      "llm_proposed_ndcg10": 0.06168344327693346
+    },
+    "aggregation": "Changed scopes within case, cases within seed, seeds within user, then users",
+    "quality_labels": "Reused first historical held-out item, not fresh behavioral generalization",
+    "original_numeric_scores_retained": true,
+    "llm_calls_during_scoring": 0,
+    "checkpoint_score_calls": 72,
+    "no_confidence_intervals_or_p_values": true
+  },
+  "integrity": {
+    "raw_score_vectors": 72,
+    "vector_width": 2593,
+    "raw_score_dtype": "float64",
+    "all_scores_finite": true,
+    "complete_ranking_rows": 28800,
+    "unique_ranking_keys": 28800,
+    "full_paths": [
+      "neutral",
+      "initial",
+      "manual",
+      "llm_proposed"
+    ]
+  },
+  "limitations": [
+    "Finite synthetic AI-authored bank, not human intent ground truth",
+    "Reused catalogue and behavioral labels, not fresh behavioral generalization",
+    "Proposed profiles, no oracle scope confirmation or participant application",
+    "No model retries, prompt tuning, confidence intervals or p-values",
+    "Original E1/E2 assets and findings unchanged"
+  ],
+  "error_bucket_interpretation": {
+    "operational_error": "All five are parser/schema validation rejections, not demonstrated network/runtime outages",
+    "rejection_counts": {
+      "Undo/clear cannot include topic actions": 4,
+      "Hard exclusion cannot have a graded strength": 1
+    }
+  },
+  "separate_ai_review": {
+    "recomputed": "Command counts, strata, status counts, 7200 top-ten exposure rows, aggregate arithmetic and 72 finite vectors",
+    "limitations": "Historical relevance labels not independently inspected; no new model inference or full scientific reproduction"
+  }
+}

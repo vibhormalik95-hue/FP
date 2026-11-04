@@ -2,9 +2,11 @@
 
 Use 12 to 15 minutes, then discussion. Read the actual status badges aloud. This script prepares a demonstration; it is not a record that the student rehearsed or delivered it.
 
+This is the dated original A-E sequence. For the current 4 November meeting, use the [18-20 minute professor sequence](../2026-11-04-reviewed-workflow/README.md#professor-meeting-sequence-18-20-minutes), which adds the current paper, reviewed topic controls, code navigation and contribution account.
+
 | Time | Show and say |
 |---|---|
-| 0:00 to 1:00 | Open the [paper](../2026-10-19/README-2026-10-19.md). "The project separates base ranking, translation of a request and deterministic enforcement. We test control together with historical next-item quality." |
+| 0:00 to 1:00 | Open the [current seven-page paper review](../2026-11-04-completion-review/COMP9500-Current-Paper-Review.pdf). "The project separates base ranking, translation of a request and deterministic enforcement. We test control together with historical next-item quality." |
 | 1:00 to 2:15 | Open the app and report its actual dataset, scorer and parser modes. "These are opaque category IDs and item metadata, not video assets." If the status is fixture or diagnostic, say so. |
 | 2:15 to 4:30 | Choose user 14, compare A and B. "A is one-item feedback. B adds explanations, so rank should stay identical. The model scores are held fixed across conditions." Confirm the visible order before stating equality. |
 | 4:30 to 6:30 | In C with the rule backend, submit `Show me more category_1`. Show the parsed boost and the changed list. "This manual click is an example, not a benchmark estimate." |

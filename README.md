@@ -1,6 +1,14 @@
 # Natural language controls for short video recommendation
 
-COMP 9500 research project by Vibhor Malik, supervised by Dr Borna Noureddin. This repository contains the offline benchmark implementation, methods, compact evidence and current [paper, presentation and progress note](deliverables/2026-10-19/README-2026-10-19.md).
+COMP 9500 research project by Vibhor Malik, supervised by Dr Borna Noureddin. This repository contains the offline benchmark implementation, methods, compact evidence and professor-review materials.
+
+## Current professor-review materials
+
+- [Complete proposal and course-deliverable audit](deliverables/2026-11-04-completion-review/PROJECT-COMPLETION-AUDIT.md), with achieved results, departures and remaining limits.
+- [Current seven-page paper review](deliverables/2026-11-04-completion-review/COMP9500-Current-Paper-Review.pdf), matching the current paper source. The [19 October paper, presentation and progress packet](deliverables/2026-10-19/README-2026-10-19.md) remains a dated historical release.
+- [Pipeline and matching code walkthrough](deliverables/2026-10-27-feedback/PIPELINE-AND-CODE-WALKTHROUGH.md), [current code/contribution map](deliverables/2026-10-27-feedback/CODE-MAP-AND-AI-ASSISTANCE.md), and [reviewed topic-workflow addendum](deliverables/2026-11-04-reviewed-workflow/README.md).
+- [Separate prospective synthetic-language results](deliverables/2026-11-04-prospective-evaluation/PROTOCOL-AND-RESULTS.md): 48/100 supported final profiles correct and 19/20 correct diagnostic clarifications. This later study does not replace E1 or revised E2, or establish an LLM recommendation benefit.
+- [Five-condition examples](deliverables/2026-10-27-feedback/FIVE-CONDITION-EXAMPLES.md), [professor-request coverage](deliverables/2026-11-04-reviewed-workflow/CAPABILITY-AND-TRANSCRIPT-AUDIT.md) and [E1 replay limitation](deliverables/2026-11-04-completion-review/E1-REPLAY-DISCREPANCY.md).
 
 The study separates language translation from deterministic category enforcement on a fixed recommender. Experiment 1 shows large exposure changes under the category policy, alongside weaker historical next-item ranking for boosts. The fresh Experiment 2 benchmark uses 100 synthetic requests. Llama matches 76 of 100 model-generated reference commands; measured category control improves over item feedback, while conditional requests have no successes and next-item NDCG@10 is lower. The [results record](docs/ai-reference-e2-results-2026-10-14.md) gives exact measures, denominators and reference provenance.
 

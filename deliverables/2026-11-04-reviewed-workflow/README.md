@@ -10,11 +10,29 @@ Current cache preparation restored the original ten records without modification
 
 After that backend configuration change, the full suite completed **314 passed, one private-bank skip and two dependency warnings**. The skip is the static split check for private parser banks absent from this public review checkout. No frontend source changed in this pass; the previous successful Vite build remains the applicable frontend check.
 
+A later full-suite check at published source `ef1bf295` completed **316 passed, one private-bank skip and two warnings**. The confirmed-scope repair also has 40 affected workflow/API checks and a fresh rendered review/apply/undo receipt. These software checks do not establish a new language benchmark result.
+
 The new **Reviewed topic feed** view supports several topic instructions, three increase/decrease strengths, hard exclusion and an editable topic profile. It uses the real saved-model catalogue and official caption sidecar. It has no YouTube connection and does not change frozen A-E experiments.
 
 An installed local Qwen 2.5 Coder 7B model interprets requests. The model proposes a plan; the user reviews the exact source subjects and proposed feed before applying it. Choosing a source phrase is not a validated new ontology or evidence of human relevance.
 
-## Pipeline and code
+## Professor meeting sequence, 18-20 minutes
+
+This is the current presentation route, not evidence of a student's rehearsal or a new benchmark. Start from the [seven-page paper review](../2026-11-04-completion-review/COMP9500-Current-Paper-Review.pdf), [pipeline walkthrough](../2026-10-27-feedback/PIPELINE-AND-CODE-WALKTHROUGH.md) and [current source/contribution map](../2026-10-27-feedback/CODE-MAP-AND-AI-ASSISTANCE.md). A source-pinned five-page repository visual is a companion attachment; it maps all 168 tracked files at ef1bf295. The two new result documents in the [separate prospective evaluation](../2026-11-04-prospective-evaluation/PROTOCOL-AND-RESULTS.md) postdate that snapshot. Private datasets are not part of the tracked-file map.
+
+| Time | Show, operate and explain |
+| --- | --- |
+| 0:00-1:30 | Open the real app on port 8772. Read processed-data, trained-model and sidecar status. Reload an expired session; choose user 14, reset, Explore feed and A. Confirm zero preferences and the observed clean order. Metadata cards are not playable videos. |
+| 1:30-3:00 | Use the repository visual and three pipeline paths. Earlier history supplies fixed candidate scores; manual intended commands bypass language parsing; the local model proposes commands for the same deterministic policy. Open the linked functions, not historical line numbers. |
+| 3:00-7:00 | Like item 1116 in A; B should retain A's order and add cached verified explanations. In C apply `Show me more category_1` using the labelled rule diagnostic. Save the equivalent preference in D, show combined E and Compare A-E. The saved matched example has 9/10 targets, not a universal guarantee. Explicit mute wins a conflicting same-category profile boost. Reset. Original A-E less/fewer means hard mute. |
+| 7:00-11:00 | Select Reviewed topic feed and read the configured model. Review `A lot more Qingdao.` If grounding suggests broader travel, choose the literal source phrase `青岛` and review again. Read strong +0.40, five source matches and the proposed order before Apply. The recorded technical example has 4/10 matches and full fill. A scope choice is explicit manual assistance, not autonomous semantic accuracy. |
+| 11:00-14:00 | Contrast a light decrease with hard exclusion: reduction keeps matches eligible; exclusion removes them. Select replacement-profile mode and review a complete two-subject profile, checking both source groups and operations. Show that Apply replaces the old profile, then review/apply undo and verify restoration. Global reset clears controls/history; it is not undoable. If a model result is wrong, retain the error/clarification and use clearly labelled manual exact-source mode or saved evidence. |
+| 14:00-17:00 | Walk through `interpret`, `ground_actions`, `compose`, `rank`, API preview/apply and the React handlers. Explain fixed offsets, overlap/exclusion precedence, revision/expiry and state isolation. Displayed source-text membership is not validated relevance; no actual YouTube algorithm is controlled. |
+| 17:00-20:00 | Show TCP/TCER arithmetic, results and the full proposal audit. Keep E1's 79/100 parser miss, rule/LLM equality, quality decline, E2 zero conditional success and replay limit visible. Attribute the student's reported vision, LLM code generation, line-by-line review and Git push as his account; later assistant changes are separate. State which work is prepared, actually executed or still awaiting feedback. Show the separate frozen synthetic-language result: 48/100 supported profiles correct and 19/20 correct diagnostic clarifications. Its strict first-pass failures remain findings, with no test-bank tuning. |
+
+The technical receipts document prior software checks. They do not establish personal rehearsal, human ground truth or final supervisor acceptance. The original [12-15 minute A-E script](../2026-10-27-demo/PROFESSOR-DEMO-SCRIPT.md) remains a dated subset of this route.
+
+## Pipeline implementation
 
 ```mermaid
 flowchart TD
