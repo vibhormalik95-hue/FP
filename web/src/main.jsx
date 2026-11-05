@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import './style.css';
 import SteeringPanel from './SteeringPanel';
+import SemanticPanel from './SemanticPanel';
 
 const conditions = {
   A: ['Item feedback', 'Direct feedback on individual items.'],
@@ -92,6 +93,7 @@ function App() {
           <section className="panel"><div className="section-heading"><span className="step">03</span><h2>Your editable profile</h2></div><form onSubmit={e => {e.preventDefault(); act(() => api('profile/text', {user_id:user, text:profileText, backend}), r => r.applied ? `Profile saved via ${r.source}.` : 'Profile was ambiguous. State explicit category preferences and try again.');}}><label className="field-label" htmlFor="profile">History context + your current preferences</label><textarea id="profile" maxLength={2000} rows={4} value={profileText} onChange={e => setProfileText(e.target.value)} placeholder={`More ${cats[0] || 'category_0'}. Mute ${cats[1] || 'category_1'}.`}/><div className="word-count">{profileWords}/200 words · Used by D and E</div><button className="secondary" disabled={busy || !profileText.trim() || profileWords > 200 || user === null}>Save profile</button></form><div className="saved-profile"><span className="field-label">Parsed current preferences</span>{Object.keys(profile).length ? Object.entries(profile).map(([c,v]) => <div className="preference" key={c}><span><i style={{background:color(c)}}/>{c}</span><b>{v < 0 ? 'Muted' : `+${v.toFixed(2)}`}</b><button aria-label={`Remove ${c} preference`} disabled={busy} onClick={() => {const next={...profile}; delete next[c]; act(() => api('profile', {user_id:user,profile:next}, 'PUT'), `Removed ${c} from profile.`, true);}}>×</button></div>) : <p className="help">No saved category preferences.</p>}</div></section>
           </>}
           <div hidden={view !== 'steering'}><SteeringPanel api={api} user={user} resetKey={steeringReset} onFeed={setReviewedFeed} onApplied={() => setView('steering')}/></div>
+          <div hidden={view !== 'steering'}><SemanticPanel api={api} user={user} resetKey={steeringReset} onFeed={setReviewedFeed}/></div>
           <details hidden={view === 'steering'}><summary>Earlier single-topic diagnostic</summary>
           <section className="panel" aria-label="Exploratory semantic topic control">
             <div className="section-heading"><span className="step">04</span><h2>Explore a new topic</h2></div>

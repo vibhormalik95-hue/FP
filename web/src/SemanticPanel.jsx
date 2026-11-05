@@ -1,0 +1,88 @@
+import React, {useEffect, useRef, useState} from 'react';
+
+export default function SemanticPanel({api,user,resetKey,onFeed}) {
+  const [open,setOpen]=useState(false),[saved,setSaved]=useState(null),[pending,setPending]=useState(null);
+  const [text,setText]=useState(''),[label,setLabel]=useState('My semantic group'),[count,setCount]=useState(10);
+  const [backend,setBackend]=useState('ollama'),[category,setCategory]=useState('category_1');
+  const [operation,setOperation]=useState('boost'),[strength,setStrength]=useState('standard'),[mode,setMode]=useState('merge');
+  const [actionSource,setActionSource]=useState('ollama');
+  const [working,setWorking]=useState(false),[message,setMessage]=useState('');
+  const generation=useRef(0);
+  useEffect(()=>{const id=++generation.current;setSaved(null);setPending(null);setMessage('');setWorking(false);
+    if(open&&user!==null){setWorking(true);api(`semantic/groups?user_id=${user}`)
+      .then(r=>{if(id===generation.current)setSaved(r);})
+      .catch(e=>{if(id===generation.current)setMessage(e.message);})
+      .finally(()=>{if(id===generation.current)setWorking(false);});}
+  },[user,resetKey,open]);
+  async function run(work){const id=generation.current;setWorking(true);setMessage('');
+    try{await work(id);}catch(e){if(id===generation.current)setMessage(e.message);}
+    finally{if(id===generation.current)setWorking(false);}}
+  async function load(id){const r=await api(`semantic/groups?user_id=${user}`);
+    if(id===generation.current){setSaved(r);return r;}}
+  function review(){run(async id=>{setPending(null);const r=saved||await load(id);if(!r)return;
+    const p=await api('semantic/preview',{user_id:user,text,label,backend,mode,category,operation,action_source:actionSource,
+      strength:operation==='exclude'?'none':strength,candidate_ids:r.feed.baseline_items.slice(0,count)});
+    if(id!==generation.current)return;
+    if(p.ready)setPending(p);else setMessage(`${p.status||'clarify'}: ${p.reason||'Please clarify the request'}`);});}
+  function history(action){run(async id=>{setPending(null);const p=await api('semantic/history/preview',{user_id:user,action});
+    if(id!==generation.current)return;if(p.ready)setPending(p);else setMessage(p.reason);});}
+  function apply(){run(async id=>{const r=await api('semantic/apply',{user_id:user,plan_id:pending.plan_id});
+    if(id!==generation.current)return;setSaved(r);setPending(null);onFeed(r.feed);setMessage('Reviewed item set applied to the separate semantic feed.');});}
+  const disabled=working||user===null;
+  return <details open={open} onToggle={e=>setOpen(e.currentTarget.open)}>
+    <summary>Experimental semantic groups: indirect intent over supplied items</summary>
+    {open&&<section className="panel" aria-label="Reviewed semantic groups">
+      <h3>Create and review a named semantic item set</h3>
+      <p className="help">The local model can propose a nonliteral relationship from real source text. Only the displayed baseline items are assessed. This is a new user-defined group over existing videos, not a new video or an official dataset category. Original A-E and literal topic preferences stay separate.</p>
+      <label className="field-label" htmlFor="semantic-backend">Method</label>
+      <select id="semantic-backend" disabled={disabled} value={backend} onChange={e=>{setBackend(e.target.value);setPending(null);}}>
+        <option value="ollama">{saved?.configured_model||'Configured local model'}: semantic proposal</option>
+        <option value="manual_category">Manual: exact original category baseline</option></select>
+      <label className="field-label" htmlFor="semantic-label">Name this group</label>
+      <input id="semantic-label" maxLength={80} disabled={disabled} value={label} onChange={e=>{setLabel(e.target.value);setPending(null);}}/>
+      <label className="field-label" htmlFor="semantic-count">Evidence scope</label>
+      <select id="semantic-count" disabled={disabled} value={count} onChange={e=>{setCount(Number(e.target.value));setPending(null);}}>
+        <option value={6}>First 6 baseline items</option><option value={10}>First 10 baseline items</option></select>
+      <p className="help">Supplied item IDs: {saved?.feed.baseline_items.slice(0,count).join(', ')||'Loading...'}. No hidden retrieval or silent truncation. An oversized evidence payload asks for a narrower scope.</p>
+      {backend==='ollama'?<><label className="field-label" htmlFor="semantic-text">One current instruction</label>
+        <textarea id="semantic-text" rows={3} maxLength={2000} disabled={disabled} value={text} onChange={e=>{setText(e.target.value);setPending(null);}}
+          placeholder="Describe what you want more, less or none of; indirect meaning is allowed."/>
+        <p className="help">Two real model calls at most: action interpretation and evidence selection, each limited to 90 seconds plus identity checks. Ambiguity or invalid evidence applies nothing. No rule fallback.</p>
+        <label className="field-label" htmlFor="semantic-action-source">Who chooses direction and strength?</label>
+        <select id="semantic-action-source" value={actionSource} disabled={disabled} onChange={e=>{setActionSource(e.target.value);setPending(null);}}>
+          <option value="ollama">The model interprets my instruction</option><option value="manual">I choose; the model only proposes related items</option></select>
+      </>:<>
+        <label className="field-label" htmlFor="semantic-category">Existing category ID</label>
+        <input id="semantic-category" disabled={disabled} value={category} onChange={e=>{setCategory(e.target.value);setPending(null);}}/>
+      </>}
+      {(backend==='manual_category'||actionSource==='manual')&&<>
+        <label className="field-label" htmlFor="semantic-operation">Manual action</label>
+        <select id="semantic-operation" disabled={disabled} value={operation} onChange={e=>{setOperation(e.target.value);setPending(null);}}>
+          <option value="boost">Increase</option><option value="reduce">Decrease, still eligible</option><option value="exclude">Exclude</option></select>
+        {operation!=='exclude'&&<select aria-label="Semantic manual strength" disabled={disabled} value={strength} onChange={e=>{setStrength(e.target.value);setPending(null);}}>
+          <option value="light">Light 0.10</option><option value="standard">Standard 0.25</option><option value="strong">Strong 0.40</option></select>}</>}
+      <label className="field-label" htmlFor="semantic-mode">Semantic profile update</label>
+      <select id="semantic-mode" disabled={disabled} value={mode} onChange={e=>{setMode(e.target.value);setPending(null);}}>
+        <option value="merge">Add or replace this named group</option><option value="replace">Replace semantic group profile</option></select>
+      <button className="primary" disabled={disabled||!saved||!label.trim()||(backend==='ollama'&&!text.trim())} onClick={review}>
+        {working?'Working locally...':'Review semantic proposal'}</button>
+      {message&&<p role="status" className="alert">{message}</p>}
+      {pending&&<div className="saved-profile"><h4>Review the meaning and evidence yourself</h4>
+        {pending.groups.map(g=><div key={g.label} className="steering-review">
+          <strong>{g.label}: {g.proposal.action.operation} ({g.proposal.action.strength})</strong>
+          <p className="help">Original request: {g.request}</p><p className="help">Model relationship: {g.proposal.reason}</p>
+          <p className="help">Direction and strength: {g.proposal.action_source==='manual'?'Explicitly selected by you; not model action accuracy':g.proposal.provenance.model.backend==='manual_category'?'Manual category baseline':'Interpreted by the model'}.</p>
+          <p className="help">Selected existing IDs: {g.proposal.item_ids.join(', ')}; assessed scope: {g.scope_ids.join(', ')}</p>
+          {g.proposal.evidence.map(e=><p className="help" key={e.item_id}>Item {e.item_id}, {e.field}: “{e.quote}”</p>)}
+          <p className="help">{g.proposal.provenance.model.backend} / {g.proposal.provenance.model.model}; digest {g.proposal.provenance.model.digest}</p>
+        </div>)}
+        {pending.feed.group_exposure.map(g=><p key={g.label} className="help">{g.label}: {g.before}/10 baseline; {g.after}/10 proposed.</p>)}
+        <p className="help">Proposed IDs: {pending.feed.items.map(i=>i.item_id).join(', ')}; {pending.feed.available_items} eligible. An exact quote proves source existence, not semantic relevance. Model meaning may be wrong; do not approve it if inappropriate.</p>
+        <button className="primary" disabled={disabled} onClick={apply}>Approve this exact item set and apply</button>
+      </div>}
+      <p className="help">Saved semantic groups: {saved?.groups.map(g=>g.label).join(', ')||'None'}. These are temporary session records with source hashes, not new source taxonomy labels.</p>
+      <button className="secondary" disabled={disabled||!saved?.can_undo} onClick={()=>history('undo')}>Review semantic undo</button>
+      <button className="secondary" disabled={disabled||!saved?.groups.length} onClick={()=>history('clear')}>Review clearing semantic groups</button>
+    </section>}
+  </details>;
+}

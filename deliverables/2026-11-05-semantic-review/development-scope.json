@@ -1,0 +1,5 @@
+{
+  "ids": [103, 128, 109, 120, 122, 130, 131, 133],
+  "selection": "First two numeric candidate IDs whose official first-level name includes the Chinese source label for food, then first six other numeric candidate IDs with captions. Disclosed development fixture; not retrieval, held-out language or an unbiased semantic evaluation.",
+  "source_sha256": "7ccf10f348da6041742222f107da32e1be8b1c8c7b710d65963fa10d56a014f5"
+}
