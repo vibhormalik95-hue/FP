@@ -49,8 +49,47 @@ class _NoRedirect(urllib.request.HTTPRedirectHandler):
         raise ParserOperationalError('Hosted model redirect rejected')
 
 
+class HostedRunBudget:
+    """One explicit, in-process allowance shared by every adapter in a run.
+
+    Create once after authorization, outside an app's per-preview factory. It
+    cannot replenish itself; starting a new app/allowance is a new run requiring
+    its own authority. This is not a persistent billing-account spending limit.
+    """
+    def __init__(self, max_calls):
+        if type(max_calls) is not int or not 1 <= max_calls <= 10:
+            raise ValueError('Invalid shared hosted run budget')
+        self._max_calls = max_calls
+        self._attempted = 0
+        self._config_sha256 = None
+        self._lock = threading.Lock()
+
+    @property
+    def max_calls(self):
+        return self._max_calls
+
+    @property
+    def attempted(self):
+        with self._lock:
+            return self._attempted
+
+    def bind(self, config_sha256):
+        with self._lock:
+            if self._config_sha256 is None:
+                self._config_sha256 = config_sha256
+            elif self._config_sha256 != config_sha256:
+                raise ValueError('Shared hosted allowance belongs to a different locked configuration')
+
+    def reserve(self):
+        with self._lock:
+            if self._attempted >= self._max_calls:
+                raise ParserOperationalError('Hosted run call budget exhausted')
+            self._attempted += 1
+            return self._attempted
+
+
 def make_openai_responses_infer(*, api_key, model, reasoning_effort,
-                               authorized=False, max_calls=2,
+                               run_budget, authorized=False,
                                max_output_tokens=4096, timeout=90,
                                max_request_bytes=20000):
     """Return (infer, provenance, receipts), with zero constructor network calls.
@@ -62,31 +101,33 @@ def make_openai_responses_infer(*, api_key, model, reasoning_effort,
     """
     if authorized is not True:
         raise ValueError('Hosted generation requires separate data and spend authorization')
+    if not isinstance(run_budget, HostedRunBudget):
+        raise ValueError('Explicit shared HostedRunBudget required')
     if not isinstance(api_key, str) or not api_key.strip() or any(c.isspace() for c in api_key):
         raise ValueError('Explicit valid API credential required')
     if not isinstance(model, str) or not re.fullmatch(r'[A-Za-z0-9_.-]{1,150}', model):
         raise ValueError('Explicit provider model identifier required')
     if reasoning_effort not in ('low', 'medium', 'high', 'xhigh', 'max'):
         raise ValueError('Explicit supported reasoning effort required')
-    for value, lower, upper in ((max_calls, 1, 10), (max_output_tokens, 1, 5000),
+    for value, lower, upper in ((max_output_tokens, 1, 5000),
                                 (max_request_bytes, 1, 50000)):
         if type(value) is not int or not lower <= value <= upper:
             raise ValueError('Invalid hosted run budget')
     if type(timeout) not in (int, float) or not 0 < timeout <= 300:
         raise ValueError('Invalid hosted timeout')
     config = {'backend': 'openai-responses', 'endpoint': ENDPOINT, 'model': model,
-              'reasoning_effort': reasoning_effort, 'max_calls': max_calls,
+              'reasoning_effort': reasoning_effort, 'max_calls': run_budget.max_calls,
               'max_output_tokens': max_output_tokens, 'timeout_seconds': timeout,
               'max_request_bytes': max_request_bytes, 'store': False,
               'retries': 0, 'tools': []}
     provenance = {**config, 'digest': _hash(config),
                   'digest_kind': 'configuration_sha256_not_model_weights',
                   'identity_limit': 'Requested API identifier; each returned model is checked. No weight attestation.'}
-    receipts, lock, attempted = [], threading.Lock(), 0
+    run_budget.bind(_hash(config))
+    receipts = []
     opener = urllib.request.build_opener(_NoRedirect())
 
     def infer(payload, schema):
-        nonlocal attempted
         owned, owned_schema = deepcopy(payload), deepcopy(schema)
         if not isinstance(owned, dict) or not isinstance(owned.get('system'), str):
             raise ValueError('Explicit system prompt required')
@@ -103,15 +144,12 @@ def make_openai_responses_infer(*, api_key, model, reasoning_effort,
         request_bytes = _json(body)
         if len(request_bytes) > max_request_bytes:
             raise ValueError('Hosted request exceeds locked evidence budget; no truncation')
-        with lock:
-            if attempted >= max_calls:
-                raise ParserOperationalError('Hosted run call budget exhausted')
-            attempted += 1
-            receipt = {'call_id': attempted, 'representation': 'actual_hosted_attempt',
-                       'request': deepcopy(body), 'request_sha256': hashlib.sha256(request_bytes).hexdigest(),
-                       'schema_sha256': _hash(owned_schema), 'outcome': 'started',
-                       'started_unix': time.time()}
-            receipts.append(receipt)
+        call_id = run_budget.reserve()
+        receipt = {'call_id': call_id, 'representation': 'actual_hosted_attempt',
+                   'request': deepcopy(body), 'request_sha256': hashlib.sha256(request_bytes).hexdigest(),
+                   'schema_sha256': _hash(owned_schema), 'outcome': 'started',
+                   'started_unix': time.time()}
+        receipts.append(receipt)
         started = time.monotonic()
         try:
             request = urllib.request.Request(ENDPOINT, data=request_bytes, method='POST',

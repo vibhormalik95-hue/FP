@@ -11,6 +11,7 @@ import os
 import math
 import secrets
 import time
+import threading
 from typing import Literal
 
 from fastapi import Header, HTTPException, Query
@@ -175,6 +176,25 @@ def rank_groups(ids, scores, groups, index, limit=10, *, original_categories=Non
 
 def install_semantic_routes(app, demo, *, infer_factory=None):
     """Session-scoped prototype. Existing A-E and literal topic state are untouched."""
+    configured_adapter = None
+    configured_adapter_lock = threading.Lock()
+
+    def configured_infer():
+        # A configured app owns one run. Never replenish a paid call cap by
+        # reconstructing a transport on each preview or concurrent request.
+        nonlocal configured_adapter
+        with configured_adapter_lock:
+            if configured_adapter is None:
+                if infer_factory is None:
+                    raise ParserOperationalError("No authorized configured model adapter is installed")
+                infer, provenance = infer_factory()
+                if (not callable(infer) or not isinstance(provenance, dict)
+                        or not all(isinstance(provenance.get(k), str) and provenance[k]
+                                   for k in ("backend", "model", "digest"))):
+                    raise ValueError("Configured adapter omitted model provenance")
+                configured_adapter = infer, deepcopy(provenance)
+            return configured_adapter[0], deepcopy(configured_adapter[1])
+
     def state_for(token, user):
         state = demo.user_state(token, user)
         if demo.topic_index is None:
@@ -267,15 +287,8 @@ def install_semantic_routes(app, demo, *, infer_factory=None):
                 request = body.category
             else:
                 if body.backend == "configured_model":
-                    if infer_factory is None:
-                        raise ParserOperationalError("No authorized configured model adapter is installed")
                     # Operator-selected transport, never request-supplied URLs or keys.
-                    infer, provenance = infer_factory()
-                    if (not callable(infer) or not isinstance(provenance, dict)
-                            or not all(isinstance(provenance.get(k), str) and provenance[k]
-                                       for k in ("backend", "model", "digest"))):
-                        raise ValueError("Configured adapter omitted model provenance")
-                    provenance = deepcopy(provenance)
+                    infer, provenance = configured_infer()
                 else:
                     infer, provenance = make_local_ollama_infer(os.getenv("FEEDCTRL_STEERING_MODEL", "qwen2.5-coder:7b-instruct"), timeout=90)
                 def tracked_infer(payload, schema):

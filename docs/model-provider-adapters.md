@@ -23,6 +23,11 @@ selection, credentials and URLs cannot be supplied by an API request. Existing
 request-bound action validation, ID/quote checks, substantive review, stale
 source checks, session isolation, ranking and undo remain in force.
 
+The configured factory is initialized at most once per app, under a lock, and its
+adapter is reused by all previews and sessions. Preview requests cannot create a
+fresh allowance. A changed provider/run configuration needs a new authorized run;
+there is no API route to replenish the allowance.
+
 ## First-party Responses adapter
 
 `feedctrl.model_adapters.make_openai_responses_infer` implements the seam for
@@ -38,6 +43,15 @@ operational gate, **not evidence of user approval**. Before enabling it, the
 operator must establish actual API access, data destination/scope and a paid-call
 spend ceiling, then freeze the exact run. A ChatGPT or Claude browser subscription
 does not establish this API entitlement or budget.
+
+Create one `HostedRunBudget(max_calls=2)` outside the factory and pass that same
+object as `run_budget` to every adapter instance belonging to the authorized run.
+It reserves each attempt atomically across concurrent adapter instances. The
+allowance is bound to the exact model/options configuration, cannot replenish
+itself, and is independent of mutable receipt lists. No implicit per-adapter
+allowance is provided. This is an in-process call limit, not a durable billing
+account cap; process restart or creation of a new allowance is a new run and must
+not be used to evade the authorized total.
 
 All attempted calls, including timeout and HTTP error, consume the shared cap.
 The returned receipts retain exact request data (without authorization headers),

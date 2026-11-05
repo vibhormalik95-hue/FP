@@ -4,6 +4,8 @@ from copy import deepcopy
 import io
 import json
 import urllib.error
+from concurrent.futures import ThreadPoolExecutor
+import threading
 import pytest
 
 from feedctrl import model_adapters as ma
@@ -41,15 +43,17 @@ def adapter(monkeypatch, result=None, *, error=None, **kw):
             raw = json.dumps(result if result is not None else envelope()).encode()
             return Response(raw)
     monkeypatch.setattr(ma.urllib.request,'build_opener',lambda *a:Opener())
+    budget=kw.pop('run_budget',None) or ma.HostedRunBudget(kw.pop('max_calls',2))
     infer,provenance,receipts=ma.make_openai_responses_infer(api_key='dummy-offline-secret',
-        model='gpt-6.1-sol',reasoning_effort='medium',authorized=True,**kw)
+        model='gpt-6.1-sol',reasoning_effort='medium',run_budget=budget,authorized=True,**kw)
     return infer,provenance,receipts,sent
 
 
 def test_constructor_requires_authorization_before_network_or_key_use(monkeypatch):
     monkeypatch.setattr(ma.urllib.request,'build_opener',lambda *a:pytest.fail('No constructor networking'))
     with pytest.raises(ValueError,match='authorization'):
-        ma.make_openai_responses_infer(api_key='dummy',model='gpt-6.1-sol',reasoning_effort='medium')
+        ma.make_openai_responses_infer(api_key='dummy',model='gpt-6.1-sol',reasoning_effort='medium',
+                                     run_budget=ma.HostedRunBudget(1))
 
 
 def test_exact_request_identity_no_tools_no_storage_no_secret_receipt(monkeypatch):
@@ -175,3 +179,82 @@ def test_mislabelled_provider_action_rejected(client,backend,action_source):
     r=configured_request(client,h,backend=backend,action_source=action_source).json()
     assert r['status']=='error' and not r['ready']
     assert saved(client,h).json()==before
+
+
+def test_independent_adapter_instances_share_one_explicit_allowance(monkeypatch):
+    budget=ma.HostedRunBudget(1)
+    first,_,r1,s1=adapter(monkeypatch,run_budget=budget)
+    second,_,r2,s2=adapter(monkeypatch,run_budget=budget)
+    assert first(PAYLOAD,SCHEMA)=={'ok':True}
+    with pytest.raises(ParserOperationalError,match='budget exhausted'):second(PAYLOAD,SCHEMA)
+    assert budget.attempted==1 and len(s1)+len(s2)==1 and len(r1)+len(r2)==1
+
+
+def test_concurrent_construction_and_attempts_share_cap(monkeypatch):
+    sent=[]
+    class Opener:
+        def open(self,*args,**kw):
+            sent.append(True)
+            return Response(json.dumps(envelope()).encode())
+    monkeypatch.setattr(ma.urllib.request,'build_opener',lambda *a:Opener())
+    budget=ma.HostedRunBudget(3)
+    def attempt(_):
+        infer,_,receipts=ma.make_openai_responses_infer(api_key='offline-dummy',model='gpt-6.1-sol',
+            reasoning_effort='medium',run_budget=budget,authorized=True)
+        try:infer(PAYLOAD,SCHEMA)
+        except ParserOperationalError as exc:
+            assert 'budget exhausted' in str(exc)
+            return None
+        return receipts[0]['call_id']
+    with ThreadPoolExecutor(max_workers=12) as pool:results=list(pool.map(attempt,range(48)))
+    assert sorted(i for i in results if i is not None)==[1,2,3]
+    assert len(sent)==budget.attempted==3
+
+
+def test_shared_allowance_cannot_change_locked_provider_configuration(monkeypatch):
+    budget=ma.HostedRunBudget(2)
+    adapter(monkeypatch,run_budget=budget)
+    with pytest.raises(ValueError,match='different locked configuration'):
+        adapter(monkeypatch,run_budget=budget,max_output_tokens=100)
+    assert budget.attempted==0
+
+
+@pytest.mark.parametrize('bad',[None,{},1,True])
+def test_explicit_shared_budget_required(bad):
+    with pytest.raises(ValueError,match='HostedRunBudget'):
+        ma.make_openai_responses_infer(api_key='offline-dummy',model='gpt-6.1-sol',
+            reasoning_effort='medium',run_budget=bad,authorized=True)
+
+
+@pytest.mark.parametrize('concurrent',[False,True])
+def test_previews_do_not_recreate_or_replenish_configured_adapter(client,monkeypatch,concurrent):
+    # Deliberately construct the allowance INSIDE a fresh-adapter factory, as in
+    # the independent repro. The app must initialize that factory only once.
+    sent=[];factory_calls=[];owned=[]
+    action={'needs_clarification':False,'question':'','control':'exclude/none','intent_span':'makes me hungry'}
+    class Opener:
+        def open(self,*args,**kw):
+            sent.append(True)
+            return Response(json.dumps(envelope(json.dumps(action))).encode())
+    monkeypatch.setattr(ma.urllib.request,'build_opener',lambda *a:Opener())
+    def factory():
+        factory_calls.append(True)
+        budget=ma.HostedRunBudget(1);owned.append(budget)
+        infer,p,_=ma.make_openai_responses_infer(api_key='offline-dummy',model='gpt-6.1-sol',
+            reasoning_effort='medium',run_budget=budget,authorized=True)
+        return infer,p
+    app=create_app(fixture=True,semantic_infer_factory=factory)
+    app.state.demo.topic_index=deepcopy(client.app.state.demo.topic_index)
+    with TestClient(app) as c:
+        hs=[headers(c) for _ in range(6)]
+        def one(h):
+            before=saved(c,h).json()
+            result=configured_request(c,h)
+            assert saved(c,h).json()==before
+            assert result.status_code in (200,502)
+            if result.status_code==200:assert not result.json()['ready'] and not result.json()['applied']
+        if concurrent:
+            with ThreadPoolExecutor(max_workers=6) as pool:list(pool.map(one,hs))
+        else:
+            for h in hs:one(h)
+    assert len(factory_calls)==len(owned)==len(sent)==owned[0].attempted==1
