@@ -4,6 +4,7 @@ COMP 9500 research project by Vibhor Malik, supervised by Dr Borna Noureddin. Th
 
 ## Current professor-review materials
 
+- [5 November delivery walkthrough and claim matrix](deliverables/2026-11-05-final-demo/README.md): manual control, a new cross-cutting induced category, one operator-assisted indirect-intent example, fictional metadata drafts, and the retained negative results. These bounded demonstrations do not establish general semantic reliability or automatic Claude API integration.
 - [Complete proposal and course-deliverable audit](deliverables/2026-11-04-completion-review/PROJECT-COMPLETION-AUDIT.md), with achieved results, departures and remaining limits.
 - [Current seven-page paper review](deliverables/2026-11-04-completion-review/COMP9500-Current-Paper-Review.pdf), matching the current paper source. The [19 October paper, presentation and progress packet](deliverables/2026-10-19/README-2026-10-19.md) remains a dated historical release.
 - [Pipeline and matching code walkthrough](deliverables/2026-10-27-feedback/PIPELINE-AND-CODE-WALKTHROUGH.md), [current code/contribution map](deliverables/2026-10-27-feedback/CODE-MAP-AND-AI-ASSISTANCE.md), and [reviewed topic-workflow addendum](deliverables/2026-11-04-reviewed-workflow/README.md).

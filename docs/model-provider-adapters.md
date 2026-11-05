@@ -77,12 +77,18 @@ The reviewer must still reject incomplete or unsupported sets before applying.
 
 ## Current verification boundary
 
-The new adapter has offline transport and API-mechanics tests using injected
-network doubles. No real hosted call has been made for this revision. Existing
-Claude browser access was observed as Ultra / Opus 5.5 Medium, while Claude Code
-reported logged out. That browser observation is not an integrated provider run.
-The earlier local Gemma timeout and all frozen negative studies remain intact.
+The first-party Responses adapter has offline transport and API-mechanics tests
+using injected network doubles. No real paid API call has been made for this
+revision. API latency, billed cost, account entitlement and automatic hosted
+transport remain unverified. Claude Code reported logged out.
 
-Real hosted latency, billed cost, current account entitlement, provider output
-quality and an actual live indirect-intent apply/undo path remain unverified.
-No publication or claim of general semantic reliability follows from these tests.
+A separate operator-assisted browser exchange on this source used the observed
+Opus 5.5 Medium selector for two fresh messages, captured with the supported Copy
+control. The actual configured-provider application route validated the replies;
+explicit browser review/apply, clear and undo changed eligibility 8 to 5 to 8 to
+5 to 8. This is one exposed synthetic development case, not automatic Claude API
+integration, provider-side processing attestation, or held-out accuracy. The
+transport observer was external to application source. See the
+[delivery walkthrough](../deliverables/2026-11-05-final-demo/README.md) for the
+exact scope and evidence. The earlier capture failure, local Gemma timeout and
+all frozen negative studies remain intact.
