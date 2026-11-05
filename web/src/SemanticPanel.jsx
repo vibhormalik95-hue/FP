@@ -26,7 +26,7 @@ export default function SemanticPanel({api,user,resetKey,onFeed}) {
       candidate_ids:r.feed.baseline_items.slice(0,count)};
     const p=backend==='staged'?await api('semantic/definition/preview',{...common,objective:text}):
       backend==='induction'?await api('semantic/induction/preview',{...common,objective:text}):
-      await api('semantic/preview',{...common,text,label,backend,category,action_source:actionSource});
+      await api('semantic/preview',{...common,text,label,backend,category,action_source:backend==='configured_model'?'model':actionSource});
     if(id!==generation.current)return;
     if(p.definition_ready)setDefinition(p);else if(p.ready)setPending(p);else setMessage(`${p.status||'clarify'}: ${p.reason||'Please clarify the request'}`);});}
   function classify(){run(async id=>{const p=await api('semantic/definition/classify',{
@@ -42,10 +42,11 @@ export default function SemanticPanel({api,user,resetKey,onFeed}) {
     <summary>Experimental semantic groups: indirect intent over supplied items</summary>
     {open&&<section className="panel" aria-label="Reviewed semantic groups">
       <h3>Create and review a named semantic item set</h3>
-      <p className="help">The local model can propose a nonliteral relationship from real source text. Only the displayed baseline items are assessed. This is a new user-defined group over existing videos, not a new video or an official dataset category. Original A-E and literal topic preferences stay separate.</p>
+      <p className="help">The selected model can propose a nonliteral relationship from supplied source text. Only the displayed baseline items are assessed. This is a new user-defined group over existing items, not a new video or an official dataset category. Original A-E and literal topic preferences stay separate.</p>
       <label className="field-label" htmlFor="semantic-backend">Method</label>
       <select id="semantic-backend" disabled={disabled} value={backend} onChange={e=>{setBackend(e.target.value);setPending(null);}}>
         <option value="ollama">{saved?.configured_model||'Configured local model'}: semantic proposal</option>
+        {saved?.external_adapter_available&&<option value="configured_model">Operator-configured model provider: semantic proposal</option>}
         <option value="staged">Local LLM: review definition, then classify all supplied items</option>
         <option value="induction">Local LLM: propose a new category definition and membership</option>
         <option value="manual_category">Manual: exact original category baseline</option></select>
@@ -59,15 +60,16 @@ export default function SemanticPanel({api,user,resetKey,onFeed}) {
         <textarea id="semantic-text" rows={3} maxLength={2000} disabled={disabled} value={text} onChange={e=>{setText(e.target.value);setPending(null);}}
           placeholder="Describe what you want more, less or none of; indirect meaning is allowed."/>
         {backend==='staged'?<p className="help">First review a model-proposed definition. After approval, one call classifies all supplied items and a separate call assesses the evidence without seeing those decisions. Disagreements become unknown. Three calls at most, each bounded to 90 seconds plus identity checks. This may use the same model and does not verify semantic truth: both passes can agree on a wrong set. Review every final membership before applying. You choose direction and strength below.</p>:backend==='induction'?<p className="help">One local model call proposes a label, definition and match/not_match/unknown decision for every supplied item. You choose the control below. Evidence and inventory budgets may block a request; no silent truncation. Review is required; no new videos are created.</p>:<>
-        <p className="help">Two real model calls at most: action interpretation and evidence selection, each limited to 90 seconds plus identity checks. Ambiguity or invalid evidence applies nothing. No rule fallback.</p>
-        <label className="field-label" htmlFor="semantic-action-source">Who chooses direction and strength?</label>
+        <p className="help">Two model stages at most: action interpretation and evidence selection. The local adapter uses 90-second calls plus identity checks. A separately configured provider uses its operator-locked timeout and shared call budget. Ambiguity or invalid evidence applies nothing. No rule fallback.</p>
+        {backend==='configured_model'&&<p className="help">This provider may receive your instruction and the displayed source metadata outside this computer. Use only the data scope and paid-call budget authorized for this run. Model identity and transport provenance appear in review. Browser subscription access alone does not enable this adapter.</p>}
+        {backend!=='configured_model'&&<><label className="field-label" htmlFor="semantic-action-source">Who chooses direction and strength?</label>
         <select id="semantic-action-source" value={actionSource} disabled={disabled} onChange={e=>{setActionSource(e.target.value);setPending(null);}}>
-          <option value="ollama">The model interprets my instruction</option><option value="manual">I choose; the model only proposes related items</option></select></>}
+          <option value="ollama">The model interprets my instruction</option><option value="manual">I choose; the model only proposes related items</option></select></>}</>}
       </>:<>
         <label className="field-label" htmlFor="semantic-category">Existing category ID</label>
         <input id="semantic-category" disabled={disabled} value={category} onChange={e=>{setCategory(e.target.value);setPending(null);}}/>
       </>}
-      {(backend==='manual_category'||backend==='induction'||backend==='staged'||actionSource==='manual')&&<>
+      {(backend==='manual_category'||backend==='induction'||backend==='staged'||(backend!=='configured_model'&&actionSource==='manual'))&&<>
         <label className="field-label" htmlFor="semantic-operation">Manual action</label>
         <select id="semantic-operation" disabled={disabled} value={operation} onChange={e=>{setOperation(e.target.value);setPending(null);}}>
           <option value="boost">Increase</option><option value="reduce">Decrease, still eligible</option><option value="exclude">Exclude</option></select>
@@ -77,7 +79,7 @@ export default function SemanticPanel({api,user,resetKey,onFeed}) {
       <select id="semantic-mode" disabled={disabled} value={mode} onChange={e=>{setMode(e.target.value);setPending(null);}}>
         <option value="merge">Add or replace this named group</option><option value="replace">Replace semantic group profile</option></select>
       <button className="primary" disabled={disabled||!saved||(!['induction','staged'].includes(backend)&&!label.trim())||(backend!=='manual_category'&&!text.trim())} onClick={review}>
-        {working?'Working locally...':backend==='staged'?'Propose a definition for review':'Review semantic proposal'}</button>
+        {working?'Working with the selected model...':backend==='staged'?'Propose a definition for review':'Review semantic proposal'}</button>
       {message&&<p role="status" className="alert">{message}</p>}
       {definition&&<div className="saved-profile" aria-label="Category definition review">
         <h4>Stage 1: review the whole definition</h4>

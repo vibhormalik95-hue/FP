@@ -52,8 +52,8 @@ class SemanticPreview(BaseModel):
     text: str = Field(default="", max_length=2000)
     label: str = Field(min_length=1, max_length=80)
     candidate_ids: list[StrictInt] = Field(min_length=2, max_length=20)
-    backend: Literal["ollama", "manual_category"] = "ollama"
-    action_source: Literal["ollama", "manual"] = "ollama"
+    backend: Literal["ollama", "manual_category", "configured_model"] = "ollama"
+    action_source: Literal["ollama", "manual", "model"] = "ollama"
     category: str | None = Field(default=None, max_length=120)
     operation: Literal["boost", "reduce", "exclude"] = "boost"
     strength: Literal["light", "standard", "strong", "none"] = "standard"
@@ -173,7 +173,7 @@ def rank_groups(ids, scores, groups, index, limit=10, *, original_categories=Non
             "after": len(set(top) & set(g["proposal"]["item_ids"]))} for g in groups]}
 
 
-def install_semantic_routes(app, demo):
+def install_semantic_routes(app, demo, *, infer_factory=None):
     """Session-scoped prototype. Existing A-E and literal topic state are untouched."""
     def state_for(token, user):
         state = demo.user_state(token, user)
@@ -209,7 +209,8 @@ def install_semantic_routes(app, demo):
     def response(state, user):
         return {"groups": deepcopy(state["semantic_groups"]), "revision": state["semantic_revision"],
             "can_undo": bool(state["semantic_history"]), "feed": feed(user, state["semantic_groups"]),
-            "configured_model": os.getenv("FEEDCTRL_STEERING_MODEL", "qwen2.5-coder:7b-instruct")}
+            "configured_model": os.getenv("FEEDCTRL_STEERING_MODEL", "qwen2.5-coder:7b-instruct"),
+            "external_adapter_available": infer_factory is not None}
 
     def review(state, user, groups, history_action="none", proposal=None):
         preview_feed = feed(user, groups)  # validate before installing a review token
@@ -244,6 +245,10 @@ def install_semantic_routes(app, demo):
             except ValueError as exc:
                 raise HTTPException(422, str(exc)) from exc
         try:
+            if body.backend == "configured_model" and body.action_source != "model":
+                raise ValueError("Configured adapter requires model-interpreted action; no fallback")
+            if body.backend != "configured_model" and body.action_source == "model":
+                raise ValueError("Model action source requires the configured adapter")
             if body.backend == "manual_category":
                 if body.category not in demo.categories:
                     raise ValueError("Manual baseline requires an existing category ID")
@@ -261,7 +266,18 @@ def install_semantic_routes(app, demo):
                         "model": {"backend": "manual_category", "model": "none", "digest": "not_applicable"}}}
                 request = body.category
             else:
-                infer, provenance = make_local_ollama_infer(os.getenv("FEEDCTRL_STEERING_MODEL", "qwen2.5-coder:7b-instruct"), timeout=90)
+                if body.backend == "configured_model":
+                    if infer_factory is None:
+                        raise ParserOperationalError("No authorized configured model adapter is installed")
+                    # Operator-selected transport, never request-supplied URLs or keys.
+                    infer, provenance = infer_factory()
+                    if (not callable(infer) or not isinstance(provenance, dict)
+                            or not all(isinstance(provenance.get(k), str) and provenance[k]
+                                       for k in ("backend", "model", "digest"))):
+                        raise ValueError("Configured adapter omitted model provenance")
+                    provenance = deepcopy(provenance)
+                else:
+                    infer, provenance = make_local_ollama_infer(os.getenv("FEEDCTRL_STEERING_MODEL", "qwen2.5-coder:7b-instruct"), timeout=90)
                 def tracked_infer(payload, schema):
                     # Own raw receipts; these are returned only to this session's caller.
                     raw = infer(deepcopy(payload), deepcopy(schema))
@@ -292,9 +308,9 @@ def install_semantic_routes(app, demo):
                 if state["semantic_revision"] != revision or state.get("semantic_preview_nonce") != nonce:
                     raise HTTPException(409, "Preferences changed during inference; review again")
                 return {**review(state, body.user_id, groups, proposal=proposal),
-                        "model_calls": calls if body.backend == "ollama" else []}
+                        "model_calls": calls if body.backend != "manual_category" else []}
         except ValueError as exc:
-            if body.backend == "ollama":
+            if body.backend != "manual_category":
                 return {"ready": False, "applied": False, "status": "error",
                     "reason": f"Model proposal rejected ({type(exc).__name__}): {exc}",
                     "model_calls": calls, "model_provenance": provenance}

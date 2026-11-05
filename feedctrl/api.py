@@ -307,7 +307,8 @@ class DemoState:
                 "research_note": "Text-match exposure is not a human relevance label or experimental result."}
 
 
-def create_app(data_path=None, model_path=None, fixture=False, semantic_path=None):
+def create_app(data_path=None, model_path=None, fixture=False, semantic_path=None,
+               *, semantic_infer_factory=None):
     app = FastAPI(title="Feed Control Lab", version="1.0.0")
     demo = DemoState(data_path, model_path, fixture, semantic_path)
     app.state.demo = demo
@@ -595,7 +596,7 @@ def create_app(data_path=None, model_path=None, fixture=False, semantic_path=Non
                          synthetic_revision=state.get("synthetic_revision", 0) + 1)
         return {"reset": True}
 
-    install_semantic_routes(app, demo)
+    install_semantic_routes(app, demo, infer_factory=semantic_infer_factory)
     install_synthetic_routes(app, demo)
 
     dist = ROOT / "web/dist"
