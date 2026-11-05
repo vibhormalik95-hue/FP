@@ -30,17 +30,16 @@ call-budget repair. Independent source review covered the in-process budget
 repair, not real paid transport. A process restart can create a new in-memory
 allowance; it must not be used to evade an authorized total. No paid call ran.
 
-## Remaining decisions and delivery gates
+## Publication and immediate professor handoff
 
-- Review and publish the exact provider/delivery payload to the existing demo
-  branch, then verify remote SHA and file bytes. No main merge.
+- Provider/delivery revision [`cb6c7b6`](https://github.com/vibhormalik95-hue/FP/commit/cb6c7b6b69fc3b38e625d9c69cff3ddac033ab7f) is published on `codex/comp9500-professor-demo-20261027`. The 5 November 10:54 UTC receipt confirms normal fast-forward publication and all 19 remote files matching Git bytes. No main merge or frozen-study change occurred. This supersedes the earlier publication-pending wording.
 - Retain the distinction between an operator-assisted working demo and a paid
   automatic provider integration. API entitlement and a guaranteed all-in dollar
   ceiling remain unresolved; browser subscription access is not API entitlement.
 - An all-frontier-model/effort comparison and general semantic reliability have
   not been established. Negative evidence is a legitimate research result.
-- Refresh the current professor packet and requested video, with these limits
-  spoken and visible. No professor email is sent by this work.
+- Use the [immediate professor delivery index](IMMEDIATE-PROFESSOR-PACKET.md) for the transcript checklist, source/evidence locations and current conference options. The later paper, archive transfer and expanded model/effort survey are separate work, not prerequisites for this bounded functionality handoff.
+- The user requested video after the immediate relevant demo work is complete. Recording remains held for that sequence and separate verification. No professor email is sent by this work.
 - Vibhor must review the code/contribution statement, rehearse, choose a venue
   with the supervisor and complete course submission/defense requirements.
   Assistant test receipts do not certify student authorship or understanding.
