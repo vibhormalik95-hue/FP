@@ -93,6 +93,9 @@ def make_induction_infer(model, timeout=90):
 
 
 def checked_category(envelope, objective, index, inventory):
+    if 'staged_definition' in envelope:
+        from feedctrl.staged_induction import revalidate_membership_envelope
+        revalidate_membership_envelope(envelope,objective,index,inventory)
     proposal, provenance = producer.validate_current_source(envelope, objective, index, inventory)
     catalogue = catalogue_snapshot(producer.catalogue_records(index, inventory))
     return validate_induced_category(proposal, catalogue, provenance)

@@ -588,7 +588,7 @@ def create_app(data_path=None, model_path=None, fixture=False, semantic_path=Non
             state.update(steering_commands=[], steering_pending=None, steering_text="",
                          steering_revision=state.get("steering_revision", 0) + 1,
                          steering_history=[], steering_focus=None)
-            state.update(semantic_groups=[], semantic_pending=None, semantic_history=[],
+            state.update(semantic_groups=[], semantic_pending=None, semantic_definition_pending=None, semantic_history=[],
                          semantic_revision=state.get("semantic_revision", 0) + 1)
         return {"reset": True}
 

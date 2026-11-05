@@ -173,7 +173,8 @@ def install_semantic_routes(app, demo):
         if demo.topic_index is None:
             raise HTTPException(503, "Official source metadata is required")
         for key, value in (("semantic_groups", []), ("semantic_revision", 0),
-                           ("semantic_pending", None), ("semantic_history", [])):
+                           ("semantic_pending", None), ("semantic_history", []),
+                           ("semantic_definition_pending", None)):
             state.setdefault(key, deepcopy(value))
         return state
 
@@ -384,3 +385,6 @@ def install_semantic_routes(app, demo):
             state["semantic_revision"] += 1
             state["semantic_pending"] = None
             return {"applied": True, **response(state, body.user_id)}
+
+    from feedctrl.staged_routes import install_staged_routes
+    install_staged_routes(app,demo,state_for,review)

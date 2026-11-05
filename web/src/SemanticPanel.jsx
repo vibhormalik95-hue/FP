@@ -6,27 +6,34 @@ export default function SemanticPanel({api,user,resetKey,onFeed}) {
   const [backend,setBackend]=useState('ollama'),[category,setCategory]=useState('category_1');
   const [operation,setOperation]=useState('boost'),[strength,setStrength]=useState('standard'),[mode,setMode]=useState('merge');
   const [actionSource,setActionSource]=useState('ollama');
+  const [definition,setDefinition]=useState(null),[evidenceReviewed,setEvidenceReviewed]=useState(false);
   const [working,setWorking]=useState(false),[message,setMessage]=useState('');
   const generation=useRef(0);
-  useEffect(()=>{const id=++generation.current;setSaved(null);setPending(null);setMessage('');setWorking(false);
+  useEffect(()=>{const id=++generation.current;setSaved(null);setPending(null);setDefinition(null);setEvidenceReviewed(false);setMessage('');setWorking(false);
     if(open&&user!==null){setWorking(true);api(`semantic/groups?user_id=${user}`)
       .then(r=>{if(id===generation.current)setSaved(r);})
       .catch(e=>{if(id===generation.current)setMessage(e.message);})
       .finally(()=>{if(id===generation.current)setWorking(false);});}
   },[user,resetKey,open]);
+  useEffect(()=>{setDefinition(null);setEvidenceReviewed(false);},[backend,text,count,operation,strength,mode]);
   async function run(work){const id=generation.current;setWorking(true);setMessage('');
     try{await work(id);}catch(e){if(id===generation.current)setMessage(e.message);}
     finally{if(id===generation.current)setWorking(false);}}
   async function load(id){const r=await api(`semantic/groups?user_id=${user}`);
     if(id===generation.current){setSaved(r);return r;}}
-  function review(){run(async id=>{setPending(null);const r=saved||await load(id);if(!r)return;
+  function review(){run(async id=>{setPending(null);setDefinition(null);setEvidenceReviewed(false);const r=saved||await load(id);if(!r)return;
     const common={user_id:user,mode,operation,strength:operation==='exclude'?'none':strength,
       candidate_ids:r.feed.baseline_items.slice(0,count)};
-    const p=backend==='induction'?await api('semantic/induction/preview',{...common,objective:text}):
+    const p=backend==='staged'?await api('semantic/definition/preview',{...common,objective:text}):
+      backend==='induction'?await api('semantic/induction/preview',{...common,objective:text}):
       await api('semantic/preview',{...common,text,label,backend,category,action_source:actionSource});
     if(id!==generation.current)return;
-    if(p.ready)setPending(p);else setMessage(`${p.status||'clarify'}: ${p.reason||'Please clarify the request'}`);});}
-  function history(action){run(async id=>{setPending(null);const p=await api('semantic/history/preview',{user_id:user,action});
+    if(p.definition_ready)setDefinition(p);else if(p.ready)setPending(p);else setMessage(`${p.status||'clarify'}: ${p.reason||'Please clarify the request'}`);});}
+  function classify(){run(async id=>{const p=await api('semantic/definition/classify',{
+    user_id:user,plan_id:definition.definition_plan_id,evidence_reviewed:evidenceReviewed});
+    if(id!==generation.current)return;setDefinition(null);setEvidenceReviewed(false);
+    if(p.ready)setPending(p);else setMessage(`${p.status||'clarify'}: ${p.reason||'No membership was approved'}`);});}
+  function history(action){run(async id=>{setPending(null);setDefinition(null);setEvidenceReviewed(false);const p=await api('semantic/history/preview',{user_id:user,action});
     if(id!==generation.current)return;if(p.ready)setPending(p);else setMessage(p.reason);});}
   function apply(){run(async id=>{const r=await api('semantic/apply',{user_id:user,plan_id:pending.plan_id});
     if(id!==generation.current)return;setSaved(r);setPending(null);onFeed(r.feed);setMessage('Reviewed item set applied to the separate semantic feed.');});}
@@ -39,18 +46,19 @@ export default function SemanticPanel({api,user,resetKey,onFeed}) {
       <label className="field-label" htmlFor="semantic-backend">Method</label>
       <select id="semantic-backend" disabled={disabled} value={backend} onChange={e=>{setBackend(e.target.value);setPending(null);}}>
         <option value="ollama">{saved?.configured_model||'Configured local model'}: semantic proposal</option>
+        <option value="staged">Local LLM: review definition, then classify all supplied items</option>
         <option value="induction">Local LLM: propose a new category definition and membership</option>
         <option value="manual_category">Manual: exact original category baseline</option></select>
-      {backend!=='induction'&&<><label className="field-label" htmlFor="semantic-label">Name this group</label>
+      {!['induction','staged'].includes(backend)&&<><label className="field-label" htmlFor="semantic-label">Name this group</label>
       <input id="semantic-label" maxLength={80} disabled={disabled} value={label} onChange={e=>{setLabel(e.target.value);setPending(null);}}/></>}
       <label className="field-label" htmlFor="semantic-count">Evidence scope</label>
       <select id="semantic-count" disabled={disabled} value={count} onChange={e=>{setCount(Number(e.target.value));setPending(null);}}>
         <option value={6}>First 6 baseline items</option><option value={10}>First 10 baseline items</option></select>
       <p className="help">Supplied item IDs: {saved?.feed.baseline_items.slice(0,count).join(', ')||'Loading...'}. No hidden retrieval or silent truncation. An oversized evidence payload asks for a narrower scope.</p>
-      {backend!=='manual_category'?<><label className="field-label" htmlFor="semantic-text">{backend==='induction'?'Category discovery objective':'One current instruction'}</label>
+      {backend!=='manual_category'?<><label className="field-label" htmlFor="semantic-text">{['induction','staged'].includes(backend)?'Category discovery objective':'One current instruction'}</label>
         <textarea id="semantic-text" rows={3} maxLength={2000} disabled={disabled} value={text} onChange={e=>{setText(e.target.value);setPending(null);}}
           placeholder="Describe what you want more, less or none of; indirect meaning is allowed."/>
-        {backend==='induction'?<p className="help">One local model call proposes a label, definition and match/not_match/unknown decision for every supplied item. You choose the control below. Evidence and inventory budgets may block a request; no silent truncation. Review is required; no new videos are created.</p>:<>
+        {backend==='staged'?<p className="help">First review a model-proposed definition and supporting evidence. Only after your approval does a second call classify every supplied item as match, not_match or unknown. Review that complete membership before applying. Each call is bounded to 90 seconds plus identity checks. Missing evidence must remain unknown; quotes do not prove relevance. You choose direction and strength below.</p>:backend==='induction'?<p className="help">One local model call proposes a label, definition and match/not_match/unknown decision for every supplied item. You choose the control below. Evidence and inventory budgets may block a request; no silent truncation. Review is required; no new videos are created.</p>:<>
         <p className="help">Two real model calls at most: action interpretation and evidence selection, each limited to 90 seconds plus identity checks. Ambiguity or invalid evidence applies nothing. No rule fallback.</p>
         <label className="field-label" htmlFor="semantic-action-source">Who chooses direction and strength?</label>
         <select id="semantic-action-source" value={actionSource} disabled={disabled} onChange={e=>{setActionSource(e.target.value);setPending(null);}}>
@@ -59,7 +67,7 @@ export default function SemanticPanel({api,user,resetKey,onFeed}) {
         <label className="field-label" htmlFor="semantic-category">Existing category ID</label>
         <input id="semantic-category" disabled={disabled} value={category} onChange={e=>{setCategory(e.target.value);setPending(null);}}/>
       </>}
-      {(backend==='manual_category'||backend==='induction'||actionSource==='manual')&&<>
+      {(backend==='manual_category'||backend==='induction'||backend==='staged'||actionSource==='manual')&&<>
         <label className="field-label" htmlFor="semantic-operation">Manual action</label>
         <select id="semantic-operation" disabled={disabled} value={operation} onChange={e=>{setOperation(e.target.value);setPending(null);}}>
           <option value="boost">Increase</option><option value="reduce">Decrease, still eligible</option><option value="exclude">Exclude</option></select>
@@ -68,15 +76,28 @@ export default function SemanticPanel({api,user,resetKey,onFeed}) {
       <label className="field-label" htmlFor="semantic-mode">Semantic profile update</label>
       <select id="semantic-mode" disabled={disabled} value={mode} onChange={e=>{setMode(e.target.value);setPending(null);}}>
         <option value="merge">Add or replace this named group</option><option value="replace">Replace semantic group profile</option></select>
-      <button className="primary" disabled={disabled||!saved||(backend!=='induction'&&!label.trim())||(backend!=='manual_category'&&!text.trim())} onClick={review}>
-        {working?'Working locally...':'Review semantic proposal'}</button>
+      <button className="primary" disabled={disabled||!saved||(!['induction','staged'].includes(backend)&&!label.trim())||(backend!=='manual_category'&&!text.trim())} onClick={review}>
+        {working?'Working locally...':backend==='staged'?'Propose a definition for review':'Review semantic proposal'}</button>
       {message&&<p role="status" className="alert">{message}</p>}
+      {definition&&<div className="saved-profile" aria-label="Category definition review">
+        <h4>Stage 1: review the whole definition</h4>
+        <strong>{definition.definition.proposal.label}</strong>
+        <p>{definition.definition.proposal.definition}</p>
+        <p className="help">Objective: {definition.definition.objective}</p>
+        <p className="help">Model rationale: {definition.definition.proposal.rationale}</p>
+        {definition.definition.proposal.evidence.map((e,n)=><p className="help" key={n}>Item {e.item_id}, {e.field}: "{e.quote}". {e.reason}</p>)}
+        <p className="help">{definition.definition.provenance.model_id}; digest {definition.definition.provenance.model_revision}. Assessed scope: {definition.scope_ids.join(', ')}. No membership or feed change is approved yet.</p>
+        <p className="help">Reject a definition with unsupported properties, credentials or ratings, even if the quotation exists. Change the objective to start again. Approval expires after five minutes.</p>
+        <label><input type="checkbox" checked={evidenceReviewed} disabled={disabled} onChange={e=>setEvidenceReviewed(e.target.checked)}/> I reviewed whether the source evidence supports the entire definition.</label>
+        <button className="primary" disabled={disabled||!evidenceReviewed} onClick={classify}>Approve definition and classify supplied items</button>
+      </div>}
       {pending&&<div className="saved-profile"><h4>Review the meaning and evidence yourself</h4>
         {pending.groups.map(g=><div key={g.label} className="steering-review">
           <strong>{g.label}: {g.proposal.action.operation} ({g.proposal.action.strength})</strong>
           <p className="help">Original request: {g.request}</p><p className="help">Model relationship: {g.proposal.reason}</p>
           {g.proposal.induction&&<div><p className="help">Generated definition: {g.proposal.induction.validated_category.definition}</p>
             <p className="help">Unknown items: {g.proposal.induction.validated_category.unknown_ids.join(', ')||'None'}. Novelty is checked only against the supplied inventory.</p>
+            {g.proposal.induction.envelope.normalizations?.map(e=><p className="help" key={e.item_id}>Item {e.item_id}: uncited unknown field "{e.original_field}" omitted from canonical evidence. The verdict remains unknown; raw model output is retained.</p>)}
             {g.proposal.induction.envelope.field_evidence.map(e=><p className="help" key={e.item_id}>Item {e.item_id}: {e.verdict}; {e.field||'no field'}; "{e.evidence_quote}". {e.reason}</p>)}
             <p className="help">Overlaps: {g.proposal.induction.envelope.overlaps.map(o=>`${o.category_id}: ${o.member_ids.join(',')}`).join('; ')||'None in supplied inventory'}</p>
           </div>}
