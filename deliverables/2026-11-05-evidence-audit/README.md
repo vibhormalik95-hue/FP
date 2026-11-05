@@ -52,11 +52,26 @@ The repair's final dispositions were **7/8** against the declared development re
 
 This revision's executed work totals **nine actual generation calls**: four assessment diagnostics, two in the failed rehearsal, three in the repair rehearsal. There were eight simulated fixture functions and four cached deterministic reanalyses, not additional inference. No paid calls, downloads, external provider transmission or held-out access occurred.
 
+### Clarification of the preserved repair protocol
+
+The executed `repair-protocol.json` is preserved byte-for-byte at SHA-256 `5dcfef338831da3f0260d6459425b448ad97d0653e9cf290a803752fca2bddc0`. It inherited descriptive fields from earlier phases. Its `followup` wording about unchanged frozen source/prompts describes the earlier rehearsal plan, not source equivalence between all phases. Its `post_development_change` statement that no model prompt/schema changed describes the literal-witness addition; it does not describe the later membership-schema repair. The inherited four scheduled audit calls were already completed, not four more calls in the repair phase.
+
+| Phase | Actual execution and change |
+|---|---|
+| Initial assessment diagnostics | Four real assessment calls against intentionally wrong software-double primary proposals; outputs then frozen |
+| Literal-witness revision and first full-app rehearsal | Four cached reanalyses, then two real calls; incomplete 3-of-8 membership failed safely before assessment |
+| Explicit structural repair | One exposed-development rehearsal with three real calls, using the recorded `source-cardinality-v3` snapshot and complete-count/supplied-ID generation schema |
+
+For the final phase, `phase`, `structural_change`, `maximum_generation_calls_this_phase: 3`, the source hashes and `previous_workflow_protocol_sha256` describe the actual repair. Source/schema changed as disclosed; semantic prompts, tasks and reference answers were unchanged. This clarification neither retroactively amends the executed protocol nor makes the exposed repair an independent test. No further model calls were made to address the review comments.
+
+The UI now distinguishes assessment disagreement from missing literal witnesses. The latter can withhold a primary positive even when both model passes agreed; it must not be labelled model disagreement.
+
 ## Software verification
 
-- Final full suite: **529 passed, 1 skipped** (private parser banks absent).
+- Full suite at reviewed revision `6a7b290`: **529 passed, 1 skipped** (private parser banks absent).
 - Affected audit/staged/literal contracts: **68 passed**. These include explicit tests showing two passes can agree wrongly, unchanged-state failures, complete IDs/quotes, current-source/seal checks, stale undo, races, immutable snapshots, literal false-positive boundaries and canonical unknowns.
 - UI build: passed, 30 modules. Browser/API evidence above is separate from mocked software tests.
+- Independent review of the exact `6a7b290` packet verified all 118 manifest hashes and the base-to-candidate patch, ran 117 unmodified test-function invocations (including the 68 affected checks) and nine additional probes, and found no blocking source/mechanics defect. Report SHA-256: `fe7c67a661b84e30ebf81375cea5413be7081cbf043417ad085d70f9999cfed0`. This does not independently establish browser execution or semantic reliability. The subsequent label/phase wording corrections are separate from that reviewed source revision.
 - Earlier frozen outcomes and the failed original IP68 examples remain unchanged. No scientific improvement or human benefit is claimed from these development checks.
 
 ## Remaining requirements and boundary
@@ -64,7 +79,7 @@ This revision's executed work totals **nine actual generation calls**: four asse
 | Professor track / deliverable | Current evidence | Remaining gap |
 |---|---|---|
 | Manual category control baseline | Existing fixed-score implementation, mechanical tests and manual comparator receipts | Preserve negative empirical results; this is not proof of better human relevance |
-| NLP-created categories feeding the filter | Published reviewed definition/membership path; new local assessment/constraint revision and actual repair rehearsal | Independent review/publication of this revision; fresh independently held semantic references across attributes, ambiguity, negation and no-match |
+| NLP-created categories feeding the filter | Published reviewed definition/membership path; local assessment/constraint revision and actual repair rehearsal; bounded independent source/mechanics review passed for `6a7b290` | Publication of the local revision; fresh independently held semantic references across attributes, ambiguity, negation and no-match |
 | Indirect intent matching existing categories/tags | Separate opt-in existing workflow; no changes to it in this revision | Broad indirect-intent quality and bilingual equivalence are not established by this direct attribute fixture |
 | Code walkthrough, attribution and results | Source map above, explicit assistant attribution, failed and successful receipts | Integrate reviewed new evidence into the professor packet; do not say all semantic claims are proven |
 | New-item pledge / frontier comparison | Outside this local safety revision | Clarify what new items means; real observations cannot be fabricated. Provider access, data destinations and spend need their separately approved scope |
