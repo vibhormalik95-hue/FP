@@ -23,6 +23,7 @@ from feedctrl.semantic_controls import (TopicGroundingError, load_topic_index, m
                                         parse_topic_request, rerank_topic)
 from feedctrl import semantic_workflow as steering
 from feedctrl.semantic_review import install_semantic_routes
+from feedctrl.synthetic_drafts import install_synthetic_routes
 
 ROOT = Path(__file__).resolve().parents[1]
 SESSION_TTL = 12 * 60 * 60
@@ -590,9 +591,12 @@ def create_app(data_path=None, model_path=None, fixture=False, semantic_path=Non
                          steering_history=[], steering_focus=None)
             state.update(semantic_groups=[], semantic_pending=None, semantic_definition_pending=None, semantic_history=[],
                          semantic_revision=state.get("semantic_revision", 0) + 1)
+            state.update(synthetic_items=[], synthetic_pending=None, synthetic_nonce=None, synthetic_last_removed=None,
+                         synthetic_revision=state.get("synthetic_revision", 0) + 1)
         return {"reset": True}
 
     install_semantic_routes(app, demo)
+    install_synthetic_routes(app, demo)
 
     dist = ROOT / "web/dist"
     if (dist / "assets").exists():

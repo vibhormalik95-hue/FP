@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 import './style.css';
 import SteeringPanel from './SteeringPanel';
 import SemanticPanel from './SemanticPanel';
+import SyntheticDraftPanel from './SyntheticDraftPanel';
 
 const conditions = {
   A: ['Item feedback', 'Direct feedback on individual items.'],
@@ -94,6 +95,7 @@ function App() {
           </>}
           <div hidden={view !== 'steering'}><SteeringPanel api={api} user={user} resetKey={steeringReset} onFeed={setReviewedFeed} onApplied={() => setView('steering')}/></div>
           <div hidden={view !== 'steering'}><SemanticPanel api={api} user={user} resetKey={steeringReset} onFeed={setReviewedFeed}/></div>
+            <div hidden={view !== 'steering'}><SyntheticDraftPanel api={api} user={user} resetKey={steeringReset}/></div>
           <details hidden={view === 'steering'}><summary>Earlier single-topic diagnostic</summary>
           <section className="panel" aria-label="Exploratory semantic topic control">
             <div className="section-heading"><span className="step">04</span><h2>Explore a new topic</h2></div>
