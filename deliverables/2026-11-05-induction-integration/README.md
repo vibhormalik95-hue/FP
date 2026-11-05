@@ -4,7 +4,8 @@
 
 The additive category producer is connected to the opt-in semantic review API,
 UI and fixed ranker. This is engineering integration. Two actual Qwen development
-requests both returned `no_match`; neither produced an approvable induced category.
+inputs each returned `no_match` under the initial prompt and under one separately
+declared overlap-coverage clarification; none produced an approvable category.
 Successful real-model category induction and its semantic quality remain unproven.
 The positive induction API tests use explicitly synthetic response doubles.
 
@@ -55,6 +56,9 @@ replace any failed empirical target. This new branch requires publication review
 - Affected producer/API/review tests at that point: **87 passed**, 1.87 seconds.
 - Final adapter/API regression result is recorded in `development-summary.json`.
   The final full suite was not rerun after that bounded accounting change.
+- Successor coverage-clarification check: **88 affected tests passed**, 1.53 seconds.
+  This includes the functional contract that a distinct derived set can be reviewed
+  even when the existing inventory covers every candidate. See `DIAGNOSIS.md`.
 - Vite production build: **30 modules, passed**, using a private local copy of
   already installed dependencies; no download/install was needed.
 - Real served status at localhost port 8775: processed data, trained model,
@@ -74,16 +78,21 @@ payload budgets, model-identity changes and retention of malformed model content
 
 ## Live local-model development findings
 
-Both attempts were declared before inference, with no prompt or semantic-validator
-changes between or after them. They are exposed development cases, not held-out
-accuracy estimates. All raw responses and failed/abstained outcomes remain in a
-private receipt directory. No raw catalogue or private meeting material belongs
-in this public source payload.
+The two initial attempts were declared before inference, with no prompt changes
+between them. A successor development pass explicitly clarified that existing
+coverage does not preclude an overlapping derived group, then repeated the same
+two inputs once each under a new recorded prompt hash. It changed no validator,
+source data, model, sampling settings or frozen study. All four calls abstained.
+These are two exposed inputs under two prompt revisions, not four independent
+cases or a held-out accuracy estimate. Raw responses remain private, including
+contradictory/unsubstantiated text inside the model's abstentions.
 
 | Attempt | Evidence pool | Result | Generation adapter time |
 | --- | --- | --- | --- |
 | English, actual browser review button | First six neutral user-14 baseline items | HTTP 200, `no_match`, one real call, no apply | 7.772 s |
 | Chinese, served HTTP API | Previously exposed eight-item development scope: two food-labelled records and six other captioned records | HTTP 200, `no_match`, one real call, no apply | 2.831 s |
+| English repeat, served HTTP API | Same six-item pool and objective as initial English case; overlap-coverage clarification only | HTTP 200, `no_match`, no apply; inconsistent rationale about an existing family/emotional relationship category | 9.121 s |
+| Chinese repeat, served HTTP API | Same eight-item pool and objective as initial Chinese case; same clarification | HTTP 200, `no_match`, no apply; unsubstantiated food/car category definition in the raw abstention | 3.053 s |
 
 Runtime: Ollama 0.34.0, `qwen2.5-coder:7b-instruct`, digest
 `dae161e27b0e90dd1856c8bb3209201fd6736d8eb66298e75ed87571486f4364`.

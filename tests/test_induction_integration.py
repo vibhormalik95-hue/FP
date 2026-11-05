@@ -45,6 +45,11 @@ def test_generated_category_review_apply_undo_and_ae_isolation(client, monkeypat
     assert saved(client, h).json()['groups'] == []
     g = p['groups'][0]
     assert g['label'] == 'Baked preparations' and g['proposal']['item_ids'] == [3, 4]
+    # Coverage by the old inventory is compatible with a distinct derived set.
+    inventory = g['proposal']['induction']['inventory']
+    assert set().union(*(set(c['member_ids']) for c in inventory)) == set(range(1, 9))
+    assert all(set(c['member_ids']) != {3, 4} for c in inventory)
+    assert g['proposal']['induction']['envelope']['overlaps']
     assert len(g['proposal']['induction']['envelope']['field_evidence']) == 8
     assert g['proposal']['induction']['validated_category']['semantic_entailment_verified'] is False
     r = apply(client, h, p).json()

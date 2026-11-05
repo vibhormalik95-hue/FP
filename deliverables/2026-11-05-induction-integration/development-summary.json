@@ -67,5 +67,37 @@
     "Manual direction and strength in induction path",
     "Final wire accounting correction tested offline after the two live calls",
     "No prior frozen study changed"
-  ]
+  ],
+  "successor_overlap_clarification": {
+    "development_only": true,
+    "same_exposed_inputs": 2,
+    "additional_generation_calls": 2,
+    "no_match": 2,
+    "ready": 0,
+    "applied": 0,
+    "affected_tests": {
+      "passed": 88,
+      "seconds": 1.53
+    },
+    "generation_seconds": [
+      9.121126100013498,
+      3.052981599990744
+    ],
+    "request_wire_bytes": [
+      8214,
+      9354
+    ],
+    "ae_unchanged_each": [
+      true,
+      true
+    ],
+    "saved_groups_unchanged_each": [
+      true,
+      true
+    ],
+    "prompt_sha256": "ca131cdd3abed42fecfc9b21b704edc1806015674f89754f8ae8c25e949c7e94",
+    "validator_changed": false,
+    "stopped_at_predeclared_limit": true,
+    "semantic_quality_established": false
+  }
 }
