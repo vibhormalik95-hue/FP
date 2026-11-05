@@ -68,7 +68,8 @@ def test_one_cached_score_vector_matches_explicit_membership_comparator(client, 
     p = preview(client, h, operation=operation, strength=strength).json()
     assert p['ready']
     ids = list(range(1, 37)); scores = [float(i) for i in ids]
-    grouped = sr.rank_groups(ids, scores, p['groups'], client.app.state.demo.topic_index, limit=36)
+    grouped = sr.rank_groups(ids, scores, p['groups'], client.app.state.demo.topic_index,
+                             limit=36, original_categories=client.app.state.demo.items)
     manual = rerank_membership(ids, scores, [3, 4], operation, strength, limit=36)
     assert [(i['item_id'], i['score']) for i in grouped['items']] == [(i['item_id'], i['score']) for i in manual['items']]
     assert grouped['available_items'] == (34 if operation == 'exclude' else 36)
@@ -102,6 +103,65 @@ def test_current_source_and_inventory_revalidated_before_apply(client, monkeypat
     else: demo.items.pop(36)
     assert apply(client, h, p).status_code == 409
     assert demo.user_state(h['X-Session-ID'], 1)['semantic_groups'] == []
+
+
+@pytest.mark.parametrize('drift_after_preview', [False, True])
+def test_undo_rejects_stale_original_inventory_without_changing_state(client, monkeypatch, drift_after_preview):
+    h = headers(client); mock_model(monkeypatch)
+    p = preview(client, h).json()
+    assert apply(client, h, p).status_code == 200
+    cleared = client.post('/api/semantic/history/preview', headers=h,
+                         json={'user_id': 1, 'action': 'clear'}).json()
+    assert apply(client, h, cleared).status_code == 200
+    demo = client.app.state.demo
+    state = demo.user_state(h['X-Session-ID'], 1)
+    if drift_after_preview:
+        restore = client.post('/api/semantic/history/preview', headers=h,
+                              json={'user_id': 1, 'action': 'undo'}).json()
+        assert restore['ready']
+    else:
+        # A failed history review must not destroy an unrelated valid pending clear.
+        assert client.post('/api/semantic/history/preview', headers=h,
+                           json={'user_id': 1, 'action': 'clear'}).json()['ready']
+    demo.items[3] = ['category_changed']
+    before = deepcopy(state)
+    if drift_after_preview:
+        rejected = apply(client, h, restore)
+    else:
+        rejected = client.post('/api/semantic/history/preview', headers=h,
+                               json={'user_id': 1, 'action': 'undo'})
+    assert rejected.status_code == 409
+    assert 'inventory changed' in rejected.json()['detail'].lower()
+    assert state == before
+    assert state['semantic_groups'] == [] and state['semantic_history']
+
+
+def test_active_induced_group_rejects_current_inventory_drift(client, monkeypatch):
+    h = headers(client); mock_model(monkeypatch)
+    assert apply(client, h, preview(client, h).json()).status_code == 200
+    demo = client.app.state.demo
+    demo.items[3] = ['category_changed']
+    state = demo.user_state(h['X-Session-ID'], 1)
+    before = deepcopy(state)
+    rejected = saved(client, h)
+    assert rejected.status_code == 409 and 'inventory changed' in rejected.json()['detail'].lower()
+    assert state == before
+
+
+def test_induced_ranking_requires_current_mapping_and_unmodified_restore_succeeds(client, monkeypatch):
+    h = headers(client); mock_model(monkeypatch)
+    p = preview(client, h).json()
+    with pytest.raises(ValueError, match='Current original category mappings'):
+        sr.rank_groups(list(range(1, 37)), list(range(1, 37)), p['groups'], client.app.state.demo.topic_index)
+    applied = apply(client, h, p).json()
+    cleared = client.post('/api/semantic/history/preview', headers=h,
+                         json={'user_id': 1, 'action': 'clear'}).json()
+    assert apply(client, h, cleared).status_code == 200
+    restore = client.post('/api/semantic/history/preview', headers=h,
+                         json={'user_id': 1, 'action': 'undo'}).json()
+    restored = apply(client, h, restore).json()
+    assert restored['applied'] and restored['groups'] == applied['groups']
+    assert restored['feed'] == applied['feed']
 
 
 def test_live_source_changes_during_inference_cannot_create_pending_review(client, monkeypatch):

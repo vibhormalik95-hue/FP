@@ -114,9 +114,21 @@ def category_as_control(envelope, objective, index, inventory, operation, streng
             'inventory': deepcopy(inventory), 'validated_category': validated}}
 
 
-def revalidate_category(control, index):
+def revalidate_category(control, index, original_categories):
     """Recheck every definition/disposition and exact field quote on current data."""
     record = control['induction']
+    if original_categories is None:
+        raise ValueError('Current original category mappings are required for induced groups')
+    try:
+        current_base = projected_inventory(index, original_categories, [])
+    except (KeyError, TypeError) as exc:
+        raise ValueError('Current original category mappings are missing or invalid') from exc
+    # Saved groups describe the creation-time comparison context, not the live
+    # source taxonomy. Reproject the authoritative original/source inventory on
+    # every use, without introducing the induced group itself as a new dependency.
+    recorded_base = [c for c in record['inventory'] if not c['category_id'].startswith('saved:')]
+    if _digest(current_base) != _digest(recorded_base):
+        raise ValueError('Category inventory changed since induction; regenerate and review')
     validated = checked_category(record['envelope'], record['objective'], index, record['inventory'])
     if (validated != record['validated_category'] or validated['member_ids'] != control['item_ids']
             or record['objective'] != control['action']['intent_span']):

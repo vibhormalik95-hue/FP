@@ -9,6 +9,12 @@ declared overlap-coverage clarification; none produced an approvable category.
 Successful real-model category induction and its semantic quality remain unproven.
 The positive induction API tests use explicitly synthetic response doubles.
 
+Independent review subsequently found a stale inventory bypass on undo in the
+initial integration revisions. The current correction revalidates live scoped
+original/source category mappings on every induced-group use, including restore,
+and preserves the complete user state on rejection. See
+[HISTORY-REVALIDATION-FIX.md](HISTORY-REVALIDATION-FIX.md) for reproduction and checks.
+
 This work starts from public revision
 `b3f2934d07159c7818a673bd6486dfd6eae5ad24`. It preserves the original A-E path,
 the E1/E2 findings and the exposed November 4 prospective study. It does not
@@ -55,10 +61,13 @@ replace any failed empirical target. This new branch requires publication review
   **455 passed, 1 skipped**, 30.83 seconds. The skip is the absent private parser bank.
 - Affected producer/API/review tests at that point: **87 passed**, 1.87 seconds.
 - Final adapter/API regression result is recorded in `development-summary.json`.
-  The final full suite was not rerun after that bounded accounting change.
+  At that checkpoint, no full suite had been rerun after the bounded accounting change.
 - Successor coverage-clarification check: **88 affected tests passed**, 1.53 seconds.
   This includes the functional contract that a distinct derived set can be reviewed
   even when the existing inventory covers every candidate. See `DIAGNOSIS.md`.
+- Inventory-history correction: **48 affected API/review tests passed**, 1.68 seconds.
+  The current full suite passed **460 tests, 1 skipped**, 30.89 seconds. Earlier
+  counts above remain historical checkpoints.
 - Vite production build: **30 modules, passed**, using a private local copy of
   already installed dependencies; no download/install was needed.
 - Real served status at localhost port 8775: processed data, trained model,

@@ -14,7 +14,7 @@
     "passed": 29,
     "seconds": 1.13
   },
-  "final_full_suite_rerun": false,
+  "final_full_suite_rerun": true,
   "web_build": {
     "passed": true,
     "modules": 30
@@ -99,5 +99,34 @@
     "validator_changed": false,
     "stopped_at_predeclared_limit": true,
     "semantic_quality_established": false
+  },
+  "inventory_history_fix": {
+    "base_revision": "9f46c20f197834356437d60be20f68f694a4f8b0",
+    "reproduced_before_fix": {
+      "failed_regression_cases": 2,
+      "observed_http": 200,
+      "required_http": 409
+    },
+    "affected_tests": {
+      "passed": 48,
+      "seconds": 1.68
+    },
+    "full_suite": {
+      "passed": 460,
+      "skipped": 1,
+      "failures": 0,
+      "errors": 0,
+      "seconds": 30.89
+    },
+    "verification_receipts": {
+      "history-fix-full-tests.log": "12fd10e2dcf747e05eedafd2b7ac2c9151730bc1da259a9c5dc4734cc68dcb46",
+      "history-fix-full.junit.xml": "d32dbd3af3d24184bea5d8fa079d0a2af6d1ae70c372d01d51d9548496d19200"
+    },
+    "stale_restore_preserves_complete_user_state": true,
+    "unchanged_restore_preserves_exact_groups_and_feed": true,
+    "active_group_checks_current_scoped_mapping": true,
+    "induced_ranking_without_current_mapping_rejects": true,
+    "new_live_model_calls": 0,
+    "frozen_study_changes": 0
   }
 }

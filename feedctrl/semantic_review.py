@@ -116,7 +116,7 @@ def seal_group(label, request, proposal, index, eligible_ids):
     return group
 
 
-def validate_group(group, index, eligible_ids):
+def validate_group(group, index, eligible_ids, original_categories=None):
     owned = deepcopy(group)
     revision = owned.pop("revision", None)
     if revision != _digest(owned):
@@ -133,11 +133,11 @@ def validate_group(group, index, eligible_ids):
     if not set(proposal["item_ids"]) <= set(scope["items"]):
         raise ValueError("Reviewed members are outside the supplied evidence scope")
     if "induction" in proposal:
-        induction.revalidate_category(proposal, scope)
+        induction.revalidate_category(proposal, scope, original_categories)
     return deepcopy(group)
 
 
-def rank_groups(ids, scores, groups, index, limit=10):
+def rank_groups(ids, scores, groups, index, limit=10, *, original_categories=None):
     """One cached score vector, additive bounded controls, hard exclusion wins."""
     if (not ids or len(ids) != len(scores) or len(ids) != len(set(ids))
             or any(type(i) is not int for i in ids)
@@ -146,7 +146,7 @@ def rank_groups(ids, scores, groups, index, limit=10):
     base = dict(zip(ids, normalize_scores(scores)))
     adjusted, excluded = dict(base), set()
     for group in groups:
-        validate_group(group, index, ids)
+        validate_group(group, index, ids, original_categories)
         proposal = group["proposal"]
         action, members = proposal["action"], set(proposal["item_ids"])
         if action["operation"] == "exclude":
@@ -186,7 +186,7 @@ def install_semantic_routes(app, demo):
         else:
             counts = Counter(c for i in history for c in demo.items.get(i, []))
             scores = [sum(counts[c] for c in demo.items[i]) + ((i * 17 + user * 7) % 19) / 100 for i in ids]
-        result = rank_groups(ids, scores, groups, demo.topic_index)
+        result = rank_groups(ids, scores, groups, demo.topic_index, original_categories=demo.items)
         for item in result["items"]:
             item["categories"] = demo.items[item["item_id"]]
             item["explanation"] = [f"Reviewed semantic group: {g['label']} ({g['proposal']['action']['operation']})."
@@ -348,15 +348,15 @@ def install_semantic_routes(app, demo):
     def history(body: SemanticHistory, x_session_id: str | None = Header(default=None)):
         with demo.lock:
             state = state_for(x_session_id, body.user_id)
-            state["semantic_preview_nonce"] = None
-            state["semantic_pending"] = None
             if body.action == "undo" and not state["semantic_history"]:
                 return {"ready": False, "applied": False, "reason": "No earlier applied semantic profile"}
             try:
-                return review(state, body.user_id,
+                result = review(state, body.user_id,
                     state["semantic_history"][-1] if body.action == "undo" else [], body.action)
             except ValueError as exc:
                 raise HTTPException(409, str(exc)) from exc
+            state["semantic_preview_nonce"] = None
+            return result
 
     @app.post("/api/semantic/apply")
     def apply(body: SemanticApply, x_session_id: str | None = Header(default=None)):
