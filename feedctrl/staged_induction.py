@@ -3,6 +3,7 @@ from copy import deepcopy
 import json
 
 from feedctrl import category_induction_producer as producer
+from feedctrl.source_constraints import literal_requirements
 
 DEFINITION_PROMPT = '''Propose ONE operational category definition for the discovery objective.
 Use only the supplied metadata as evidence. Existing categories can cover every item;
@@ -98,6 +99,7 @@ def propose_definition(objective,index,inventory,infer,model_provenance):
     for value in raw['alternatives']: producer._text(value)
     if not isinstance(raw['evidence'],list) or len(raw['evidence'])>24: raise ValueError('Invalid definition evidence')
     base={'status':'no_match','requires_review':True,'objective':objective,'proposal':None,
+        'source_constraints':literal_requirements(objective,raw['definition']),
         'reason':raw['rationale'],'provenance':model,'audit':{
         'source_sha256':snapshot['source_sha256'],'candidate_sha256':producer._digest(snapshot),
         'candidate_ids':sorted(r['item_id'] for r in snapshot['items']),'inventory_sha256':producer._digest(inventory),
@@ -138,6 +140,8 @@ def revalidate_definition(record,objective,index,inventory):
             or audit['candidate_sha256']!=producer._digest(snapshot)
             or audit['inventory_sha256']!=producer._digest(inventory)):
         raise ValueError('Definition source, objective or inventory changed')
+    if ('source_constraints' in record and record['source_constraints']!=literal_requirements(objective,record['proposal']['definition'])):
+        raise ValueError('Reviewed literal evidence requirements changed')
 
 
 def classify_rows(definition,index,infer):
@@ -147,7 +151,11 @@ def classify_rows(definition,index,infer):
     snapshot=producer._snapshot(index)
     payload={'instructions':MEMBERSHIP_PROMPT,'reviewed_definition':owned,'catalogue':deepcopy(snapshot['items'])}
     _budget(payload)
-    raw=_response(infer(deepcopy(payload),deepcopy(MEMBERSHIP_SCHEMA)))
+    schema=deepcopy(MEMBERSHIP_SCHEMA)
+    ids=sorted(r['item_id'] for r in snapshot['items'])
+    schema['properties']['memberships'].update(minItems=len(ids),maxItems=len(ids))
+    schema['properties']['memberships']['items']['properties']['item_id']['enum']=ids
+    raw=_response(infer(deepcopy(payload),deepcopy(schema)))
     producer._exact(raw,{'memberships'})
     if not isinstance(raw['memberships'],list) or len(raw['memberships'])!=len(snapshot['items']):
         raise ValueError('Every supplied item requires one disposition')
@@ -173,7 +181,7 @@ def classify_rows(definition,index,infer):
                     or row['evidence_quote'] not in fields[iid][row['field']]): raise ValueError('Membership evidence quote is absent')
     return {'memberships':sorted(deepcopy(raw['memberships']),key=lambda r:r['item_id']),
         'normalizations':normalizations,
-        'audit':{'prompt_sha256':producer._digest(MEMBERSHIP_PROMPT),'schema_sha256':producer._digest(MEMBERSHIP_SCHEMA),
+        'audit':{'prompt_sha256':producer._digest(MEMBERSHIP_PROMPT),'schema_sha256':producer._digest(schema),
                  'payload_sha256':producer._digest(payload),'response_sha256':response_sha256}}
 
 
@@ -206,6 +214,9 @@ def classify_definition(record,objective,index,inventory,infer,model_provenance)
 
 def revalidate_membership_envelope(envelope,objective,index,inventory):
     check_seal(envelope,'staged_revision')
+    if 'evidence_audit' in envelope:
+        from feedctrl.evidence_audit import revalidate_audited_envelope
+        revalidate_audited_envelope(envelope,objective,index,inventory)
     revalidate_definition(envelope['staged_definition'],objective,index,inventory)
     if envelope['status']!='review': raise ValueError('No reviewable staged membership')
     definition=envelope['staged_definition']['proposal']

@@ -8,6 +8,7 @@ from fastapi import Header,HTTPException
 from pydantic import BaseModel,ConfigDict,Field,StrictBool,field_validator
 from feedctrl import induction_integration as ii
 from feedctrl import staged_induction as staged
+from feedctrl import evidence_audit
 from feedctrl.indirect_grounding import _digest
 from feedctrl.controls import ParserOperationalError
 from feedctrl.semantic_controls import STRENGTH_WEIGHTS
@@ -77,7 +78,7 @@ def install_staged_routes(app,demo,state_for,review):
 
     @app.post('/api/semantic/definition/classify')
     def classify(body:DefinitionApproval,x_session_id:str|None=Header(default=None)):
-        calls=[]
+        calls=[];audit_calls=[]
         with demo.lock:
             state=state_for(x_session_id,body.user_id);pending=state.get('semantic_definition_pending')
             if not pending or pending['id']!=body.plan_id: raise HTTPException(409,'No matching definition review')
@@ -91,6 +92,14 @@ def install_staged_routes(app,demo,state_for,review):
             if envelope['status']!='review':
                 return {'ready':False,'applied':False,**envelope,'model_calls':deepcopy(calls)}
             with demo.lock:
+                current(owned,state_for(x_session_id,body.user_id))
+            audit_infer,audit_model,audit_calls=ii.make_induction_infer(model['model_id'],timeout=90)
+            if audit_model!=model:raise ValueError('Model identity changed before evidence assessment')
+            envelope=evidence_audit.audit_membership_envelope(envelope,request['objective'],scope,inventory,audit_infer,audit_model)
+            if envelope['status']!='review':
+                return {'ready':False,'applied':False,**envelope,'model_calls':deepcopy(calls),
+                    'evidence_audit_model_calls':deepcopy(audit_calls)}
+            with demo.lock:
                 state=state_for(x_session_id,body.user_id)
                 # Validate again with a separate unused copy: a consumed token cannot
                 # start another call, while its in-flight result can still be checked.
@@ -98,7 +107,8 @@ def install_staged_routes(app,demo,state_for,review):
                 staged.revalidate_membership_envelope(envelope,request['objective'],scope,inventory)
                 control=ii.category_as_control(envelope,request['objective'],scope,inventory,
                     request['operation'],request['strength'],model)
-                control['induction'].update(definition_model_calls=owned['definition_model_calls'],model_calls=deepcopy(calls))
+                control['induction'].update(definition_model_calls=owned['definition_model_calls'],model_calls=deepcopy(calls),
+                    evidence_audit_model_calls=deepcopy(audit_calls))
                 group=seal_group(envelope['proposal']['label'],request['objective'],control,scope,demo.items)
                 groups=([] if request['mode']=='replace' else deepcopy(state['semantic_groups']))+[group]
                 if len(groups)>8: raise ValueError('At most eight active semantic groups')
@@ -106,6 +116,8 @@ def install_staged_routes(app,demo,state_for,review):
                 state['semantic_pending']['induction_context']={
                     'candidate_ids':request['candidate_ids'],'inventory_sha256':_digest(inventory)}
                 state['semantic_definition_pending']=None
-                return {**result,'definition_approved':True,'induction':deepcopy(envelope),'model_calls':deepcopy(calls)}
+                return {**result,'definition_approved':True,'induction':deepcopy(envelope),'model_calls':deepcopy(calls),
+                    'evidence_audit_model_calls':deepcopy(audit_calls)}
         except (ValueError,ParserOperationalError) as exc:
-            return {'ready':False,'applied':False,'status':'error','reason':str(exc),'model_calls':deepcopy(calls)}
+            return {'ready':False,'applied':False,'status':'error','reason':str(exc),'model_calls':deepcopy(calls),
+                'evidence_audit_model_calls':deepcopy(audit_calls)}

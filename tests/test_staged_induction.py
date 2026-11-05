@@ -24,9 +24,12 @@ def model(monkeypatch,first=definition,second=memberships,hook=None,digest='fixt
     def make(*args,**kwargs):
         local=[]
         def infer(payload,schema):
-            stage='definition' if 'evidence' in schema['required'] else 'membership'
+            stage='definition' if 'evidence' in schema['required'] else 'evidence_audit' if 'assessments' in schema['required'] else 'membership'
             if hook: hook(stage)
-            raw=(first if stage=='definition' else second)(deepcopy(payload))
+            if stage=='evidence_audit':
+                raw={'assessments':[{'item_id':r['item_id'],'assessment':'supported' if r['item_id'] in (3,4) else 'contradicted',
+                    'field':'caption','quote':r['fields']['caption'],'reason':'Synthetic assessment double.'} for r in payload['catalogue']]}
+            else:raw=(first if stage=='definition' else second)(deepcopy(payload))
             local.append({'raw_http_response':deepcopy(raw)})
             calls.append(stage)
             return raw
@@ -54,7 +57,7 @@ def test_two_distinct_approvals_apply_only_complete_reviewed_ids(client,monkeypa
     assert saved(client,h).json()['groups']==[]
     m=classify(client,h,p).json()
     assert m['ready'] and m['definition_approved'] and not m['applied']
-    assert calls==['definition','membership'] and saved(client,h).json()['groups']==[]
+    assert calls==['definition','membership','evidence_audit'] and saved(client,h).json()['groups']==[]
     g=m['groups'][0]
     assert g['proposal']['item_ids']==[3,4]
     assert len(g['proposal']['induction']['envelope']['field_evidence'])==8
@@ -101,10 +104,10 @@ def test_consumed_token_cannot_duplicate_in_flight_model_call(client,monkeypatch
         if stage=='membership':nested.append(classify(client,h,p_holder['p']).status_code)
     calls=model(monkeypatch,hook=hook);p_holder['p']=preview(client,h).json()
     assert classify(client,h,p_holder['p']).json()['ready']
-    assert nested==[409] and calls==['definition','membership']
+    assert nested==[409] and calls==['definition','membership','evidence_audit']
 
 
-@pytest.mark.parametrize('stage',['definition','membership'])
+@pytest.mark.parametrize('stage',['definition','membership','evidence_audit'])
 def test_newer_review_race_prevents_stale_stage_result(client,monkeypatch,stage):
     h=headers(client)
     def hook(current):
@@ -227,3 +230,18 @@ def test_unknown_normalization_does_not_allow_false_evidence(client,verdict,fiel
         'reason':'Synthetic invalid output.'} for i in (3,4)]}
     with pytest.raises(ValueError):
         si.classify_rows({'label':'A property','definition':'A property.'},index,lambda *a:raw)
+
+
+def test_generation_schema_binds_complete_cardinality_and_existing_ids(client):
+    index=sr.scoped_index(client.app.state.demo.topic_index,[3,4]);seen=[]
+    original=deepcopy(si.MEMBERSHIP_SCHEMA)
+    def infer(payload,schema):
+        seen.append(deepcopy(schema))
+        schema['properties']['memberships']['items']['properties']['item_id']['enum'].append(999)
+        return memberships(payload)
+    result=si.classify_rows({'label':'Bread','definition':'Bread preparation'},index,infer)
+    generated=seen[0]['properties']['memberships']
+    assert generated['minItems']==generated['maxItems']==2
+    assert generated['items']['properties']['item_id']['enum']==[3,4]
+    assert si.MEMBERSHIP_SCHEMA==original
+    assert result['audit']['schema_sha256']==ii._digest(seen[0])
