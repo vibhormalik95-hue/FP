@@ -21,15 +21,18 @@ from feedctrl.indirect_grounding import _catalogue, _digest, make_local_ollama_i
 from feedctrl.semantic_controls import STRENGTH_WEIGHTS
 from feedctrl import induction_integration as induction
 
+ACTION_CHOICES = {f"{operation}/{strength}": (operation, strength)
+    for operation in ("boost", "reduce") for strength in STRENGTH_WEIGHTS}
+ACTION_CHOICES["exclude/none"] = ("exclude", "none")
 ACTION_SCHEMA = {"type": "object", "additionalProperties": False,
-    "required": ["needs_clarification", "question", "operation", "strength", "intent_span"],
+    "required": ["needs_clarification", "question", "control", "intent_span"],
     "properties": {"needs_clarification": {"type": "boolean"}, "question": {"type": "string"},
-        "operation": {"type": "string", "enum": ["boost", "reduce", "exclude"]},
-        "strength": {"type": "string", "enum": ["light", "standard", "strong", "none"]},
+        "control": {"type": "string", "enum": list(ACTION_CHOICES)},
         "intent_span": {"type": "string"}}}
 ACTION_PROMPT = """Interpret exactly one current feed-control request.
-Return boost, reduce (still eligible), or exclude (remove entirely), and strength
-light=.10, standard=.25 or strong=.40; exclusion has strength none. intent_span
+Return one control enum encoding operation/strength: boost or reduce (still
+eligible) with light=.10, standard=.25 or strong=.40; exclude/none removes
+entirely. Choose the exact enum value; do not emit separate operation/strength fields. intent_span
 must be a verbatim continuous substring of the request describing the intended
 subject, including modifiers. It may describe an indirect relationship such as
 a personal goal, without using a category name. Do not substitute a category
@@ -84,11 +87,15 @@ def interpret_action(text, infer):
         raise ValueError("A current natural-language request is required")
     raw = infer({"system": ACTION_PROMPT, "request": text}, deepcopy(ACTION_SCHEMA))
     if (not isinstance(raw, dict) or set(raw) != set(ACTION_SCHEMA["required"])
-            or type(raw["needs_clarification"]) is not bool or not isinstance(raw["question"], str)):
+            or type(raw["needs_clarification"]) is not bool or not isinstance(raw["question"], str)
+            or not isinstance(raw["control"], str) or raw["control"] not in ACTION_CHOICES
+            or not isinstance(raw["intent_span"], str)):
         raise ValueError("Invalid semantic action schema")
     if raw["needs_clarification"]:
         return None, raw["question"][:2000] or "Name one current subject and direction"
-    action = {k: raw[k] for k in ("operation", "strength", "intent_span")}
+    # Decode a declared enum value exactly. Invalid pairs are never repaired.
+    operation, strength = ACTION_CHOICES[raw["control"]]
+    action = {"operation": operation, "strength": strength, "intent_span": raw["intent_span"]}
     if (not isinstance(action["operation"], str) or not isinstance(action["strength"], str)
             or action["operation"] not in ("boost", "reduce", "exclude")
             or not isinstance(action["intent_span"], str) or not action["intent_span"].strip()

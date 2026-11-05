@@ -27,8 +27,8 @@ def headers(c):
 def fake_model(monkeypatch, operation='exclude', strength='none', hook=None):
     def infer(payload, schema):
         if schema is sr.ACTION_SCHEMA or 'needs_clarification' in schema['required']:
-            return {'needs_clarification': False, 'question': '', 'operation': operation,
-                'strength': strength, 'intent_span': 'makes me hungry'}
+            return {'needs_clarification': False, 'question': '', 'control': f'{operation}/{strength}',
+                'intent_span': 'makes me hungry'}
         if hook:
             hook()
         return {'status': 'propose', 'reason': 'Bread may stimulate appetite; synthetic mock output',
@@ -138,8 +138,8 @@ def test_no_match_invalid_model_and_oversize_never_apply(client, monkeypatch):
     for kind in ['no_match', 'invalid', 'oversized']:
         def infer(payload, schema):
             if 'needs_clarification' in schema['required']:
-                return {'needs_clarification': False, 'question': '', 'operation': 'exclude',
-                    'strength': 'none', 'intent_span': 'makes me hungry'}
+                return {'needs_clarification': False, 'question': '', 'control': 'exclude/none',
+                    'intent_span': 'makes me hungry'}
             return {'status': 'no_match', 'reason': 'No evidence', 'negation_resolved': True,
                 'alternatives': [], 'evidence': []} if kind == 'no_match' else {'bad': 'schema'}
         monkeypatch.setattr(sr, 'make_local_ollama_infer', lambda *a, **kw:
@@ -159,7 +159,7 @@ def test_candidate_and_model_action_types_are_strict(client):
     for bad in [[], {}, 'missing']:
         with pytest.raises(ValueError):
             sr.interpret_action('Hide food', lambda *a: {'needs_clarification': False, 'question': '',
-                'operation': bad, 'strength': 'none', 'intent_span': 'food'})
+                'control': bad, 'intent_span': 'food'})
 
 
 def test_explicit_manual_action_ablation_never_calls_the_action_parser(client, monkeypatch):
@@ -175,8 +175,8 @@ def test_explicit_manual_action_ablation_never_calls_the_action_parser(client, m
 
 def test_invalid_model_action_retains_its_raw_response_without_applying(client, monkeypatch):
     h = headers(client)
-    raw = {'needs_clarification': False, 'question': '', 'operation': 'exclude',
-           'strength': 'none', 'intent_span': 'invented subject absent from request'}
+    raw = {'needs_clarification': False, 'question': '', 'control': 'exclude/none',
+           'intent_span': 'invented subject absent from request'}
     monkeypatch.setattr(sr, 'make_local_ollama_infer', lambda *a, **kw:
         (lambda *a: deepcopy(raw), {'backend': 'test', 'model': 'mock', 'digest': 'mock'}))
     p = preview(client, h).json()
