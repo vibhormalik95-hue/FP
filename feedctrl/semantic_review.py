@@ -19,6 +19,7 @@ from pydantic import BaseModel, ConfigDict, Field, StrictInt
 from feedctrl.controls import ParserOperationalError, normalize_scores
 from feedctrl.indirect_grounding import _catalogue, _digest, make_local_ollama_infer, propose_indirect
 from feedctrl.semantic_controls import STRENGTH_WEIGHTS
+from feedctrl import induction_integration as induction
 
 ACTION_SCHEMA = {"type": "object", "additionalProperties": False,
     "required": ["needs_clarification", "question", "operation", "strength", "intent_span"],
@@ -60,6 +61,16 @@ class SemanticApply(BaseModel):
     model_config = ConfigDict(extra="forbid")
     user_id: int = Field(ge=0)
     plan_id: str = Field(min_length=1, max_length=100)
+
+
+class InductionPreview(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    user_id: int = Field(ge=0)
+    objective: str = Field(min_length=1, max_length=2000)
+    candidate_ids: list[StrictInt] = Field(min_length=2, max_length=induction.MAX_ITEMS)
+    operation: Literal["boost", "reduce", "exclude"] = "boost"
+    strength: Literal["light", "standard", "strong", "none"] = "standard"
+    mode: Literal["merge", "replace"] = "merge"
 
 
 class SemanticHistory(BaseModel):
@@ -121,6 +132,8 @@ def validate_group(group, index, eligible_ids):
         raise ValueError("Source, request or action changed; generate and review a new proposal")
     if not set(proposal["item_ids"]) <= set(scope["items"]):
         raise ValueError("Reviewed members are outside the supplied evidence scope")
+    if "induction" in proposal:
+        induction.revalidate_category(proposal, scope)
     return deepcopy(group)
 
 
@@ -282,6 +295,55 @@ def install_semantic_routes(app, demo):
             raise HTTPException(422 if body.backend == "manual_category" else 502,
                 f"Semantic proposal failed ({type(exc).__name__}); no preferences changed: {exc}") from exc
 
+    @app.post("/api/semantic/induction/preview")
+    def induction_preview(body: InductionPreview, x_session_id: str | None = Header(default=None)):
+        calls = []
+        with demo.lock:
+            state = state_for(x_session_id, body.user_id)
+            revision, nonce = state["semantic_revision"], secrets.token_urlsafe(16)
+            state["semantic_preview_nonce"] = nonce
+            state["semantic_pending"] = None
+            existing = deepcopy(state["semantic_groups"])
+            try:
+                index = scoped_index(demo.topic_index, body.candidate_ids)
+                inventory = induction.projected_inventory(index, demo.items, existing)
+            except ValueError as exc:
+                raise HTTPException(422, str(exc)) from exc
+        if (body.strength != "none" if body.operation == "exclude" else body.strength not in STRENGTH_WEIGHTS):
+            raise HTTPException(422, "Exclusion has strength none; boost/reduce need a graded strength")
+        try:
+            infer, provenance, calls = induction.make_induction_infer(
+                os.getenv("FEEDCTRL_STEERING_MODEL", "qwen2.5-coder:7b-instruct"), timeout=90)
+            envelope = induction.producer.propose_category(body.objective, index, infer,
+                model_provenance=provenance, existing_categories=inventory,
+                max_items=induction.MAX_ITEMS, max_bytes=induction.PRODUCER_BYTES)
+            if envelope["status"] != "review":
+                return {"ready": False, "applied": False, "status": envelope["status"],
+                    "reason": envelope["reason"], "induction": envelope, "model_calls": deepcopy(calls)}
+            control = induction.category_as_control(envelope, body.objective, index, inventory,
+                                                    body.operation, body.strength, provenance)
+            control["induction"]["model_calls"] = deepcopy(calls)
+            group = seal_group(envelope["proposal"]["label"], body.objective, control, index, demo.items)
+            groups = ([] if body.mode == "replace" else existing) + [group]
+            if len(groups) > 8:
+                raise ValueError("At most eight active semantic groups")
+            with demo.lock:
+                state = state_for(x_session_id, body.user_id)
+                if state["semantic_revision"] != revision or state.get("semantic_preview_nonce") != nonce:
+                    raise HTTPException(409, "Preferences changed during induction; review again")
+                current_scope = scoped_index(demo.topic_index, body.candidate_ids)
+                current_inventory = induction.projected_inventory(current_scope, demo.items, state["semantic_groups"])
+                induction.producer.validate_current_source(envelope, body.objective, current_scope, current_inventory)
+                result = review(state, body.user_id, groups, proposal=control)
+                state["semantic_pending"]["induction_context"] = {
+                    "candidate_ids": sorted(body.candidate_ids), "inventory_sha256": _digest(inventory)}
+                return {**result, "induction": deepcopy(envelope), "model_calls": deepcopy(calls),
+                        "action_source": "manual", "research_note": "Generated definition and membership are hypotheses; review is mandatory."}
+        except (ValueError, ParserOperationalError) as exc:
+            return {"ready": False, "applied": False, "status": "error",
+                "reason": f"Category induction rejected ({type(exc).__name__}): {exc}",
+                "model_calls": deepcopy(calls)}
+
     @app.post("/api/semantic/history/preview")
     def history(body: SemanticHistory, x_session_id: str | None = Header(default=None)):
         with demo.lock:
@@ -305,6 +367,12 @@ def install_semantic_routes(app, demo):
                     or time.monotonic() - pending["created"] > 300):
                 raise HTTPException(409, "Review expired or changed; review again")
             try:
+                context = pending.get("induction_context")
+                if context:
+                    scope = scoped_index(demo.topic_index, context["candidate_ids"])
+                    inventory = induction.projected_inventory(scope, demo.items, state["semantic_groups"])
+                    if _digest(inventory) != context["inventory_sha256"]:
+                        raise ValueError("Category inventory changed since induction review")
                 feed(body.user_id, pending["groups"])  # current-source and digest revalidation before any state write
             except ValueError as exc:
                 raise HTTPException(409, str(exc)) from exc

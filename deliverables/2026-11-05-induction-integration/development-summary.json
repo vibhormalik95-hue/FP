@@ -1,0 +1,71 @@
+{
+  "kind": "Exposed development integration smoke, not semantic accuracy evaluation",
+  "base_revision": "b3f2934d07159c7818a673bd6486dfd6eae5ad24",
+  "full_suite_before_wire_accounting_fix": {
+    "passed": 455,
+    "skipped": 1,
+    "seconds": 30.83
+  },
+  "affected_before_wire_fix": {
+    "passed": 87,
+    "seconds": 1.87
+  },
+  "final_adapter_api_regressions": {
+    "passed": 29,
+    "seconds": 1.13
+  },
+  "final_full_suite_rerun": false,
+  "web_build": {
+    "passed": true,
+    "modules": 30
+  },
+  "live": {
+    "invocations": 2,
+    "generation_calls": 2,
+    "ready": 0,
+    "no_match": 2,
+    "applied": 0,
+    "generation_seconds": [
+      7.771645799977705,
+      2.83052509999834
+    ],
+    "model": "qwen2.5-coder:7b-instruct",
+    "model_digest": "dae161e27b0e90dd1856c8bb3209201fd6736d8eb66298e75ed87571486f4364",
+    "ollama_version": "0.34.0",
+    "ae_unchanged_api_session": true,
+    "saved_groups_unchanged_api_session": true,
+    "raw_responses_retained_privately": true,
+    "prompt_or_semantic_validator_tuning": false
+  },
+  "browser_manual_check": {
+    "explicitly_manual": true,
+    "selected_ids": [
+      1116,
+      4367,
+      6001,
+      8958
+    ],
+    "eligible_before": 2593,
+    "eligible_after": 2589,
+    "eligible_after_undo": 2593,
+    "full_feed_restored": true,
+    "new_induction_success": false
+  },
+  "wire_byte_sizes_reconstructed": [
+    7789,
+    8929
+  ],
+  "runtime_cleanup": {
+    "owned_qwen_unloaded": true,
+    "ollama_resident_models": 0,
+    "gpu_used_mib": 0
+  },
+  "limits": [
+    "No positive real-model category proposal",
+    "No independent semantic reference judgement",
+    "No full-catalogue semantic retrieval or new items",
+    "Manual direction and strength in induction path",
+    "Final wire accounting correction tested offline after the two live calls",
+    "No prior frozen study changed"
+  ]
+}
