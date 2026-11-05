@@ -6,6 +6,7 @@ import os
 import re
 import secrets
 import time
+import unicodedata
 
 from fastapi import Header, HTTPException, Query
 from pydantic import BaseModel, ConfigDict, Field, StrictBool, field_validator
@@ -43,8 +44,9 @@ def _text(value, limit, multiline=False):
     if not isinstance(value, str) or not value.strip() or len(value) > limit:
         raise ValueError('Missing, non-string or oversized draft text')
     value.encode('utf-8', errors='strict')
-    if any((ord(c) < 32 and not (multiline and c in '\n\t')) or ord(c) == 127 for c in value):
-        raise ValueError('Control characters are not allowed')
+    if any(unicodedata.category(c) in {'Cc', 'Cf', 'Cs', 'Zl', 'Zp'}
+           and not (multiline and c in '\n\t') for c in value):
+        raise ValueError('Unicode control, format and line-separator characters are not allowed')
     if re.search(r'https?://|www\.', value, re.I):
         raise ValueError('Fictional metadata cannot claim a media/source URL')
     return value
@@ -121,11 +123,16 @@ def make_draft_infer(model, timeout=90):
         try:
             raw = _request('http://127.0.0.1:11434', '/api/chat', request, timeout)
             call['raw_http_response'] = deepcopy(raw)
+            if not isinstance(raw, dict):
+                raise ValueError('Malformed draft response envelope')
             if raw.get('model') != model or raw.get('done') is not True or raw.get('done_reason') == 'length':
                 raise ValueError('Incomplete or wrong-model draft response')
             if ollama_provenance('http://127.0.0.1:11434', model, 10)['digest'] != p['digest']:
                 raise ValueError('Installed model changed during draft generation')
-            result = json.loads(raw['message']['content'], object_pairs_hook=_unique_object)
+            message = raw.get('message')
+            if not isinstance(message, dict) or not isinstance(message.get('content'), str):
+                raise ValueError('Malformed draft response message/content')
+            result = json.loads(message['content'], object_pairs_hook=_unique_object)
             call['status'] = 'returned_json'
             return result
         except Exception as exc:

@@ -220,3 +220,42 @@ def test_adapter_failures_keep_raw_receipt_and_never_retry(monkeypatch,fault):
     assert receipts[0]['status']=='error' and 'raw_http_response' in receipts[0]
     with pytest.raises(ValueError):infer('No retry')
     assert len(attempts)==1
+
+@pytest.mark.parametrize('envelope',[
+    {'model':'fixture','done':True,'done_reason':'stop'},
+    {'model':'fixture','done':True,'message':None},
+    {'model':'fixture','done':True,'message':{}},
+    {'model':'fixture','done':True,'message':{'content':None}},
+    {'model':'fixture','done':True,'message':{'content':123}},
+    []])
+def test_malformed_completed_envelope_is_handled_with_caller_receipt(client,monkeypatch,envelope):
+    h=session(client);attempts=[]
+    monkeypatch.setenv('FEEDCTRL_STEERING_MODEL','fixture')
+    monkeypatch.setattr(sd,'ollama_provenance',lambda *a:{'model':'fixture','digest':'D'})
+    def request(*args):attempts.append(True);return deepcopy(envelope)
+    monkeypatch.setattr(sd,'_request',request)
+    before=client.get('/api/compare?user_id=1',headers=h).json()
+    result=preview(client,h)
+    assert result.status_code==200
+    body=result.json();assert body['status']=='error' and not body['ready'] and not body['admitted']
+    assert 'Malformed draft response' in body['reason']
+    assert body['model_calls'][0]['status']=='error' and body['model_calls'][0]['raw_http_response']==envelope
+    assert len(attempts)==1 and listing(client,h).json()['items']==[]
+    assert client.get('/api/compare?user_id=1',headers=h).json()==before
+
+@pytest.mark.parametrize('character',['\u0085','\u202e','\u2066','\u200b','\ufeff','\u2028','\u2029'])
+@pytest.mark.parametrize('field',['title','description','category_label'])
+def test_unicode_review_obscuring_characters_rejected_without_admission(client,monkeypatch,character,field):
+    h=session(client);mock(monkeypatch,{**RAW,field:RAW[field]+character+'hidden'})
+    p=preview(client,h).json()
+    assert p['status']=='error' and 'Unicode control' in p['reason'] and not p['ready']
+    assert listing(client,h).json()['items']==[]
+
+@pytest.mark.parametrize('character',['\u0085','\u202e'])
+def test_unicode_obscured_user_brief_rejected_before_inference(client,monkeypatch,character):
+    h=session(client);count,_=mock(monkeypatch)
+    assert preview(client,h,brief='Fictional'+character+'brief').status_code==422 and count==[]
+
+def test_ordinary_unicode_and_explicit_multiline_text_remain_valid():
+    raw={'title':'Café 月','description':'Fictional café.\nA second imagined line.\tA detail.','category_label':'Imaginary café'}
+    assert sd.validate_output(raw)==raw
