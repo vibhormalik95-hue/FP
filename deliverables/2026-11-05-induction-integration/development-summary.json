@@ -128,5 +128,55 @@
     "induced_ranking_without_current_mapping_rejects": true,
     "new_live_model_calls": 0,
     "frozen_study_changes": 0
+  },
+  "stale_ui_recovery": {
+    "base_revision": "7bc52410d978391dc4ed572318727d385680252f",
+    "production_backend_changed": false,
+    "affected_tests": {
+      "passed": 49,
+      "seconds": 1.71
+    },
+    "build": {
+      "passed": true,
+      "modules": 30,
+      "milliseconds": 650
+    },
+    "rendered_fixture_walkthrough": {
+      "synthetic_only": true,
+      "read_error": 409,
+      "clear_enabled_after_error": true,
+      "unavailable_label_verified": true,
+      "explicit_clear_approval_succeeded": true,
+      "stale_undo_rejected": true,
+      "http_receipts": [
+        {
+          "path": "/api/semantic/groups",
+          "status": 409
+        },
+        {
+          "path": "/api/semantic/groups",
+          "status": 409
+        },
+        {
+          "path": "/api/semantic/history/preview",
+          "status": 200
+        },
+        {
+          "path": "/api/semantic/apply",
+          "status": 200
+        },
+        {
+          "path": "/api/semantic/history/preview",
+          "status": 409
+        }
+      ]
+    },
+    "nonempty_other_controls_preserved": true,
+    "full_suite_repeated_for_ui_change": false,
+    "new_live_model_calls": 0,
+    "receipt_hashes": {
+      "ui-recovery-affected-tests.log": "077a8e8e6cac7c75d0d63387e3a5ade726c72521d20622d63e1fdd3b5e1059da",
+      "ui-recovery-affected.junit.xml": "af4d3d452f67d35ff470e078861df96861c9da5af1810a383828ed4bf5114cf9"
+    }
   }
 }

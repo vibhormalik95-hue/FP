@@ -164,6 +164,40 @@ def test_induced_ranking_requires_current_mapping_and_unmodified_restore_succeed
     assert restored['feed'] == applied['feed']
 
 
+def test_stale_read_can_recover_by_reviewed_clear_without_resetting_other_controls(client, monkeypatch):
+    h = headers(client); mock_model(monkeypatch)
+    assert client.post('/api/control', headers=h,
+        json={'user_id': 1, 'text': 'boost category_1', 'backend': 'rule'}).json()['applied']
+    assert client.put('/api/profile', headers=h,
+        json={'user_id': 1, 'profile': {'category_2': 0.25}}).status_code == 200
+    assert client.post('/api/feedback', headers=h,
+        json={'user_id': 1, 'item_id': 1, 'direction': 'like'}).status_code == 200
+    topic = client.post('/api/steering/preview', headers=h, json={'user_id': 1,
+        'backend': 'manual', 'actions': [{'topic': 'bread', 'operation': 'boost', 'strength': 'light'}]}).json()
+    assert topic['ready']
+    assert client.post('/api/steering/apply', headers=h,
+        json={'user_id': 1, 'plan_id': topic['plan_id']}).json()['commands']
+    assert apply(client, h, preview(client, h).json()).status_code == 200
+    demo = client.app.state.demo
+    demo.items[3] = ['category_changed']
+    assert saved(client, h).status_code == 409
+    before_ae = client.get('/api/compare?user_id=1', headers=h).json()
+    state = demo.user_state(h['X-Session-ID'], 1)
+    other_controls = {k: deepcopy(state[k]) for k in ('command', 'profile', 'feedback', 'steering_commands')}
+    assert all(other_controls.values())
+    clear = client.post('/api/semantic/history/preview', headers=h,
+                        json={'user_id': 1, 'action': 'clear'}).json()
+    assert clear['ready'] and state['semantic_groups']
+    assert apply(client, h, clear).json()['groups'] == []
+    assert saved(client, h).status_code == 200
+    assert client.get('/api/compare?user_id=1', headers=h).json() == before_ae
+    assert {k: state[k] for k in other_controls} == other_controls
+    before_rejected_undo = deepcopy(state)
+    rejected = client.post('/api/semantic/history/preview', headers=h,
+                           json={'user_id': 1, 'action': 'undo'})
+    assert rejected.status_code == 409 and state == before_rejected_undo
+
+
 def test_live_source_changes_during_inference_cannot_create_pending_review(client, monkeypatch):
     h = headers(client)
     def mutate(): client.app.state.demo.topic_index['items'][3]['fields']['caption'] = 'Changed'

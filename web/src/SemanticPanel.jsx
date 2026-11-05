@@ -89,9 +89,10 @@ export default function SemanticPanel({api,user,resetKey,onFeed}) {
         <p className="help">Proposed IDs: {pending.feed.items.map(i=>i.item_id).join(', ')}; {pending.feed.available_items} eligible. An exact quote proves source existence, not semantic relevance. Model meaning may be wrong; do not approve it if inappropriate.</p>
         <button className="primary" disabled={disabled} onClick={apply}>Approve this exact item set and apply</button>
       </div>}
-      <p className="help">Saved semantic groups: {saved?.groups.map(g=>g.label).join(', ')||'None'}. These are temporary session records with source hashes, not new source taxonomy labels.</p>
+      <p className="help">Saved semantic groups: {saved?(saved.groups.map(g=>g.label).join(', ')||'None'):(working?'Loading...':'Unavailable')}. These are temporary session records with source hashes, not new source taxonomy labels.</p>
+      {!saved&&message&&<p className="help">If saved groups cannot be loaded, you can still review clearing semantic groups for this user. Approval is required; original category and topic preferences are preserved.</p>}
       <button className="secondary" disabled={disabled||!saved?.can_undo} onClick={()=>history('undo')}>Review semantic undo</button>
-      <button className="secondary" disabled={disabled||!saved?.groups.length} onClick={()=>history('clear')}>Review clearing semantic groups</button>
+      <button className="secondary" disabled={disabled||saved?.groups.length===0} onClick={()=>history('clear')}>Review clearing semantic groups</button>
     </section>}
   </details>;
 }

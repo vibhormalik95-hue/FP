@@ -57,4 +57,21 @@ no additional live-model call or semantic accuracy claim is involved. The four
 earlier Qwen abstentions and all frozen evidence remain unchanged.
 
 Earlier immutable review ZIPs remain historical artifacts containing the reported
-defect. This source correction requires separate review and is not published.
+defect. Independent review subsequently verified the correction in `7bc5241`.
+
+## Stale UI recovery
+
+If the semantic-group read fails because its inventory is stale, the UI now shows
+**Unavailable** and keeps **Review clearing semantic groups** enabled. Clearing
+still requires the existing preview and explicit approval; undo and all other
+stale-group validations remain unchanged. A known empty profile disables clear.
+
+The final rendered check used a separate, explicitly synthetic fixture server:
+the group read returned 409, the clear button remained enabled, review showed an
+empty semantic profile, approval succeeded, and stale undo still returned 409.
+No real catalogue or existing demo session was mutated. The affected API/review
+checks passed **49 tests in 1.71 seconds**, including recovery with nonempty
+original instruction/profile/feedback and literal-topic controls preserved.
+The frontend production build passed (30 modules, 650 ms). No new inference ran.
+The last complete Python suite remains the **460 passed / 1 skipped** checkpoint
+at `7bc5241`; it was not repeated for this UI-only production change.

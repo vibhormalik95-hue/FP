@@ -18,7 +18,8 @@ and preserves the complete user state on rejection. See
 This work starts from public revision
 `b3f2934d07159c7818a673bd6486dfd6eae5ad24`. It preserves the original A-E path,
 the E1/E2 findings and the exposed November 4 prospective study. It does not
-replace any failed empirical target. This new branch requires publication review.
+replace any failed empirical target. All capability claims below are limited to
+the executed checks.
 
 ## Five compatibility requirements
 
@@ -66,8 +67,12 @@ replace any failed empirical target. This new branch requires publication review
   This includes the functional contract that a distinct derived set can be reviewed
   even when the existing inventory covers every candidate. See `DIAGNOSIS.md`.
 - Inventory-history correction: **48 affected API/review tests passed**, 1.68 seconds.
-  The current full suite passed **460 tests, 1 skipped**, 30.89 seconds. Earlier
-  counts above remain historical checkpoints.
+  The full suite at `7bc5241` passed **460 tests, 1 skipped**, 30.89 seconds.
+- Stale UI recovery follow-up: **49 affected API/review tests passed**, 1.71 seconds;
+  production build passed, 30 modules, 650 ms. A rendered synthetic-fixture
+  walkthrough verified read-error recovery by reviewed clear and rejected stale
+  undo. Production backend code is unchanged from `7bc5241`; the full Python
+  suite was not repeated for this UI-only change.
 - Vite production build: **30 modules, passed**, using a private local copy of
   already installed dependencies; no download/install was needed.
 - Real served status at localhost port 8775: processed data, trained model,
