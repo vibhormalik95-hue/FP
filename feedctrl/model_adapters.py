@@ -17,6 +17,8 @@ import urllib.error
 import urllib.request
 
 from feedctrl.controls import ParserOperationalError
+from feedctrl.indirect_grounding import _response_snapshot
+from feedctrl.hosted_spend_guard import DurableHostedSpendGuard
 
 ENDPOINT = 'https://api.openai.com/v1/responses'
 
@@ -91,7 +93,7 @@ class HostedRunBudget:
 def make_openai_responses_infer(*, api_key, model, reasoning_effort,
                                run_budget, authorized=False,
                                max_output_tokens=4096, timeout=90,
-                               max_request_bytes=20000):
+                               max_request_bytes=20000, spend_guard=None):
     """Return (infer, provenance, receipts), with zero constructor network calls.
 
     authorized is an operational gate, not proof of user consent. The caller must
@@ -103,6 +105,8 @@ def make_openai_responses_infer(*, api_key, model, reasoning_effort,
         raise ValueError('Hosted generation requires separate data and spend authorization')
     if not isinstance(run_budget, HostedRunBudget):
         raise ValueError('Explicit shared HostedRunBudget required')
+    if spend_guard is not None and not isinstance(spend_guard,DurableHostedSpendGuard):
+        raise ValueError('Explicit durable spending guard required')
     if not isinstance(api_key, str) or not api_key.strip() or any(c.isspace() for c in api_key):
         raise ValueError('Explicit valid API credential required')
     if not isinstance(model, str) or not re.fullmatch(r'[A-Za-z0-9_.-]{1,150}', model):
@@ -119,7 +123,10 @@ def make_openai_responses_infer(*, api_key, model, reasoning_effort,
               'reasoning_effort': reasoning_effort, 'max_calls': run_budget.max_calls,
               'max_output_tokens': max_output_tokens, 'timeout_seconds': timeout,
               'max_request_bytes': max_request_bytes, 'store': False,
-              'retries': 0, 'tools': []}
+              'service_tier':'default', 'retries': 0, 'tools': []}
+    if spend_guard is not None:
+        spend_guard.validate_transport(config)
+        config['durable_spend_binding_sha256']=spend_guard.binding_sha256
     provenance = {**config, 'digest': _hash(config),
                   'digest_kind': 'configuration_sha256_not_model_weights',
                   'identity_limit': 'Requested API identifier; each returned model is checked. No weight attestation.'}
@@ -133,7 +140,7 @@ def make_openai_responses_infer(*, api_key, model, reasoning_effort,
             raise ValueError('Explicit system prompt required')
         if not isinstance(owned_schema, dict) or owned_schema.get('type') != 'object':
             raise ValueError('Object response schema required')
-        body = {'model': model, 'store': False, 'stream': False,
+        body = {'model': model, 'store': False, 'stream': False, 'service_tier':'default',
                 'reasoning': {'effort': reasoning_effort},
                 'max_output_tokens': max_output_tokens,
                 'input': [{'role': 'system', 'content': owned['system']},
@@ -144,11 +151,21 @@ def make_openai_responses_infer(*, api_key, model, reasoning_effort,
         request_bytes = _json(body)
         if len(request_bytes) > max_request_bytes:
             raise ValueError('Hosted request exceeds locked evidence budget; no truncation')
-        call_id = run_budget.reserve()
+        reservation=None
+        try:
+            if spend_guard is not None:reservation=spend_guard.before_send(request_bytes)
+            call_id = run_budget.reserve()
+        except Exception as exc:
+            if reservation is not None:spend_guard.fail(reservation)
+            if spend_guard is not None:
+                receipts.append({'representation':'preflight_only','request_sha256':hashlib.sha256(request_bytes).hexdigest(),
+                                 'outcome':'preflight_error','error_type':type(exc).__name__})
+            raise
         receipt = {'call_id': call_id, 'representation': 'actual_hosted_attempt',
                    'request': deepcopy(body), 'request_sha256': hashlib.sha256(request_bytes).hexdigest(),
                    'schema_sha256': _hash(owned_schema), 'outcome': 'started',
                    'started_unix': time.time()}
+        if reservation is not None:receipt['spend_reservation']=deepcopy(reservation)
         receipts.append(receipt)
         started = time.monotonic()
         try:
@@ -193,12 +210,14 @@ def make_openai_responses_infer(*, api_key, model, reasoning_effort,
                     texts.append(part['text'])
             if len(texts) != 1:
                 raise ValueError('Expected one complete JSON text; no concatenation or repair')
-            parsed = _decode(texts[0])
+            parsed = _response_snapshot(_decode(texts[0]))
             if not isinstance(parsed, dict):
                 raise ValueError('Hosted response is not a JSON object')
+            if reservation is not None:spend_guard.complete(reservation,raw)
             receipt['outcome'] = 'parsed_transport_only'
             return deepcopy(parsed)
-        except (ValueError, TypeError, KeyError, urllib.error.URLError, OSError, ParserOperationalError) as exc:
+        except (ValueError, TypeError, KeyError, RecursionError, urllib.error.URLError, OSError, ParserOperationalError) as exc:
+            if reservation is not None:spend_guard.fail(reservation)
             receipt['outcome'] = 'error'
             receipt['error_type'] = type(exc).__name__
             if isinstance(exc, urllib.error.HTTPError):

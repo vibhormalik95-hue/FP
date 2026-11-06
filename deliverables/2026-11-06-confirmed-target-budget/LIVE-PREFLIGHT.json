@@ -1,0 +1,15 @@
+{
+  "status": "BLOCKED_BEFORE_CREDENTIAL_USE_OR_NETWORK",
+  "user_approval_retained": {"model":"gpt-6.1-sol","reasoning_effort":"medium","maximum_generations":2,"ceiling_usd":"0.50","data":"synthetic only"},
+  "actual_new_generations":0,
+  "actual_count_endpoint_calls":0,
+  "credentials_read_or_used":false,
+  "counter_billing_upper_micro_usd":null,
+  "account_applicability_evidence_sha256":null,
+  "verified_complete_payload_counter_implementation_sha256":null,
+  "frozen_generation_request_sha256":[],
+  "new_source_fixture_sha256":null,
+  "owned_run_ledger_path":null,
+  "live_generation_enabled":false,
+  "next":"Establish the missing independent billing/account/counter evidence and a separately frozen new protocol before configuring any live counter or provider. Do not rerun the exhausted hunger test."
+}
