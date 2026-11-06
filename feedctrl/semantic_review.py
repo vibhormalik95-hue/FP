@@ -12,10 +12,11 @@ import math
 import secrets
 import time
 import threading
+import unicodedata
 from typing import Literal
 
 from fastapi import Header, HTTPException, Query
-from pydantic import BaseModel, ConfigDict, Field, StrictInt
+from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictInt
 
 from feedctrl.controls import ParserOperationalError, normalize_scores
 from feedctrl.indirect_grounding import _catalogue, _digest, _response_snapshot, make_local_ollama_infer, propose_indirect
@@ -54,7 +55,9 @@ class SemanticPreview(BaseModel):
     label: str = Field(min_length=1, max_length=80)
     candidate_ids: list[StrictInt] = Field(min_length=2, max_length=20)
     backend: Literal["ollama", "manual_category", "configured_model"] = "ollama"
-    action_source: Literal["ollama", "manual", "model"] = "ollama"
+    action_source: Literal["ollama", "manual", "model", "confirmed"] = "ollama"
+    confirmed_target: str | None = Field(default=None, min_length=1, max_length=2000)
+    target_confirmed: StrictBool = False
     category: str | None = Field(default=None, max_length=120)
     operation: Literal["boost", "reduce", "exclude"] = "boost"
     strength: Literal["light", "standard", "strong", "none"] = "standard"
@@ -113,6 +116,28 @@ def scoped_index(index, ids):
     return {"sha256": index["sha256"], "items": {i: deepcopy(index["items"][i]) for i in sorted(ids)}}
 
 
+def confirmed_target_context(body):
+    """A new explicit user instruction, never a repaired model interpretation."""
+    if body.action_source != 'confirmed':
+        if body.confirmed_target is not None or body.target_confirmed:
+            raise ValueError('Confirmed target fields require explicit confirmed-target mode')
+        return None
+    if (body.backend == 'manual_category' or body.target_confirmed is not True
+            or not body.text.strip() or not body.confirmed_target
+            or not body.confirmed_target.strip()):
+        raise ValueError('Explicit original request, target and user confirmation required')
+    if any(unicodedata.category(c) in {'Cc', 'Cf', 'Cs'}
+           for c in body.confirmed_target):
+        raise ValueError('Use printable target text without control or format characters')
+    if (body.strength != 'none' if body.operation == 'exclude'
+            else body.strength not in STRENGTH_WEIGHTS):
+        raise ValueError('Explicit target action has an invalid strength')
+    return {'kind':'explicit-user-target-v1','confirmed':True,
+        'original_request':body.text,'original_request_sha256':_digest(body.text),
+        'target':body.confirmed_target,'target_sha256':_digest(body.confirmed_target),
+        'direction_source':'user'}
+
+
 def seal_group(label, request, proposal, index, eligible_ids):
     if proposal["status"] != "review" or not proposal["item_ids"]:
         raise ValueError("Only a nonempty reviewed proposal can become a named group")
@@ -140,6 +165,24 @@ def validate_group(group, index, eligible_ids, original_categories=None):
         raise ValueError("Source, request or action changed; generate and review a new proposal")
     if not set(proposal["item_ids"]) <= set(scope["items"]):
         raise ValueError("Reviewed members are outside the supplied evidence scope")
+    confirmation = proposal.get('target_confirmation')
+    if confirmation is not None:
+        if (not isinstance(confirmation,dict) or set(confirmation) != {
+                'kind','confirmed','original_request','original_request_sha256',
+                'target','target_sha256','direction_source'}
+                or confirmation['kind']!='explicit-user-target-v1'
+                or confirmation['confirmed'] is not True
+                or confirmation['direction_source']!='user'
+                or proposal.get('action_source')!='user_confirmed_target'
+                or not isinstance(confirmation['original_request'],str)
+                or not confirmation['original_request'].strip()
+                or confirmation['original_request_sha256']!=_digest(confirmation['original_request'])
+                or confirmation['target']!=owned['request']
+                or confirmation['target_sha256']!=provenance['request_sha256']
+                or proposal['action']['intent_span']!=confirmation['target']):
+            raise ValueError('Confirmed target or original request changed after review')
+    elif proposal.get('action_source')=='user_confirmed_target':
+        raise ValueError('Confirmed target provenance is missing')
     if "induction" in proposal:
         induction.revalidate_category(proposal, scope, original_categories)
     return deepcopy(group)
@@ -265,7 +308,8 @@ def install_semantic_routes(app, demo, *, infer_factory=None):
             except ValueError as exc:
                 raise HTTPException(422, str(exc)) from exc
         try:
-            if body.backend == "configured_model" and body.action_source != "model":
+            confirmation = confirmed_target_context(body)
+            if body.backend == "configured_model" and body.action_source not in ("model", "confirmed"):
                 raise ValueError("Configured adapter requires model-interpreted action; no fallback")
             if body.backend != "configured_model" and body.action_source == "model":
                 raise ValueError("Model action source requires the configured adapter")
@@ -300,7 +344,12 @@ def install_semantic_routes(app, demo, *, infer_factory=None):
                     calls.append({"request_sha256": _digest(payload), "schema_sha256": _digest(schema),
                         "response_sha256": _digest(raw), "raw_response": deepcopy(raw)})
                     return raw
-                if body.action_source == "manual":
+                grounding_request = body.confirmed_target if confirmation else body.text
+                if confirmation:
+                    action = {'operation':body.operation,'strength':body.strength,
+                              'intent_span':grounding_request}
+                    question = ''
+                elif body.action_source == "manual":
                     # Explicit ablation/user choice, never a fallback after model failure.
                     action = {"operation": body.operation, "strength": body.strength, "intent_span": body.text}
                     question = ""
@@ -309,11 +358,13 @@ def install_semantic_routes(app, demo, *, infer_factory=None):
                 if action is None:
                     return {"ready": False, "applied": False, "status": "clarify", "reason": question,
                             "model_calls": calls, "model_provenance": provenance}
-                proposal = propose_indirect(body.text, action, index, tracked_infer, model_provenance=provenance)
-                proposal["action_source"] = body.action_source
+                proposal = propose_indirect(grounding_request, action, index, tracked_infer, model_provenance=provenance)
+                proposal["action_source"] = 'user_confirmed_target' if confirmation else body.action_source
+                if confirmation:
+                    proposal['target_confirmation'] = deepcopy(confirmation)
                 if proposal["status"] != "review":
                     return {"ready": False, "applied": False, **proposal, "model_calls": calls}
-                request = body.text
+                request = grounding_request
             group = seal_group(body.label, request, proposal, index, demo.items)
             groups = ([] if body.mode == "replace" else
                       [g for g in existing if g["label"].casefold() != group["label"].casefold()]) + [group]

@@ -9,14 +9,19 @@ export default function SemanticPanel({api,user,resetKey,onFeed}) {
   const [definition,setDefinition]=useState(null),[evidenceReviewed,setEvidenceReviewed]=useState(false);
   const [working,setWorking]=useState(false),[message,setMessage]=useState('');
   const [clarification,setClarification]=useState(null);
+  const [explicitTarget,setExplicitTarget]=useState(false),[target,setTarget]=useState(''),[targetConfirmed,setTargetConfirmed]=useState(false);
+  const [targetSignature,setTargetSignature]=useState(null);
+  const currentTargetSignature=JSON.stringify([user,backend,text,target,count,operation,operation==='exclude'?'none':strength,mode]);
+  const confirmedNow=targetConfirmed&&targetSignature===currentTargetSignature;
   const generation=useRef(0);
-  useEffect(()=>{const id=++generation.current;setSaved(null);setPending(null);setDefinition(null);setEvidenceReviewed(false);setClarification(null);setMessage('');setWorking(false);
+  useEffect(()=>{const id=++generation.current;setSaved(null);setPending(null);setDefinition(null);setEvidenceReviewed(false);setClarification(null);setExplicitTarget(false);setTargetConfirmed(false);setMessage('');setWorking(false);
     if(open&&user!==null){setWorking(true);api(`semantic/groups?user_id=${user}`)
       .then(r=>{if(id===generation.current)setSaved(r);})
       .catch(e=>{if(id===generation.current)setMessage(e.message);})
       .finally(()=>{if(id===generation.current)setWorking(false);});}
   },[user,resetKey,open]);
   useEffect(()=>{setDefinition(null);setEvidenceReviewed(false);setClarification(null);},[backend,text,label,count,operation,strength,mode,actionSource,category]);
+  useEffect(()=>{setTargetConfirmed(false);setPending(null);},[backend,text,target,count,operation,strength,mode,explicitTarget]);
   async function run(work){const id=generation.current;setWorking(true);setMessage('');setClarification(null);
     try{await work(id);}catch(e){if(id===generation.current)setMessage(e.message);}
     finally{if(id===generation.current)setWorking(false);}}
@@ -27,7 +32,9 @@ export default function SemanticPanel({api,user,resetKey,onFeed}) {
       candidate_ids:r.feed.baseline_items.slice(0,count)};
     const p=backend==='staged'?await api('semantic/definition/preview',{...common,objective:text}):
       backend==='induction'?await api('semantic/induction/preview',{...common,objective:text}):
-      await api('semantic/preview',{...common,text,label,backend,category,action_source:backend==='configured_model'?'model':actionSource});
+      await api('semantic/preview',{...common,text,label,backend,category,
+        action_source:explicitTarget?'confirmed':backend==='configured_model'?'model':actionSource,
+        ...(explicitTarget?{confirmed_target:target,target_confirmed:confirmedNow}:{})});
     if(id!==generation.current)return;
     if(p.definition_ready)setDefinition(p);else if(p.ready)setPending(p);else {setClarification(p.clarification||null);setMessage(`${p.status||'clarify'}: ${p.reason||'Please clarify the request'}`);}});}
   function classify(){run(async id=>{const p=await api('semantic/definition/classify',{
@@ -45,7 +52,7 @@ export default function SemanticPanel({api,user,resetKey,onFeed}) {
       <h3>Create and review a named semantic item set</h3>
       <p className="help">The selected model can propose a nonliteral relationship from supplied source text. Only the displayed baseline items are assessed. This is a new user-defined group over existing items, not a new video or an official dataset category. Original A-E and literal topic preferences stay separate.</p>
       <label className="field-label" htmlFor="semantic-backend">Method</label>
-      <select id="semantic-backend" disabled={disabled} value={backend} onChange={e=>{setBackend(e.target.value);setPending(null);}}>
+      <select id="semantic-backend" disabled={disabled} value={backend} onChange={e=>{setBackend(e.target.value);setExplicitTarget(false);setPending(null);}}>
         <option value="ollama">{saved?.configured_model||'Configured local model'}: semantic proposal</option>
         {saved?.external_adapter_available&&<option value="configured_model">Operator-configured model provider: semantic proposal</option>}
         <option value="staged">Local LLM: review definition, then classify all supplied items</option>
@@ -63,14 +70,21 @@ export default function SemanticPanel({api,user,resetKey,onFeed}) {
         {backend==='staged'?<p className="help">First review a model-proposed definition. After approval, one call classifies all supplied items and a separate call assesses the evidence without seeing those decisions. Disagreements become unknown. Three calls at most, each bounded to 90 seconds plus identity checks. This may use the same model and does not verify semantic truth: both passes can agree on a wrong set. Review every final membership before applying. You choose direction and strength below.</p>:backend==='induction'?<p className="help">One local model call proposes a label, definition and match/not_match/unknown decision for every supplied item. You choose the control below. Evidence and inventory budgets may block a request; no silent truncation. Review is required; no new videos are created.</p>:<>
         <p className="help">Two model stages at most: action interpretation and evidence selection. The local adapter uses 90-second calls plus identity checks. A separately configured provider uses its operator-locked timeout and shared call budget. Ambiguity or invalid evidence applies nothing. No rule fallback.</p>
         {backend==='configured_model'&&<p className="help">This provider may receive your instruction and the displayed source metadata outside this computer. Use only the data scope and paid-call budget authorized for this run. Model identity and transport provenance appear in review. Browser subscription access alone does not enable this adapter.</p>}
-        {backend!=='configured_model'&&<><label className="field-label" htmlFor="semantic-action-source">Who chooses direction and strength?</label>
+        <label><input type="checkbox" disabled={disabled} checked={explicitTarget} onChange={e=>setExplicitTarget(e.target.checked)}/> I will explicitly state the target meaning and action.</label>
+        {explicitTarget&&<>
+          <label className="field-label" htmlFor="semantic-confirmed-target">Target meaning I want filtered</label>
+          <textarea id="semantic-confirmed-target" rows={3} maxLength={2000} disabled={disabled} value={target} onChange={e=>setTarget(e.target.value)}/>
+          <p className="help">Use an observable rule supported by supplied metadata. This is your clarified interpretation, not automatic intent recognition or proof of a personal reaction. The model only proposes related existing IDs; review is still required.</p>
+          <label><input type="checkbox" disabled={disabled||!target.trim()} checked={confirmedNow} onChange={e=>{setTargetConfirmed(e.target.checked);setTargetSignature(e.target.checked?currentTargetSignature:null);}}/> I confirm this target and the action below as my intended instruction.</label>
+        </>}
+        {backend!=='configured_model'&&!explicitTarget&&<><label className="field-label" htmlFor="semantic-action-source">Who chooses direction and strength?</label>
         <select id="semantic-action-source" value={actionSource} disabled={disabled} onChange={e=>{setActionSource(e.target.value);setPending(null);}}>
           <option value="ollama">The model interprets my instruction</option><option value="manual">I choose; the model only proposes related items</option></select></>}</>}
       </>:<>
         <label className="field-label" htmlFor="semantic-category">Existing category ID</label>
         <input id="semantic-category" disabled={disabled} value={category} onChange={e=>{setCategory(e.target.value);setPending(null);}}/>
       </>}
-      {(backend==='manual_category'||backend==='induction'||backend==='staged'||(backend!=='configured_model'&&actionSource==='manual'))&&<>
+      {(backend==='manual_category'||backend==='induction'||backend==='staged'||explicitTarget||(backend!=='configured_model'&&actionSource==='manual'))&&<>
         <label className="field-label" htmlFor="semantic-operation">Manual action</label>
         <select id="semantic-operation" disabled={disabled} value={operation} onChange={e=>{setOperation(e.target.value);setPending(null);}}>
           <option value="boost">Increase</option><option value="reduce">Decrease, still eligible</option><option value="exclude">Exclude</option></select>
@@ -79,7 +93,7 @@ export default function SemanticPanel({api,user,resetKey,onFeed}) {
       <label className="field-label" htmlFor="semantic-mode">Semantic profile update</label>
       <select id="semantic-mode" disabled={disabled} value={mode} onChange={e=>{setMode(e.target.value);setPending(null);}}>
         <option value="merge">Add or replace this named group</option><option value="replace">Replace semantic group profile</option></select>
-      <button className="primary" disabled={disabled||!saved||(!['induction','staged'].includes(backend)&&!label.trim())||(backend!=='manual_category'&&!text.trim())} onClick={review}>
+      <button className="primary" disabled={disabled||!saved||(!['induction','staged'].includes(backend)&&!label.trim())||(backend!=='manual_category'&&!text.trim())||(explicitTarget&&(!target.trim()||!confirmedNow))} onClick={review}>
         {working?'Working with the selected model...':backend==='staged'?'Propose a definition for review':'Review semantic proposal'}</button>
       {message&&<p role="status" className="alert">{message}</p>}
       {clarification&&<section aria-label="Unresolved semantic interpretations" className="saved-profile">
@@ -106,7 +120,9 @@ export default function SemanticPanel({api,user,resetKey,onFeed}) {
       {pending&&<div className="saved-profile"><h4>Review the meaning and evidence yourself</h4>
         {pending.groups.map(g=><div key={g.label} className="steering-review">
           <strong>{g.label}: {g.proposal.action.operation} ({g.proposal.action.strength})</strong>
-          <p className="help">Original request: {g.request}</p><p className="help">Model relationship: {g.proposal.reason}</p>
+          <p className="help">Original request: {g.proposal.target_confirmation?.original_request||g.request}</p>
+          {g.proposal.target_confirmation&&<p className="help">User-confirmed target: {g.request}. This interpretation and action were explicitly supplied by you; no automatic intent-accuracy claim.</p>}
+          <p className="help">Model relationship: {g.proposal.reason}</p>
           {g.proposal.induction&&<div><p className="help">Generated definition: {g.proposal.induction.validated_category.definition}</p>
             <p className="help">Unknown items: {g.proposal.induction.validated_category.unknown_ids.join(', ')||'None'}. Novelty is checked only against the supplied inventory.</p>
             {g.proposal.induction.envelope.evidence_audit&&<div>
@@ -120,7 +136,7 @@ export default function SemanticPanel({api,user,resetKey,onFeed}) {
             {g.proposal.induction.envelope.field_evidence.map(e=><p className="help" key={e.item_id}>Item {e.item_id}: {e.verdict}; {e.field||'no field'}; "{e.evidence_quote}". {e.reason}</p>)}
             <p className="help">Overlaps: {g.proposal.induction.envelope.overlaps.map(o=>`${o.category_id}: ${o.member_ids.join(',')}`).join('; ')||'None in supplied inventory'}</p>
           </div>}
-          <p className="help">Direction and strength: {g.proposal.action_source==='manual'?'Explicitly selected by you; not model action accuracy':g.proposal.provenance.model.backend==='manual_category'?'Manual category baseline':'Interpreted by the model'}.</p>
+          <p className="help">Direction and strength: {['manual','user_confirmed_target'].includes(g.proposal.action_source)?'Explicitly selected by you; not model action accuracy':g.proposal.provenance.model.backend==='manual_category'?'Manual category baseline':'Interpreted by the model'}.</p>
           <p className="help">Selected existing IDs: {g.proposal.item_ids.join(', ')}; assessed scope: {g.scope_ids.join(', ')}</p>
           {g.proposal.evidence.map(e=><p className="help" key={e.item_id}>Item {e.item_id}, {e.field}: “{e.quote}”</p>)}
           <p className="help">{g.proposal.provenance.model.backend} / {g.proposal.provenance.model.model}; digest {g.proposal.provenance.model.digest}</p>
