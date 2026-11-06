@@ -1,6 +1,7 @@
 """Offline simulated prices/counter/provider only. Not verified live billing."""
 from concurrent.futures import ThreadPoolExecutor
 from copy import deepcopy
+import base64
 import hashlib
 import io
 import json
@@ -8,6 +9,7 @@ import shutil
 import threading
 import subprocess
 import sys
+import urllib.error
 from pathlib import Path
 import pytest
 
@@ -212,3 +214,62 @@ except ParserOperationalError:
     assert guard.snapshot()['reserved_micro_usd']==250000
     assert len(guard.snapshot()['attempts'])==1
     with pytest.raises(ParserOperationalError):guard.before_send(canonical(body(2)))
+
+def fail_failure_persistence(monkeypatch,guard):
+    original=guard._update
+    def update(ticket,state,proof=None):
+        if state=='failed':raise OSError('offline-ledger-write-failure')
+        return original(ticket,state,proof)
+    monkeypatch.setattr(guard,'_update',update)
+
+def test_http_error_receipt_survives_secondary_ledger_failure(tmp_path,monkeypatch):
+    guard=Guard.create_new(tmp_path/'run.sqlite',policy(),counter([]));sent=[]
+    raw=b'{"error":"offline-provider-unavailable"}'
+    error=urllib.error.HTTPError(ma.ENDPOINT,503,'offline',{'x-request-id':'offline-request'},io.BytesIO(raw))
+    infer,_,receipts=make_adapter(monkeypatch,guard,sent,error=error)
+    fail_failure_persistence(monkeypatch,guard)
+    with pytest.raises(ParserOperationalError) as caught:infer(payload(1),SCHEMA)
+    assert caught.value.__cause__ is error
+    receipt=receipts[0]
+    assert receipt['outcome']=='error' and receipt['error_type']=='HTTPError'
+    assert receipt['http_status']==503 and receipt['provider_request_id']=='offline-request'
+    assert base64.b64decode(receipt['response_base64'])==raw and receipt['response_sha256']==sha(raw)
+    assert receipt['guard_persistence_error_type']=='OSError' and len(sent)==1
+    assert guard.snapshot()['attempts'][0]['state']=='counted'
+    with pytest.raises(ParserOperationalError):guard.before_send(canonical(body(2)))
+
+def test_preflight_primary_error_survives_secondary_ledger_failure(tmp_path,monkeypatch):
+    guard=Guard.create_new(tmp_path/'run.sqlite',policy(),counter([]));sent=[]
+    infer,_,receipts=make_adapter(monkeypatch,guard,sent)
+    fail_failure_persistence(monkeypatch,guard)
+    error=RuntimeError('offline-memory-allowance-error')
+    def reserve(_):raise error
+    monkeypatch.setattr(ma.HostedRunBudget,'reserve',reserve)
+    with pytest.raises(RuntimeError) as caught:infer(payload(1),SCHEMA)
+    assert caught.value is error and sent==[]
+    assert receipts[0]['outcome']=='preflight_error' and receipts[0]['error_type']=='RuntimeError'
+    assert receipts[0]['guard_persistence_error_type']=='OSError'
+    assert guard.snapshot()['attempts'][0]['state']=='counted'
+
+def test_counter_error_keeps_primary_cause_when_failure_persistence_fails(tmp_path,monkeypatch):
+    error=TimeoutError('offline-counter-timeout')
+    def count(_):raise error
+    guard=Guard.create_new(tmp_path/'run.sqlite',policy(),count);sent=[]
+    infer,_,receipts=make_adapter(monkeypatch,guard,sent)
+    fail_failure_persistence(monkeypatch,guard)
+    with pytest.raises(ParserOperationalError) as caught:infer(payload(1),SCHEMA)
+    assert caught.value.__cause__ is error and sent==[]
+    assert receipts[0]['outcome']=='preflight_error'
+    assert receipts[0]['guard_persistence_error_type']=='OSError'
+    assert guard.snapshot()['attempts'][0]['state']=='reserved'
+
+def test_usage_error_keeps_raw_response_when_failure_persistence_fails(tmp_path,monkeypatch):
+    guard=Guard.create_new(tmp_path/'run.sqlite',policy(),counter([]));sent=[]
+    raw=response(usage={'input_tokens':43,'output_tokens':9})
+    infer,_,receipts=make_adapter(monkeypatch,guard,sent,result=raw)
+    fail_failure_persistence(monkeypatch,guard)
+    with pytest.raises(ParserOperationalError) as caught:infer(payload(1),SCHEMA)
+    assert 'Unexpected model/tier/usage' in str(caught.value.__cause__)
+    assert receipts[0]['raw_response']==raw and receipts[0]['usage']==raw['usage']
+    assert receipts[0]['outcome']=='error' and receipts[0]['guard_persistence_error_type']=='OSError'
+    assert guard.snapshot()['attempts'][0]['state']=='counted'

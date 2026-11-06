@@ -213,8 +213,8 @@ class DurableHostedSpendGuard:
             self._update(ticket,'counted',ticket)
             return deepcopy(ticket)
         except Exception as exc:
-            self.fail(ticket)
-            raise ParserOperationalError('Spending preflight failed; no generation, reservation retained') from exc
+            error=ParserOperationalError('Spending preflight failed; no generation, reservation retained')
+            raise self._fail_retaining_error(ticket,error) from exc
 
     def complete(self,ticket,response):
         usage=response.get('usage') if isinstance(response,dict) else None
@@ -224,11 +224,19 @@ class DurableHostedSpendGuard:
                 or not 0<=usage['input_tokens']<=ticket['input_tokens']
                 or type(usage.get('output_tokens')) is not int
                 or not 0<=usage['output_tokens']<=self.policy['max_output_tokens']):
-            self.fail(ticket)
-            raise ParserOperationalError('Unexpected model/tier/usage; run blocked, reservation retained')
+            error=ParserOperationalError('Unexpected model/tier/usage; run blocked, reservation retained')
+            raise self._fail_retaining_error(ticket,error)
         self._update(ticket,'completed')  # no refund, even on cheap completion
 
     def fail(self,ticket):self._update(ticket,'failed')
+
+    def _fail_retaining_error(self,ticket,error):
+        try:self.fail(ticket)
+        except Exception as persistence_error:
+            # A prior committed reservation still prevents reuse. Do not let
+            # secondary persistence failure erase the primary failure evidence.
+            error.guard_persistence_error_type=type(persistence_error).__name__
+        return error
 
     def snapshot(self):
         with self._connection() as db:

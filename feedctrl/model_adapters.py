@@ -134,6 +134,18 @@ def make_openai_responses_infer(*, api_key, model, reasoning_effort,
     receipts = []
     opener = urllib.request.build_opener(_NoRedirect())
 
+    def record_guard_failure(receipt, reservation, primary_error):
+        secondary = getattr(primary_error, 'guard_persistence_error_type', None)
+        if secondary:
+            receipt['guard_persistence_error_type'] = secondary
+        if reservation is not None:
+            try:
+                spend_guard.fail(reservation)
+            except Exception as persistence_error:
+                # The durable reservation remains consumed. Preserve the
+                # original failure and record this separate persistence error.
+                receipt['guard_persistence_error_type'] = type(persistence_error).__name__
+
     def infer(payload, schema):
         owned, owned_schema = deepcopy(payload), deepcopy(schema)
         if not isinstance(owned, dict) or not isinstance(owned.get('system'), str):
@@ -156,10 +168,11 @@ def make_openai_responses_infer(*, api_key, model, reasoning_effort,
             if spend_guard is not None:reservation=spend_guard.before_send(request_bytes)
             call_id = run_budget.reserve()
         except Exception as exc:
-            if reservation is not None:spend_guard.fail(reservation)
             if spend_guard is not None:
-                receipts.append({'representation':'preflight_only','request_sha256':hashlib.sha256(request_bytes).hexdigest(),
-                                 'outcome':'preflight_error','error_type':type(exc).__name__})
+                receipt = {'representation':'preflight_only','request_sha256':hashlib.sha256(request_bytes).hexdigest(),
+                           'outcome':'preflight_error','error_type':type(exc).__name__}
+                receipts.append(receipt)
+                record_guard_failure(receipt, reservation, exc)
             raise
         receipt = {'call_id': call_id, 'representation': 'actual_hosted_attempt',
                    'request': deepcopy(body), 'request_sha256': hashlib.sha256(request_bytes).hexdigest(),
@@ -217,16 +230,19 @@ def make_openai_responses_infer(*, api_key, model, reasoning_effort,
             receipt['outcome'] = 'parsed_transport_only'
             return deepcopy(parsed)
         except (ValueError, TypeError, KeyError, RecursionError, urllib.error.URLError, OSError, ParserOperationalError) as exc:
-            if reservation is not None:spend_guard.fail(reservation)
             receipt['outcome'] = 'error'
             receipt['error_type'] = type(exc).__name__
             if isinstance(exc, urllib.error.HTTPError):
                 receipt['http_status'] = exc.code
                 receipt['provider_request_id'] = exc.headers.get('x-request-id') if exc.headers else None
-                raw_bytes = exc.read(2_000_001)
-                receipt['response_base64'] = base64.b64encode(raw_bytes).decode('ascii')
-                receipt['response_sha256'] = hashlib.sha256(raw_bytes).hexdigest()
-                receipt['response_capture_truncated'] = len(raw_bytes) > 2_000_000
+                try:
+                    raw_bytes = exc.read(2_000_001)
+                    receipt['response_base64'] = base64.b64encode(raw_bytes).decode('ascii')
+                    receipt['response_sha256'] = hashlib.sha256(raw_bytes).hexdigest()
+                    receipt['response_capture_truncated'] = len(raw_bytes) > 2_000_000
+                except Exception as capture_error:
+                    receipt['response_capture_error_type'] = type(capture_error).__name__
+            record_guard_failure(receipt, reservation, exc)
             # Do not echo a provider error body or credential in a user-facing error.
             raise ParserOperationalError('Hosted model attempt failed: ' + type(exc).__name__) from exc
         finally:
