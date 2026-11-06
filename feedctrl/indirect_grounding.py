@@ -9,6 +9,7 @@ from copy import deepcopy
 import hashlib
 import json
 import re
+import unicodedata
 from typing import Callable
 
 FIELDS = frozenset({'manual_cover_text', 'caption', 'topic_tag',
@@ -122,18 +123,34 @@ def propose_indirect(request: str, action: dict, index: dict, infer: Callable,
         return result('error', 'Invalid proposal schema')
     status, reason, resolved, alternatives, evidence = (raw[k] for k in schema['required'])
     if (not isinstance(status, str) or status not in {'propose', 'no_match', 'ambiguous'} or not isinstance(reason, str)
-            or not 1 <= len(reason.strip()) <= 2000 or type(resolved) is not bool
+            or not 1 <= len(reason.strip()) <= 2000
+            or any(unicodedata.category(c) in {'Cf', 'Cs'}
+                   or (unicodedata.category(c) == 'Cc' and c not in '\n\r\t') for c in reason)
+            or type(resolved) is not bool
             or not isinstance(alternatives, list) or not all(isinstance(s, str) for s in alternatives)
             or not isinstance(evidence, list)):
         return result('error', 'Invalid proposal values')
+    if (len(alternatives) > 6 or any(not s.strip() or len(s) > 300
+            or any(unicodedata.category(c) in {'Cc', 'Cf', 'Cs'} for c in s)
+            for s in alternatives)):
+        return result('error', 'Invalid bounded clarification alternatives')
+    def clarify():
+        # Preserve model hypotheses for the user without selecting, approving,
+        # rewriting the request or making a rescue inference call.
+        value = result('clarify', 'Semantic scope or negation has competing interpretations')
+        value['clarification'] = {'model_reason': reason,
+            'alternatives': deepcopy(alternatives), 'negation_resolved': resolved,
+            'question': 'Please state the intended target explicitly in your instruction.',
+            'notice': 'These are unverified model interpretations. None was selected or applied.'}
+        return value
     if status != 'propose':
         if evidence:
             return result('error', 'Abstention must not contain selected evidence')
         if not resolved or alternatives:
-            return result('clarify', 'Semantic scope or negation has competing interpretations')
-        return result('no_match' if status == 'no_match' else 'clarify', reason)
+            return clarify()
+        return result('no_match', reason) if status == 'no_match' else clarify()
     if not resolved or alternatives:
-        return result('clarify', 'Semantic scope or negation has competing interpretations')
+        return clarify()
     if not evidence:
         return result('no_match', 'No cited catalogue evidence')
     ids = set()
@@ -172,13 +189,29 @@ def make_local_ollama_infer(model, timeout=90):
                            if k != 'system'}, ensure_ascii=False)}], 'format': schema,
             'stream': False, 'options': {'temperature': 0, 'seed': 42, 'num_ctx': 16384,
                                        'num_predict': 4096}}, timeout)
-        if raw.get('done') is not True or raw.get('done_reason') == 'length':
+        if not isinstance(raw, dict) or raw.get('done') is not True or raw.get('done_reason') == 'length':
             raise ValueError('Incomplete model response')
         if raw.get('model') != model:
             raise ValueError('Response model does not match requested installed identity')
+        message = raw.get('message')
+        if not isinstance(message, dict) or not isinstance(message.get('content'), str) or not message['content'].strip():
+            raise ValueError('Missing structured model message')
         current = ollama_provenance('http://127.0.0.1:11434', model, min(timeout, 10))
         if current['digest'] != p['digest']:
             raise ValueError('Installed model changed during inference')
-        return json.loads(raw['message']['content'])
+        def unique_object(pairs):
+            value = {}
+            for key, item in pairs:
+                if key in value:
+                    raise ValueError('Duplicate JSON key in model response')
+                value[key] = item
+            return value
+        def reject_constant(_):
+            raise ValueError('Nonfinite JSON in model response')
+        parsed = json.loads(message['content'], object_pairs_hook=unique_object,
+                            parse_constant=reject_constant)
+        if not isinstance(parsed, dict):
+            raise ValueError('Model response must be a JSON object')
+        return parsed
     return infer, {'backend': 'ollama-loopback', 'model': model, 'digest': p['digest'],
                    'ollama_version': p.get('ollama_version')}

@@ -8,15 +8,16 @@ export default function SemanticPanel({api,user,resetKey,onFeed}) {
   const [actionSource,setActionSource]=useState('ollama');
   const [definition,setDefinition]=useState(null),[evidenceReviewed,setEvidenceReviewed]=useState(false);
   const [working,setWorking]=useState(false),[message,setMessage]=useState('');
+  const [clarification,setClarification]=useState(null);
   const generation=useRef(0);
-  useEffect(()=>{const id=++generation.current;setSaved(null);setPending(null);setDefinition(null);setEvidenceReviewed(false);setMessage('');setWorking(false);
+  useEffect(()=>{const id=++generation.current;setSaved(null);setPending(null);setDefinition(null);setEvidenceReviewed(false);setClarification(null);setMessage('');setWorking(false);
     if(open&&user!==null){setWorking(true);api(`semantic/groups?user_id=${user}`)
       .then(r=>{if(id===generation.current)setSaved(r);})
       .catch(e=>{if(id===generation.current)setMessage(e.message);})
       .finally(()=>{if(id===generation.current)setWorking(false);});}
   },[user,resetKey,open]);
-  useEffect(()=>{setDefinition(null);setEvidenceReviewed(false);},[backend,text,count,operation,strength,mode]);
-  async function run(work){const id=generation.current;setWorking(true);setMessage('');
+  useEffect(()=>{setDefinition(null);setEvidenceReviewed(false);setClarification(null);},[backend,text,label,count,operation,strength,mode,actionSource,category]);
+  async function run(work){const id=generation.current;setWorking(true);setMessage('');setClarification(null);
     try{await work(id);}catch(e){if(id===generation.current)setMessage(e.message);}
     finally{if(id===generation.current)setWorking(false);}}
   async function load(id){const r=await api(`semantic/groups?user_id=${user}`);
@@ -28,7 +29,7 @@ export default function SemanticPanel({api,user,resetKey,onFeed}) {
       backend==='induction'?await api('semantic/induction/preview',{...common,objective:text}):
       await api('semantic/preview',{...common,text,label,backend,category,action_source:backend==='configured_model'?'model':actionSource});
     if(id!==generation.current)return;
-    if(p.definition_ready)setDefinition(p);else if(p.ready)setPending(p);else setMessage(`${p.status||'clarify'}: ${p.reason||'Please clarify the request'}`);});}
+    if(p.definition_ready)setDefinition(p);else if(p.ready)setPending(p);else {setClarification(p.clarification||null);setMessage(`${p.status||'clarify'}: ${p.reason||'Please clarify the request'}`);}});}
   function classify(){run(async id=>{const p=await api('semantic/definition/classify',{
     user_id:user,plan_id:definition.definition_plan_id,evidence_reviewed:evidenceReviewed});
     if(id!==generation.current)return;setDefinition(null);setEvidenceReviewed(false);
@@ -81,6 +82,14 @@ export default function SemanticPanel({api,user,resetKey,onFeed}) {
       <button className="primary" disabled={disabled||!saved||(!['induction','staged'].includes(backend)&&!label.trim())||(backend!=='manual_category'&&!text.trim())} onClick={review}>
         {working?'Working with the selected model...':backend==='staged'?'Propose a definition for review':'Review semantic proposal'}</button>
       {message&&<p role="status" className="alert">{message}</p>}
+      {clarification&&<section aria-label="Unresolved semantic interpretations" className="saved-profile">
+        <h4>Clarify the target before trying again</h4>
+        <p className="help">{clarification.notice}</p>
+        <p className="help">Model explanation: {clarification.model_reason}</p>
+        {clarification.alternatives.length>0&&<><p className="help">Competing interpretations:</p>
+          <ul>{clarification.alternatives.map((a,n)=><li key={n}>{a}</li>)}</ul></>}
+        <p className="help">{clarification.question} Editing it does not call a model; only a new explicit review submission does.</p>
+      </section>}
       {definition&&<div className="saved-profile" aria-label="Category definition review">
         <h4>Stage 1: review the whole definition</h4>
         <strong>{definition.definition.proposal.label}</strong>
