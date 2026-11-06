@@ -212,6 +212,7 @@ def make_local_ollama_infer(model, timeout=90):
                             parse_constant=reject_constant)
         if not isinstance(parsed, dict):
             raise ValueError('Model response must be a JSON object')
+        json.dumps(parsed, allow_nan=False)  # also rejects overflow such as 1e309
         return parsed
     return infer, {'backend': 'ollama-loopback', 'model': model, 'digest': p['digest'],
                    'ollama_version': p.get('ollama_version')}

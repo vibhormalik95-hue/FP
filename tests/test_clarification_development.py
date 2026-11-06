@@ -122,3 +122,10 @@ def test_strict_local_transport_accepts_one_object_and_rechecks_identity(monkeyp
     infer,p=ig.make_local_ollama_infer('installed:development',timeout=12)
     assert infer({'system':'offline contract only','request':'fixture'}, {'type':'object'})=={'fixture':'accepted'}
     assert len(checks)==2 and p['backend']=='ollama-loopback'
+
+def test_strict_local_transport_rejects_overflow_to_infinity(monkeypatch):
+    monkeypatch.setattr(controls,'ollama_provenance',lambda *a:{'digest':'same','ollama_version':'test-only'})
+    monkeypatch.setattr(controls,'_request',lambda *a:envelope('{"value":1e309}'))
+    infer,_=ig.make_local_ollama_infer('installed:development',timeout=12)
+    with pytest.raises(ValueError):
+        infer({'system':'offline contract only','request':'fixture'},{'type':'object'})
