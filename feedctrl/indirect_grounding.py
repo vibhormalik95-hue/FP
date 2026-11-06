@@ -51,6 +51,41 @@ def _digest(value):
         separators=(',', ':'), allow_nan=False).encode()).hexdigest()
 
 
+def _response_snapshot(value):
+    """Own bounded finite JSON before recursive hashing/copying by any adapter."""
+    stack, nodes, text_chars = [(value, 0)], 0, 0
+    while stack:
+        item, depth = stack.pop()
+        nodes += 1
+        if depth > 64 or nodes > 50000:
+            raise ValueError('Model response exceeds JSON structure budget')
+        if type(item) is dict:
+            if len(item) > 50000 - nodes - len(stack):
+                raise ValueError('Model response exceeds JSON structure budget')
+            if not all(type(k) is str and len(k) <= 2000000 for k in item):
+                raise ValueError('Model response JSON keys must be strings')
+            text_chars += sum(len(k) for k in item)
+            stack.extend((child, depth + 1) for child in item.values())
+        elif type(item) is list:
+            if len(item) > 50000 - nodes - len(stack):
+                raise ValueError('Model response exceeds JSON structure budget')
+            stack.extend((child, depth + 1) for child in item)
+        elif type(item) is str:
+            text_chars += len(item)
+        elif type(item) not in (str, int, float, bool, type(None)):
+            raise ValueError('Model response is not JSON data')
+        if text_chars > 2000000:
+            raise ValueError('Model response exceeds JSON text budget')
+    try:
+        encoded = json.dumps(value, ensure_ascii=False, allow_nan=False,
+                             sort_keys=True, separators=(',', ':')).encode('utf8')
+        if len(encoded) > 2000000:
+            raise ValueError('Model response exceeds JSON byte budget')
+        return json.loads(encoded)
+    except (TypeError, ValueError, RecursionError) as exc:
+        raise ValueError('Model response is not bounded finite JSON') from exc
+
+
 def _catalogue(index):
     if not isinstance(index, dict) or not isinstance(index.get('items'), dict) or not index['items']:
         raise ValueError('An existing nonempty topic index is required')
@@ -115,10 +150,10 @@ def propose_indirect(request: str, action: dict, index: dict, infer: Callable,
     except Exception as exc:
         return result('error', 'Inference failed: ' + type(exc).__name__)
     try:
-        raw = json.loads(json.dumps(raw, ensure_ascii=False, allow_nan=False))
+        raw = _response_snapshot(raw)
         provenance['response_sha256'] = _digest(raw)
     except (TypeError, ValueError):
-        return result('error', 'Response is not finite JSON')
+        return result('error', 'Response is not bounded finite JSON')
     if not isinstance(raw, dict) or set(raw) != set(schema['required']):
         return result('error', 'Invalid proposal schema')
     status, reason, resolved, alternatives, evidence = (raw[k] for k in schema['required'])
@@ -208,11 +243,13 @@ def make_local_ollama_infer(model, timeout=90):
             return value
         def reject_constant(_):
             raise ValueError('Nonfinite JSON in model response')
-        parsed = json.loads(message['content'], object_pairs_hook=unique_object,
-                            parse_constant=reject_constant)
+        try:
+            parsed = json.loads(message['content'], object_pairs_hook=unique_object,
+                                parse_constant=reject_constant)
+        except RecursionError as exc:
+            raise ValueError('Model response exceeds JSON nesting budget') from exc
         if not isinstance(parsed, dict):
             raise ValueError('Model response must be a JSON object')
-        json.dumps(parsed, allow_nan=False)  # also rejects overflow such as 1e309
-        return parsed
+        return _response_snapshot(parsed)  # also rejects overflow such as 1e309
     return infer, {'backend': 'ollama-loopback', 'model': model, 'digest': p['digest'],
                    'ollama_version': p.get('ollama_version')}

@@ -7,6 +7,7 @@ This separate development revision makes no new model calls and changes no seman
 
 - When the evidence model abstains because scope or negation is unresolved, retain its bounded reason and competing interpretations. The UI labels these as unverified model hypotheses. None is selected or applied; the user must explicitly rewrite and resubmit. No automatic rescue call, proposal repair or category substitution occurs.
 - Reject malformed local-model envelopes, non-object output, duplicate JSON keys and nonfinite JSON through the handled error path. A completed response missing `message` no longer escapes as an unhandled exception during action interpretation.
+- Check response depth, node count, text size and finite canonical JSON before recursive copying/hashing. Excessive nesting from either adapter also fails as a handled error, with no apply token or preference change.
 - Bound clarification alternatives and reject control/format/surrogate characters that could obscure their review. React renders the explanation and alternatives as text, without HTML interpretation or executable controls.
 
 The new exposed rehearsal-display fixture and malformed response fixtures are offline contract tests. Their authored expected values are not semantic gold. Old tests are regressions only; no study is rescored or reused for tuning.

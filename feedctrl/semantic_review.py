@@ -18,7 +18,7 @@ from fastapi import Header, HTTPException, Query
 from pydantic import BaseModel, ConfigDict, Field, StrictInt
 
 from feedctrl.controls import ParserOperationalError, normalize_scores
-from feedctrl.indirect_grounding import _catalogue, _digest, make_local_ollama_infer, propose_indirect
+from feedctrl.indirect_grounding import _catalogue, _digest, _response_snapshot, make_local_ollama_infer, propose_indirect
 from feedctrl.semantic_controls import STRENGTH_WEIGHTS
 from feedctrl import induction_integration as induction
 
@@ -293,7 +293,10 @@ def install_semantic_routes(app, demo, *, infer_factory=None):
                     infer, provenance = make_local_ollama_infer(os.getenv("FEEDCTRL_STEERING_MODEL", "qwen2.5-coder:7b-instruct"), timeout=90)
                 def tracked_infer(payload, schema):
                     # Own raw receipts; these are returned only to this session's caller.
-                    raw = infer(deepcopy(payload), deepcopy(schema))
+                    try:
+                        raw = _response_snapshot(infer(deepcopy(payload), deepcopy(schema)))
+                    except RecursionError as exc:
+                        raise ValueError('Model response exceeds JSON nesting budget') from exc
                     calls.append({"request_sha256": _digest(payload), "schema_sha256": _digest(schema),
                         "response_sha256": _digest(raw), "raw_response": deepcopy(raw)})
                     return raw

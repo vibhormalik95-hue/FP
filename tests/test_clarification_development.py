@@ -63,6 +63,8 @@ def app_client(tmp_path):
             fields=INDEX['items'].get(i,{'fields':{'caption':'Unrelated synthetic calibration record.'}})['fields']
             w.writerow({'video_id':i,**fields})
     with TestClient(create_app(fixture=True,semantic_path=path)) as c:
+        c.fixture_source_path=path
+        c.app.state.demo.topic_index['source']='synthetic://offline-contract/rehearsal'
         h={'X-Session-ID':c.post('/api/session',json={}).json()['session_id']}
         yield c,h
 
@@ -129,3 +131,49 @@ def test_strict_local_transport_rejects_overflow_to_infinity(monkeypatch):
     infer,_=ig.make_local_ollama_infer('installed:development',timeout=12)
     with pytest.raises(ValueError):
         infer({'system':'offline contract only','request':'fixture'},{'type':'object'})
+
+def nested_value(depth):
+    value=[]
+    for _ in range(depth):value=[value]
+    return {'nested':value}
+
+@pytest.mark.parametrize('value',[nested_value(5000),{'large':'x'*2000001},
+    {'a':'x'*1000000,'b':'x'*1000000},[None]*50001,{'not_finite':float('inf')}])
+def test_response_snapshot_rejects_unbounded_or_nonfinite_values(value):
+    with pytest.raises(ValueError):ig._response_snapshot(value)
+
+def test_cyclic_callback_response_is_rejected_without_recursive_copy():
+    value={};value['cycle']=value
+    with pytest.raises(ValueError):ig._response_snapshot(value)
+
+def test_direct_grounding_rejects_deep_model_response():
+    r=ig.propose_indirect(REQUEST,ACTION,INDEX,lambda *_:nested_value(5000),model_provenance=PROVENANCE)
+    assert r['status']=='error' and r['item_ids']==[]
+
+def test_local_transport_handles_excessive_encoded_json_nesting(monkeypatch):
+    monkeypatch.setattr(controls,'ollama_provenance',lambda *a:{'digest':'same','ollama_version':'test-only'})
+    monkeypatch.setattr(controls,'_request',lambda *a:envelope('{"x":'+('['*5000)+'0'+(']'*5000)+'}'))
+    infer,_=ig.make_local_ollama_infer('installed:development',timeout=12)
+    with pytest.raises(ValueError):infer({'system':'offline contract only'},{'type':'object'})
+
+@pytest.mark.parametrize('transport_raises',[False,True])
+def test_configured_transport_depth_failure_is_handled_before_hashing(app_client,transport_raises):
+    c,h=app_client
+    def factory():
+        def infer(*_):
+            if transport_raises:raise RecursionError('synthetic decoder depth error')
+            return nested_value(5000)
+        return infer,PROVENANCE
+    # Install a fresh app with the same explicitly synthetic source, using its
+    # public factory seam rather than mutating or bypassing a transport budget.
+    source=c.fixture_source_path
+    with TestClient(create_app(fixture=True,semantic_path=source,semantic_infer_factory=factory)) as configured:
+        configured.app.state.demo.topic_index['source']='synthetic://offline-contract/rehearsal'
+        hh={'X-Session-ID':configured.post('/api/session',json={}).json()['session_id']}
+        configured.get('/api/semantic/groups?user_id=1',headers=hh)
+        before=durable(configured,hh)
+        data=body();data.update(backend='configured_model',action_source='model')
+        response=configured.post('/api/semantic/preview',headers=hh,json=data)
+        assert response.status_code==200 and response.json()['status']=='error'
+        assert not response.json()['applied'] and 'plan_id' not in response.json()
+        assert durable(configured,hh)==before
