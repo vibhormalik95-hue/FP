@@ -75,7 +75,7 @@ export default function SemanticPanel({api,user,resetKey,onFeed}) {
           <label className="field-label" htmlFor="semantic-confirmed-target">Target meaning I want filtered</label>
           <textarea id="semantic-confirmed-target" rows={3} maxLength={2000} disabled={disabled} value={target} onChange={e=>setTarget(e.target.value)}/>
           <p className="help">Use an observable rule supported by supplied metadata. This is your clarified interpretation, not automatic intent recognition or proof of a personal reaction. The model only proposes related existing IDs; review is still required.</p>
-          <label><input type="checkbox" disabled={disabled||!target.trim()} checked={confirmedNow} onChange={e=>{setTargetConfirmed(e.target.checked);setTargetSignature(e.target.checked?currentTargetSignature:null);}}/> I confirm this target and the action below as my intended instruction.</label>
+          <label><input type="checkbox" disabled={disabled||!target.trim()} checked={confirmedNow} onChange={e=>{setPending(null);setTargetConfirmed(e.target.checked);setTargetSignature(e.target.checked?currentTargetSignature:null);}}/> I confirm this target and the action below as my intended instruction.</label>
         </>}
         {backend!=='configured_model'&&!explicitTarget&&<><label className="field-label" htmlFor="semantic-action-source">Who chooses direction and strength?</label>
         <select id="semantic-action-source" value={actionSource} disabled={disabled} onChange={e=>{setActionSource(e.target.value);setPending(null);}}>
@@ -143,7 +143,7 @@ export default function SemanticPanel({api,user,resetKey,onFeed}) {
         </div>)}
         {pending.feed.group_exposure.map(g=><p key={g.label} className="help">{g.label}: {g.before}/10 baseline; {g.after}/10 proposed.</p>)}
         <p className="help">Proposed IDs: {pending.feed.items.map(i=>i.item_id).join(', ')}; {pending.feed.available_items} eligible. An exact quote proves source existence, not semantic relevance. Model meaning may be wrong; do not approve it if inappropriate.</p>
-        <button className="primary" disabled={disabled} onClick={apply}>Approve this exact item set and apply</button>
+        <button className="primary" disabled={disabled||(pending.proposal?.target_confirmation&&(!explicitTarget||!confirmedNow))} onClick={apply}>Approve this exact item set and apply</button>
       </div>}
       <p className="help">Saved semantic groups: {saved?(saved.groups.map(g=>g.label).join(', ')||'None'):(working?'Loading...':'Unavailable')}. These are temporary session records with source hashes, not new source taxonomy labels.</p>
       {!saved&&message&&<p className="help">If saved groups cannot be loaded, you can still review clearing semantic groups for this user. Approval is required; original category and topic preferences are preserved.</p>}
