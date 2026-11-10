@@ -1,94 +1,47 @@
-# Model providers in the reviewed semantic workflow
+# Model adapters for indirect requests
 
-The semantic algorithms accept `infer(payload, schema) -> dict`. The runtime
-must supply an adapter for the selected provider. A model name alone does not
-make different APIs interchangeable.
+The indirect-intent workflow calls `infer(payload, schema) -> dict`. Each provider needs an adapter that accepts that input and returns the expected data. Entering a model name alone does not connect its API.
 
-The existing Ollama default, original A–E routes, staged category induction,
-synthetic-item generation and frozen experiments are unchanged. This addition
-exposes an operator-injected provider only for the separate indirect-intent
-workflow. It is not a claim that all project workflows support every provider.
+The configuration described here covers indirect intent. Category creation has a [separate configuration interface](category-provider-configuration.md). The original A–E routes, local Ollama behavior and frozen experiments remain unchanged. The latest source also supplies the shared provider to the optional fictional-item adapter through `synthetic_infer_factory`. That wiring has offline tests, not a verified live hosted-generation result; support for one workflow does not by itself prove that another works.
 
-## Explicit startup configuration
+## Configure the provider at startup
 
-`create_app(..., semantic_infer_factory=factory)` installs a factory returning
-`(infer, provenance)`. Provenance must contain nonempty `backend`, `model` and
-`digest` strings. An app without this factory does not offer the provider option
-in the UI; a direct configured-provider request fails closed with HTTP 502.
+`create_app(..., semantic_infer_factory=factory)` supplies a factory returning `(infer, provenance)`. Provenance must contain nonempty `backend`, `model` and `digest` strings. Without a factory, the UI does not offer this provider, and a direct request for it fails with HTTP 502.
 
-The API option is `backend="configured_model", action_source="model"`.
-Both direction/strength interpretation and item grounding use that provider.
-There is no fallback to Ollama, manual selection or a rule parser. Provider
-selection, credentials and URLs cannot be supplied by an API request. Existing
-request-bound action validation, ID/quote checks, substantive review, stale
-source checks, session isolation, ranking and undo remain in force.
+The API option is `backend="configured_model", action_source="model"`. The provider handles both action/strength interpretation and matching the request to source items. Errors do not fall back to Ollama, manual selection or a rule parser. API requests cannot supply provider URLs, credentials or provider selection.
 
-The configured factory is initialized at most once per app, under a lock, and its
-adapter is reused by all previews and sessions. Preview requests cannot create a
-fresh allowance. A changed provider/run configuration needs a new authorized run;
-there is no API route to replenish the allowance.
+The app still checks the action against the request, item IDs, quotations, source changes and session identity. Review, ranking and undo keep their existing behavior.
 
-## First-party Responses adapter
+The factory initializes at most once per app under a lock. All sessions and previews reuse the adapter, so preview requests cannot create a fresh call allowance. Changing provider/run settings requires a newly authorized run; the API cannot refill the allowance.
 
-`feedctrl.model_adapters.make_openai_responses_infer` implements the seam for
-the fixed HTTPS endpoint `https://api.openai.com/v1/responses`. It uses strict
-`text.format` JSON Schema, one system and one user message, no tools, no history,
-`store=false`, and explicit model, reasoning effort, output-token, request-byte,
-timeout and shared call limits. It does not set unsupported temperature or seed
-parameters, perform retries, repair output or silently substitute model IDs.
+## OpenAI Responses adapter
 
-The constructor makes no network call and does not read credentials. It requires
-an explicitly supplied credential and `authorized=True`. That flag is an
-operational gate, **not evidence of user approval**. Before enabling it, the
-operator must establish actual API access, data destination/scope and a paid-call
-spend ceiling, then freeze the exact run. A ChatGPT or Claude browser subscription
-does not establish this API entitlement or budget.
+`feedctrl.model_adapters.make_openai_responses_infer` connects to the fixed HTTPS endpoint `https://api.openai.com/v1/responses`. It uses strict `text.format` JSON Schema, one system and one user message, no tools or history, and `store=false`.
 
-Create one `HostedRunBudget(max_calls=2)` outside the factory and pass that same
-object as `run_budget` to every adapter instance belonging to the authorized run.
-It reserves each attempt atomically across concurrent adapter instances. The
-allowance is bound to the exact model/options configuration, cannot replenish
-itself, and is independent of mutable receipt lists. No implicit per-adapter
-allowance is provided. This is an in-process call limit, not a durable billing
-account cap; process restart or creation of a new allowance is a new run and must
-not be used to evade the authorized total.
+Model, reasoning effort, output-token limit, request-byte limit, timeout and shared call allowance are explicit. The adapter does not send unsupported temperature or seed parameters, retry, repair output or silently substitute a model ID.
 
-All attempted calls, including timeout and HTTP error, consume the shared cap.
-The returned receipts retain exact request data (without authorization headers),
-bounded original response bytes, HTTP/request IDs when available, elapsed time,
-usage and parsing disposition. Oversized captures are explicitly marked as
-truncated. A refusal, incomplete response, model mismatch, duplicate JSON key,
-nonfinite value, unexpected content or invalid JSON fails without repair.
-The semantic workflow then validates the parsed object independently.
+Construction makes no network call and does not read credentials. It requires an explicitly supplied credential and `authorized=True`. That flag is a code setting, not proof of user approval. Before use, verify API access, the authorized data/destination and the paid-call ceiling, then record the exact run configuration. A ChatGPT or Claude browser subscription does not establish API access or a budget.
 
-The hosted `digest` is explicitly a **configuration SHA-256, not a model weight
-digest**. Requested/returned API identity is checked exactly. Mutable provider
-aliases and provider-side processing are not weight attestations. Use a verified
-explicit snapshot where available; do not silently accept a different returned
-identifier. `store=false` is not a claim of zero retention by the provider.
+### Share the call allowance
 
-Authoritative API contract consulted on November 5, 2026:
+Create one `HostedRunBudget(max_calls=2)` outside the factory. Pass the same object as `run_budget` to every adapter instance in that authorized run. It reserves attempts atomically across concurrent instances, is bound to the exact model/options configuration and cannot refill itself. Mutable receipt lists do not control the allowance. There is no implicit per-adapter allowance.
 
-- [OpenAI Structured Outputs](https://developers.openai.com/api/docs/guides/structured-outputs)
-- [GPT-6.1 Sol model reference](https://developers.openai.com/api/docs/models/gpt-6.1-sol)
+This is an in-process call limit, not a durable account billing cap. Restarting the process or creating another allowance must not be used to evade the authorized total. The [hosted-only configuration](hosted-only-configuration.md) also requires the durable spending guard.
 
-Structured formatting and exact source quotes do not establish semantic truth.
-The reviewer must still reject incomplete or unsupported sets before applying.
+Timeouts and HTTP errors still consume an attempt. Records retain exact request data without authorization headers, bounded original response bytes, HTTP/request IDs where available, elapsed time, usage and parsing outcome. Oversized captures are marked truncated. Refusals, incomplete responses, model mismatches, duplicate JSON keys, nonfinite values, unexpected content and invalid JSON fail without repair. The semantic workflow independently validates the parsed object afterward.
 
-## Current verification boundary
+### Interpret model identity carefully
 
-The first-party Responses adapter has offline transport and API-mechanics tests
-using injected network doubles. No real paid API call has been made for this
-revision. API latency, billed cost, account entitlement and automatic hosted
-transport remain unverified. Claude Code reported logged out.
+The hosted `digest` is a configuration SHA-256, not a model-weight digest. Requested and returned API identities must match exactly. Provider aliases and reported processing do not verify the weights. Use a verified explicit snapshot where available; do not silently accept another identifier. `store=false` does not mean the provider retains no data.
 
-A separate operator-assisted browser exchange on this source used the observed
-Opus 5.5 Medium selector for two fresh messages, captured with the supported Copy
-control. The actual configured-provider application route validated the replies;
-explicit browser review/apply, clear and undo changed eligibility 8 to 5 to 8 to
-5 to 8. This is one exposed synthetic development case, not automatic Claude API
-integration, provider-side processing attestation, or held-out accuracy. The
-transport observer was external to application source. See the
-[delivery walkthrough](../deliverables/2026-11-05-final-demo/README.md) for the
-exact scope and evidence. The earlier capture failure, local Gemma timeout and
-all frozen negative studies remain intact.
+The API references checked on November 5, 2026 were [OpenAI Structured Outputs](https://developers.openai.com/api/docs/guides/structured-outputs) and the [GPT-6.1 Sol reference](https://developers.openai.com/api/docs/models/gpt-6.1-sol).
+
+A correctly formatted response with exact source quotes can still be semantically wrong. Reviewers must reject unsupported or incomplete sets before applying them.
+
+## What has actually been tested
+
+The Responses adapter has offline network-substitute and API tests. The records for this revision contain no real paid API call. API latency, billed cost, account access and automatic hosted transport remain unverified. The earlier check reported Claude Code logged out; that is a dated observation, not a fresh account-status check.
+
+A separate operator-assisted browser example used the observed Opus 5.5 Medium selector for two fresh messages, with replies captured through Copy. The configured-provider app route validated them, and explicit review/apply, clear and undo changed eligibility 8 to 5 to 8 to 5 to 8.
+
+This was one exposed synthetic development example. It was not an automatic Claude API connection, a verification of provider-side processing or a held-out accuracy result. The tool observing the copied replies was separate from the application code. See the [5 November walkthrough](../deliverables/2026-11-05-final-demo/README.md) for the full record. The earlier capture failure, local Gemma timeout and frozen negative studies remain unchanged.

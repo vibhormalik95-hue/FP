@@ -1,10 +1,10 @@
-# Run on Windows 11 or Google Colab
+# Historical Windows 11 and Google Colab setup
 
-> **Current personal candidate: do not run the historical local app, model or recommender.** No local model or recommender execution is authorized for this candidate. Do not use the historical commands, launchers or scripts below as a workaround. The current hosted personal launch is disabled pending real validation; these historical instructions and results do not establish that validation. See [candidate status](../CLAUDE-PERSONAL-CANDIDATE.md) and [hosted-only configuration](hosted-only-configuration.md).
+**Historical reproduction guide.** Local models and the local recommender are not authorized for the current personal configuration, and automatic personal Claude launch remains disabled. The commands below are retained to explain the earlier experiments; they are not instructions to run them now. Start with [current progress](current-progress.md), [hosted configuration](hosted-only-configuration.md) or [personal Claude status](../CLAUDE-PERSONAL-CANDIDATE.md) for the current app.
 
-The original Experiment One run used a Linux CPU VM; the fresh Experiment Two inference ran locally on AI_WORK on 14 October. See [saved results](ai-reference-e2-results-2026-10-14.md). This guide shows how to run the code on Windows or Colab. A Core i9 laptop with 32 GB RAM can run the small SASRec model and a local quantized 8B language model; inference speed depends on the CPU, cooling and any compatible GPU.
+The original Experiment One run used a Linux CPU VM; the fresh Experiment Two inference ran locally on AI_WORK on 14 October. See [saved results](ai-reference-e2-results-2026-10-14.md). This guide records the setup for a separately authorized Windows or Colab rerun. A Core i9 laptop with 32 GB RAM can run the small SASRec model and a local quantized 8B language model; inference speed depends on the CPU, cooling and any compatible GPU.
 
-## Public code-review checkout: safe checks
+## Self-contained checks in the public checkout
 
 This partial repository omits research data and reserved material. With the required packages already installed, run only the self-contained checks below. Use a new, unused directory for `--basetemp`: pytest clears that directory if it already exists.
 
@@ -13,7 +13,7 @@ python -m pytest -q tests/test_data.py tests/test_api.py tests/test_output_safet
 python -m pytest -q tests/test_frozen_e1_manifest.py --basetemp "$env:TEMP\comp9500-new-manifest-check" -p no:cacheprovider
 ```
 
-The benchmark-split test explicitly skips when both private parser banks are absent. It checks their separation only when both are supplied. These checks use synthetic fixtures and mocked model responses; they do not establish model inference, experimental accuracy or formal E2 readiness. Full pipeline commands below require the authoritative archive and the applicable execution authorization.
+The benchmark-split test explicitly skips when both private parser banks are absent. It checks their separation only when both are supplied. These checks use synthetic fixtures and mocked model responses; they do not establish model inference, experimental accuracy or completion of the original human-reference E2 evaluation. Full pipeline commands below require the authoritative archive and the applicable execution authorization.
 
 For a read-only E1 integrity check, supply the extracted full-archive root to the standalone verifier. It first checks the manifest against its pinned original SHA-256, then validates all 288 paths before streaming hashes, without parsing research evidence, starting services or running experiments:
 
@@ -83,7 +83,7 @@ See [methods and provenance](academic-use.md) for the study design and interpret
 - Ollama Linux: https://docs.ollama.com/linux
 - Colab limits and allowed interactive use: https://research.google.com/colaboratory/faq.html
 
-## Audit revision portability corrections
+## Paths and software versions
 
 The API reads processed JSON explicitly as UTF-8. The direct evaluation and plotting scripts resolve relative input/output paths from the project root; absolute paths remain supported. `evaluate_matrix.py --cache-dir` and the API's `FEEDCTRL_PARSER_CACHE` likewise use project-relative or absolute paths; standalone evaluation defaults to a raw LLM cache inside its fresh output folder, and the temporary Ollama wrapper writes its server log under the project root even when invoked elsewhere. The standalone frozen control/model modules retain their recorded source; use the documented entry points or pass explicit paths when importing them directly.
 

@@ -173,7 +173,9 @@ class Removal(User):
     item_id: str = Field(min_length=1, max_length=100)
 
 
-def install_synthetic_routes(app, demo, *, allow_local_models=True):
+def install_synthetic_routes(app, demo, *, allow_local_models=True, synthetic_infer_factory=None):
+    if synthetic_infer_factory is not None and not callable(synthetic_infer_factory):
+        raise ValueError('Synthetic inference factory must be callable')
     def state_for(token, user):
         state = demo.user_state(token, user)
         state.setdefault('synthetic_items', [])
@@ -201,9 +203,13 @@ def install_synthetic_routes(app, demo, *, allow_local_models=True):
         display = [{**r, 'source_snapshot_changed': r['source_version'] != current} for r in rows]
         return {'items': display, 'revision': state['synthetic_revision'],
                 'can_restore_removed': state['synthetic_last_removed'] is not None,
-                'configured_model': (os.getenv('FEEDCTRL_STEERING_MODEL', 'qwen2.5-coder:7b-instruct')
+                'configured_model': (getattr(synthetic_infer_factory, 'model_identity', {}).get('model')
+                                     if synthetic_infer_factory is not None else
+                                     os.getenv('FEEDCTRL_STEERING_MODEL', 'qwen2.5-coder:7b-instruct')
                                      if allow_local_models else None),
-                'generation_available': allow_local_models,
+                'generation_provider': (getattr(synthetic_infer_factory, 'model_identity', {}).get('backend', 'configured provider')
+                                        if synthetic_infer_factory is not None else 'local' if allow_local_models else None),
+                'generation_available': synthetic_infer_factory is not None or allow_local_models,
                 'source_version': current, 'origin': ORIGIN,
                 'feed': {'kind': 'synthetic_metadata_only', 'uses_trained_scorer': False,
                          'isolated_from_observed_catalogue': True, 'cold_start_policy': POLICY,
@@ -220,8 +226,8 @@ def install_synthetic_routes(app, demo, *, allow_local_models=True):
 
     @app.post('/api/synthetic/preview')
     def preview(body: DraftRequest, x_session_id: str | None = Header(default=None)):
-        if not allow_local_models:
-            raise HTTPException(403, 'Synthetic generation has no hosted adapter; local models are disabled')
+        if synthetic_infer_factory is None and not allow_local_models:
+            raise HTTPException(403, 'Synthetic generation is unavailable; local models are disabled')
         with demo.lock:
             state = state_for(x_session_id, body.user_id)
             if len(state['synthetic_items']) >= MAX_ITEMS:
@@ -231,11 +237,31 @@ def install_synthetic_routes(app, demo, *, allow_local_models=True):
             revision, source = state['synthetic_revision'], source_version(demo)
         calls = []
         try:
-            infer, model, calls = make_draft_infer(os.getenv('FEEDCTRL_STEERING_MODEL', 'qwen2.5-coder:7b-instruct'))
+            if synthetic_infer_factory is not None:
+                hosted_infer, model = synthetic_infer_factory()
+                if not callable(hosted_infer):
+                    raise ValueError('Configured draft inference must be callable')
+                def infer(brief):
+                    payload = {'system': PROMPT, 'brief': brief}
+                    call = {'request': deepcopy(payload), 'request_sha256': _digest(payload),
+                            'schema_sha256': _digest(SCHEMA), 'status': 'started'}
+                    calls.append(call)
+                    try:
+                        result = hosted_infer(payload, deepcopy(SCHEMA))
+                        call.update(status='returned_json', raw_output=deepcopy(result))
+                        return result
+                    except Exception as exc:
+                        call.update(status='error', error_type=type(exc).__name__, error=str(exc))
+                        raise
+            else:
+                infer, model, calls = make_draft_infer(os.getenv('FEEDCTRL_STEERING_MODEL', 'qwen2.5-coder:7b-instruct'))
             model = deepcopy(model)
-            if (not isinstance(model, dict) or any(not isinstance(model.get(k), str) or not model[k]
+            if (not isinstance(model, dict) or any(not isinstance(model.get(k), str) or not model[k].strip()
                                                   for k in ('model', 'digest'))):
                 raise ValueError('Draft generation requires model identity and digest')
+            if synthetic_infer_factory is not None and model.get('backend') not in (
+                    'openai-responses', 'claude-code-personal-cli'):
+                raise ValueError('Unsupported configured draft provider')
             raw = deepcopy(infer(body.brief))
             output = validate_output(raw)
             record = sealed({'item_id': 'synthetic-' + secrets.token_hex(12), **output,

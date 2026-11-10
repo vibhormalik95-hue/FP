@@ -310,7 +310,7 @@ class DemoState:
 
 
 def create_app(data_path=None, model_path=None, fixture=False, semantic_path=None,
-               *, semantic_infer_factory=None, category_infer_factory=None, allow_local_models=True,
+               *, semantic_infer_factory=None, category_infer_factory=None, synthetic_infer_factory=None, allow_local_models=True,
                allow_local_recommender=True):
     if type(allow_local_models) is not bool or type(allow_local_recommender) is not bool:
         raise ValueError("Model policy flags must be booleans")
@@ -618,7 +618,8 @@ def create_app(data_path=None, model_path=None, fixture=False, semantic_path=Non
 
     install_semantic_routes(app, demo, infer_factory=semantic_infer_factory,
                             category_infer_factory=category_infer_factory, allow_local_models=allow_local_models)
-    install_synthetic_routes(app, demo, allow_local_models=allow_local_models)
+    install_synthetic_routes(app, demo, allow_local_models=allow_local_models,
+                             synthetic_infer_factory=synthetic_infer_factory)
 
     dist = ROOT / "web/dist"
     if (dist / "assets").exists():

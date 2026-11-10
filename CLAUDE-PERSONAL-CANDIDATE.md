@@ -1,151 +1,81 @@
-# Unactivated personal CLI candidate
+# Personal Claude Code integration status
 
-This is a source-only candidate. No authenticated app call, project-source transfer,
-provider activation, semantic validation, live browser test, or research result has
-been performed. Authored mock responses test plumbing only. The existing OpenAI
-transport and its fixed spending guard are unchanged and cannot authorize this route.
-The fixed recommender and frozen experiments are unchanged; hosted-only mode still
-refuses a local recommender checkpoint. A compatible fixed scorer remains unresolved.
+The installed Claude Code CLI is the intended runtime, but the app cannot automatically launch it. The launch function always rejects the call, and no configuration flag enables it. Offline tests use substitute responses; they do not demonstrate an authenticated app call, semantic accuracy or successful browser use.
 
-The actual process-launch seam unconditionally fails closed. No Boolean gate can enable it. An experimental Windows process-containment implementation exists separately, but is not wired into the app and requires verification before any real call. The mocked tests replace that seam.
+The successful Claude development example used an operator to copy requests and replies between the app and the Claude browser. It did not use this integration. See [current progress](docs/current-progress.md) and the [5 November record](deliverables/2026-11-05-final-demo/README.md).
 
-The candidate is solely for one person using their own, unmodified, already signed-in
-Claude Code binary. It is not a service that routes or intermediates other users'
-credentials. See Anthropic's [authentication conditions](https://code.claude.com/docs/en/legal-and-compliance#authentication-and-credential-use).
-Explicitly choosing a provider is required; nothing in the app selects this one by default.
+The latest source passes this same configured provider and shared call allowance to fictional metadata drafting. That addition is tested with substitute replies; it does not enable automatic launch or verify live generation.
 
-Before any activation, independently review the executable and its installed version,
-account and billing/extra-usage configuration, model entitlement, actual data being
-transmitted, managed policies and hooks, model fallback behavior, working directory,
-and recipient/destination. The version parameter and authorization booleans, including the containment review, are operator
-assertions, not verification, and must not be asserted by an unattended default. Managed
-policy still applies in safe mode, and managed hooks can run or add context. An isolated
-working directory and no built-in tools do not provide OS-level confinement. An experimental Windows Job Object runner is present separately, but it is not wired to the disabled app launch seam and has not been run on Windows. Do not use it
-until a supported containment and cleanup approach has been reviewed for the actual
-Windows environment. No source is transferred or runtime inspected by this candidate.
+The fixed recommender and frozen experiments are unchanged. Hosted-only mode refuses a local recommender checkpoint, so a compatible fixed scorer remains unresolved. The existing OpenAI adapter and its fixed spending policy do not authorize Claude calls.
 
-The explicit `HostedRunBudget` is a shared in-memory allowance for logical CLI invocations,
-consumed before launch and never automatically replenished. It is not durable across
-process restarts, an account-wide limit, proof of one HTTP/model attempt, or a charge cap.
-A restarted process is a new run needing fresh authorization. Retry-related environment
-settings request suppression of documented retry classes; one turn or one subprocess is
-not proof of one underlying request. The per-invocation dollar threshold is an estimated
-CLI stop setting, not a hard cap: estimates can differ from billing and spend may exceed
-it. It resets for each invocation. CLI cost and usage are reported estimates/metadata,
-not proof of billing, account identity, quota or model weights. See the [CLI reference](https://code.claude.com/docs/en/cli-reference) and [environment settings](https://code.claude.com/docs/en/env-vars).
+## Intended use and checks still needed
 
-The adapter sets a system prompt on the process command line. It must contain only the
-reviewed, non-secret workflow instruction; request data are sent by stdin. The schema is
-also passed on the command line. Provider errors are not echoed. Responses must report a
-successful envelope, the requested full model ID, and a locally schema-valid structured
-object. Model reports are not weight attestation. Exact source evidence and user review
-remain required by the app; a valid structured response is not semantic accuracy.
+This code is intended for one person using their own unmodified, already signed-in Claude Code binary. It does not route other users' credentials. The provider must be chosen explicitly; the app never selects it by default. See Anthropic's [authentication conditions](https://code.claude.com/docs/en/legal-and-compliance#authentication-and-credential-use).
 
-The separate optional dependency `claude-personal` adds jsonschema for fail-closed local
-validation. No dependency was installed or CLI run as part of this candidate. The developer
-must verify the whole source and the installed CLI's actual structured-output, model-report,
-retry, refusal/model fallback, effort and containment behavior before any allowed live use. Requested effort may be lowered by provider or organization policy and is not an attestation of effective effort.
+Before any future activation, verify:
 
-The app adds a loopback-peer and caller-supplied operator-token boundary as defense in depth. A future launcher must bind to loopback and protect the token. This does not establish OS-user isolation and has not been browser-tested. Category model_revision is the configuration digest, not a model-weight hash.
+- The actual installed binary, version, digest and path, and its effective policies.
+- The operating-system user, signed-in account, subscription/model access, billing, quota and extra-usage settings. These have not been checked for this app.
+- The requested model, effective fallback behavior, routing and reasoning effort. Requested effort may be reduced by provider or organization policy.
+- The exact data and recipient authorized for the run, including context that managed hooks might add.
+- Process containment, bounded output capture and timeout cleanup on the actual operating system.
+- Personal-only access, a securely random operator token, loopback binding and browser behavior.
+- The run's call allowance, estimated CLI threshold and any separately verified account-side limit.
 
-## Pending activation review manifest (all unverified)
+Configuration flags and version strings are declarations, not proof that these checks happened. Safe mode still permits managed policy and hooks. An isolated working directory and disabled built-in tools are not an operating-system sandbox.
 
-- Exact unmodified binary version and digest, installed path, and effective policy.
-- Operating-system user and actual signed-in account; subscription entitlement and
-  billing, quota and extra-usage settings. No account was checked for this candidate.
-- Model ID, effective fallback chain and provider routing; verified absence of an
-  unapproved fallback, including managed policy. Requested effort is not proof of
-  effective effort.
-- Specific data and recipients authorized for each run, plus managed-hook behavior.
-- Reviewed Windows process-tree containment, bounded capture and timeout cleanup.
-- Personal-only access, securely random operator token, loopback binding and browser
-  verification of the implemented memory-only personal token handoff.
-- Run-specific logical invocation allowance and separately chosen estimated CLI
-  threshold, with any account-side limit independently established if required.
+## Call limits and response validation
 
-Any eventual decision to activate must bind to reviewed exact values rather than
-claiming the placeholder assertions in this candidate prove those facts.
+`HostedRunBudget` is a shared in-memory allowance for logical CLI invocations. An invocation consumes its allowance before launch; the allowance does not refill automatically. It does not survive restarts or enforce an account-wide dollar limit. Restarting the process starts a new run that requires authorization.
+
+Retry-related environment settings request suppression of documented retry classes. One turn or subprocess does not prove that only one underlying request occurred. The per-invocation dollar threshold is an estimated CLI stopping point, not a hard billing cap, and resets for each invocation. Reported cost and usage do not verify account identity, quota, billing or model weights. See the [CLI reference](https://code.claude.com/docs/en/cli-reference) and [environment settings](https://code.claude.com/docs/en/env-vars).
+
+The system prompt and schema are passed on the command line. The prompt must contain only reviewed, non-secret workflow instructions; request data goes through stdin. Provider errors are not echoed. A response must report success and the requested full model ID, then pass local schema validation. Those checks do not prove model identity at the weights level or semantic accuracy. Source evidence and user review remain necessary.
+
+The optional `claude-personal` dependency adds jsonschema for local validation that rejects invalid output. No dependency installation or CLI run was part of this source change. Before live use, the installed CLI still needs checks for structured output, model reporting, retries, refusal/fallback, effort and containment behavior.
+
+Category `model_revision` identifies the configuration digest, not model weights.
 
 ## Experimental Windows runner
 
-`windows_job_native.py` uses creation-time Job Object assignment, explicit inherited
-handles, suspended startup, synchronous anonymous pipes with dedicated I/O workers,
-pinned worker thread handles and repeated `CancelSynchronousIo` before bounded join.
-`windows_job_runner.py` bounds output and elapsed runtime, terminates ordinary job
-members on completion or failure, and reports cleanup uncertainty. A Windows Job
-Object is not a security sandbox: operating-system-brokered or alternate-parent
-processes can escape ordinary job inheritance. Synchronous Win32 startup calls are not
-proven to finish before the deadline; the code checks the deadline before resuming the
-process but cannot guarantee a hard bound during a blocked OS call. The app permanently
-blocks subsequent calls in the same process after uncertain cleanup. The actual launch
-seam remains disabled. Windows verification has not run because the diagnostic has not been materialized successfully.
+The separate runner is not connected to the disabled app launch function and has not been verified on Windows. Its smoke-check script was not successfully made available there, so those checks have not run.
 
-The smallest useful Windows smoke check after a legitimate transfer is a harmless,
-source-free local Python program, never Claude: run the experimental runner once with
-`C:\Python314\python.exe -c` to echo a tiny stdin token and verify exact bytes, exit
-status and no active job members. Then run one bounded scenario where the Python parent
-starts a short-lived sleeping Python child and exits, verifying that the runner reports
-the lingering child and terminates it. The bundled scripts/windows_runner_smoke.py supplies those two local-only scenarios
-and a third output-bound scenario. Startup-failure cleanup still needs a separate
-Windows check. These are checks for normal job behavior, not proof of adversarial containment.
-They must be performed on the actual laptop only after reviewed source is legitimately
-available there. Do not test credentials, project data, or live model calls in this smoke.
+`windows_job_native.py` assigns a Job Object at process creation, explicitly controls inherited handles, starts suspended, and uses synchronous anonymous pipes with dedicated I/O workers. It pins worker thread handles and repeatedly calls `CancelSynchronousIo` before a bounded join. `windows_job_runner.py` bounds captured output and elapsed runtime, terminates ordinary job members on completion or failure, and reports uncertain cleanup. The app rejects subsequent calls in that process after uncertain cleanup.
 
-The browser token handoff is implemented and covered by offline tests, but has not
-received browser acceptance. The structured-output combination produced two reported
-turns in a separate compatibility check and is rejected by the one-turn rule; do not
-silently increase the limit. The app is not ready for live browser or provider use.
+A Windows Job Object is not a security sandbox. Operating-system-brokered or alternate-parent processes may escape normal job inheritance. Synchronous Win32 startup calls are not proven to finish before the deadline. The code checks the deadline before resuming the process, but cannot enforce a hard bound during a blocked OS call.
 
-After legitimate transfer and review, from the source root on the laptop run `C:\Python314\python.exe -I -S scripts\windows_runner_smoke.py`. It uses only the literal stdin token `COMP_RUNNER_OK` and short Python snippets; it does not invoke Claude. The Windows smoke test has not run because the diagnostic has not been materialized successfully.
+If this optional runner is pursued later, first review containment and cleanup for the actual Windows environment. Use only harmless Python checks, never Claude, credentials or project data. `scripts/windows_runner_smoke.py` contains three scenarios: echo a small stdin token, detect and terminate a short-lived sleeping child left by its parent, and enforce the output bound. Startup-failure cleanup needs a separate Windows check. These test ordinary job behavior, not adversarial containment.
 
-## Explicit output modes and observed compatibility
+After a separately authorized transfer and review, the script can be run from the source root with `C:\Python314\python.exe -I -S scripts\windows_runner_smoke.py`. It uses only `COMP_RUNNER_OK` and short Python snippets, including the equivalent of `C:\Python314\python.exe -c` for the echo check. Verify exact output bytes, exit status and no active job members. This document does not require a laptop demonstration or authorize running the checks now.
 
-A separate source-free live compatibility check supplied by the project owner used
-`--json-schema`, one maximum turn and no built-in tools. It returned exit 0, a success
-wrapper and `{"ok":true}`, but reported `num_turns=2` and `stop_reason=tool_use`.
+## Output modes and recorded compatibility checks
+
+A separate source-free check supplied by the project owner used `--json-schema`, one maximum turn and no built-in tools. It returned exit 0, a success wrapper and `{"ok":true}`, but reported `num_turns=2` and `stop_reason=tool_use`.
+
 Receipt SHA-256: `83c09bb776e28924fe333f8ed5a6a4853188661622d82df5cb48216c08def205`.
-The adapter correctly rejects that result under its existing one-turn requirement.
-It has not been changed to accept two turns, and this result does not verify app
-integration, recommendation output, research accuracy, billing or HTTP-attempt count.
 
-The source now requires an explicit selection of `schema_tool` or `plain_json`; neither
-mode is automatically tried after the other. In `plain_json`, the original response
-schema is appended to the system instruction, the CLI's result text must be one JSON
-object, and a strict duplicate-key/nonfinite-aware decoder plus the same local schema
-validator checks it. Prose, Markdown, malformed JSON, invalid objects and two-turn
-results fail without repair or retry; a reported non-final stop reason also fails.
-Request hashes identify canonical CLI logical requests, not underlying HTTP wire bytes.
-Existing downstream evidence, session, review
-and apply rules remain unchanged. The previous simple one-turn CLI probes did not test
-this exact schema-bearing prompt or application path; a separate permitted validation
-is required. No output mode is activated by this source change.
+The adapter rejects this response under its one-turn requirement. It has not been changed to allow two turns. The check does not verify app integration, recommendations, research accuracy, billing or HTTP-attempt count.
 
-## Personal browser token boundary
+The code requires an explicit choice of `schema_tool` or `plain_json` and never tries one automatically after the other. In `plain_json`, the original response schema is appended to the system instruction. The CLI result must be one JSON object, decoded with duplicate-key and nonfinite-value checks and validated against the same local schema. Prose, Markdown, malformed or invalid JSON, two-turn responses and a reported non-final stop reason all fail without repair or retry.
 
-The personal app requires a separately supplied operator token and an explicit canonical
-HTTP loopback origin with a non-default port, for example `http://127.0.0.1:8000`. The
-server must bind directly to that address and disable proxy-header trust; this is not
-an OS-user isolation mechanism. The app serves only its index and exact built assets
-without the token. Every API route requires the operator header; remote peers, mismatched
-Host or Origin, forwarded headers and cross-site API requests are rejected.
+Request hashes describe canonical logical CLI requests, not underlying HTTP bytes. The existing source-evidence, session, review and Apply checks remain unchanged. Earlier simple one-turn probes did not test this exact schema-bearing prompt or application path. Neither mode is activated by this code change.
 
-The personal index marks the UI to show a token entry form. A successful check holds
-the token only in JavaScript memory and adds it as a header to same-origin API requests.
-It is not placed in URLs, browser storage, application logs or model request bodies by
-this code. The form requests autocomplete off, but browser extensions, password
-managers, debuggers, a compromised same-origin script or other local processes are
-outside this control. Lock clears the UI's references, aborts outstanding fetches and
-starts a fresh UI session on the next unlock; a browser refresh also returns to the
-token entry screen. Ordinary research-user reset leaves the operator session unlocked.
+A separate harmless plain-JSON check reported by the owner returned one reported turn with `end_turn`; its exact prompt bytes were verified.
 
-Lock does not revoke a copied server-configured token, erase strings from browser
-memory immediately, delete server sessions, or guarantee already-started backend work
-stops. The token should be supplied securely from outside this app, not generated or
-stored by these files. The candidate has no launcher, and actual browser acceptance and
-the disabled CLI launch remain unverified. The normal non-personal app has no entry
-gate and continues to use its existing session header.
-
-A separate harmless plain-JSON CLI compatibility check, reported by the project owner,
-returned one reported turn with `end_turn`; its exact prompt bytes were verified.
 Receipt SHA-256: `584caa325f927e937349227357b1971a5e72654acf09296c89ce8b33b0f0c90f`.
-It did not execute the project and is not evidence of app integration or acceptance.
+
+That check also did not execute the project or verify app integration.
+
+## Browser access and operator token
+
+The personal app requires an externally supplied operator token and an explicit canonical HTTP loopback origin with a non-default port, such as `http://127.0.0.1:8000`. A future launcher must bind directly to that address, disable proxy-header trust and protect the token. These checks do not isolate operating-system users.
+
+Only the index and exact built assets are served without the token. Every API route requires the operator header. Remote peers, mismatched Host or Origin, forwarded headers and cross-site API requests are rejected.
+
+The personal index enables a token-entry screen. After a successful check, the UI holds the token only in JavaScript memory and adds it to same-origin API request headers. This code does not put it in URLs, browser storage, application logs or model requests. The form requests autocomplete off. Browser extensions, password managers, debuggers, compromised same-origin scripts and other local processes remain outside this protection.
+
+Lock clears the UI's token references, aborts outstanding fetches and starts a new UI session on the next unlock. Refresh also returns to token entry. Resetting the research user leaves the operator session unlocked.
+
+Lock cannot revoke a copied token, immediately erase strings from browser memory, delete server sessions or guarantee that already-started backend work stops. Supply the token securely outside the app; these files do not generate or store it. The normal non-personal app has no token-entry requirement and retains its existing session header.
+
+The token flow has offline tests, but browser verification is still outstanding. There is no personal launcher, and automatic CLI launch remains disabled.

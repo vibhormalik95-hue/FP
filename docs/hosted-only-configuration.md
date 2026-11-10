@@ -1,31 +1,35 @@
-# Hosted-only source candidate, 9 November 2026
+# Hosted-only configuration and current limits
 
-This is unactivated source wiring, not a running hosted integration, a new model result, or a completed professor demonstration. It does not establish account entitlement to Astra, Sol 6.1 or Terra 6.1.
+The hosted-only code was added on 9 November 2026. It is not a verified running integration or a new model result. It does not establish access to Astra, Sol 6.1 or Terra 6.1. The automatic personal Claude route also remains disabled; see [personal Claude status](../CLAUDE-PERSONAL-CANDIDATE.md).
 
-## Explicit construction
+## Creating the hosted app
 
-`feedctrl.hosted_app.create_openai_hosted_app` constructs one existing OpenAI Responses transport and shares that callable, call allowance and receipt collection across indirect intent and category production. It requires an explicit API credential, exact model identifier, reasoning level, run allowance, verified durable spending guard and affirmative authorization. It discovers no credentials and makes no constructor inference call. The existing transport enforces its own configuration, no redirects, no automatic retries and exact returned model identity.
+`feedctrl.hosted_app.create_openai_hosted_app` creates one OpenAI Responses adapter and shares its callable, call allowance and records across indirect intent, category creation and fictional metadata generation. Setup requires an explicit API credential, exact model identifier, reasoning level, run allowance, verified durable spending guard and authorization. Construction neither discovers credentials nor calls a model. The adapter rejects redirects, automatic retries and mismatched returned model identities.
 
-The category producer uses `instructions`; its bridge maps that trusted field exactly to transport `system`, preserving the other data and rejecting ambiguous envelopes. Category provenance uses the transport configuration digest as `model_revision`, not a model-weight attestation. Proposal and response schemas, evidence validation and explicit review/Apply gates are unchanged.
+The category producer supplies `instructions`; the bridge maps that field exactly to transport `system`, keeps the other data and rejects ambiguous input. Category `model_revision` is the transport configuration digest, not a model-weight hash. Proposal/response schemas, evidence checks and review before Apply remain unchanged.
 
-The existing durable policy is unchanged: two attempts, its specified Sol 6.1/medium configuration and US$0.50 maximum. A staged category workflow needs three calls; ordinary indirect intent needs two. The authored five-call offline test is only a shared-counter contract test. It does not authorize more paid calls, expand the existing guard, or demonstrate a paid run. Do not modify or bypass the guard to make a workflow fit.
+The existing spending policy permits two attempts with its specified Sol 6.1/medium configuration and US$0.50 maximum. A definition-first category workflow needs three calls; ordinary indirect intent needs two. The five-call offline test checks shared counting only. It does not authorize more paid calls or prove a paid run. The spending guard must not be changed or bypassed to fit a workflow.
 
-## Local-model boundary
+## Local execution stays disabled
 
-The explicit hosted factory sets `allow_local_models=False` and `allow_local_recommender=False`. Local parser, profile, topic, steering, indirect-intent and synthetic-generation endpoints reject before state changes or inference. Unconfigured category routes reject before state changes and cannot fall back to Ollama. A configured provider failure cannot switch to a local provider.
+The hosted factory sets `allow_local_models=False` and `allow_local_recommender=False`. Local parser, profile, topic, steering and indirect-intent routes reject before inference or preference changes. Fictional metadata generation uses the optional configured hosted adapter. If no adapter is supplied, it rejects before inference while local models are disabled; it never falls back to a local model. Unconfigured category routes reject without falling back to Ollama, and a configured provider error cannot switch to a local model.
 
-If non-fixture app configuration points to an existing local recommender checkpoint, construction rejects it before loading. It does not silently replace the fixed recommender with a different scorer. The user's restriction on local models does not clearly distinguish the language interpreter from the historical SASRec recommender; that scope must be resolved before a live configuration requiring SASRec is activated. Frozen experiments and results are unchanged.
+If a non-fixture configuration points to an existing local recommender checkpoint, construction rejects it before loading. It does not quietly choose another scorer. The current restriction covers local models without clearly separating the language interpreter from the historical SASRec recommender. A live configuration that needs SASRec therefore remains unresolved. Frozen experiments and results are unchanged.
 
-Importing `feedctrl.api` no longer constructs an application. Explicit `feedctrl.api:app` access still lazily creates the historical legacy application. The legacy shell and PowerShell launchers remain local-enabled and are not the hosted-only launcher. Do not use them to claim the new policy is active.
+Importing `feedctrl.api` no longer constructs an app. Accessing `feedctrl.api:app` still lazily creates the older local-enabled app. The legacy shell and PowerShell launchers are not hosted-only launchers and must not be used to bypass the current restriction.
 
-Missing data/checkpoints retain the old app's visibly labeled fixture/diagnostic behavior. Such a run is not research validation or evidence that the fixed recommender ran.
+Missing data or checkpoints retain the visibly labeled fixture/diagnostic behavior. A fixture run is not evidence that the fixed research recommender ran.
 
-## UI and current blockers
+## Interface and unfinished verification
 
-JSX source now hides local choices in hosted-only mode, shows configured category methods, explains external transmission and disables synthetic generation when no hosted adapter exists. After explicit approval, the exact locked npm dependencies were installed with lifecycle scripts disabled and a cache inside the writable project workspace. Vite 7.3.1 then built the updated interface successfully twice; the three output files were byte-identical across both builds. The saved `web/dist` now matches this JSX source. No browser verification or deployment occurred. Compilation is not interaction acceptance.
+In hosted-only mode, the interface hides local choices, shows configured category methods and explains external data transmission. Fictional item generation is offered when the hosted draft adapter is configured and disabled when no permitted adapter exists. For the earlier hosted UI, the exact locked npm dependencies were installed after approval with lifecycle scripts disabled and a cache inside the writable project workspace. Vite 7.3.1 built that interface twice, producing the same three output files byte-for-byte. The newer fictional-draft change reused those dependencies and also produced matching builds. The matching built files are saved in `web/dist`. Neither build result establishes browser behavior or deployment.
 
-Live completion still needs a supported authenticated hosted runtime with verified entitlement, data scope and cost authorization; an authorized configuration consistent with the unchanged recommender; browser interaction acceptance against the matching frontend build; full applicable regression checks; and authorized publication of this exact candidate followed by remote verification. None of those gates is waived by this source change.
+Before a live demonstration, the project still needs a supported authenticated runtime, verified account access, authorized data and cost limits, and a configuration consistent with the unchanged recommender. The matching frontend also needs browser checks and the applicable regression checks. Publishing source does not complete any of those steps.
 
 ## Offline checks
 
-Run the dependency-light boundary suite with `PYTHONPATH=.:tests python -m unittest -v test_hosted_app_offline`. It uses in-process endpoint calls, synthetic records and authored replies, with no HTTP server, browser, sockets, credentials or model calls. It covers both category paths, indirect intent, explicit review/Apply/undo, one shared allowance, rejection of local entry points, missing providers, and a non-fixture checkpoint load guard. These are code-contract tests, not semantic accuracy or real hosted transport evidence.
+Run `PYTHONPATH=.:tests python -m unittest -v test_hosted_app_offline` for the dependency-light suite. It uses in-process endpoint calls, synthetic records and authored replies, without an HTTP server, browser, sockets, credentials or model calls.
+
+The suite covers both category paths, indirect intent, review/Apply/undo, a shared allowance, blocked local entry points, missing providers and the non-fixture checkpoint restriction. The added hosted-draft tests exercise the optional factory and fictional-item lifecycle with authored responses. These checks concern code behavior, not semantic accuracy or real hosted transport.
+
+Independent review of the hosted-draft revision passed 92 guarded Python checks, including 3 ASGI checks for both hosted constructors and their request/session/isolation, lifecycle and failure behavior. All 7 frontend index checks passed after correcting the exact build pins. No blocking adapter defect remained in that review. No real model call was made, so live generation and the intended installed Claude Code CLI path remain unverified.

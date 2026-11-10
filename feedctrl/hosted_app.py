@@ -53,6 +53,7 @@ def shared_factories(infer, provenance):
     def category_factory():
         return category_infer, deepcopy(category_identity)
 
+    semantic_factory.model_identity = deepcopy(identity)
     return semantic_factory, category_factory
 
 
@@ -82,6 +83,7 @@ def create_openai_hosted_app(*, api_key, model, reasoning_effort, run_budget,
     app = create_app(data_path=data_path, semantic_path=semantic_path, fixture=fixture,
                      semantic_infer_factory=semantic_factory,
                      category_infer_factory=category_factory,
+                     synthetic_infer_factory=semantic_factory,
                      allow_local_models=False, allow_local_recommender=False)
     app.state.hosted_model_provenance = deepcopy(provenance)
     app.state.hosted_model_receipts = receipts

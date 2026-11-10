@@ -1,8 +1,8 @@
-# Local Llama runtime
+# Historical local Llama runtime
 
-> **Current personal candidate: do not run the historical local app, model or recommender.** No local model or recommender execution is authorized for this candidate. Do not use the historical commands, launchers or scripts below as a workaround. The current hosted personal launch is disabled pending real validation; these historical instructions and results do not establish that validation. See [candidate status](../CLAUDE-PERSONAL-CANDIDATE.md) and [hosted-only configuration](hosted-only-configuration.md).
+**Historical reproduction guide.** Local models and the local recommender are not authorized for the current personal configuration, and automatic personal Claude launch remains disabled. The commands below are retained to explain the earlier experiments; they are not instructions to run them now. Start with [current progress](current-progress.md), [hosted configuration](hosted-only-configuration.md) or [personal Claude status](../CLAUDE-PERSONAL-CANDIDATE.md) for the current app.
 
-The fresh Experiment Two run completed locally on AI_WORK on 14 October with Ollama 0.34.0 and the `llama3.1:8b` digest recorded in the [study evidence](ai-reference-e2-evidence/README.md). This page lists the runtime settings and steps for a separate rerun.
+The recorded fresh Experiment Two run completed locally on AI_WORK on 14 October with Ollama 0.34.0 and the `llama3.1:8b` digest recorded in the [study evidence](ai-reference-e2-evidence/README.md). This page lists the runtime settings and steps for a separate rerun.
 
 The backend is Ollama with `llama3.1:8b`. The original Experiment One implementation defaults to a maximum of 256 generated tokens for a single control and 1536 for a multi-preference profile. The completed Experiment Two run instead recorded a 768-token maximum for each question. Both use `/api/chat` with structured output, temperature 0, seed 42 and context length 4096. Application validation checks allowed categories, exact keys, numeric values and operation-specific strength. Record the Ollama version and model digest for a rerun; a model tag alone is not a permanent version.
 
@@ -14,7 +14,7 @@ At 03:27 UTC, the documented temporary-server wrapper started installed Ollama 0
 
 One existing development utterance, `e2-dev-001` (`I would like more category_0 and less category_12.`), passed through the unchanged `ollama_compound` parser with seed 42, six threads and a temporary cache. It returned a validated `set` command with moderate boost of `category_0` and moderate reduction of `category_12`, both with floor 0 and no condition, and reported the complete digest above. The temporary cache response has SHA-256 `e66d49d69cb872fa4efeb6473976b451ba9e607a3a163e36a5f88d5dbbb73491`; the local server log is `results/ollama_server.log`. The wrapper stopped the server after the check, and no Ollama process remained in the post-run process check.
 
-This verifies one development parse and local runtime availability. It did not open reserved Experiment Two test inputs, perform a new evaluation, or complete the original human-annotation and full-freeze gate.
+This verifies one development parse and local runtime availability. It did not open reserved Experiment Two test inputs, perform a new evaluation, or complete the original human-annotation and study-freeze requirements.
 
 ## Windows 11 (32 GB RAM laptop)
 
@@ -61,7 +61,7 @@ python scripts/with_ollama.py --binary /tmp/ollama-runtime/bin/ollama --models /
 - Linux installation: <https://docs.ollama.com/linux>
 - Llama 3.1 model entry: <https://ollama.com/library/llama3.1>
 
-Ollama's hosted Cloud service currently does not support this structured-output feature. “Cloud compute” here means running the local Ollama server inside a cloud VM/notebook; it does not mean using Ollama Cloud.
+At the reference check above, Ollama's hosted Cloud service did not support this structured-output feature. “Cloud compute” here means running the local Ollama server inside a cloud VM/notebook; it does not mean using Ollama Cloud.
 
 ## Grounded explanations
 

@@ -235,6 +235,10 @@ class HostedWorkflowTests(unittest.TestCase):
                 return {"status": "propose", "reason": "Authored test reply, not model semantics",
                         "negation_resolved": True, "alternatives": [], "evidence": [
                             {"item_id": 3, "field": "caption", "quote": "Freshly baked bread"}]}
+            if keys == ["title", "description", "category_label"]:
+                self.calls.append("draft")
+                return {"title": "Imagined harbor", "description": "A fictional harbor.",
+                        "category_label": "Imaginary places"}
             rows = payload["catalogue"]
             if "evidence" in keys:
                 self.calls.append("definition")
@@ -264,7 +268,8 @@ class HostedWorkflowTests(unittest.TestCase):
                     for r in rows]}
         semantic, category = shared_factories(infer, IDENTITY)
         self.app = create_app(fixture=True, semantic_path=path, allow_local_models=False,
-                              semantic_infer_factory=semantic, category_infer_factory=category)
+                              semantic_infer_factory=semantic, category_infer_factory=category,
+                              synthetic_infer_factory=semantic)
         self.session = endpoint(self.app, "/api/session")()["session_id"]
 
     def call(self, path, body):
@@ -309,6 +314,28 @@ class HostedWorkflowTests(unittest.TestCase):
         self.assertEqual(exhausted["status"], "error")
         self.assertEqual(len(self.calls), 5)
         self.assertEqual(self.saved()["feed"]["available_items"], 34)
+
+    def test_indirect_category_and_draft_share_one_attempt_cap(self):
+        original = self.saved()["feed"]
+        indirect = self.call("/api/semantic/preview", SemanticPreview(
+            user_id=1, label="Authored fixture", candidate_ids=list(range(1, 9)),
+            text="Hide what makes me hungry", backend="configured_model", action_source="model"))
+        self.assertTrue(indirect["ready"])
+        category = self.call("/api/semantic/induction/preview", InductionPreview(
+            user_id=1, candidate_ids=list(range(1, 9)), objective="Find preparation scenes."))
+        self.assertTrue(category["ready"])
+        for _ in range(2):
+            draft = self.call("/api/synthetic/preview", DraftRequest(
+                user_id=1, brief="Imagine a fictional harbor.", synthetic_acknowledged=True))
+            self.assertTrue(draft["ready"])
+            self.assertFalse(draft["admitted"])
+        exhausted = self.call("/api/synthetic/preview", DraftRequest(
+            user_id=1, brief="Imagine a fictional harbor.", synthetic_acknowledged=True))
+        self.assertFalse(exhausted["ready"])
+        self.assertEqual(self.calls, ["action", "grounding", "combined", "draft", "draft"])
+        self.assertEqual(self.budget.attempted, 5)
+        self.assertEqual(self.saved()["feed"], original)
+        self.assertEqual(endpoint(self.app, "/api/synthetic/items")(1, self.session)["items"], [])
 
     def test_combined_category_uses_bridge_without_apply_or_budget_reset(self):
         before = self.saved()["feed"]

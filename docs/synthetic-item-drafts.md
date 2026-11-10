@@ -1,15 +1,35 @@
-# Experimental synthetic item drafts
+# Fictional item metadata drafts
 
-This opt-in feature creates fictional metadata: a model-written title, description and synthetic category label. It creates no real media, observed event or factual dataset record. All drafts retain `model_generated_synthetic` origin, an explicit synthetic flag, no media asset, raw output, model/digest, brief/prompt/schema hashes and the original source-version digest. The origin cannot be edited through the API.
+This optional feature creates a model-written title, description and synthetic category label. It creates no real media, observed event or factual dataset record. A separate local-model development example is recorded in the [5 November demonstration](../deliverables/2026-11-05-final-demo/CLAIM-MATRIX.md).
 
-## Review and isolation
+**Current status:** the latest source adds a hosted adapter using the existing provider and shared call allowance. Independent offline and ASGI tests pass, but live hosted generation through the app has not been verified. The automatic personal Claude launcher remains disabled. If no hosted adapter is configured and local models are disabled, generation returns HTTP 403 before inference and the UI disables generation. The earlier local example does not establish hosted generation.
 
-Open **Reviewed topic feed → Experimental synthetic item drafts**, opt in, enter a fictional brief and generate once. A preview admits nothing. Review the wording and provenance, then explicitly approve admission. The separate synthetic feed uses score zero for every item, with admission order breaking ties. It never calls the trained scorer. Synthetic string IDs cannot enter observed-source semantic scopes or original item-feedback controls. Original catalogue/categories, saved observed-source groups and A–E ranks are preserved.
+## Review before adding a draft
 
-Records live only in the current session/user. Up to eight can be admitted. Removal retains one exact removed generated record for separately reviewed restoration, without inference. Restoration preserves the original generation provenance and requires fresh approval. Clear/global reset removes items, restoration history and pending drafts. Admission/removal invalidates pending reviews, including already in-flight observed-source previews, while preserving saved observed-source preferences. Source drift blocks stale admission/restoration and withholds earlier records from the synthetic feed.
+In an authorized configuration with a working provider, open **Reviewed topic feed → Experimental synthetic item drafts**, opt in, enter a fictional brief and generate once. Previewing adds nothing to the feed. Read the wording and generation details, then explicitly approve the draft if it is suitable.
 
-## Bounded local inference
+Each record keeps its `model_generated_synthetic` origin, a synthetic flag, no media asset, raw output, model/digest, brief/prompt/schema hashes and the original source-version digest. The API cannot change the origin label.
 
-The adapter uses an explicitly configured installed local model, fixed loopback transport, temperature 0, seed 42, context 8192, at most 1000 output tokens and 90 seconds plus identity probes. It makes one attempt per preview, with no internal retry or rule fallback. Malformed/duplicate-key JSON, unsupported fields/IDs, invalid text, URLs, incomplete response or changed model digest admit nothing; raw receipts remain available to the caller. A valid schema and exact provenance cannot guarantee that the creative wording is appropriate. Review remains necessary.
+Approved drafts appear in a separate feed. Every item has score zero; admission order breaks ties. This feed never calls the trained scorer. Synthetic string IDs cannot enter groups over observed items or the original item-feedback controls. The original catalogue, categories, saved source-based groups and A–E rankings are preserved.
 
-Offline tests use inference doubles and validate mechanics only. Any live development result is a separately frozen, bounded fixture and must be labelled as such; do not infer model reliability from mocked tests or fictional records. This feature does not implement source-backed admission of real media or trained cold-start relevance, and does not change frozen studies.
+## Removal, restoration and reset
+
+Records exist only for the current session/user, with up to eight admitted items. Removing an item keeps its exact generated record for a separately reviewed restoration without another model call. Restoration needs fresh approval and retains the original generation details.
+
+Clear/global reset removes drafts, admitted items and restoration history. Admission or removal invalidates pending reviews, including source-based previews already in progress, while retaining saved source-based preferences. If the source changes, the app blocks stale admission/restoration and withholds earlier records from the synthetic feed.
+
+## Hosted configuration
+
+Trusted setup can pass `synthetic_infer_factory` to `create_app`. Both hosted app factories supply their existing provider callable and call allowance, so a drafting attempt draws from the same run budget as the other model-assisted actions. It does not create a fresh allowance or enable the disabled personal Claude launcher.
+
+Only the drafting instruction, fictional brief and response schema go to the provider. The observed catalogue and existing synthetic records are not included. The app preserves the returned model/configuration identity and raw response before validation. The usual preview, review, admission, removal, restoration and reset rules still apply, and configured failures do not trigger a local fallback.
+
+Independent review passed 92 guarded Python checks, including 3 ASGI checks covering both hosted constructors and request/session/isolation behavior, the item lifecycle, and malformed-response, provider-error and source-change handling. All 7 frontend index checks passed after the build pins were corrected. This evidence uses authored provider replies; the frontend builds also matched. It does not establish real model output, browser behavior or paid-provider execution.
+
+## Earlier local generation settings
+
+The local adapter uses an explicitly configured installed model over loopback, with temperature 0, seed 42, context 8192, at most 1000 output tokens and 90 seconds plus identity probes. Each preview gets one attempt, with no automatic retry or rule fallback.
+
+Malformed or duplicate-key JSON, unsupported fields/IDs, invalid text, URLs, an incomplete response or a changed model digest adds nothing. The caller can inspect the raw records. A valid response and recorded origin do not guarantee suitable wording, so human review remains necessary.
+
+Offline tests use model substitutes and check application behavior only. Live development examples are separately preserved fixtures, not reliability estimates. The feature does not admit source-backed real media, establish trained cold-start relevance or change the frozen studies.

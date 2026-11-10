@@ -1,17 +1,31 @@
-# Optional category provider configuration
+# Configuring a model for category creation
 
-This unpublished source successor adds configuration, not a live provider. No transport is installed or activated. Existing default Ollama behavior is unchanged.
+The app can use an explicitly configured model for new category definitions and membership decisions. This configuration support does not by itself connect a live provider. The original local Ollama default remains available only where local models are allowed. See [hosted configuration](hosted-only-configuration.md) for the current restrictions.
 
-Call `create_app(..., category_infer_factory=factory)` in trusted application configuration. The separate `semantic_infer_factory` argument still configures indirect intent only. HTTP request/response schemas, producer schemas and explicit review/Apply gates are unchanged. No new endpoint or environment variable selects a provider.
+## Supply the adapter
 
-The factory takes no arguments and returns `(infer, provenance)` once per application. `infer(payload, schema)` returns JSON data. Provenance must have exactly `backend`, `model_id`, and `model_revision`, each nonempty valid UTF-8 text of at most 300 characters. Use truthful provider/model/version or configuration identity; a declared revision/configuration hash is not proof of model weights. Synthetic adapters must identify themselves as synthetic. The factory must not return credentials or private account data.
+Trusted application setup calls `create_app(..., category_infer_factory=factory)`. The separate `semantic_infer_factory` argument configures indirect intent. Requests cannot choose a provider through a new endpoint or environment variable. Request/response schemas, producer schemas, and review before Apply are unchanged.
 
-Combined category production receives one wrapper. The staged route receives separate definition, membership and evidence-audit wrappers, with explicit definition review between definition and membership. Membership and audit must use the same complete identity as the definition. One configured callable is cached across these stages and subsequent previews, so rebuilding a factory cannot replenish an adapter's own run budget. Failed initialization is not retried; no fallback to local Ollama occurs for configured failures.
+The factory takes no arguments and returns `(infer, provenance)` once per application. `infer(payload, schema)` returns JSON data. Provenance must contain exactly `backend`, `model_id` and `model_revision`, each nonempty valid UTF-8 text of at most 300 characters. Identify the provider, model and version or configuration truthfully. A declared configuration hash does not verify model weights. Test adapters must identify themselves as synthetic and must not return credentials or private account data.
 
-Each wrapper allows one observable invocation of the callable. This is NOT an upstream HTTP/model-attempt, timeout, price or retry limit. A future transport is responsible for enforcing its own bounded behavior, truthful reported identity and safe error content; this module implements no network client, CLI, credentials, retries, cancellation or transport adapter. Its lock serializes configured calls and factory initialization. A blocked callable can block other configured category calls; no timeout guarantee is made here.
+## Follow the selected category workflow
 
-The configured path records stage, exact producer payload and schema hashes, declared model provenance, bounded raw JSON response and its digest, error status, and local elapsed time. It does not label callable output as raw HTTP. Invalid/nonfinite/over-budget responses fail closed. Bounded raw responses that fail later producer validation remain in receipts; data rejected by the bounded-response snapshot cannot be safely retained in full. Errors before invocation may have no call receipt. Raw transport output is not available through this contract. Supplied provenance is structurally checked, snapshotted and compared for mutations before/after calls, not independently provider-attested.
+The combined category route uses one wrapper. The definition-first route uses separate definition, membership and evidence-check wrappers, with user review before classification. Membership and the evidence check must retain the definition's complete provider identity.
 
-Definition, membership, evidence audit, source custody, exact quotes, uncertainty, session/nonce/revision/expiry, review and Apply validation remain in their original modules. The audit sees its own blinded source payload, not membership answers. No proposal automatically changes preferences. Combined induction remains a different endpoint and is not a substitute for the staged three-call path.
+One configured callable is reused across stages and later previews. Rebuilding a factory cannot refill its run allowance. Initialization is tried once; a configured failure never falls back to local Ollama.
 
-Focused synthetic checks: `python -m pytest -p no:cacheprovider tests/test_category_provider.py tests/test_staged_induction.py tests/test_induction_integration.py`. Disable external pytest plugin autoload for isolated reproduction. These tests establish selected mechanics only, not fresh-model semantics, transport behavior, UI acceptance, broad language accuracy, or end-to-end readiness. The original r2 831-pass source result belongs to r2; it was not rerun or claimed for this successor. Frozen study outcomes are unchanged. Publication remains separate.
+Each wrapper permits one visible call to the supplied function. That does not limit the function's internal HTTP attempts, retries, runtime or price. The adapter must enforce those limits itself. This configuration module contains no network client, CLI, credentials or cancellation mechanism. A lock serializes calls and initialization, so a blocked function can block other configured category calls; the wrapper provides no timeout guarantee.
+
+## What the records contain
+
+For each call, the app records the stage, exact input and schema hashes, declared model identity, bounded raw JSON and its digest, error status and local elapsed time. These records describe the function call, not raw HTTP traffic.
+
+Invalid, nonfinite or over-budget responses are rejected. A bounded response remains in the record if later validation rejects it. A response rejected by the size/depth checks cannot be retained in full. Errors before invocation may have no call record. The app checks and snapshots supplied model identity and detects changes before or after a call; it cannot independently verify the provider's claim.
+
+The existing modules still check the definition, membership, original source version, exact quotations, uncertainty, session, nonce, revision and expiry. The evidence checker sees its own source input without the membership answers. No proposal changes preferences until reviewed and applied. The combined endpoint is not a substitute for the three-call definition-first procedure.
+
+## Offline checks
+
+Run `python -m pytest -p no:cacheprovider tests/test_category_provider.py tests/test_staged_induction.py tests/test_induction_integration.py`. Disable external pytest plugin autoload for an isolated run.
+
+These synthetic tests check selected software behavior, not model accuracy, real transport, browser interaction or full workflow readiness. The original r2 result of 831 passes belongs to that earlier source and was not rerun for this change. Frozen study outcomes remain unchanged.

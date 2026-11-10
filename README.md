@@ -1,40 +1,41 @@
 # Natural language controls for short video recommendation
 
-> **Current personal candidate: do not run the historical local app, model or recommender.** No local model or recommender execution is authorized for this candidate. Do not use the historical commands, launchers or scripts below as a workaround. The current hosted personal launch is disabled pending real validation; these historical instructions and results do not establish that validation. See [candidate status](CLAUDE-PERSONAL-CANDIDATE.md) and [hosted-only configuration](docs/hosted-only-configuration.md).
+COMP 9500 project by Vibhor Malik, supervised by Dr Borna Noureddin.
 
-COMP 9500 research project by Vibhor Malik, supervised by Dr Borna Noureddin. This repository contains the offline benchmark implementation, methods, compact evidence and professor-review materials.
+The recent work focuses on three ways to control a feed: choosing categories manually, asking an LLM to propose a genuinely new category, and expressing a preference indirectly in ordinary language. The app keeps the recommender separate from these controls so that a model suggestion can be checked before it changes the feed.
 
-## Personal UI publication note
+## Current progress
 
-The personal app serves the verified `web/dist/` build, but `.gitignore` excludes it. An ordinary Git add may therefore omit the UI. Deliberately include the exact verified build in the eventual publication through the chosen publication process, and inspect the resulting Git index before publishing. The following check reads the index only: it neither stages files nor uploads anything. It requires exactly the three paths and SHA-256 values pinned in `scripts/check_personal_ui_index.py`, and compares the actual staged blob bytes, not merely working-tree files. From the repository root in Windows PowerShell, run:
+- **Manual category controls:** implemented, with recorded examples of filtering and restoring a feed. These provide a baseline for checking what the language-based controls add.
+- **New LLM-proposed categories:** implemented as definition, membership and evidence-review steps. A recorded example created “offline practice without account creation” across Coding, Design and Language, rather than renaming an existing category.
+- **Indirect requests:** one recorded Claude example handled “Hide desk tools that would tie me to a wall socket.” It selected records that explicitly required mains power. The replies were copied between Claude and the app by an operator; this was not an automatic Claude connection. Other requests remain unsuccessful or ambiguous.
+- **Fictional item descriptions:** a separate local-model example generated metadata for a fictional item. The latest source adds a hosted-generation adapter using the existing shared provider and call allowance. Independent offline and ASGI checks pass, but live generation through the hosted app has not been verified.
 
-```powershell
-C:\Python314\python.exe scripts\check_personal_ui_index.py
-```
+These are specific development examples, not a general accuracy result or proof that recommendations improve. See [current progress and remaining work](docs/current-progress.md) for the evidence and [the app guide](docs/app.md) for how the controls fit together.
 
-The check uses Python's standard library and Git; it also runs on other platforms with Python 3 and Git. Run it only after the publication index is prepared. It does not itself prepare the index.
+**The automatic personal Claude launch is still disabled.** The installed Claude Code CLI is the intended runtime, but it has not yet been verified through the app. The current configuration keeps local model and recommender execution disabled. The older setup instructions remain available for reproducing the earlier experiments. See [hosted configuration](docs/hosted-only-configuration.md) and [personal Claude status](CLAUDE-PERSONAL-CANDIDATE.md).
 
-The `PERSONAL-AUTH-SHA256SUMS.txt` receipt is historical and remains unchanged. In this combined reviewed v6 source candidate, the receipt-covered paths that differ or are absent are `feedctrl/claude_personal.py`, `feedctrl/windows_job_native.py`, `feedctrl/windows_job_runner.py`, `web/src/personalApi.js`, `web/dist/index.html`, `web/dist/assets/index-DTzE0yVt.js`, `tests/test_windows_job_runner_offline.py`, `pyproject.toml`. The old `web/dist/assets/index-DTzE0yVt.js` is replaced by `web/dist/assets/index-CZ9L8i2t.js`; the staged-UI check pins the new error-handling build. `pyproject.toml` now declares `jsonschema` in the test extra. Use [`CURRENT-SOURCE-SHA256.txt`](CURRENT-SOURCE-SHA256.txt), beside this README, for the current repository-relative source hashes. Verify it from the repository root in a Git checkout or from `source/` in a packaged copy; it records exact bytes for every release source file except the manifest itself, which is excluded to avoid self-reference. Checkout line-ending conversion must preserve those bytes when verifying. The separate package-root `SOURCE-FILE-SHA256.txt` is the full package-layout manifest and includes the portable manifest with `source/`-prefixed paths. The historical receipt describes an earlier candidate, not this build or a complete current-tree checksum. Offline tests and a successful build do not establish hosted-model or browser acceptance; the actual personal launch remains disabled.
+## Where to start
 
-## Current professor-review materials
+- [Current progress](docs/current-progress.md): the recent requirements, observed examples and unfinished work.
+- [App guide](docs/app.md): manual controls, category creation, indirect requests and review before applying a change.
+- [Provider configuration](docs/model-provider-adapters.md) and [category configuration](docs/category-provider-configuration.md): what the code supports and what has not been tested live.
+- [Fictional item drafts](docs/synthetic-item-drafts.md): what is generated, how review works and what remains unverified in the hosted path.
+- [Source verification](docs/source-verification.md): frontend build files, checksums and release checks.
+- Implementation: `feedctrl/`, `scripts/`, `tests/` and `web/`.
 
-- [5 November delivery walkthrough and claim matrix](deliverables/2026-11-05-final-demo/README.md): manual control, a new cross-cutting induced category, one operator-assisted indirect-intent example, fictional metadata drafts, and the retained negative results. These bounded demonstrations do not establish general semantic reliability or automatic Claude API integration.
-- [Complete proposal and course-deliverable audit](deliverables/2026-11-04-completion-review/PROJECT-COMPLETION-AUDIT.md), with achieved results, departures and remaining limits.
-- [Current seven-page paper review](deliverables/2026-11-04-completion-review/COMP9500-Current-Paper-Review.pdf), matching the current paper source. The [19 October paper, presentation and progress packet](deliverables/2026-10-19/README-2026-10-19.md) remains a dated historical release.
-- [Pipeline and matching code walkthrough](deliverables/2026-10-27-feedback/PIPELINE-AND-CODE-WALKTHROUGH.md), [current code/contribution map](deliverables/2026-10-27-feedback/CODE-MAP-AND-AI-ASSISTANCE.md), and [reviewed topic-workflow addendum](deliverables/2026-11-04-reviewed-workflow/README.md).
-- [Separate prospective synthetic-language results](deliverables/2026-11-04-prospective-evaluation/PROTOCOL-AND-RESULTS.md): 48/100 supported final profiles correct and 19/20 correct diagnostic clarifications. This later study does not replace E1 or revised E2, or establish an LLM recommendation benefit.
-- [Five-condition examples](deliverables/2026-10-27-feedback/FIVE-CONDITION-EXAMPLES.md), [professor-request coverage](deliverables/2026-11-04-reviewed-workflow/CAPABILITY-AND-TRANSCRIPT-AUDIT.md) and [E1 replay limitation](deliverables/2026-11-04-completion-review/E1-REPLAY-DISCREPANCY.md).
+## Earlier research and dated records
 
-The study separates language translation from deterministic category enforcement on a fixed recommender. Experiment 1 shows large exposure changes under the category policy, alongside weaker historical next-item ranking for boosts. The fresh Experiment 2 benchmark uses 100 synthetic requests. Llama matches 76 of 100 model-generated reference commands; measured category control improves over item feedback, while conditional requests have no successes and next-item NDCG@10 is lower. The [results record](docs/ai-reference-e2-results-2026-10-14.md) gives exact measures, denominators and reference provenance.
+The original study separates language translation from deterministic category enforcement on a fixed recommender. Experiment 1 found large exposure changes under the category policy, with weaker historical next-item ranking for boosts. The fresh Experiment 2 used 100 synthetic requests. Llama matched 76 of 100 model-generated reference commands; category control improved over item feedback, but conditional requests had no successes and next-item NDCG@10 was lower. The [results record](docs/ai-reference-e2-results-2026-10-14.md) retains the exact measures, denominators and reference history.
 
-## Project files
+The following files are dated records. Their results and wording have been preserved; they should not be read as a description of everything that works in the latest app.
 
-| Purpose | Files |
-|---|---|
-| Study methods | [Experiment 1 protocol](docs/evaluation-protocol.md), [fresh Experiment 2 protocol](docs/ai-reference-e2-protocol-2026-10-14.md), [rubric](docs/ai-reference-e2-rubric-2026-10-14.md), [research provenance](docs/academic-use.md) |
-| Saved evidence | [Experiment 2 index](docs/ai-reference-e2-evidence/README.md), [exposed practice record](docs/execution-2026-10-14.md), `docs/evidence/2026-10-14/` |
-| Implementation | `feedctrl/`, `scripts/`, `tests/`, and the `web/` source |
-| Reproduction | [Windows and Colab](docs/windows-and-colab.md), [model runtime](docs/LLM_RUNTIME.md), [app guide](docs/app.md) |
-| Publication sources | `paper/research-paper-2026-10-19.tex`, `paper/references.bib`, `presentation-bcit/ai-reference-main.tex` |
+- [5 November demonstration](deliverables/2026-11-05-final-demo/README.md), including its [walkthrough](deliverables/2026-11-05-final-demo/WALKTHROUGH.md), [claim matrix](deliverables/2026-11-05-final-demo/CLAIM-MATRIX.md) and retained failures.
+- [4 November proposal and deliverable audit](deliverables/2026-11-04-completion-review/PROJECT-COMPLETION-AUDIT.md), [seven-page paper review](deliverables/2026-11-04-completion-review/COMP9500-Current-Paper-Review.pdf) and [E1 replay limitation](deliverables/2026-11-04-completion-review/E1-REPLAY-DISCREPANCY.md). The paper covers the earlier study, not all the recent application work.
+- [4 November synthetic-language study](deliverables/2026-11-04-prospective-evaluation/PROTOCOL-AND-RESULTS.md): 48/100 supported final profiles correct and 19/20 correct diagnostic clarifications. It does not replace E1 or revised E2 or establish an LLM recommendation benefit.
+- [27 October pipeline walkthrough](deliverables/2026-10-27-feedback/PIPELINE-AND-CODE-WALKTHROUGH.md), [code and contribution map](deliverables/2026-10-27-feedback/CODE-MAP-AND-AI-ASSISTANCE.md), [five-condition examples](deliverables/2026-10-27-feedback/FIVE-CONDITION-EXAMPLES.md), and the later [4 November workflow](deliverables/2026-11-04-reviewed-workflow/README.md) and [professor-request audit](deliverables/2026-11-04-reviewed-workflow/CAPABILITY-AND-TRANSCRIPT-AUDIT.md).
+- [19 October paper, presentation and progress packet](deliverables/2026-10-19/README-2026-10-19.md).
 
-The public screening records include all 300 candidate request texts, including the selected wording. Complete cases, model-generated labels, responses, ranking outputs, SASRec checkpoints and caches are in the separate research archive `COMP9500-Research-Project-Recovered.zip` (SHA-256 `fe9ef07dbb55902626fe5e5aab20261a57b6fb6e86832267e2249b052d587cc1`). Llama weights must be downloaded separately. See the [reproduction guide](docs/windows-and-colab.md) and [notices](NOTICE.md).
+Study methods: [Experiment 1](docs/evaluation-protocol.md), [fresh Experiment 2](docs/ai-reference-e2-protocol-2026-10-14.md), [rubric](docs/ai-reference-e2-rubric-2026-10-14.md) and [research provenance](docs/academic-use.md). Saved evidence: [Experiment 2 index](docs/ai-reference-e2-evidence/README.md), [exposed practice run](docs/execution-2026-10-14.md) and `docs/evidence/2026-10-14/`. The earlier paper and presentation sources remain in `paper/research-paper-2026-10-19.tex`, `paper/references.bib` and `presentation-bcit/ai-reference-main.tex`.
+
+The public screening records contain all 300 candidate request texts, including the selected wording. Complete cases, model-generated labels, responses, ranking outputs, SASRec checkpoints and caches are held in `COMP9500-Research-Project-Recovered.zip` (SHA-256 `fe9ef07dbb55902626fe5e5aab20261a57b6fb6e86832267e2249b052d587cc1`). Llama weights are separate. The [Windows and Colab guide](docs/windows-and-colab.md) and [local model guide](docs/LLM_RUNTIME.md) retain the historical reproduction steps. See [third-party notices](NOTICE.md) for data and software attribution.
