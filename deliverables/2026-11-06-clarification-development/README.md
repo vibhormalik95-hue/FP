@@ -1,5 +1,15 @@
 # Clarification and local transport development revision
 
+> **Dated correction, 2026-11-06.** The base line below is historical: this revision is
+> contained in published `1b682eaa3af6bd60b7ee0f6f36562bc09a33f08a` (public branch
+> `codex/comp9500-professor-demo-20261027`). The "durable pre-send reservation remains
+> unimplemented" sentence is superseded: `feedctrl/hosted_spend_guard.py` now implements a
+> durable SQLite reservation committed before the token-counter callback and any send, no refunds or resets after an
+> error, and a fixed two-attempt/US$0.50 ledger (tested offline in `tests/test_hosted_spend_guard.py`).
+> Still NOT established: the exact input-token/overhead proof, the provider-side counter,
+> billing or account cap, and any live call. `make_openai_responses_infer` still accepts
+> `spend_guard=None`, so callers must pass the guard. Paid execution remains disabled and was not run.
+
 Base: published demo `1f578bbb3548e3b8e2d86dfe2c634f5100b95899`.
 This separate development revision makes no new model calls and changes no semantic prompt or generation schema. Frozen studies, raw model outputs, references and the exhausted hunger run are untouched.
 

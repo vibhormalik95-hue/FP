@@ -1,5 +1,7 @@
 # Run on Windows 11 or Google Colab
 
+> **Current personal candidate: do not run the historical local app, model or recommender.** No local model or recommender execution is authorized for this candidate. Do not use the historical commands, launchers or scripts below as a workaround. The current hosted personal launch is disabled pending real validation; these historical instructions and results do not establish that validation. See [candidate status](../CLAUDE-PERSONAL-CANDIDATE.md) and [hosted-only configuration](hosted-only-configuration.md).
+
 The original Experiment One run used a Linux CPU VM; the fresh Experiment Two inference ran locally on AI_WORK on 14 October. See [saved results](ai-reference-e2-results-2026-10-14.md). This guide shows how to run the code on Windows or Colab. A Core i9 laptop with 32 GB RAM can run the small SASRec model and a local quantized 8B language model; inference speed depends on the CPU, cooling and any compatible GPU.
 
 ## Public code-review checkout: safe checks
@@ -27,7 +29,7 @@ Install Python 3.12 and unzip the project into a short path, for example `C:\CMP
 py -3.12 -m venv .venv
 .\.venv\Scripts\python.exe -m pip install --upgrade pip
 .\.venv\Scripts\python.exe -m pip install torch==2.5.1 --index-url https://download.pytorch.org/whl/cpu
-.\.venv\Scripts\python.exe -m pip install -e ".[test,analysis]"
+.\.venv\Scripts\python.exe -m pip install -e ".[test]"
 .\.venv\Scripts\python.exe -m pytest -q
 ```
 

@@ -7,6 +7,8 @@ from copy import deepcopy
 import hashlib
 import json
 
+from feedctrl.label_validation import is_printable_label
+
 FIELDS = frozenset({'manual_cover_text', 'caption', 'topic_tag',
     'first_level_category_name', 'second_level_category_name', 'third_level_category_name'})
 PROMPT = '''Propose one NEW useful category from the supplied existing item metadata,
@@ -132,6 +134,8 @@ def propose_category(objective, index, infer, *, model_provenance, existing_cate
             if raw['memberships']: raise ValueError('Abstention cannot contain memberships')
             return result('clarify' if raw['status'] == 'ambiguous' or raw['alternatives'] else 'no_match', raw['rationale'])
         _text(raw['label'], 80); _text(raw['definition'], 1000)
+        if not is_printable_label(raw['label']):
+            raise ValueError('Use a printable category label')
         if any(ord(ch) < 32 for ch in raw['label'] + raw['definition']):
             raise ValueError('Control character in category text')
         if raw['alternatives']: return result('clarify', 'Competing category definitions require clarification')

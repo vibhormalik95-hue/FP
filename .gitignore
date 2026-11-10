@@ -6,6 +6,8 @@ web/node_modules/
 web/dist/
 data/raw/
 *.log
+!/docs/ai-reference-e2-evidence/audit/inference-worker-terminal.log
+!/docs/ai-reference-e2-evidence/audit/scoring-terminal.log
 *.aux
 *.bbl
 *.blg

@@ -113,7 +113,7 @@ class SteeringRemoveRequest(Request):
 
 
 class DemoState:
-    def __init__(self, data_path=None, model_path=None, fixture=False, semantic_path=None):
+    def __init__(self, data_path=None, model_path=None, fixture=False, semantic_path=None, *, allow_local_recommender=True):
         data_path = Path(data_path or os.getenv("FEEDCTRL_DATA", ROOT / "data/processed.json"))
         model_path = Path(model_path or os.getenv("FEEDCTRL_MODEL", ROOT / "results/models/seed_42"))
         self.data = fixture_data() if fixture or not data_path.exists() else json.loads(data_path.read_text(encoding="utf-8"))
@@ -125,6 +125,8 @@ class DemoState:
                         or meta.get("kind") == "synthetic_fixture")
         self.model = None
         if not self.fixture and model_path.exists():
+            if not allow_local_recommender:
+                raise ValueError("A local recommender is configured; loading or replacing it is not authorized by hosted-only mode")
             from feedctrl.model import load_model
             self.model = load_model(model_path)
         self.sessions = {}
@@ -308,10 +310,19 @@ class DemoState:
 
 
 def create_app(data_path=None, model_path=None, fixture=False, semantic_path=None,
-               *, semantic_infer_factory=None):
+               *, semantic_infer_factory=None, category_infer_factory=None, allow_local_models=True,
+               allow_local_recommender=True):
+    if type(allow_local_models) is not bool or type(allow_local_recommender) is not bool:
+        raise ValueError("Model policy flags must be booleans")
     app = FastAPI(title="Feed Control Lab", version="1.0.0")
-    demo = DemoState(data_path, model_path, fixture, semantic_path)
+    demo = DemoState(data_path, model_path, fixture, semantic_path,
+                     allow_local_recommender=allow_local_recommender)
     app.state.demo = demo
+    app.state.allow_local_models = allow_local_models
+
+    def require_backend(backend):
+        if backend == "ollama" and not allow_local_models:
+            raise HTTPException(403, "Local models are disabled in this application; no inference was attempted")
 
     @app.middleware("http")
     async def response_headers(request, call_next):
@@ -329,7 +340,9 @@ def create_app(data_path=None, model_path=None, fixture=False, semantic_path=Non
                 "model_mode": "trained model" if demo.model else "deterministic diagnostic scorer",
                 "users": len(demo.users), "items": len(demo.items), "categories": len(demo.categories),
                 "default_parser": "rule", "ollama_model": os.getenv("FEEDCTRL_OLLAMA_MODEL", DEFAULT_MODEL),
-                "ollama_status": "Not checked; selecting Ollama makes a real request. Failures remain visible.",
+                "local_models_allowed": allow_local_models,
+                "ollama_status": ("Not checked; selecting Ollama makes a real request. Failures remain visible."
+                                  if allow_local_models else "Disabled by hosted-only application policy."),
                 "research_note": "Synthetic category controls measure offline behavior; this demo does not establish human agency or satisfaction.",
                 "category_note": "Opaque dataset category IDs; no invented topic names.",
                 "semantic_topic": ("Official caption sidecar loaded; exploratory preview only"
@@ -403,6 +416,7 @@ def create_app(data_path=None, model_path=None, fixture=False, semantic_path=Non
 
     @app.post("/api/steering/preview")
     def steering_preview(body: SteeringPreviewRequest, x_session_id: str | None = Header(default=None)):
+        require_backend(body.backend)
         with demo.lock:
             state = demo.steering_state(x_session_id, body.user_id)
             revision = state["steering_revision"]
@@ -475,20 +489,24 @@ def create_app(data_path=None, model_path=None, fixture=False, semantic_path=Non
     def steering_remove(body: SteeringRemoveRequest, x_session_id: str | None = Header(default=None)):
         with demo.lock:
             state = demo.steering_state(x_session_id, body.user_id)
-            demo.steering_remember(state)
-            state["steering_commands"] = [c for c in state["steering_commands"]
-                                         if c["topic"].casefold() != body.topic.casefold()]
-            state["steering_text"] = steering.profile_text(state["steering_commands"])
-            state["steering_revision"] += 1
-            state["steering_pending"] = None
-            state["steering_focus"] = None
-            return {"removed": True, "commands": state["steering_commands"],
+            remaining = [c for c in state["steering_commands"]
+                         if c["topic"].casefold() != body.topic.casefold()]
+            removed = len(remaining) != len(state["steering_commands"])
+            if removed:
+                demo.steering_remember(state)
+                state["steering_commands"] = remaining
+                state["steering_text"] = steering.profile_text(remaining)
+                state["steering_revision"] += 1
+                state["steering_pending"] = None
+                state["steering_focus"] = None
+            return {"removed": removed, "commands": state["steering_commands"],
                     "text": state["steering_text"], "revision": state["steering_revision"],
-                    "can_undo": bool(state["steering_history"]), "focus": None,
+                    "can_undo": bool(state["steering_history"]), "focus": state["steering_focus"],
                     "feed": demo.steering_feed(body.user_id, state["steering_commands"])}
 
     @app.post("/api/topic/preview")
     def topic_preview(body: TopicRequest, x_session_id: str | None = Header(default=None)):
+        require_backend(body.backend)
         with demo.lock:
             demo.user_state(x_session_id, body.user_id)
         if demo.topic_index is None:
@@ -513,6 +531,7 @@ def create_app(data_path=None, model_path=None, fixture=False, semantic_path=Non
 
     @app.post("/api/control")
     def control(body: ControlRequest, x_session_id: str | None = Header(default=None)):
+        require_backend(body.backend)
         with demo.lock:
             demo.user_state(x_session_id, body.user_id)
         try:
@@ -553,6 +572,7 @@ def create_app(data_path=None, model_path=None, fixture=False, semantic_path=Non
 
     @app.post("/api/profile/text")
     def profile_text(body: ProfileTextRequest, x_session_id: str | None = Header(default=None)):
+        require_backend(body.backend)
         with demo.lock:
             demo.user_state(x_session_id, body.user_id)
         try:
@@ -596,8 +616,9 @@ def create_app(data_path=None, model_path=None, fixture=False, semantic_path=Non
                          synthetic_revision=state.get("synthetic_revision", 0) + 1)
         return {"reset": True}
 
-    install_semantic_routes(app, demo, infer_factory=semantic_infer_factory)
-    install_synthetic_routes(app, demo)
+    install_semantic_routes(app, demo, infer_factory=semantic_infer_factory,
+                            category_infer_factory=category_infer_factory, allow_local_models=allow_local_models)
+    install_synthetic_routes(app, demo, allow_local_models=allow_local_models)
 
     dist = ROOT / "web/dist"
     if (dist / "assets").exists():
@@ -612,4 +633,11 @@ def create_app(data_path=None, model_path=None, fixture=False, semantic_path=Non
     return app
 
 
-app = create_app()
+def __getattr__(name):
+    # Keep the historical uvicorn feedctrl.api:app entrypoint, but do not create
+    # an app or discover/load a recommender merely by importing factory helpers.
+    if name != "app":
+        raise AttributeError(name)
+    application = create_app()
+    globals()["app"] = application
+    return application

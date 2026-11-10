@@ -1,6 +1,6 @@
 import React, {useEffect, useRef, useState} from 'react';
 
-export default function SteeringPanel({api, user, resetKey, onFeed, onApplied}) {
+export default function SteeringPanel({api, user, resetKey, onFeed, onApplied, allowLocalModels=true}) {
   const [saved,setSaved]=useState(null), [text,setText]=useState(''), [mode,setMode]=useState('merge');
   const [backend,setBackend]=useState('ollama'), [manual,setManual]=useState([]);
   const [topic,setTopic]=useState(''), [operation,setOperation]=useState('boost'), [strength,setStrength]=useState('standard');
@@ -10,6 +10,7 @@ export default function SteeringPanel({api, user, resetKey, onFeed, onApplied}) 
   const [clarification,setClarification]=useState(null);
   const [subjectBindings,setSubjectBindings]=useState([]);
   const generation=useRef(0);
+  useEffect(()=>{if(!allowLocalModels&&backend==='ollama'){setBackend('manual');setPending(null);}},[allowLocalModels,backend]);
   useEffect(()=>{
     const id=++generation.current; setWorking(false);setPending(null);setQuestion('');setClarification(null);setSubjectBindings([]);setError('');setManual([]);setText('');setSaved(null);
     if(user===null)return;
@@ -61,7 +62,7 @@ export default function SteeringPanel({api, user, resetKey, onFeed, onApplied}) 
     <p className="help">Compose several topic preferences, review their source subjects, then apply. This controls the local saved-model catalogue, with no YouTube connection. Original A-E results remain separate.</p>
     <label className="field-label" htmlFor="steering-backend">Interpretation method</label>
     <select id="steering-backend" value={backend} disabled={disabled} onChange={e=>{setBackend(e.target.value);setPending(null);}}>
-      <option value="ollama">{modelName}: natural language</option><option value="manual">Manual: exact source subjects</option>
+      {allowLocalModels&&<option value="ollama">{modelName}: natural language</option>}<option value="manual">Manual: exact source subjects</option>
     </select>
     <label className="field-label" htmlFor="steering-mode">Update scope</label>
     <select id="steering-mode" value={mode} disabled={disabled} onChange={e=>{

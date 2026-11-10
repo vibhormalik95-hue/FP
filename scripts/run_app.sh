@@ -2,7 +2,7 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 if [[ ! -x .venv/bin/python ]]; then
-  echo 'Follow README.md: python3.12 -m venv .venv, then install the CPU PyTorch wheel and .venv/bin/python -m pip install -e ".[test,analysis]".'
+  echo 'Follow README.md: python3.12 -m venv .venv, then install the CPU PyTorch wheel and .venv/bin/python -m pip install -e ".[test]".'
   exit 1
 fi
 if [[ ! -f web/dist/index.html ]]; then

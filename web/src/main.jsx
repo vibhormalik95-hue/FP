@@ -4,6 +4,7 @@ import './style.css';
 import SteeringPanel from './SteeringPanel';
 import SemanticPanel from './SemanticPanel';
 import SyntheticDraftPanel from './SyntheticDraftPanel';
+import { createApiClient } from './personalApi';
 
 const conditions = {
   A: ['Item feedback', 'Direct feedback on individual items.'],
@@ -13,7 +14,7 @@ const conditions = {
   E: ['All channels', 'Frozen scorer + explanation, instruction and profile. Latest instruction wins conflicts.'],
 };
 
-function App() {
+function App({client, personal, onLock}) {
   const [status, setStatus] = useState(null), [users, setUsers] = useState([]), [cats, setCats] = useState([]);
   const [user, setUser] = useState(null), [condition, setCondition] = useState('E');
   const [backend, setBackend] = useState('rule'), [feed, setFeed] = useState(null), [comparison, setComparison] = useState(null);
@@ -27,12 +28,7 @@ function App() {
   const token = useRef(null), requestId = useRef(0);
 
   async function api(path, body, method='POST') {
-    const response = await fetch(`/api/${path}`, { method: body === undefined ? 'GET' : method,
-      headers: { 'Content-Type': 'application/json', ...(token.current ? {'X-Session-ID': token.current} : {}) },
-      ...(body === undefined ? {} : { body: JSON.stringify(body) }) });
-    const payload = await response.json();
-    if (!response.ok) throw new Error(typeof payload.detail === 'string' ? payload.detail : 'Check the input and try again.');
-    return payload;
+    return client.request(path, body, method, token.current);
   }
   async function refresh(selectedUser=user, selectedCondition=condition, loadProfile=false) {
     const id = ++requestId.current;
@@ -78,7 +74,7 @@ function App() {
   const color = category => palette[Math.max(0, cats.indexOf(category)) % palette.length];
 
   return <div className="app-shell">
-    <header className="header"><a href="#main" className="brand"><span className="brand-mark">f<span>↗</span></span><span>feed control<span className="brand-sub">RESEARCH LAB</span></span></a><div className="header-right"><span className="research-tag">COMP 9500 · OFFLINE PROTOTYPE</span><a href="/docs" target="_blank" rel="noreferrer">API reference ↗</a></div></header>
+    <header className="header"><a href="#main" className="brand"><span className="brand-mark">f<span>↗</span></span><span>feed control<span className="brand-sub">RESEARCH LAB</span></span></a><div className="header-right"><span className="research-tag">COMP 9500 · OFFLINE PROTOTYPE</span>{personal ? <button type="button" className="text-button" onClick={onLock}>Lock session</button> : <a href="/docs" target="_blank" rel="noreferrer">API reference ↗</a>}</div></header>
     <main id="main">
       <section className="intro"><div><p className="eyebrow">YOUR PREFERENCES, MADE VISIBLE</p><h1>A feed you can<br/><em>steer.</em></h1><p className="lede">Explore how explanations, natural-language instructions and an editable profile change a recommendation list.</p></div><div className="intro-note"><span className="big-number">05</span><span>conditions.<br/>One frozen scorer.<br/>Every control visible.</span></div></section>
       {status && <section className="status-strip" aria-label="Research environment"><span className={`status-chip ${status.data_mode === 'fixture' ? 'fixture' : ''}`}><i/>{status.data_mode === 'fixture' ? 'FIXTURE DATA' : 'PROCESSED DATASET'}</span><span>{status.model_mode}</span><span>{view === 'steering' ? 'Reviewed catalogue controls; model shown in the panel' : backend === 'rule' ? 'Rule parser · diagnostic only' : 'Ollama parser · actual request on submit'}</span><span>{status.items.toLocaleString()} items · {status.users.toLocaleString()} users</span></section>}
@@ -90,10 +86,10 @@ function App() {
         <aside className="controls">
           {view !== 'steering' && <>
           <section className="panel"><div className="section-heading"><span className="step">01</span><h2>Choose a condition</h2></div><div className="conditions">{Object.entries(conditions).map(([key, [label]]) => <button key={key} aria-pressed={condition === key} className={`condition ${condition === key ? 'selected' : ''}`} disabled={busy || user === null} onClick={() => selectCondition(key)}><b>{key}</b><span>{label}</span><span className="radio-dot"/></button>)}</div><p className="help">{conditions[condition][1]}</p></section>
-          <section className="panel"><div className="section-heading"><span className="step">02</span><h2>Original category control</h2></div><label className="field-label" htmlFor="parser">Interpretation backend</label><select id="parser" value={backend} disabled={busy} onChange={e => {setBackend(e.target.value); setNotice('');}}><option value="rule">Rule parser (diagnostic)</option><option value="ollama">Ollama (local LLM)</option></select><p className="help">{backend === 'rule' ? 'Original A–E: one explicit existing category_N per instruction. This diagnostic parser is not an LLM.' : `Uses ${status?.ollama_model || 'the configured model'}. Original A–E accepts one explicit existing category_N. Backend errors are shown; no silent fallback.`}</p><form onSubmit={e => {e.preventDefault(); act(() => api('control', {user_id:user, text:control, backend}), r => r.applied ? `${r.command.operation} ${r.command.category || ''} applied via ${r.command.source}.` : 'Please clarify: name one existing category_N and ask for more, less, mute or reset. For named topics, use Reviewed topic feed.');}}><label className="field-label" htmlFor="control">What would you like to change?</label><textarea id="control" aria-describedby="control-shortcut" onKeyDown={e => {if ((e.ctrlKey || e.metaKey) && e.key === 'Enter' && !e.nativeEvent.isComposing) {e.preventDefault(); if (!busy && control.trim() && user !== null) e.currentTarget.form.requestSubmit();}}} maxLength={500} value={control} onChange={e => setControl(e.target.value)} placeholder={`Show me more ${cats[0] || 'category_0'}`} rows={3}/><div className="suggestions"><button type="button" onClick={() => setControl(`Show me more ${cats[0]}`)} disabled={!cats.length}>More {cats[0]}</button><button type="button" onClick={() => setControl(`Mute ${cats[1]}`)} disabled={cats.length < 2}>Mute {cats[1]}</button></div><button className="primary" disabled={busy || !control.trim() || user === null}>Apply instruction <span>↗</span></button></form><p className="help">Used by C and E. <span id="control-shortcut">Ctrl/Cmd+Enter applies the instruction.</span> One existing category_N per instruction; the latest replaces the previous one. Less/fewer means hard mute. New names and graded decreases belong in Reviewed topic feed.</p><button type="button" className="secondary" disabled={!reviewedFeed || busy} onClick={() => {setError(''); setNotice(''); setView('steering');}}>Use named topics and graded controls</button></section>
+          <section className="panel"><div className="section-heading"><span className="step">02</span><h2>Original category control</h2></div><label className="field-label" htmlFor="parser">Interpretation backend</label><select id="parser" value={backend} disabled={busy} onChange={e => {setBackend(e.target.value); setNotice('');}}><option value="rule">Rule parser (diagnostic)</option>{status?.local_models_allowed!==false&&<option value="ollama">Ollama (local LLM)</option>}</select><p className="help">{backend === 'rule' ? 'Original A–E: one explicit existing category_N per instruction. This diagnostic parser is not an LLM.' : `Uses ${status?.ollama_model || 'the configured model'}. Original A–E accepts one explicit existing category_N. Backend errors are shown; no silent fallback.`}</p><form onSubmit={e => {e.preventDefault(); act(() => api('control', {user_id:user, text:control, backend}), r => r.applied ? `${r.command.operation} ${r.command.category || ''} applied via ${r.command.source}.` : 'Please clarify: name one existing category_N and ask for more, less, mute or reset. For named topics, use Reviewed topic feed.');}}><label className="field-label" htmlFor="control">What would you like to change?</label><textarea id="control" aria-describedby="control-shortcut" onKeyDown={e => {if ((e.ctrlKey || e.metaKey) && e.key === 'Enter' && !e.nativeEvent.isComposing) {e.preventDefault(); if (!busy && control.trim() && user !== null) e.currentTarget.form.requestSubmit();}}} maxLength={500} value={control} onChange={e => setControl(e.target.value)} placeholder={`Show me more ${cats[0] || 'category_0'}`} rows={3}/><div className="suggestions"><button type="button" onClick={() => setControl(`Show me more ${cats[0]}`)} disabled={!cats.length}>More {cats[0]}</button><button type="button" onClick={() => setControl(`Mute ${cats[1]}`)} disabled={cats.length < 2}>Mute {cats[1]}</button></div><button className="primary" disabled={busy || !control.trim() || user === null}>Apply instruction <span>↗</span></button></form><p className="help">Used by C and E. <span id="control-shortcut">Ctrl/Cmd+Enter applies the instruction.</span> One existing category_N per instruction; the latest replaces the previous one. Less/fewer means hard mute. New names and graded decreases belong in Reviewed topic feed.</p><button type="button" className="secondary" disabled={!reviewedFeed || busy} onClick={() => {setError(''); setNotice(''); setView('steering');}}>Use named topics and graded controls</button></section>
           <section className="panel"><div className="section-heading"><span className="step">03</span><h2>Your editable profile</h2></div><form onSubmit={e => {e.preventDefault(); act(() => api('profile/text', {user_id:user, text:profileText, backend}), r => r.applied ? `Profile saved via ${r.source}.` : 'Profile was ambiguous. State explicit category preferences and try again.');}}><label className="field-label" htmlFor="profile">History context + your current preferences</label><textarea id="profile" maxLength={2000} rows={4} value={profileText} onChange={e => setProfileText(e.target.value)} placeholder={`More ${cats[0] || 'category_0'}. Mute ${cats[1] || 'category_1'}.`}/><div className="word-count">{profileWords}/200 words · Used by D and E</div><button className="secondary" disabled={busy || !profileText.trim() || profileWords > 200 || user === null}>Save profile</button></form><div className="saved-profile"><span className="field-label">Parsed current preferences</span>{Object.keys(profile).length ? Object.entries(profile).map(([c,v]) => <div className="preference" key={c}><span><i style={{background:color(c)}}/>{c}</span><b>{v < 0 ? 'Muted' : `+${v.toFixed(2)}`}</b><button aria-label={`Remove ${c} preference`} disabled={busy} onClick={() => {const next={...profile}; delete next[c]; act(() => api('profile', {user_id:user,profile:next}, 'PUT'), `Removed ${c} from profile.`, true);}}>×</button></div>) : <p className="help">No saved category preferences.</p>}</div></section>
           </>}
-          <div hidden={view !== 'steering'}><SteeringPanel api={api} user={user} resetKey={steeringReset} onFeed={setReviewedFeed} onApplied={() => setView('steering')}/></div>
+          <div hidden={view !== 'steering'}><SteeringPanel allowLocalModels={status?.local_models_allowed!==false} api={api} user={user} resetKey={steeringReset} onFeed={setReviewedFeed} onApplied={() => setView('steering')}/></div>
           <div hidden={view !== 'steering'}><SemanticPanel api={api} user={user} resetKey={steeringReset} onFeed={setReviewedFeed}/></div>
             <div hidden={view !== 'steering'}><SyntheticDraftPanel api={api} user={user} resetKey={steeringReset}/></div>
           <details hidden={view === 'steering'}><summary>Earlier single-topic diagnostic</summary>
@@ -105,7 +101,7 @@ function App() {
               <label className="field-label" htmlFor="topic-backend">Interpretation</label>
               <select id="topic-backend" value={topicBackend} disabled={busy} onChange={e => setTopicBackend(e.target.value)}>
                 <option value="manual">Literal source-text topic (no LLM)</option>
-                <option value="ollama">Local Ollama (real inference)</option>
+                {status?.local_models_allowed!==false&&<option value="ollama">Local Ollama (real inference)</option>}
               </select>
               {topicBackend === 'manual' && <><label className="field-label" htmlFor="topic-operation">Action</label>
                 <select id="topic-operation" value={topicOperation} disabled={busy} onChange={e => setTopicOperation(e.target.value)}>
@@ -145,4 +141,32 @@ function App() {
   </div>;
 }
 
-createRoot(document.getElementById('root')).render(<App/>);
+function PersonalEntry() {
+  const personal = document.documentElement.dataset.personalAuth === 'required';
+  const [client] = useState(() => createApiClient({personal}));
+  const [unlocked, setUnlocked] = useState(!personal);
+  const [draft, setDraft] = useState('');
+  const [checking, setChecking] = useState(false);
+  const [authError, setAuthError] = useState('');
+  async function submit(event) {
+    event.preventDefault();
+    if (!draft || checking) return;
+    setChecking(true); setAuthError('');
+    const ok = await client.unlock(draft);
+    setDraft(''); setChecking(false);
+    if (ok) setUnlocked(true); else setAuthError('Could not unlock this personal session. Check the token and try again.');
+  }
+  function lock() {client.lock(); setDraft(''); setAuthError(''); setUnlocked(false);}
+  if (unlocked) return <App client={client} personal={personal} onLock={lock}/>;
+  return <main className="personal-entry"><section className="panel" aria-labelledby="personal-title">
+    <p className="eyebrow">PERSONAL LOOPBACK SESSION</p><h1 id="personal-title">Unlock the research app</h1>
+    <p className="help">Enter the operator token supplied for this local session. It stays in this page’s memory and is cleared when you lock or reload.</p>
+    <form onSubmit={submit} autoComplete="off"><label className="field-label" htmlFor="personal-token">Operator token</label>
+      <input id="personal-token" type="password" autoComplete="off" spellCheck={false} value={draft}
+        onChange={e => setDraft(e.target.value)} disabled={checking} />
+      <button type="submit" className="primary" disabled={checking || !draft}>{checking ? 'Checking…' : 'Unlock'}</button>
+    </form>{authError && <p role="alert" className="alert error">{authError}</p>}
+  </section></main>;
+}
+
+createRoot(document.getElementById('root')).render(<PersonalEntry/>);

@@ -9,6 +9,7 @@ from __future__ import annotations
 import base64
 from copy import deepcopy
 import hashlib
+import http.client
 import json
 import re
 import threading
@@ -229,7 +230,8 @@ def make_openai_responses_infer(*, api_key, model, reasoning_effort,
             if reservation is not None:spend_guard.complete(reservation,raw)
             receipt['outcome'] = 'parsed_transport_only'
             return deepcopy(parsed)
-        except (ValueError, TypeError, KeyError, RecursionError, urllib.error.URLError, OSError, ParserOperationalError) as exc:
+        except (ValueError, TypeError, KeyError, RecursionError, urllib.error.URLError,
+                http.client.IncompleteRead, OSError, ParserOperationalError) as exc:
             receipt['outcome'] = 'error'
             receipt['error_type'] = type(exc).__name__
             if isinstance(exc, urllib.error.HTTPError):

@@ -20,6 +20,7 @@ export default function SemanticPanel({api,user,resetKey,onFeed}) {
       .catch(e=>{if(id===generation.current)setMessage(e.message);})
       .finally(()=>{if(id===generation.current)setWorking(false);});}
   },[user,resetKey,open]);
+  useEffect(()=>{if(saved?.local_models_allowed===false&&backend==='ollama'){setBackend(saved.external_adapter_available?'configured_model':'manual_category');setPending(null);}},[saved,backend]);
   useEffect(()=>{setDefinition(null);setEvidenceReviewed(false);setClarification(null);},[backend,text,label,count,operation,strength,mode,actionSource,category]);
   useEffect(()=>{setTargetConfirmed(false);setPending(null);},[backend,text,target,count,operation,strength,mode,explicitTarget]);
   async function run(work){const id=generation.current;setWorking(true);setMessage('');setClarification(null);
@@ -53,11 +54,14 @@ export default function SemanticPanel({api,user,resetKey,onFeed}) {
       <p className="help">The selected model can propose a nonliteral relationship from supplied source text. Only the displayed baseline items are assessed. This is a new user-defined group over existing items, not a new video or an official dataset category. Original A-E and literal topic preferences stay separate.</p>
       <label className="field-label" htmlFor="semantic-backend">Method</label>
       <select id="semantic-backend" disabled={disabled} value={backend} onChange={e=>{setBackend(e.target.value);setExplicitTarget(false);setPending(null);}}>
-        <option value="ollama">{saved?.configured_model||'Configured local model'}: semantic proposal</option>
+        {saved?.local_models_allowed!==false&&<option value="ollama">{saved?.configured_model||'Configured local model'}: semantic proposal</option>}
         {saved?.external_adapter_available&&<option value="configured_model">Operator-configured model provider: semantic proposal</option>}
-        <option value="staged">Local LLM: review definition, then classify all supplied items</option>
-        <option value="induction">Local LLM: propose a new category definition and membership</option>
+        {(saved?.category_adapter_available||saved?.local_models_allowed!==false)&&<>
+          <option value="staged">Configured model: review definition, then classify all supplied items</option>
+          <option value="induction">Configured model: propose a new category definition and membership</option>
+        </>}
         <option value="manual_category">Manual: exact original category baseline</option></select>
+        {(backend==='configured_model'||(['staged','induction'].includes(backend)&&saved?.category_adapter_available))&&<p className="help">This provider may receive your instruction and the displayed source metadata outside this computer. Use only the data scope and paid-call budget authorized for this run. Model identity and transport provenance appear in review. Browser subscription access alone does not enable this adapter.</p>}
       {!['induction','staged'].includes(backend)&&<><label className="field-label" htmlFor="semantic-label">Name this group</label>
       <input id="semantic-label" maxLength={80} disabled={disabled} value={label} onChange={e=>{setLabel(e.target.value);setPending(null);}}/></>}
       <label className="field-label" htmlFor="semantic-count">Evidence scope</label>
@@ -67,9 +71,8 @@ export default function SemanticPanel({api,user,resetKey,onFeed}) {
       {backend!=='manual_category'?<><label className="field-label" htmlFor="semantic-text">{['induction','staged'].includes(backend)?'Category discovery objective':'One current instruction'}</label>
         <textarea id="semantic-text" rows={3} maxLength={2000} disabled={disabled} value={text} onChange={e=>{setText(e.target.value);setPending(null);}}
           placeholder="Describe what you want more, less or none of; indirect meaning is allowed."/>
-        {backend==='staged'?<p className="help">First review a model-proposed definition. After approval, one call classifies all supplied items and a separate call assesses the evidence without seeing those decisions. Disagreements become unknown. Three calls at most, each bounded to 90 seconds plus identity checks. This may use the same model and does not verify semantic truth: both passes can agree on a wrong set. Review every final membership before applying. You choose direction and strength below.</p>:backend==='induction'?<p className="help">One local model call proposes a label, definition and match/not_match/unknown decision for every supplied item. You choose the control below. Evidence and inventory budgets may block a request; no silent truncation. Review is required; no new videos are created.</p>:<>
+        {backend==='staged'?<p className="help">First review a model-proposed definition. After approval, one call classifies all supplied items and a separate call assesses the evidence without seeing those decisions. Disagreements become unknown. Three stages at most. The selected adapter enforces its configured timeout and total attempt budget. This may use the same model and does not verify semantic truth: both passes can agree on a wrong set. Review every final membership before applying. You choose direction and strength below.</p>:backend==='induction'?<p className="help">One configured model call proposes a label, definition and match/not_match/unknown decision for every supplied item. You choose the control below. Evidence and inventory budgets may block a request; no silent truncation. Review is required; no new videos are created.</p>:<>
         <p className="help">Two model stages at most: action interpretation and evidence selection. The local adapter uses 90-second calls plus identity checks. A separately configured provider uses its operator-locked timeout and shared call budget. Ambiguity or invalid evidence applies nothing. No rule fallback.</p>
-        {backend==='configured_model'&&<p className="help">This provider may receive your instruction and the displayed source metadata outside this computer. Use only the data scope and paid-call budget authorized for this run. Model identity and transport provenance appear in review. Browser subscription access alone does not enable this adapter.</p>}
         <label><input type="checkbox" disabled={disabled} checked={explicitTarget} onChange={e=>setExplicitTarget(e.target.checked)}/> I will explicitly state the target meaning and action.</label>
         {explicitTarget&&<>
           <label className="field-label" htmlFor="semantic-confirmed-target">Target meaning I want filtered</label>
@@ -143,6 +146,10 @@ export default function SemanticPanel({api,user,resetKey,onFeed}) {
         </div>)}
         {pending.feed.group_exposure.map(g=><p key={g.label} className="help">{g.label}: {g.before}/10 baseline; {g.after}/10 proposed.</p>)}
         <p className="help">Proposed IDs: {pending.feed.items.map(i=>i.item_id).join(', ')}; {pending.feed.available_items} eligible. An exact quote proves source existence, not semantic relevance. Model meaning may be wrong; do not approve it if inappropriate.</p>
+        {pending.evidence_context?.length>0&&<div aria-label="Full cited source context">
+          <p className="help">Full supplied text around each cited quote (display only; check for negation or contrary meaning before approving):</p>
+          {pending.evidence_context.map(e=><p className="help" key={`${e.item_id}-${e.field}`}>Item {e.item_id}, {e.field}: “{e.supplied_field_text??'unavailable'}”{e.truncated?' [truncated]':''}{e.quote_present?'':' [quote not found in current text]'}</p>)}
+        </div>}
         <button className="primary" disabled={disabled||(pending.proposal?.target_confirmation&&(!explicitTarget||!confirmedNow))} onClick={apply}>Approve this exact item set and apply</button>
       </div>}
       <p className="help">Saved semantic groups: {saved?(saved.groups.map(g=>g.label).join(', ')||'None'):(working?'Loading...':'Unavailable')}. These are temporary session records with source hashes, not new source taxonomy labels.</p>

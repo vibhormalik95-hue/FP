@@ -26,7 +26,10 @@ class DefinitionApproval(BaseModel):
         if value is not True: raise ValueError('Explicit evidence review is required')
         return value
 
-def install_staged_routes(app,demo,state_for,review):
+def install_staged_routes(app,demo,state_for,review,*,category_provider=None):
+    if category_provider is None:
+        from feedctrl.category_provider import CategoryProvider
+        category_provider = CategoryProvider()
     def binding(pending):
         return _digest({k:pending[k] for k in ('id','created','revision','nonce','body','definition',
                                              'eligible_sha256','definition_model_calls')})
@@ -45,6 +48,10 @@ def install_staged_routes(app,demo,state_for,review):
 
     @app.post('/api/semantic/definition/preview')
     def propose(body:InductionPreview,x_session_id:str|None=Header(default=None)):
+        try:
+            category_provider.require_available()
+        except ParserOperationalError as exc:
+            raise HTTPException(503,str(exc)) from exc
         if (body.strength!='none' if body.operation=='exclude' else body.strength not in STRENGTH_WEIGHTS):
             raise HTTPException(422,'Invalid operation/strength')
         calls=[]
@@ -58,7 +65,7 @@ def install_staged_routes(app,demo,state_for,review):
             except ValueError as exc: raise HTTPException(422,str(exc)) from exc
             eligible=_digest(sorted(demo.items))
         try:
-            infer,model,calls=ii.make_induction_infer(os.getenv('FEEDCTRL_STEERING_MODEL','qwen2.5-coder:7b-instruct'),timeout=90)
+            infer,model,calls=category_provider.stage('definition',os.getenv('FEEDCTRL_STEERING_MODEL','qwen2.5-coder:7b-instruct'))
             definition=staged.propose_definition(body.objective,scope,inventory,infer,model)
             if definition['status']!='definition_review':
                 return {'definition_ready':False,'applied':False,**definition,'model_calls':deepcopy(calls)}
@@ -78,6 +85,10 @@ def install_staged_routes(app,demo,state_for,review):
 
     @app.post('/api/semantic/definition/classify')
     def classify(body:DefinitionApproval,x_session_id:str|None=Header(default=None)):
+        try:
+            category_provider.require_available()
+        except ParserOperationalError as exc:
+            raise HTTPException(503,str(exc)) from exc
         calls=[];audit_calls=[]
         with demo.lock:
             state=state_for(x_session_id,body.user_id);pending=state.get('semantic_definition_pending')
@@ -86,14 +97,15 @@ def install_staged_routes(app,demo,state_for,review):
             except ValueError as exc: raise HTTPException(409,str(exc)) from exc
             owned=deepcopy(pending);pending['used']=True
         try:
-            infer,model,calls=ii.make_induction_infer(owned['definition']['provenance']['model_id'],timeout=90)
+            infer,model,calls=category_provider.stage('membership',owned['definition']['provenance']['model_id'],
+                expected=owned['definition']['provenance'])
             request=owned['body']
             envelope=staged.classify_definition(owned['definition'],request['objective'],scope,inventory,infer,model)
             if envelope['status']!='review':
                 return {'ready':False,'applied':False,**envelope,'model_calls':deepcopy(calls)}
             with demo.lock:
                 current(owned,state_for(x_session_id,body.user_id))
-            audit_infer,audit_model,audit_calls=ii.make_induction_infer(model['model_id'],timeout=90)
+            audit_infer,audit_model,audit_calls=category_provider.stage('evidence_audit',model['model_id'],expected=model)
             if audit_model!=model:raise ValueError('Model identity changed before evidence assessment')
             envelope=evidence_audit.audit_membership_envelope(envelope,request['objective'],scope,inventory,audit_infer,audit_model)
             if envelope['status']!='review':

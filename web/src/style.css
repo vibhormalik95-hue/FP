@@ -9,3 +9,5 @@
 .steering-review{padding:10px 0;border-bottom:1px solid #dce1cf;overflow-wrap:anywhere}
 #steering-manual-topic{width:100%;padding:10px;border:1px solid #cbd3c1;border-radius:4px;background:#fff}
 .view-tabs{flex-wrap:wrap}.saved-profile .help{overflow-wrap:anywhere}
+
+.personal-entry{max-width:520px;margin:12vh auto;padding:24px}.personal-entry h1{font-size:38px;line-height:1.1;letter-spacing:-1.5px}.personal-entry input{display:block;width:100%;padding:12px;margin:8px 0 16px;border:1px solid #cbd3c1;border-radius:4px}.personal-entry .primary{width:100%}

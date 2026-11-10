@@ -173,7 +173,7 @@ class Removal(User):
     item_id: str = Field(min_length=1, max_length=100)
 
 
-def install_synthetic_routes(app, demo):
+def install_synthetic_routes(app, demo, *, allow_local_models=True):
     def state_for(token, user):
         state = demo.user_state(token, user)
         state.setdefault('synthetic_items', [])
@@ -201,7 +201,9 @@ def install_synthetic_routes(app, demo):
         display = [{**r, 'source_snapshot_changed': r['source_version'] != current} for r in rows]
         return {'items': display, 'revision': state['synthetic_revision'],
                 'can_restore_removed': state['synthetic_last_removed'] is not None,
-                'configured_model': os.getenv('FEEDCTRL_STEERING_MODEL', 'qwen2.5-coder:7b-instruct'),
+                'configured_model': (os.getenv('FEEDCTRL_STEERING_MODEL', 'qwen2.5-coder:7b-instruct')
+                                     if allow_local_models else None),
+                'generation_available': allow_local_models,
                 'source_version': current, 'origin': ORIGIN,
                 'feed': {'kind': 'synthetic_metadata_only', 'uses_trained_scorer': False,
                          'isolated_from_observed_catalogue': True, 'cold_start_policy': POLICY,
@@ -218,6 +220,8 @@ def install_synthetic_routes(app, demo):
 
     @app.post('/api/synthetic/preview')
     def preview(body: DraftRequest, x_session_id: str | None = Header(default=None)):
+        if not allow_local_models:
+            raise HTTPException(403, 'Synthetic generation has no hosted adapter; local models are disabled')
         with demo.lock:
             state = state_for(x_session_id, body.user_id)
             if len(state['synthetic_items']) >= MAX_ITEMS:

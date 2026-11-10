@@ -6,6 +6,9 @@
 /scripts/audit_ai_e2.py -text whitespace=cr-at-eol
 /scripts/publish_ai_e2_evidence.py -text whitespace=cr-at-eol
 /scripts/test_ai_e2_boundary.py -text whitespace=cr-at-eol
+/web/dist/** -text
+/deliverables/** -text
+/docs/evidence/** -text
 *.pdf binary
 *.docx binary
 *.zip binary

@@ -20,6 +20,7 @@ from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictInt
 
 from feedctrl.controls import ParserOperationalError, normalize_scores
 from feedctrl.indirect_grounding import _catalogue, _digest, _response_snapshot, make_local_ollama_infer, propose_indirect
+from feedctrl.label_validation import is_printable_label
 from feedctrl.semantic_controls import STRENGTH_WEIGHTS
 from feedctrl import induction_integration as induction
 
@@ -141,10 +142,10 @@ def confirmed_target_context(body):
 def seal_group(label, request, proposal, index, eligible_ids):
     if proposal["status"] != "review" or not proposal["item_ids"]:
         raise ValueError("Only a nonempty reviewed proposal can become a named group")
+    if not is_printable_label(label):
+        raise ValueError("Use a printable category label")
     group = {"label": label.strip(), "request": request, "proposal": deepcopy(proposal),
         "scope_ids": sorted(index["items"]), "eligible_sha256": _digest(sorted(eligible_ids))}
-    if not group["label"] or any(ord(c) < 32 for c in group["label"]):
-        raise ValueError("Use a printable category label")
     group["revision"] = _digest(group)
     return group
 
@@ -217,8 +218,10 @@ def rank_groups(ids, scores, groups, index, limit=10, *, original_categories=Non
             "after": len(set(top) & set(g["proposal"]["item_ids"]))} for g in groups]}
 
 
-def install_semantic_routes(app, demo, *, infer_factory=None):
+def install_semantic_routes(app, demo, *, infer_factory=None, category_infer_factory=None, allow_local_models=True):
     """Session-scoped prototype. Existing A-E and literal topic state are untouched."""
+    from feedctrl.category_provider import CategoryProvider
+    category_provider = CategoryProvider(category_infer_factory, allow_local_models=allow_local_models)
     configured_adapter = None
     configured_adapter_lock = threading.Lock()
 
@@ -272,7 +275,10 @@ def install_semantic_routes(app, demo, *, infer_factory=None):
     def response(state, user):
         return {"groups": deepcopy(state["semantic_groups"]), "revision": state["semantic_revision"],
             "can_undo": bool(state["semantic_history"]), "feed": feed(user, state["semantic_groups"]),
-            "configured_model": os.getenv("FEEDCTRL_STEERING_MODEL", "qwen2.5-coder:7b-instruct"),
+            "configured_model": (os.getenv("FEEDCTRL_STEERING_MODEL", "qwen2.5-coder:7b-instruct")
+                                 if allow_local_models else None),
+            "local_models_allowed": allow_local_models,
+            "category_adapter_available": category_infer_factory is not None,
             "external_adapter_available": infer_factory is not None}
 
     def review(state, user, groups, history_action="none", proposal=None):
@@ -282,7 +288,29 @@ def install_semantic_routes(app, demo, *, infer_factory=None):
             "revision": state["semantic_revision"], "groups": deepcopy(groups), "history_action": history_action}
         return {"ready": True, "applied": False, "plan_id": plan_id,
             "groups": deepcopy(groups), "proposal": proposal, "feed": preview_feed,
+            "evidence_context": evidence_context(proposal),
             "note": "Only the declared supplied items were assessed; quotes are not relevance proof."}
+
+    def evidence_context(proposal):
+        """Read-only display aid: the full supplied field around each cited quote.
+
+        An exact quotation proves only that the text exists. A reviewer needs the
+        surrounding field (for example a negation just before the quote) to judge
+        meaning. Return the complete field, including all repeated occurrences and
+        distant qualifiers; a prefix or quote window can hide contrary meaning.
+        This is not part of the sealed group and never affects approval.
+        """
+        rows = []
+        for e in (proposal or {}).get("evidence") or []:
+            item = demo.topic_index["items"].get(e.get("item_id")) if demo.topic_index else None
+            text = item["fields"].get(e.get("field")) if item else None
+            text = text if isinstance(text, str) else None
+            rows.append({"item_id": e.get("item_id"), "field": e.get("field"), "quote": e.get("quote"),
+                "supplied_field_text": text,
+                "truncated": False,
+                "quote_present": bool(text and isinstance(e.get("quote"), str) and e["quote"] and e["quote"] in text),
+                "semantic_check": "not performed: quote custody only; a human must judge meaning"})
+        return rows
 
     @app.get("/api/semantic/groups")
     def get_groups(user_id: int = Query(ge=0), x_session_id: str | None = Header(default=None)):
@@ -295,6 +323,8 @@ def install_semantic_routes(app, demo, *, infer_factory=None):
 
     @app.post("/api/semantic/preview")
     def preview(body: SemanticPreview, x_session_id: str | None = Header(default=None)):
+        if body.backend == "ollama" and not allow_local_models:
+            raise HTTPException(403, "Local models are disabled in this application; no inference was attempted")
         calls, provenance = [], None
         with demo.lock:
             state = state_for(x_session_id, body.user_id)
@@ -355,6 +385,13 @@ def install_semantic_routes(app, demo, *, infer_factory=None):
                     question = ""
                 else:
                     action, question = interpret_action(body.text, tracked_infer)
+                # Do not start a second provider call for a request that a newer
+                # review or reset already superseded while action inference ran.
+                # Recheck under the state lock, then release it before inference.
+                with demo.lock:
+                    state = state_for(x_session_id, body.user_id)
+                    if state["semantic_revision"] != revision or state.get("semantic_preview_nonce") != nonce:
+                        raise HTTPException(409, "Preferences changed during inference; review again")
                 if action is None:
                     return {"ready": False, "applied": False, "status": "clarify", "reason": question,
                             "model_calls": calls, "model_provenance": provenance}
@@ -388,6 +425,10 @@ def install_semantic_routes(app, demo, *, infer_factory=None):
 
     @app.post("/api/semantic/induction/preview")
     def induction_preview(body: InductionPreview, x_session_id: str | None = Header(default=None)):
+        try:
+            category_provider.require_available()
+        except ParserOperationalError as exc:
+            raise HTTPException(503, str(exc)) from exc
         calls = []
         with demo.lock:
             state = state_for(x_session_id, body.user_id)
@@ -403,8 +444,8 @@ def install_semantic_routes(app, demo, *, infer_factory=None):
         if (body.strength != "none" if body.operation == "exclude" else body.strength not in STRENGTH_WEIGHTS):
             raise HTTPException(422, "Exclusion has strength none; boost/reduce need a graded strength")
         try:
-            infer, provenance, calls = induction.make_induction_infer(
-                os.getenv("FEEDCTRL_STEERING_MODEL", "qwen2.5-coder:7b-instruct"), timeout=90)
+            infer, provenance, calls = category_provider.stage(
+                "combined", os.getenv("FEEDCTRL_STEERING_MODEL", "qwen2.5-coder:7b-instruct"))
             envelope = induction.producer.propose_category(body.objective, index, infer,
                 model_provenance=provenance, existing_categories=inventory,
                 max_items=induction.MAX_ITEMS, max_bytes=induction.PRODUCER_BYTES)
@@ -477,4 +518,4 @@ def install_semantic_routes(app, demo, *, infer_factory=None):
             return {"applied": True, **response(state, body.user_id)}
 
     from feedctrl.staged_routes import install_staged_routes
-    install_staged_routes(app,demo,state_for,review)
+    install_staged_routes(app,demo,state_for,review,category_provider=category_provider)

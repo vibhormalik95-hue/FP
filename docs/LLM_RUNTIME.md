@@ -1,5 +1,7 @@
 # Local Llama runtime
 
+> **Current personal candidate: do not run the historical local app, model or recommender.** No local model or recommender execution is authorized for this candidate. Do not use the historical commands, launchers or scripts below as a workaround. The current hosted personal launch is disabled pending real validation; these historical instructions and results do not establish that validation. See [candidate status](../CLAUDE-PERSONAL-CANDIDATE.md) and [hosted-only configuration](hosted-only-configuration.md).
+
 The fresh Experiment Two run completed locally on AI_WORK on 14 October with Ollama 0.34.0 and the `llama3.1:8b` digest recorded in the [study evidence](ai-reference-e2-evidence/README.md). This page lists the runtime settings and steps for a separate rerun.
 
 The backend is Ollama with `llama3.1:8b`. The original Experiment One implementation defaults to a maximum of 256 generated tokens for a single control and 1536 for a multi-preference profile. The completed Experiment Two run instead recorded a 768-token maximum for each question. Both use `/api/chat` with structured output, temperature 0, seed 42 and context length 4096. Application validation checks allowed categories, exact keys, numeric values and operation-specific strength. Record the Ollama version and model digest for a rerun; a model tag alone is not a permanent version.

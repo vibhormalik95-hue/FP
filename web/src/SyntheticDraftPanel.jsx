@@ -31,8 +31,8 @@ export default function SyntheticDraftPanel({api,user,resetKey}) {
       <textarea id="synthetic-brief" rows={3} maxLength={2000} value={brief} disabled={disabled}
         onChange={e=>{setBrief(e.target.value);setPending(null);}}/>
       <label><input type="checkbox" checked={ack} disabled={disabled} onChange={e=>{setAck(e.target.checked);setPending(null);}}/> I want fictional metadata, not a real video or observed item.</label>
-      <p className="help">Configured local model: {saved?.configured_model||'Loading...'}. One attempt per click, no automatic retry, at most 1,000 output tokens and 90 seconds plus identity checks. Model wording can still be inappropriate; review before admission.</p>
-      <button className="primary" disabled={disabled||!saved||!ack||!brief.trim()} onClick={generate}>{working?'Working locally...':'Generate fictional metadata draft'}</button>
+      {saved?.generation_available===false?<p className="help">Fictional drafting has no hosted adapter in this application. Local models are disabled; generation is unavailable.</p>:<p className="help">Configured local model: {saved?.configured_model||'Loading...'}. One attempt per click, no automatic retry, at most 1,000 output tokens and 90 seconds plus identity checks. Model wording can still be inappropriate; review before admission.</p>}
+      <button className="primary" disabled={disabled||!saved||saved.generation_available===false||!ack||!brief.trim()} onClick={generate}>{working?'Working locally...':'Generate fictional metadata draft'}</button>
       {message&&<p className="alert" role="status">{message}</p>}
       {pending&&<div className="saved-profile" aria-label="Fictional draft review">
         <h4>Review fictional metadata before admission</h4>

@@ -12,6 +12,7 @@ import json
 import math
 
 from feedctrl.controls import normalize_scores
+from feedctrl.label_validation import is_printable_label
 from feedctrl.semantic_controls import STRENGTH_WEIGHTS
 
 
@@ -70,6 +71,8 @@ def validate_induced_category(proposal, catalogue, provenance):
         if (not isinstance(value, str) or not 1 <= len(value.strip()) <= bound
                 or any(ord(c) < 32 for c in value)):
             raise MembershipValidationError(f"Invalid {key}")
+    if not is_printable_label(proposal["label"]):
+        raise MembershipValidationError("Invalid label")
     if (not isinstance(provenance, dict)
             or any(not isinstance(provenance.get(k), str) or not provenance[k]
                    for k in ("model_id", "model_revision", "prompt_sha256"))):

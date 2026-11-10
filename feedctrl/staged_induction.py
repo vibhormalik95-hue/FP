@@ -3,6 +3,7 @@ from copy import deepcopy
 import json
 
 from feedctrl import category_induction_producer as producer
+from feedctrl.label_validation import is_printable_label
 from feedctrl.source_constraints import literal_requirements
 
 DEFINITION_PROMPT = '''Propose ONE operational category definition for the discovery objective.
@@ -114,6 +115,7 @@ def propose_definition(objective,index,inventory,infer,model_provenance):
         base.update(status='clarify',reason='Resolve competing definition meanings before classification')
         return sealed(base,'definition_revision')
     producer._text(raw['label'],80); producer._text(raw['definition'],1000)
+    if not is_printable_label(raw['label']): raise ValueError('Use a printable category label')
     if any(ord(c)<32 for c in raw['label']+raw['definition']): raise ValueError('Invalid definition text')
     if any(raw['label'].strip().casefold()==c['label'].strip().casefold() for c in inventory):
         base.update(status='duplicate',reason='Definition label already exists in supplied inventory')

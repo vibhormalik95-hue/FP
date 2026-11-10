@@ -1,5 +1,7 @@
 # Feed Control Lab
 
+> **Current personal candidate: do not run the historical local app, model or recommender.** No local model or recommender execution is authorized for this candidate. Do not use the historical commands, launchers or scripts below as a workaround. The current hosted personal launch is disabled pending real validation; these historical instructions and results do not establish that validation. See [candidate status](../CLAUDE-PERSONAL-CANDIDATE.md) and [hosted-only configuration](hosted-only-configuration.md).
+
 The React/FastAPI interface is a local research demonstrator. It displays item metadata; it does not distribute or play KuaiRec videos. Category IDs are opaque and are never given invented semantic labels. Run in a single process on localhost. This is not a hosted service with authentication or durable user accounts.
 
 ## Start

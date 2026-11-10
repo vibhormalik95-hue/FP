@@ -1,0 +1,16 @@
+✔ locked personal client does not send an API request (1.38033ms)
+✔ unlock, normal reset and API use token only as a header (0.415055ms)
+✔ failed unlock and a fresh page both remain locked (0.272951ms)
+✔ lock aborts an in-flight request and blocks later requests (0.394535ms)
+✔ lock invalidates a delayed unlock (0.302135ms)
+✔ response body completing after lock cannot restore data (0.328905ms)
+✔ normal app has no token gate or personal header (0.220382ms)
+✔ refuses traversal outside API path before fetch (0.220773ms)
+ℹ tests 8
+ℹ suites 0
+ℹ pass 8
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 86.564502

@@ -1,6 +1,20 @@
 # Natural language controls for short video recommendation
 
+> **Current personal candidate: do not run the historical local app, model or recommender.** No local model or recommender execution is authorized for this candidate. Do not use the historical commands, launchers or scripts below as a workaround. The current hosted personal launch is disabled pending real validation; these historical instructions and results do not establish that validation. See [candidate status](CLAUDE-PERSONAL-CANDIDATE.md) and [hosted-only configuration](docs/hosted-only-configuration.md).
+
 COMP 9500 research project by Vibhor Malik, supervised by Dr Borna Noureddin. This repository contains the offline benchmark implementation, methods, compact evidence and professor-review materials.
+
+## Personal UI publication note
+
+The personal app serves the verified `web/dist/` build, but `.gitignore` excludes it. An ordinary Git add may therefore omit the UI. Deliberately include the exact verified build in the eventual publication through the chosen publication process, and inspect the resulting Git index before publishing. The following check reads the index only: it neither stages files nor uploads anything. It requires exactly the three paths and SHA-256 values pinned in `scripts/check_personal_ui_index.py`, and compares the actual staged blob bytes, not merely working-tree files. From the repository root in Windows PowerShell, run:
+
+```powershell
+C:\Python314\python.exe scripts\check_personal_ui_index.py
+```
+
+The check uses Python's standard library and Git; it also runs on other platforms with Python 3 and Git. Run it only after the publication index is prepared. It does not itself prepare the index.
+
+The `PERSONAL-AUTH-SHA256SUMS.txt` receipt is historical and remains unchanged. In this combined reviewed v6 source candidate, the receipt-covered paths that differ or are absent are `feedctrl/claude_personal.py`, `feedctrl/windows_job_native.py`, `feedctrl/windows_job_runner.py`, `web/src/personalApi.js`, `web/dist/index.html`, `web/dist/assets/index-DTzE0yVt.js`, `tests/test_windows_job_runner_offline.py`, `pyproject.toml`. The old `web/dist/assets/index-DTzE0yVt.js` is replaced by `web/dist/assets/index-CZ9L8i2t.js`; the staged-UI check pins the new error-handling build. `pyproject.toml` now declares `jsonschema` in the test extra. Use [`CURRENT-SOURCE-SHA256.txt`](CURRENT-SOURCE-SHA256.txt), beside this README, for the current repository-relative source hashes. Verify it from the repository root in a Git checkout or from `source/` in a packaged copy; it records exact bytes for every release source file except the manifest itself, which is excluded to avoid self-reference. Checkout line-ending conversion must preserve those bytes when verifying. The separate package-root `SOURCE-FILE-SHA256.txt` is the full package-layout manifest and includes the portable manifest with `source/`-prefixed paths. The historical receipt describes an earlier candidate, not this build or a complete current-tree checksum. Offline tests and a successful build do not establish hosted-model or browser acceptance; the actual personal launch remains disabled.
 
 ## Current professor-review materials
 
