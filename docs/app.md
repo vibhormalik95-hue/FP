@@ -4,14 +4,14 @@ Feed Control Lab is a React/FastAPI research app for changing a recommendation f
 
 The recent work adds manual category selection, model-proposed categories and indirect language requests alongside the original A–E comparison. [Current progress](current-progress.md) separates observed examples from untested behavior.
 
-**Current availability:** the automatic personal Claude launch is disabled. Local models and the local recommender are not authorized for the current personal configuration. The local startup instructions later on this page are historical reproduction instructions. See [hosted configuration](hosted-only-configuration.md) and [personal Claude status](../CLAUDE-PERSONAL-CANDIDATE.md).
+**Current availability:** the default personal Claude launch is disabled; an explicitly selected runner has bounded headless evidence. Local models and the local recommender are not authorized for the current personal configuration. The local startup instructions later on this page are historical reproduction instructions. See [hosted configuration](hosted-only-configuration.md) and [personal Claude status](../CLAUDE-PERSONAL-CANDIDATE.md).
 
 ## The recent controls
 
 In **Reviewed topic feed**, the **Experimental semantic groups** panel provides the following paths when their required provider is configured:
 
 - **Manual: exact original category baseline.** Choose the existing category ID and the action yourself. This provides a no-LLM comparison.
-- **Review definition, then classify all supplied items.** Ask for a category that is not already represented by the existing labels. Review its proposed definition, approve classification, then inspect the membership decisions and separate evidence check before applying it.
+- **Review definition, then classify all supplied items.** Ask for a category that is not already represented by the existing labels. A validated primary with competing interpretations can be explicitly selected unchanged for definition review, or cancelled, without another model call. Nothing is selected by default. Review its proposed definition, approve classification, then inspect the membership decisions and separate evidence check before applying it. See [category clarification resolution](category-clarification-resolution.md) for the retained evidence and session safeguards.
 - **Propose a new category definition and membership.** This combines the proposal into one call. It is a separate path, not the same procedure as definition review followed by classification and evidence checking.
 - **Indirect intent.** Describe the change without having to name a category. The configured model interprets the action and proposes related items from the supplied text. Review the proposed meaning and members before applying it.
 
@@ -21,7 +21,7 @@ If the model cannot resolve the request, the app can show its competing interpre
 
 A proposal does not change the feed until it is reviewed and applied. Clear and undo also require review of the displayed change. Session, source-version and expiry checks prevent applying an obsolete proposal. The dated [walkthrough](../deliverables/2026-11-05-final-demo/WALKTHROUGH.md) records specific examples; it is not evidence that automatic Claude integration works today.
 
-The separate [fictional item draft panel](synthetic-item-drafts.md) creates metadata only. The latest source connects it to the configured hosted provider and shared call allowance. This wiring has offline tests, but live hosted generation has not been verified. Without a configured adapter or permission to use a local model, generation remains disabled.
+The separate [fictional item draft panel](synthetic-item-drafts.md) creates metadata only. The latest source connects it to the configured hosted provider and shared call allowance. One real Claude Code Lunaria run completed the lifecycle through the application’s Python methods, without HTTP or browser interaction. The UI itself remains unverified live; see [current progress](current-progress.md). Without a configured adapter or permission to use a local model, generation remains disabled.
 
 ## The original A–E comparison
 
@@ -47,7 +47,7 @@ The API checks category, user and item IDs, instruction lengths, profile words/w
 
 ## Historical local setup
 
-This section describes the earlier local research app, not the disabled personal hosted launch. Run it only with separate authorization for local execution and the required inputs. It is a single-process localhost app, not a hosted service with durable accounts or authentication.
+This section describes the earlier local research app, not the current explicit-runner hosted configuration. Run it only with separate authorization for local execution and the required inputs. It is a single-process localhost app, not a hosted service with durable accounts or authentication.
 
 Install the project in `.venv` using the [Windows and Colab guide](windows-and-colab.md). With Node.js 22.12 or newer, run `npm ci` and `npm run build` in `web/`. The lockfile fixes JavaScript dependency resolution.
 

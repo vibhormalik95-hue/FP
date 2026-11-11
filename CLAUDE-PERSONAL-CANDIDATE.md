@@ -1,12 +1,10 @@
 # Personal Claude Code integration status
 
-The installed Claude Code CLI is the intended runtime, but the app cannot automatically launch it. The launch function always rejects the call, and no configuration flag enables it. Offline tests use substitute responses; they do not demonstrate an authenticated app call, semantic accuracy or successful browser use.
+The default `_run_process` still rejects launches. `make_claude_personal_infer` accepts an explicitly selected process runner, and `create_claude_personal_app` passes that selection through its transport configuration. No automatic fallback is enabled.
 
-The successful Claude development example used an operator to copy requests and replies between the app and the Claude browser. It did not use this integration. See [current progress](docs/current-progress.md) and the [5 November record](deliverables/2026-11-05-final-demo/README.md).
+One real Claude Code call completed the fictional Lunaria lifecycle through the application’s Python methods, with scripted operator reviews and no browser clicks. The early 11 November category attempt failed after one invocation; its cause was not retained. A later separate batch proposed a category but stopped at clarification before membership or Apply. The definition conflicts with the existing unknown-facts rule. That batch also recorded two hunger calls selecting described food preparation and direct Python Apply/Undo 8→5→8, not browser/HTTP acceptance or personal appetite truth. See [current progress](docs/current-progress.md) for the evidence and limits.
 
-The latest source passes this same configured provider and shared call allowance to fictional metadata drafting. That addition is tested with substitute replies; it does not enable automatic launch or verify live generation.
-
-The fixed recommender and frozen experiments are unchanged. Hosted-only mode refuses a local recommender checkpoint, so a compatible fixed scorer remains unresolved. The existing OpenAI adapter and its fixed spending policy do not authorize Claude calls.
+The latest adapter projects only allowlisted CLI status, bounded numeric usage/cost, response hashes and known failure reasons. Arbitrary error text, account fields and unknown model names are not exported. This improves evidence retention without changing model input, successful-result validation or the execution gates.
 
 ## Intended use and checks still needed
 
@@ -38,7 +36,7 @@ Category `model_revision` identifies the configuration digest, not model weights
 
 ## Experimental Windows runner
 
-The separate runner is not connected to the disabled app launch function and has not been verified on Windows. Its smoke-check script was not successfully made available there, so those checks have not run.
+The separate runner can be selected explicitly while the default launch function remains disabled. The earlier bounded live evidence does not establish universal Windows containment or deadline guarantees. The latest Windows offline suite reported 61 tests and 41 errors because the guard blocked `ctypes.dlopen` while importing kernel32. No model ran and no guard changed. A separate portable diagnostic subset subsequently passed seven tests on Windows with Python 3.14.0. It exercises the actual adapter and helper using authored envelopes and an injected callable, not the native backend or live provider. The broad suite remains failed. The relocated repository variant is cloud-checked, not a new Windows execution. See the [portable result](docs/evidence/2026-11-11/WINDOWS-PORTABLE-DIAGNOSTIC-SUMMARY.json).
 
 `windows_job_native.py` assigns a Job Object at process creation, explicitly controls inherited handles, starts suspended, and uses synchronous anonymous pipes with dedicated I/O workers. It pins worker thread handles and repeatedly calls `CancelSynchronousIo` before a bounded join. `windows_job_runner.py` bounds captured output and elapsed runtime, terminates ordinary job members on completion or failure, and reports uncertain cleanup. The app rejects subsequent calls in that process after uncertain cleanup.
 
@@ -78,4 +76,4 @@ Lock clears the UI's token references, aborts outstanding fetches and starts a n
 
 Lock cannot revoke a copied token, immediately erase strings from browser memory, delete server sessions or guarantee that already-started backend work stops. Supply the token securely outside the app; these files do not generate or store it. The normal non-personal app has no token-entry requirement and retains its existing session header.
 
-The token flow has offline tests, but browser verification is still outstanding. There is no personal launcher, and automatic CLI launch remains disabled.
+The token flow has offline tests, but browser verification is still outstanding. The default CLI launcher remains disabled; the explicit runner path has the bounded headless evidence described above.

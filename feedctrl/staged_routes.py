@@ -3,6 +3,7 @@ from copy import deepcopy
 import os
 import secrets
 import time
+from typing import Literal
 
 from fastapi import Header,HTTPException
 from pydantic import BaseModel,ConfigDict,Field,StrictBool,field_validator
@@ -26,16 +27,24 @@ class DefinitionApproval(BaseModel):
         if value is not True: raise ValueError('Explicit evidence review is required')
         return value
 
-def install_staged_routes(app,demo,state_for,review,*,category_provider=None):
+class DefinitionResolution(BaseModel):
+    model_config=ConfigDict(extra='forbid')
+    user_id:int=Field(ge=0)
+    plan_id:str=Field(min_length=1,max_length=100)
+    choice:Literal['review_primary','cancel']
+
+
+def install_staged_routes(app,demo,state_for,review,*,evidence_context,category_provider=None):
     if category_provider is None:
         from feedctrl.category_provider import CategoryProvider
         category_provider = CategoryProvider()
     def binding(pending):
         return _digest({k:pending[k] for k in ('id','created','revision','nonce','body','definition',
-                                             'eligible_sha256','definition_model_calls')})
+                                             'eligible_sha256','definition_model_calls','session_id')})
 
-    def current(pending,state):
-        if (not pending or pending.get('used') or time.monotonic()-pending['created']>300
+    def current(pending,state,session_id,user_id,*,clarification=False):
+        if (not pending or pending.get('used') or pending['session_id']!=session_id
+                or pending['body']['user_id']!=user_id or time.monotonic()-pending['created']>300
                 or state['semantic_revision']!=pending['revision']
                 or state.get('semantic_preview_nonce')!=pending['nonce']):
             raise ValueError('Definition review expired, consumed or superseded')
@@ -43,7 +52,8 @@ def install_staged_routes(app,demo,state_for,review,*,category_provider=None):
         scope=scoped_index(demo.topic_index,pending['body']['candidate_ids'])
         inventory=ii.projected_inventory(scope,demo.items,state['semantic_groups'])
         if _digest(sorted(demo.items))!=pending['eligible_sha256']: raise ValueError('Eligible catalogue changed')
-        staged.revalidate_definition(pending['definition'],pending['body']['objective'],scope,inventory)
+        validate=staged.revalidate_clarification if clarification else staged.revalidate_definition
+        validate(pending['definition'],pending['body']['objective'],scope,inventory)
         return scope,inventory
 
     @app.post('/api/semantic/definition/preview')
@@ -67,21 +77,56 @@ def install_staged_routes(app,demo,state_for,review,*,category_provider=None):
         try:
             infer,model,calls=category_provider.stage('definition',os.getenv('FEEDCTRL_STEERING_MODEL','qwen2.5-coder:7b-instruct'))
             definition=staged.propose_definition(body.objective,scope,inventory,infer,model)
-            if definition['status']!='definition_review':
+            resolvable=definition['status']=='clarify' and bool(definition.get('clarification',{}).get('candidate'))
+            if definition['status']!='definition_review' and not resolvable:
                 return {'definition_ready':False,'applied':False,**definition,'model_calls':deepcopy(calls)}
             with demo.lock:
                 state=state_for(x_session_id,body.user_id)
                 pending={'id':secrets.token_urlsafe(24),'created':time.monotonic(),'revision':revision,
-                    'nonce':nonce,'body':body.model_dump(),'definition':deepcopy(definition),
+                    'nonce':nonce,'session_id':x_session_id,'body':body.model_dump(),'definition':deepcopy(definition),
                     'eligible_sha256':eligible,'definition_model_calls':deepcopy(calls),'used':False}
                 pending['binding_sha256']=binding(pending)
-                current(pending,state)
+                scope,inventory=current(pending,state,x_session_id,body.user_id,clarification=resolvable)
                 state['semantic_definition_pending']=pending
+                if resolvable:
+                    return {'definition_ready':False,'resolution_ready':True,'resolution_plan_id':pending['id'],
+                        'applied':False,**deepcopy(definition),'model_calls':deepcopy(calls),
+                        'scope_ids':sorted(scope['items']),
+                        'evidence_context':evidence_context(definition['clarification']['candidate'],scope)}
                 return {'definition_ready':True,'applied':False,'definition_plan_id':pending['id'],
                     'definition':deepcopy(definition),'scope_ids':sorted(scope['items']),
+                    'evidence_context':evidence_context(definition['proposal'],scope),
                     'model_calls':deepcopy(calls),'action_source':'manual'}
         except (ValueError,ParserOperationalError) as exc:
             return {'definition_ready':False,'applied':False,'status':'error','reason':str(exc),'model_calls':deepcopy(calls)}
+
+    @app.post('/api/semantic/definition/resolve')
+    def resolve(body:DefinitionResolution,x_session_id:str|None=Header(default=None)):
+        # No provider lookup or inference: the client supplies only a bounded choice.
+        with demo.lock:
+            state=state_for(x_session_id,body.user_id);pending=state.get('semantic_definition_pending')
+            if not pending or pending['id']!=body.plan_id:
+                raise HTTPException(409,'No matching definition clarification')
+            try:
+                scope,inventory=current(pending,state,x_session_id,body.user_id,clarification=True)
+                if body.choice=='cancel':
+                    pending['used']=True
+                    state['semantic_definition_pending']=None
+                    return {'definition_ready':False,'resolution_ready':False,'applied':False,'status':'cancelled'}
+                definition=staged.resolve_primary(pending['definition'],pending['body']['objective'],scope,inventory,
+                    user_id=body.user_id,resolved_at=time.time())
+                # Replace the single-use clarification with a distinct ordinary review token.
+                next_pending={**deepcopy(pending),'id':secrets.token_urlsafe(24),'created':time.monotonic(),
+                    'definition':definition,'used':False}
+                next_pending['binding_sha256']=binding(next_pending)
+                current(next_pending,state,x_session_id,body.user_id)
+                pending['used']=True
+                state['semantic_definition_pending']=next_pending
+                return {'definition_ready':True,'resolution_ready':False,'applied':False,
+                    'definition_plan_id':next_pending['id'],'definition':deepcopy(definition),
+                    'scope_ids':sorted(scope['items']),'model_calls':deepcopy(next_pending['definition_model_calls']),
+                    'action_source':'manual','evidence_context':evidence_context(definition['proposal'],scope)}
+            except ValueError as exc: raise HTTPException(409,str(exc)) from exc
 
     @app.post('/api/semantic/definition/classify')
     def classify(body:DefinitionApproval,x_session_id:str|None=Header(default=None)):
@@ -93,7 +138,7 @@ def install_staged_routes(app,demo,state_for,review,*,category_provider=None):
         with demo.lock:
             state=state_for(x_session_id,body.user_id);pending=state.get('semantic_definition_pending')
             if not pending or pending['id']!=body.plan_id: raise HTTPException(409,'No matching definition review')
-            try: scope,inventory=current(pending,state)
+            try: scope,inventory=current(pending,state,x_session_id,body.user_id)
             except ValueError as exc: raise HTTPException(409,str(exc)) from exc
             owned=deepcopy(pending);pending['used']=True
         try:
@@ -104,7 +149,7 @@ def install_staged_routes(app,demo,state_for,review,*,category_provider=None):
             if envelope['status']!='review':
                 return {'ready':False,'applied':False,**envelope,'model_calls':deepcopy(calls)}
             with demo.lock:
-                current(owned,state_for(x_session_id,body.user_id))
+                current(owned,state_for(x_session_id,body.user_id),x_session_id,body.user_id)
             audit_infer,audit_model,audit_calls=category_provider.stage('evidence_audit',model['model_id'],expected=model)
             if audit_model!=model:raise ValueError('Model identity changed before evidence assessment')
             envelope=evidence_audit.audit_membership_envelope(envelope,request['objective'],scope,inventory,audit_infer,audit_model)
@@ -115,7 +160,7 @@ def install_staged_routes(app,demo,state_for,review,*,category_provider=None):
                 state=state_for(x_session_id,body.user_id)
                 # Validate again with a separate unused copy: a consumed token cannot
                 # start another call, while its in-flight result can still be checked.
-                scope,inventory=current(owned,state)
+                scope,inventory=current(owned,state,x_session_id,body.user_id)
                 staged.revalidate_membership_envelope(envelope,request['objective'],scope,inventory)
                 control=ii.category_as_control(envelope,request['objective'],scope,inventory,
                     request['operation'],request['strength'],model)

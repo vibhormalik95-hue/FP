@@ -1,13 +1,13 @@
-"""Read-only check of the staged personal UI against the verified error-handling build."""
+"""Read-only check of the staged personal UI against the verified current build."""
 
 import hashlib
 import subprocess
 import sys
 
 EXPECTED = {
-    "web/dist/index.html": "eb1c5da055b9c2eb1d9bf102ad51ec6177158fb24f24ad4f6fdcf9cc0fe9e495",
-    "web/dist/assets/index-3Po6RtMZ.js": "3bc591e7b1e91b2a5a6b2b2c44f1e9460baba1dad0793ae30f8a4ae63c9d394d",
+    "web/dist/assets/index-C2wfZ-Ft.js": "c19f8920a158405b0ec0a300e34bffcb4bf66682a5cc55e2445399fa8dbcb343",
     "web/dist/assets/index-hBnJv3xo.css": "7a86a3861d714c72b3b13f57dcfc65ccb27ee9143dbf801b183bc81bdd4eb0bb",
+    "web/dist/index.html": "b33482d800d174204d169070fd8356cec74b17d53998ed943a270583a2be5bb0"
 }
 
 

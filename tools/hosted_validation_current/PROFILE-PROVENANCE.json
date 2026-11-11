@@ -1,0 +1,19 @@
+{
+  "profile_id": "current-definition-context-20261111",
+  "authorization": "INCOMPLETE FALSE-GATED TEMPLATE. No fresh hosted batch authorized.",
+  "base_source_manifest_sha256": "d46d94e2cdf2b004ffb37c1f43297e9f4d6deba9fd506f02c74c716850f1b61f",
+  "historical_helper": "tools/hosted_validation",
+  "historical_manifest_sha256": "b524eb6ff4814140308f0708d5efc9ea201fb1431749297f8274c93b826c57d3",
+  "current_manifest_sha256": "e4e36c14e3947324e1f34458f49df432130c7b5904aefda672953daabbb91655",
+  "historical_first_request_sha256": "91118a23abef9b3fb425d33ff1e84b2371a61eefad178d5ac8bd27ed470349b6",
+  "current_first_request_sha256": "c91994a1e52945315d625ab3df337eeffcd668b7ec9c301d8d40b2be60651c45",
+  "sole_model_input_delta": "Relative to the notes-r3 source: only payload.system adds the generic definition modality/tense instruction. All other payload fields and schema are unchanged. The earlier unknown-facts instruction remains intact.",
+  "membership_prompt_utf8_sha256": "b0916b2ddb294dee063d58954641b26cfd689a7ba82654549fa3fff3b1864444",
+  "operator_only": "Review notes and provenance are not model-bound fields. No desired category, expected target set or simpler descriptions supplied.",
+  "historical_output": "Old Repaired and kept in use definition is not approved or repaired. Never import or resume ended output; review actual fresh output only.",
+  "operator_documentation_delta": "Current inputs README distinguishes retained v4 operator-note correction from original historical provenance and describes this modality successor accurately. No model-bound effect.",
+  "previous_profile_id": "current-category-modality-r2-20261111",
+  "previous_first_request_sha256": "e8eab1df46bf4e9d822d702af8bb4cbd73864464c11ecd704f73833f3f2a7a45",
+  "scanner_revision": "Consistent in-word apostrophe handling; ambiguous trailing single-quote/possessive syntax disables structural masking and retains digits. No model-bound change from the preceding modality successor.",
+  "definition_context_revision": "Read-only cited-field context in scoped definition responses and UI. No model-bound request change from R2; schemas, prompts, approval gates and decision criteria unchanged."
+}

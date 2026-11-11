@@ -1,0 +1,49 @@
+{
+  "scope": "existing category failure evidence only; no new request",
+  "report_sha256": "ef61c609f3f73aeef15914808ce18df2c3b11a4267768cff7fc6829fe53b513b",
+  "category": {
+    "driver_exit_code": 0,
+    "driver_exit_source": "completed owned execution output",
+    "cli_exit_code": 1,
+    "logical_invocations": 1,
+    "driver_status": "terminal_without_apply",
+    "application_result_status": "error",
+    "application_error_type": "ParserOperationalError",
+    "transport_error_type": "ValueError",
+    "runner_checkpoint": "runner_returned",
+    "response_sha256": "a69b5fdb06fc68b6edecf3c4f8c9a1b6955d9dc9bcf4a7283d3e037b08567d1b",
+    "elapsed_seconds": 30.14873160002753,
+    "reported_model": null,
+    "reported_usage": null,
+    "estimated_cost_usd": null,
+    "structured_failure_subtype": null,
+    "budget_or_turn_status": null,
+    "raw_response_retained_in_report": false,
+    "failure_cause": "unknown; retained projection has no safe structured subtype or provider error",
+    "consumed_marker_present": true,
+    "report_present": true,
+    "applied": false
+  },
+  "indirect": {
+    "launched": false,
+    "logical_invocations": 0,
+    "consumed_marker_present": false,
+    "report_present": false
+  },
+  "allowance": {
+    "original_category_cap": 3,
+    "category_consumed": 1,
+    "remaining_category_cap_arithmetic": 2,
+    "original_indirect_cap": 2,
+    "indirect_consumed": 0,
+    "remaining_indirect_cap_arithmetic": 2,
+    "remaining_total_arithmetic": 4,
+    "qualification": "Arithmetic only; category marker is consumed and the failed call cannot be retried or its allowance renewed."
+  },
+  "cleanup": "runner returned without signaling CleanupUncertain; no detailed per-invocation cleanup trace is retained",
+  "pending_process": "No pending session known: owned driver execution returned exit code 0; no process inspection performed",
+  "limits": [
+    "Underlying HTTP attempts, actual returned model, usage, cost and exact provider failure are unknown.",
+    "No further scenario or model call was launched."
+  ]
+}

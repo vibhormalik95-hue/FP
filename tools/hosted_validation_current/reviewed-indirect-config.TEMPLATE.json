@@ -1,0 +1,90 @@
+{
+  "scenario": "indirect",
+  "max_calls": 2,
+  "model": "claude-fable-5-2",
+  "effort": "max",
+  "estimated_per_invocation_usd": null,
+  "output_mode": "plain_json",
+  "reviewed_cli_version": "2.1.321",
+  "max_output_tokens": 4096,
+  "max_request_bytes": 20000,
+  "max_response_bytes": 1000000,
+  "timeout": 90,
+  "executable": null,
+  "executable_sha256": null,
+  "workdir": null,
+  "operator_token": null,
+  "reviewer_reference": null,
+  "driver_sha256": "e384f90c920b94b5ca792b64e1d9949976ac90cefa30f8fb06aa5573690bd361",
+  "source_sha256": {
+    "feedctrl/__init__.py": "eaabd38e85dd5a5f07362331ac61fb03de4b808055144d328d12e9f8fe5fce39",
+    "feedctrl/api.py": "408f49ddf6f8060e683886c1a3bce3d92fd2271c3cc78e1ae630faf5c084a74f",
+    "feedctrl/category_induction_producer.py": "23080f1999ae69a09772673d7010016c5ad0493aaae98f1f4eda1387a2d13ad9",
+    "feedctrl/category_provider.py": "e07cc07a9d38c369001485f6db1221e4c7ee43afc70635ae1a00e3b8bfb89df2",
+    "feedctrl/claude_personal.py": "5971daefba03dd88fbf3b6b9b107fcb05371210cd660914d9022553e78af3113",
+    "feedctrl/claude_personal_app.py": "f5ceaabadbf91fa2ea5f8dc5fbeb3f0b6fafa5f2d7246e5e1dec0f90de213447",
+    "feedctrl/controls.py": "1488f03b7e36f79d964b40ef6d9eb343f8b2c33374eb2766714cd2ae028f2c57",
+    "feedctrl/data.py": "890bceb61ca57abd44399604c025e977d7ac7a52bb80bc894ca17c6b41b7645a",
+    "feedctrl/evaluation.py": "0739f634b369d540bc4347f65463788f8f8a67fcbc475d76f9497b6887c49604",
+    "feedctrl/evidence_audit.py": "b6e6ba47d1dead69f055a35b2f94adc9102d230cbce29003a839948b17990d27",
+    "feedctrl/experiment2_controls.py": "2566f41a94770a2a2904fda35262fc0d8d6f4be0a6b47879d1b0da452b18a8b6",
+    "feedctrl/experiment2_evaluation.py": "24671587df4a613d1d0570e7ad5f0e3da69f9e5ce345492ced05e3fb443ab2a3",
+    "feedctrl/explanations.py": "a2e27f03191522c0cf58793a802f8424c2eab7b0a3751d658139db62ccea4692",
+    "feedctrl/hosted_app.py": "1ec01c8215ae2c36b5b38c0919e15a60a5f168f6f1b4d6580ff37cc3d7f352f7",
+    "feedctrl/hosted_spend_guard.py": "d8324db782d3ac38306d6333af9025c11adfd96d3d2d4899d9af2634d7f8a553",
+    "feedctrl/indirect_grounding.py": "a42e5a33f3c5166b5b1fa48464a9d187c1b468534bc0b216ac12e5c74f1ccdc0",
+    "feedctrl/induction_integration.py": "9d06f4f03436821fa0c2905b156f1d3b02f40ad89f4fb47d44a79c23a6b35526",
+    "feedctrl/label_validation.py": "8435d21fce55da3675b0514d14e426e3fd9d661b3678ed65ac591fd1e6dcf4c1",
+    "feedctrl/model.py": "35fcd7f3ecebe5d3ed3ff33f83545d9ec70f91105aea84e03bed8a246c31eade",
+    "feedctrl/model_adapters.py": "1216b5a60900e43df8aac7f59daf33edade4e9ec385df58a2535a003866d01b9",
+    "feedctrl/parser_benchmark.py": "2cae6f085a4b52f31f387595a6a5deee5b1804c15d9232003d16152b683935c4",
+    "feedctrl/semantic_controls.py": "d5b29ab1ec41d2822d48def85f86e7f9bcbe16db6092cadaf457351c5c501ab9",
+    "feedctrl/semantic_induction.py": "69bcbd0aab2b76ec1d88cdd176d230fcf881ede54945afcf509546e026e187ab",
+    "feedctrl/semantic_review.py": "ed77f30b5b7d019d440313760f7faa17129433f3cf645b5bccb376c6b21d33ef",
+    "feedctrl/semantic_workflow.py": "a94a938bc375da8ffa975835fa24321296d5e30d557cc4f1afecc335e92145a4",
+    "feedctrl/source_constraints.py": "e3e16c8c291633bd64426ce57dcb65cf2b47d6c5dbe24e127804f23655f3150a",
+    "feedctrl/staged_induction.py": "2178eee900baf87dbda0dbb5761fcc9898ca4177029cbe2ed6097e8cf8c35c52",
+    "feedctrl/staged_routes.py": "ea3abdc0e281ba5f85a1dbbc7a8b918a5037d86b194836f5c383e4bf867ce465",
+    "feedctrl/synthetic_drafts.py": "e6d0aae1df121dc0c3937c66eef5ffe7d23273c1ddd714c1117f2071f1bd3d8b",
+    "feedctrl/windows_job_native.py": "d081495c2c07dc1645373e111f6253d88b5c490a0f8fe3fdd04ffef1b3be5fb0",
+    "feedctrl/windows_job_runner.py": "cea74bc85108e6109dc1d0609b14a805ab4b0c7c025b24b2a1f3d9f525f893c3"
+  },
+  "review_receipts": {
+    "authorization": {
+      "path": null,
+      "sha256": null
+    },
+    "native_containment": {
+      "path": null,
+      "sha256": null
+    },
+    "managed_runtime": {
+      "path": null,
+      "sha256": null
+    },
+    "model_identity": {
+      "path": null,
+      "sha256": "0368e562a019784bf90aac4dbb802167a01f57872f424282682ba0fd28975445"
+    }
+  },
+  "runtime_authorized": false,
+  "data_authorized": false,
+  "subscription_and_usage_authorized": false,
+  "executable_reviewed": false,
+  "managed_runtime_reviewed": false,
+  "process_containment_reviewed": false,
+  "identity_basis": {
+    "kind": "official_documentation",
+    "expected_model_id": "claude-fable-5-2",
+    "requested_effort": "max",
+    "minimum_cli_version": "2.1.321",
+    "prior_runtime_observed": false,
+    "runtime_availability": "unknown",
+    "references": [
+      "https://platform.claude.com/docs/en/models/fable-5-2/overview",
+      "https://code.claude.com/docs/en/model-config#work-with-fable"
+    ]
+  },
+  "input_manifest_sha256": "e4e36c14e3947324e1f34458f49df432130c7b5904aefda672953daabbb91655",
+  "profile_id": "current-definition-context-20261111"
+}

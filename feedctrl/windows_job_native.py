@@ -50,7 +50,7 @@ class WindowsBackend:
         defs={
           'CreateJobObjectW':([P,w.LPCWSTR],H), 'SetInformationJobObject':([H,D,P,D],B),
           'QueryInformationJobObject':([H,D,P,D,ctypes.POINTER(D)],B),
-          'TerminateJobObject':([H,w.UINT],B), 'CloseHandle':([H],B),
+          'TerminateJobObject':([H,w.UINT],B), 'TerminateProcess':([H,w.UINT],B), 'CloseHandle':([H],B),
           'CreatePipe':([ctypes.POINTER(H),ctypes.POINTER(H),ctypes.POINTER(SA),D],B),
           'SetHandleInformation':([H,D,D],B),
           'CreateFileW':([w.LPCWSTR,D,D,ctypes.POINTER(SA),D,D,H],H),
@@ -87,6 +87,10 @@ class _NativeRun:
     def __init__(self,api,exe,cmd,payload,env,cwd,limit,deadline):
         self.api=api;self.k=api.k;self.job=None;self.process=None;self.primary=None
         self.root_exit_code=None;self.root_release_failed=False;self.close_failed=False
+        self.root_created=False;self.root_handle=None;self.root_released=False
+        self.root_membership=None  # Unknown until IsProcessInJob succeeds.
+        self.resume_attempted=False;self.startup_failed=False
+        self.root_termination_attempted=False;self.root_cleanup_failed=False
         self.input_handle=None;self.output_handle=None;self.threads=[];self.thread_handles={}
         self.thread_ready={'writer':threading.Event(),'reader':threading.Event()}
         self.lock=threading.Lock();self.stop=threading.Event();self.data=bytearray()
@@ -94,6 +98,7 @@ class _NativeRun:
         self.owned=[];self.child=[];self.attribute=None;self.attribute_initialized=False
         try:self._create(exe,cmd,payload,env,cwd,deadline)
         except BaseException as exc:
+            self.startup_failed=True
             errors=[]
             # A failed startup may still own the suspended primary-thread handle.
             # Release it before waiting for job accounting, but never hide failure.
@@ -101,6 +106,10 @@ class _NativeRun:
                 try:self._close(self.primary);self.primary=None
                 except BaseException as failure:errors.append(type(failure).__name__)
             try:self.terminate()
+            except BaseException as failure:errors.append(type(failure).__name__)
+            # Job cleanup cannot reach a never-resumed root outside that job.
+            # Keep this independent so a job error does not skip owned-root cleanup.
+            try:self._terminate_uncontained_startup_root()
             except BaseException as failure:errors.append(type(failure).__name__)
             deadline=time.monotonic()+3
             try:
@@ -127,6 +136,7 @@ class _NativeRun:
             try:self.api._ok(self.k.CloseHandle(h),'CloseHandle')
             except BaseException:
                 self.close_failed=True
+                if h==self.root_handle:self.root_release_failed=True
                 raise
     def _pipe(self):
         a,b=w.HANDLE(),w.HANDLE();sa=self.api.SA(ctypes.sizeof(self.api.SA),None,True)
@@ -161,12 +171,14 @@ class _NativeRun:
         envbuf=ctypes.create_unicode_buffer(environment);cmdbuf=ctypes.create_unicode_buffer(cmd);pi=api.PI()
         flags=0x00000004|0x00000400|0x00080000|0x08000000
         api._ok(k.CreateProcessW(exe,cmdbuf,None,None,True,flags,envbuf,cwd,ctypes.byref(startup),ctypes.byref(pi)),'CreateProcessW')
-        self.process=self._own(pi.hProcess);self.primary=self._own(pi.hThread)
+        self.root_created=True;self.root_handle=pi.hProcess
+        self.process=self._own(self.root_handle);self.primary=self._own(pi.hThread)
         for h in list(self.child):self._close(h)
         self.child=[]
         contained=w.BOOL()
         api._ok(k.IsProcessInJob(self.process,self.job,ctypes.byref(contained)),'IsProcessInJob')
-        if not contained.value:raise WindowsRunnerError('Process was not assigned to job')
+        self.root_membership=bool(contained.value)
+        if not self.root_membership:raise WindowsRunnerError('Process was not assigned to job')
         self.threads=[threading.Thread(target=self._writer,args=(payload,),daemon=True),
                       threading.Thread(target=self._reader,daemon=True)]
         for t in self.threads:t.start()
@@ -178,6 +190,8 @@ class _NativeRun:
             if self.io_error or set(self.thread_handles)!={'writer','reader'}:
                 raise WindowsRunnerError('I/O worker initialization failed')
         if time.monotonic()>=deadline:raise TimeoutError('Startup deadline exceeded before resume')
+        # Even an exception or unexpected return may follow an effective resume.
+        self.resume_attempted=True
         previous=k.ResumeThread(self.primary)
         if previous != 1:raise WindowsRunnerError('Primary thread did not resume as expected')
         self._close(self.primary);self.primary=None
@@ -237,31 +251,53 @@ class _NativeRun:
 
     def active_count(self):
         if not self.job:return 0
+        if self.job not in self.owned:raise CleanupUncertain('Job handle ownership unconfirmed')
         info=self.api.ACCOUNT()
         self.api._ok(self.k.QueryInformationJobObject(self.job,1,ctypes.byref(info),ctypes.sizeof(info),None),'QueryInformationJobObject')
         return info.ActiveProcesses
     def _observe_root(self):
         # Retain the exact process handle until the exit is signaled and its code
-        # captured. Never wait/query it again after successful release.
+        # captured. Never use its value again after any release attempt.
         if self.root_release_failed:
             raise CleanupUncertain('Root process handle release unconfirmed')
-        if self.process is None:return self.root_exit_code
-        status=self.k.WaitForSingleObject(self.process,0)
-        if status==258:return None
-        if status!=0:raise OSError(ctypes.get_last_error(),'Process wait failed')
-        code=w.DWORD()
-        self.api._ok(self.k.GetExitCodeProcess(self.process,ctypes.byref(code)),'GetExitCodeProcess')
-        self.root_exit_code=code.value
-        try:self._close(self.process)
+        if not self.root_created:return None
+        if self.root_released:return self.root_exit_code
+        if self.process is None or self.process!=self.root_handle or self.process not in self.owned:
+            self.root_cleanup_failed=True
+            raise CleanupUncertain('Root process handle ownership unconfirmed')
+        try:
+            status=self.k.WaitForSingleObject(self.process,0)
+            if status==258:return None
+            if status!=0:raise OSError(ctypes.get_last_error(),'Process wait failed')
+            code=w.DWORD()
+            self.api._ok(self.k.GetExitCodeProcess(self.process,ctypes.byref(code)),'GetExitCodeProcess')
+            self.root_exit_code=code.value
+            self._close(self.process)
         except BaseException:
-            self.root_release_failed=True
+            self.root_cleanup_failed=True
             raise
-        self.process=None
+        self.process=None;self.root_released=True
         return self.root_exit_code
+    def _terminate_uncontained_startup_root(self):
+        # Never reopen by PID, enumerate, or reach a possibly resumed root here.
+        if (not self.startup_failed or not self.root_created or self.resume_attempted
+                or self.root_membership is True):return
+        if self.root_cleanup_failed or self.root_release_failed:
+            raise CleanupUncertain('Startup root cleanup already unconfirmed')
+        if self.root_termination_attempted:return
+        if self._observe_root() is not None:return
+        self.root_termination_attempted=True
+        try:self.api._ok(self.k.TerminateProcess(self.process,1),'TerminateProcess')
+        except BaseException:
+            self.root_cleanup_failed=True
+            raise
+        # Success only requests asynchronous termination. The bounded drain must
+        # still observe exit, capture its code and release this exact handle.
     def cleanup_complete(self):
         # Job accounting alone cannot prove the retained root has exited. The job
         # handle stays open until this check and I/O cleanup have completed.
         self._observe_root()
+        if self.root_cleanup_failed:raise CleanupUncertain('Root cleanup previously failed')
         if self.process is not None:return False
         return self.active_count()==0
     def poll(self,remaining):

@@ -33,6 +33,10 @@ In v6, `web/dist/assets/index-CZ9L8i2t.js` replaced the old `web/dist/assets/ind
 
 Each release should carry an updated [`CURRENT-SOURCE-SHA256.txt`](../CURRENT-SOURCE-SHA256.txt). Its paths are relative to the repository root, or to `source/` in a packaged copy. It covers every release source file except the manifest itself, which is excluded to avoid self-reference. Git checkout line-ending conversion must preserve the recorded bytes.
 
-The separate package-root `SOURCE-FILE-SHA256.txt` describes the full package layout and includes the portable manifest with `source/`-prefixed paths. Regenerate release manifests after approved source or documentation changes, then verify them against the final files. Never replace an older test or evidence receipt with a new checksum and present it as the original record.
+The separate package-root `SOURCE-FILE-SHA256.txt` covers the source tree within the package, including the portable manifest, using paths relative to `source/`, without a `source/` prefix. Verify it with `source/` as the working directory (for example, `cd source` followed by `sha256sum -c ../SOURCE-FILE-SHA256.txt`). It excludes the outer verification records, other package documents and itself. Regenerate release manifests after approved source or documentation changes, then verify them against the final files. Never replace an older test or evidence receipt with a new checksum and present it as the original record.
 
 Offline checks and builds do not establish hosted-model behavior or successful browser interaction. The automatic personal launch remains disabled.
+
+## Current cited-context interface
+
+The integrated definition-context interface was rebuilt using existing dependencies matching package-lock.json, without installation. All 59 offline Node checks passed and Vite transformed 32 modules. The build contains index-C2wfZ-Ft.js and index-hBnJv3xo.css. The complete dist tree reproduces the context patch author's build exactly; scripts/check_personal_ui_index.py pins all three current asset paths and hashes. Its seven mocked-index checks pass within the current aggregate. No real Git index, browser or server was exercised. Earlier build and missing-dependency receipts remain historical evidence.

@@ -1,0 +1,31 @@
+{
+  "scope": "Portable adapter/helper diagnostic subset with authored envelopes and injected callable; not native runner, whole application, broad Windows suite or live-provider acceptance.",
+  "executed_platform": "Windows",
+  "python_version": "3.14.0",
+  "started_utc": "2026-11-11T02:42:26Z",
+  "finished_utc": "2026-11-11T02:42:27Z",
+  "tests_passed": 7,
+  "exit_code": 0,
+  "guard_events": {
+    "count": 6,
+    "meaning": "Deliberate sys.audit probes only; no underlying operations."
+  },
+  "executed_files_sha256": {
+    "feedctrl/claude_personal.py": "5971daefba03dd88fbf3b6b9b107fcb05371210cd660914d9022553e78af3113",
+    "driver.py": "603e7cdc430c9100271ef4bf2005c4e58e0914c2e2f4844b043dd1f8d084a709",
+    "run_guarded.py": "641b20138b35b7d8996a7307a07db8ccfaeb0bcaeca79c003eade7717c2f9177",
+    "test_diagnostics_portable.py": "f2a1ce4b30eaf1c46e1cc3f4bb7ad1d8eb1162c99a0b8cb29f87f6f7e29e3608"
+  },
+  "executed_hashes_matched_before_and_after": true,
+  "evidence_sha256": {
+    "receipt": "649b54f867b9c40d0e4934600a5c0f9585c196fc942d6db567d5860cf20568ef",
+    "stdout": "b42ca741cec1e45f7c8acb74517abc62cad3b011aa5ce8b7125778de3d6b1806",
+    "stderr": "bc1d000f092f94d039ab68d0e356d8153c768879cbf3ebe2e27c4992dc9c811a"
+  },
+  "repository_variant": {
+    "test_sha256": "c997bf41a092d957bcad0a45930784d3531d4cd6cd7479a66f3cad2bdd2a27f5",
+    "driver_sha256": "8d1cc561b4d466d93c780aa85223f47b82a087539c18f5f0cb371607fbc0d2f5",
+    "difference": "Test helper path and expected driver pin only. Driver differs from the executed original only in its input-manifest metadata hash constant. This relocated variant has not been executed on Windows."
+  },
+  "broad_windows_suite": "Earlier 61-test/41-error kernel32 import failure remains failed; this subset does not replace it."
+}

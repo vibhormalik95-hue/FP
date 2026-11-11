@@ -117,7 +117,8 @@ def create_claude_personal_app(*, operator_token, allowed_origin, data_path=None
     """Create only after independent personal runtime, data, and usage review.
 
     This is not a launcher and does not configure a network listener. The caller
-    must bind only to loopback and protect the token. The transport launch is disabled.
+    must bind only to loopback and protect the token. Transport launch is disabled
+    by default; a runner must be supplied explicitly.
     """
     if (not isinstance(operator_token,str) or len(operator_token)<32 or len(operator_token)>256
             or not operator_token.isascii() or any(c.isspace() for c in operator_token)):

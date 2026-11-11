@@ -1,0 +1,35 @@
+{
+  "primary_transcript": {
+    "meeting_date_verified": false,
+    "quotes": [
+      {
+        "at": "07:49",
+        "speaker": "Professor",
+        "text": "Yeah, if I said, I don't know some other word that basically cooking, but it doesn't literally match cooking."
+      },
+      {
+        "at": "07:55",
+        "speaker": "Student",
+        "text": "I'm not hungry, remove all the stuff that makes me hungry."
+      },
+      {
+        "at": "08:38",
+        "speaker": "Professor",
+        "text": "If we can use NLP to create new categories that then feed the filter And we can use NLP to match what people intend to existing categories and tags."
+      }
+    ],
+    "received_utc": "2026-11-04T22:57:15.757059Z",
+    "sha256": "dfa21271a1fa0d996c366bbeb02b7d57b8c7399628b13adf5e5a0af25c3074f4",
+    "source_description": "Professor transcript supplied on 4 November 2026; source retained privately under the recorded SHA-256."
+  },
+  "source_files_sha256": {
+    "feedctrl/api.py": "408f49ddf6f8060e683886c1a3bce3d92fd2271c3cc78e1ae630faf5c084a74f",
+    "feedctrl/claude_personal.py": "5afa23c0f7fef098c510055d4d80655475b75677b2273aa334560f0960b8f154",
+    "feedctrl/evidence_audit.py": "b6e6ba47d1dead69f055a35b2f94adc9102d230cbce29003a839948b17990d27",
+    "feedctrl/indirect_grounding.py": "a42e5a33f3c5166b5b1fa48464a9d187c1b468534bc0b216ac12e5c74f1ccdc0",
+    "feedctrl/semantic_review.py": "4907c75329cca72a4de859f054260ab0399167e159dae4b700a0e730196325a7",
+    "feedctrl/staged_induction.py": "3e20b7aeb1df53e4033bbcd3f2369ee0e90371e6d359dde210d7b92a3db5d17c",
+    "feedctrl/staged_routes.py": "bb52fa020e32eeecdf5ba51a4f45b98ef73b4ec38ef450e3f97897547d83e3ce"
+  },
+  "source_files_sha256_context": "Application file hashes at scenario preparation, before the safe CLI evidence projection change. These are historical provenance, not current source pins."
+}

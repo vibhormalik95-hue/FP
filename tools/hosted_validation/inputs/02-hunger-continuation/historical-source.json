@@ -1,0 +1,34 @@
+{
+  "actual_generation_calls": 2,
+  "first_returned_action": {
+    "control": "exclude/none",
+    "intent_span": "the stuff that makes me hungry",
+    "needs_clarification": false,
+    "question": "I'm not hungry, remove all the stuff that makes me hungry."
+  },
+  "future_use": "Prospective exposed synthetic continuation with Fable5.2 Max; not a rerun of the old study and not a held-out comparison.",
+  "metadata_equal_to_historical_second_call": true,
+  "original_file": "old-hunger-negative.json",
+  "original_file_sha256": "7a9ffc3629831106316a26983bb41ac7cc34ae00e78c883908dd13ebcf5d62b3",
+  "outcome": "terminal_clarify",
+  "request": "I'm not hungry, remove all the stuff that makes me hungry.",
+  "review": [
+    {
+      "decision": "no-apply",
+      "reason": "Case stopped at returned non-review terminal status; no retry",
+      "response_status": "clarify"
+    }
+  ],
+  "second_returned_response": {
+    "alternatives": [
+      "Exclude items based on the request, but the request is ambiguous.",
+      "Exclude items that are related to food or cooking, but the request does not explicitly mention this."
+    ],
+    "evidence": [],
+    "negation_resolved": false,
+    "reason": "No evidence supports the intent to exclude items based on the request.",
+    "status": "no_match"
+  },
+  "source_commit": "1f578bbb3548e3b8e2d86dfe2c634f5100b95899",
+  "status": "Historical failed result retained; not a new execution"
+}

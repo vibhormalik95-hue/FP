@@ -1,5 +1,21 @@
 import React, {useEffect, useRef, useState} from 'react';
 
+// Display only: match the complete citation, never borrow another item's field.
+function definitionEvidence(evidence, context) {
+  return evidence.map((e,n)=>{
+    const row=context?.find(r=>r.item_id===e.item_id&&r.field===e.field&&r.quote===e.quote);
+    const available=typeof row?.supplied_field_text==='string';
+    return <div className="help" key={n} aria-label="Definition cited source context">
+      <p>Item {e.item_id}, {e.field}: "{e.quote}". {e.reason}</p>
+      <p>Complete supplied field (quote custody, not semantic relevance):</p>
+      {available?<p style={{whiteSpace:'pre-wrap',overflowWrap:'anywhere'}}>{row.supplied_field_text}</p>:
+        <p>Full source field unavailable for this citation.</p>}
+      {row?.truncated&&<p>[truncated]</p>}
+      {available&&!row.quote_present&&<p>[quote not found in current text]</p>}
+    </div>;
+  });
+}
+
 export default function SemanticPanel({api,user,resetKey,onFeed}) {
   const [open,setOpen]=useState(false),[saved,setSaved]=useState(null),[pending,setPending]=useState(null);
   const [text,setText]=useState(''),[label,setLabel]=useState('My semantic group'),[count,setCount]=useState(10);
@@ -9,23 +25,27 @@ export default function SemanticPanel({api,user,resetKey,onFeed}) {
   const [definition,setDefinition]=useState(null),[evidenceReviewed,setEvidenceReviewed]=useState(false);
   const [working,setWorking]=useState(false),[message,setMessage]=useState('');
   const [clarification,setClarification]=useState(null);
+  const [resolution,setResolution]=useState(null),[resolutionChoice,setResolutionChoice]=useState('');
   const [explicitTarget,setExplicitTarget]=useState(false),[target,setTarget]=useState(''),[targetConfirmed,setTargetConfirmed]=useState(false);
   const [targetSignature,setTargetSignature]=useState(null);
   const currentTargetSignature=JSON.stringify([user,backend,text,target,count,operation,operation==='exclude'?'none':strength,mode]);
   const confirmedNow=targetConfirmed&&targetSignature===currentTargetSignature;
-  const generation=useRef(0);
-  useEffect(()=>{const id=++generation.current;setSaved(null);setPending(null);setDefinition(null);setEvidenceReviewed(false);setClarification(null);setExplicitTarget(false);setTargetConfirmed(false);setMessage('');setWorking(false);
+  const generation=useRef(0),activeRequest=useRef(null);
+  useEffect(()=>{const id=++generation.current;activeRequest.current=null;setResolution(null);setResolutionChoice('');setSaved(null);setPending(null);setDefinition(null);setEvidenceReviewed(false);setClarification(null);setExplicitTarget(false);setTargetConfirmed(false);setMessage('');setWorking(false);
     if(open&&user!==null){setWorking(true);api(`semantic/groups?user_id=${user}`)
       .then(r=>{if(id===generation.current)setSaved(r);})
       .catch(e=>{if(id===generation.current)setMessage(e.message);})
       .finally(()=>{if(id===generation.current)setWorking(false);});}
   },[user,resetKey,open]);
   useEffect(()=>{if(saved?.local_models_allowed===false&&backend==='ollama'){setBackend(saved.external_adapter_available?'configured_model':'manual_category');setPending(null);}},[saved,backend]);
-  useEffect(()=>{setDefinition(null);setEvidenceReviewed(false);setClarification(null);},[backend,text,label,count,operation,strength,mode,actionSource,category]);
+  useEffect(()=>{++generation.current;activeRequest.current=null;setWorking(false);setDefinition(null);setEvidenceReviewed(false);setClarification(null);setResolution(null);setResolutionChoice('');},[backend,text,label,count,operation,strength,mode,actionSource,category]);
   useEffect(()=>{setTargetConfirmed(false);setPending(null);},[backend,text,target,count,operation,strength,mode,explicitTarget]);
-  async function run(work){const id=generation.current;setWorking(true);setMessage('');setClarification(null);
+  async function run(work,keepClarification=false){
+    if(activeRequest.current)return;
+    const request=Symbol(),id=generation.current;activeRequest.current=request;setWorking(true);setMessage('');
+    if(!keepClarification){setClarification(null);setResolution(null);setResolutionChoice('');}
     try{await work(id);}catch(e){if(id===generation.current)setMessage(e.message);}
-    finally{if(id===generation.current)setWorking(false);}}
+    finally{if(activeRequest.current===request)activeRequest.current=null;if(id===generation.current)setWorking(false);}}
   async function load(id){const r=await api(`semantic/groups?user_id=${user}`);
     if(id===generation.current){setSaved(r);return r;}}
   function review(){run(async id=>{setPending(null);setDefinition(null);setEvidenceReviewed(false);const r=saved||await load(id);if(!r)return;
@@ -37,7 +57,17 @@ export default function SemanticPanel({api,user,resetKey,onFeed}) {
         action_source:explicitTarget?'confirmed':backend==='configured_model'?'model':actionSource,
         ...(explicitTarget?{confirmed_target:target,target_confirmed:confirmedNow}:{})});
     if(id!==generation.current)return;
-    if(p.definition_ready)setDefinition(p);else if(p.ready)setPending(p);else {setClarification(p.clarification||null);setMessage(`${p.status||'clarify'}: ${p.reason||'Please clarify the request'}`);}});}
+    if(p.definition_ready)setDefinition(p);else if(p.ready)setPending(p);else {setResolution(p.resolution_ready?p:null);setResolutionChoice('');setClarification(p.clarification||null);setMessage(`${p.status||'clarify'}: ${p.reason||'Please clarify the request'}`);}});}
+  function resolveDefinition(choice){
+    if(!resolution||!['review_primary','cancel'].includes(choice)||(choice==='review_primary'&&resolutionChoice!==choice))return;
+    run(async id=>{const p=await api('semantic/definition/resolve',{
+      user_id:user,plan_id:resolution.resolution_plan_id,choice});
+      if(id!==generation.current)return;
+      setResolution(null);setResolutionChoice('');setClarification(null);setEvidenceReviewed(false);
+      if(p.definition_ready)setDefinition(p);
+      else setMessage(p.status==='cancelled'?'Category clarification cancelled. Nothing was approved or applied.':`${p.status||'clarify'}: ${p.reason||'No definition was approved'}`);
+    },true);
+  }
   function classify(){run(async id=>{const p=await api('semantic/definition/classify',{
     user_id:user,plan_id:definition.definition_plan_id,evidence_reviewed:evidenceReviewed});
     if(id!==generation.current)return;setDefinition(null);setEvidenceReviewed(false);
@@ -100,21 +130,39 @@ export default function SemanticPanel({api,user,resetKey,onFeed}) {
         {working?'Working with the selected model...':backend==='staged'?'Propose a definition for review':'Review semantic proposal'}</button>
       {message&&<p role="status" className="alert">{message}</p>}
       {clarification&&<section aria-label="Unresolved semantic interpretations" className="saved-profile">
-        <h4>Clarify the target before trying again</h4>
+        <h4>{resolution?'Resolve competing category meanings':'Clarify the target before trying again'}</h4>
         <p className="help">{clarification.notice}</p>
         <p className="help">Model explanation: {clarification.model_reason}</p>
+        {resolution&&<div aria-label="Unapproved primary category">
+          <strong>{clarification.candidate.label}</strong>
+          <p>{clarification.candidate.definition}</p>
+          <p className="help">Objective: {resolution.objective}</p>
+          <p className="help">Model rationale: {clarification.candidate.rationale}</p>
+          {definitionEvidence(clarification.candidate.evidence,resolution?.evidence_context)}
+          <p className="help">{resolution.provenance.model_id}; digest {resolution.provenance.model_revision}. Assessed scope: {resolution.scope_ids.join(', ')}.</p>
+        </div>}
         {clarification.alternatives.length>0&&<><p className="help">Competing interpretations:</p>
           <ul>{clarification.alternatives.map((a,n)=><li key={n}>{a}</li>)}</ul></>}
         <p className="help">{clarification.question} Editing it does not call a model; only a new explicit review submission does.</p>
+        {resolution&&<>
+          <p className="help">Alternatives are unvalidated text descriptions and cannot be classified directly. Choosing the primary meaning makes no model call and approves neither evidence nor membership. This choice expires after five minutes.</p>
+          <label><input type="radio" name="category-resolution" disabled={disabled} checked={resolutionChoice==='review_primary'} onChange={()=>setResolutionChoice('review_primary')}/> I resolve the competing meanings by choosing this exact, unchanged primary definition for review.</label>
+          <button className="primary" disabled={disabled||resolutionChoice!=='review_primary'} onClick={()=>resolveDefinition('review_primary')}>Continue to definition review</button>
+          <button className="secondary" disabled={disabled} onClick={()=>resolveDefinition('cancel')}>Cancel category clarification</button>
+        </>}
       </section>}
       {definition&&<div className="saved-profile" aria-label="Category definition review">
         <h4>Stage 1: review the whole definition</h4>
+        {definition.definition.operator_resolution&&<div aria-label="Explicit category resolution record">
+          <p className="help">You explicitly chose the unchanged primary meaning. The original model result remains clarification, not automatic approval. Evidence review is still required.</p>
+          <p className="help">Original competing meanings: {definition.definition.original_clarification.clarification.alternatives.join('; ')}</p>
+        </div>}
         <strong>{definition.definition.proposal.label}</strong>
         <p>{definition.definition.proposal.definition}</p>
         {definition.definition.source_constraints&&<p className="help">Literal witness requirements: {definition.definition.source_constraints.terms.join(', ')||'No digit-bearing terms'}. Every positive must contain these terms in supplied metadata. This conservative text constraint may withhold equivalent wording, unit conversions or ranges; presence does not establish truth.</p>}
         <p className="help">Objective: {definition.definition.objective}</p>
         <p className="help">Model rationale: {definition.definition.proposal.rationale}</p>
-        {definition.definition.proposal.evidence.map((e,n)=><p className="help" key={n}>Item {e.item_id}, {e.field}: "{e.quote}". {e.reason}</p>)}
+        {definitionEvidence(definition.definition.proposal.evidence,definition.evidence_context)}
         <p className="help">{definition.definition.provenance.model_id}; digest {definition.definition.provenance.model_revision}. Assessed scope: {definition.scope_ids.join(', ')}. No membership or feed change is approved yet.</p>
         <p className="help">Reject a definition with unsupported properties, credentials or ratings, even if the quotation exists. Change the objective to start again. Approval expires after five minutes.</p>
         <label><input type="checkbox" checked={evidenceReviewed} disabled={disabled} onChange={e=>setEvidenceReviewed(e.target.checked)}/> I reviewed whether the source evidence supports the entire definition.</label>

@@ -1,0 +1,62 @@
+{
+  "evidence_type": "single fictional draft direct-endpoint development check",
+  "report_sha256": "c3df9588d90ad49cfefc9a00e90c1c3e6f452939d567ebbc35e13c2197d751bf",
+  "source_python_manifest": {
+    "sha256": "711e871fa683d88c95f31fd4ba9b94c14d4b29dbe95f8a011dee752e98bc7193",
+    "file_count": 31,
+    "algorithm": "SHA-256 of UTF-8 JSON object mapping source-relative Python paths to SHA-256, keys sorted, compact separators",
+    "matches_reviewed_template": true,
+    "scope": "feedctrl Python modules only"
+  },
+  "application_api_sha256": "408f49ddf6f8060e683886c1a3bce3d92fd2271c3cc78e1ae630faf5c084a74f",
+  "driver_sha256": "fa6f9444e4046a180256c6bc8186b201b036456ece9dd866129777e685920e44",
+  "native_runner_sha256": "d081495c2c07dc1645373e111f6253d88b5c490a0f8fe3fdd04ffef1b3be5fb0",
+  "runner_control_sha256": "cea74bc85108e6109dc1d0609b14a805ab4b0c7c025b24b2a1f3d9f525f893c3",
+  "execution": {
+    "driver_exit_code": 0,
+    "driver_exit_evidence": "observed owned execution-session result",
+    "cli_exit_code": 0,
+    "logical_invocations": 1,
+    "underlying_http_attempts": null,
+    "cli_started_utc": "2026-11-10T22:46:22.340178+00:00",
+    "cli_elapsed_seconds": 6.284157300018705,
+    "requested_model": "claude-fable-5-2",
+    "requested_effort": "max",
+    "reported_model": "claude-fable-5-2",
+    "effective_effort": null,
+    "usage": {
+      "input_tokens": 2,
+      "output_tokens": 427,
+      "cache_creation_input_tokens": 970,
+      "cache_read_input_tokens": 0
+    },
+    "cli_estimated_cost_usd": 0.032616,
+    "billing_verified": false,
+    "cost_note": "CLI estimate, not verified billing or a guaranteed cap"
+  },
+  "fictional_item": {
+    "brief": "Invent one fictional item called Lunaria Pod, a quiet imaginary desk garden. Clearly fictional metadata only, no real media or performance claims.",
+    "title": "Lunaria Pod: A Quiet Imaginary Desk Garden",
+    "description": "Fictional concept, invented for a creative brief. The Lunaria Pod is an imaginary desk garden: a palm-sized dome of frosted glass in which make-believe silver-leafed moonwort is said to unfurl slowly whenever the room goes still. In this story, the pod hums a note too soft to hear and gives off a pale, pearly glow that exists only on the page. Its tiny garden follows an invented lunar rhythm, opening at dusk and folding closed at dawn. Nothing here describes a real product, plant, recording or event. No footage or images exist, and no performance or wellbeing claims are made. It is a small piece of whimsy for anyone who likes to picture a calmer corner of their desk.",
+    "category": "Fictional Concept – Imaginary Desk Gardens"
+  },
+  "lifecycle": {
+    "preview_ready": true,
+    "preview_admitted": false,
+    "preview_model_calls": 1,
+    "admitted_items_after_admit": 1,
+    "admitted_items_after_remove": 0,
+    "restore_preview_ready": true,
+    "restore_replayed_removed_record": true,
+    "restore_preview_model_calls": 0,
+    "admitted_items_after_restore": 1,
+    "same_item_restored": true,
+    "original_fixture_feed_unchanged": "driver assertion passed; original feed was not separately retained as a full artifact",
+    "operator_decisions": "scripted operator reviews: admit, remove, restore; no physical clicks"
+  },
+  "limitations": [
+    "No detailed per-invocation process-cleanup record in projected receipt.",
+    "No browser or HTTP acceptance, trained recommender execution, category induction, indirect-intent evaluation, or broad language accuracy claim.",
+    "Managed hook context, account entitlement before the call, effective effort, and actual billing were not independently established."
+  ]
+}

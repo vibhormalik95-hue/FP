@@ -168,6 +168,8 @@ class NativeRootLifecycleTests(unittest.TestCase):
                 return value
         run=_NativeRun.__new__(_NativeRun);run.api=API();run.k=run.api.k
         run.job=11;run.process=12;run.primary=None;run.root_exit_code=None;run.root_release_failed=False
+        run.root_created=True;run.root_handle=12;run.root_released=False;run.root_cleanup_failed=False
+        run.root_membership=True;run.resume_attempted=True;run.startup_failed=False;run.root_termination_attempted=False
         run.owned=[11,12];run.lock=threading.Lock();run.io_error=None;run.data=bytearray()
         run.input_done=True;run.output_eof=True;run.input_handle=None;run.output_handle=None
         run.threads=[];run.thread_handles={};run.attribute_initialized=False;run.stop=threading.Event()
@@ -226,6 +228,7 @@ class NativeRootLifecycleTests(unittest.TestCase):
         from feedctrl.windows_job_native import _NativeRun
         r=self.make_run(signaled=False,active=1)
         def create(self,*args):
+            self.root_created=True;self.root_handle=12;self.root_membership=True
             self.job=11;self.process=12;self.primary=13;self.owned=[11,12,13]
             self.k=r.k
             raise ValueError('startup')
@@ -247,6 +250,7 @@ class NativeRootLifecycleTests(unittest.TestCase):
             return normal(h)
         r.k.CloseHandle=close
         def create(self,*args):
+            self.root_created=True;self.root_handle=12;self.root_membership=True
             self.job=11;self.process=12;self.primary=13;self.owned=[11,12,13]
             raise ValueError('startup')
         with patch.object(_NativeRun,'_create',create):
@@ -275,6 +279,7 @@ class NativeRootLifecycleTests(unittest.TestCase):
                     return normal(h)
                 r.k.CloseHandle=close
                 def create(self,*args):
+                    self.root_created=True;self.root_handle=12;self.root_membership=True
                     self.job=11;self.process=12;self.primary=13;self.owned=[11,12,13,14]
                     self._close(handle)
                 with patch.object(_NativeRun,'_create',create):

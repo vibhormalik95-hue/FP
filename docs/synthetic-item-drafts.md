@@ -2,7 +2,7 @@
 
 This optional feature creates a model-written title, description and synthetic category label. It creates no real media, observed event or factual dataset record. A separate local-model development example is recorded in the [5 November demonstration](../deliverables/2026-11-05-final-demo/CLAIM-MATRIX.md).
 
-**Current status:** the latest source adds a hosted adapter using the existing provider and shared call allowance. Independent offline and ASGI tests pass, but live hosted generation through the app has not been verified. The automatic personal Claude launcher remains disabled. If no hosted adapter is configured and local models are disabled, generation returns HTTP 403 before inference and the UI disables generation. The earlier local example does not establish hosted generation.
+**Current status (11 November):** one real Claude Code Lunaria call completed preview, admission, removal and restoration through the application’s Python methods using an explicit runner. Restoration replayed the removed record with no extra model call. This is operator-reviewed headless synthetic evidence, not browser acceptance, real media creation or trained cold-start relevance. The default launch remains disabled. If no permitted adapter is configured, generation remains unavailable. See the [safe result](evidence/2026-11-11/FABLE-LUNARIA-PUBLIC-SAFE-SUMMARY.json).
 
 ## Review before adding a draft
 

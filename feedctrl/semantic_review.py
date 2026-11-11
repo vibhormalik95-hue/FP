@@ -291,7 +291,7 @@ def install_semantic_routes(app, demo, *, infer_factory=None, category_infer_fac
             "evidence_context": evidence_context(proposal),
             "note": "Only the declared supplied items were assessed; quotes are not relevance proof."}
 
-    def evidence_context(proposal):
+    def evidence_context(proposal, index=None):
         """Read-only display aid: the full supplied field around each cited quote.
 
         An exact quotation proves only that the text exists. A reviewer needs the
@@ -299,10 +299,13 @@ def install_semantic_routes(app, demo, *, infer_factory=None, category_infer_fac
         meaning. Return the complete field, including all repeated occurrences and
         distant qualifiers; a prefix or quote window can hide contrary meaning.
         This is not part of the sealed group and never affects approval.
+        Definition routes pass their already-validated candidate scope explicitly;
+        an empty supplied index must not fall back to the full catalogue.
         """
+        index = demo.topic_index if index is None else index
         rows = []
         for e in (proposal or {}).get("evidence") or []:
-            item = demo.topic_index["items"].get(e.get("item_id")) if demo.topic_index else None
+            item = index["items"].get(e.get("item_id")) if index else None
             text = item["fields"].get(e.get("field")) if item else None
             text = text if isinstance(text, str) else None
             rows.append({"item_id": e.get("item_id"), "field": e.get("field"), "quote": e.get("quote"),
@@ -518,4 +521,4 @@ def install_semantic_routes(app, demo, *, infer_factory=None, category_infer_fac
             return {"applied": True, **response(state, body.user_id)}
 
     from feedctrl.staged_routes import install_staged_routes
-    install_staged_routes(app,demo,state_for,review,category_provider=category_provider)
+    install_staged_routes(app,demo,state_for,review,evidence_context=evidence_context,category_provider=category_provider)

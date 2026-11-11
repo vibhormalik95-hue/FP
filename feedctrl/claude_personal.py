@@ -27,6 +27,62 @@ _ENV_ALLOW = ('SYSTEMROOT', 'WINDIR', 'APPDATA', 'LOCALAPPDATA', 'USERPROFILE',
               'HOMEDRIVE', 'HOMEPATH', 'HOME', 'PATH', 'TEMP', 'TMP', 'TMPDIR')
 
 
+# Closed receipt vocabulary. Unknown/missing values are omitted, never guessed.
+_CLI_ENUMS = {
+    'type': ('result',),
+    'subtype': ('success', 'error_during_execution', 'error_max_turns',
+                'error_max_budget_usd', 'error_max_structured_output_retries'),
+    'stop_reason': ('end_turn', 'max_tokens', 'stop_sequence', 'tool_use',
+                    'pause_turn', 'refusal'),
+}
+_USAGE_FIELDS = ('input_tokens', 'output_tokens', 'cache_creation_input_tokens',
+                 'cache_read_input_tokens')
+_MODEL_USAGE_FIELDS = ('inputTokens', 'outputTokens', 'cacheReadInputTokens',
+                       'cacheCreationInputTokens', 'webSearchRequests',
+                       'contextWindow', 'maxOutputTokens')
+
+
+def _safe_cost(value):
+    return type(value) in (int, float) and 0 <= value <= 1000000 and math.isfinite(value)
+
+
+def _safe_usage(value, fields, cost=False):
+    if not isinstance(value, dict):
+        return {}
+    out = {k: value[k] for k in fields
+           if type(value.get(k)) is int and 0 <= value[k] <= 2**53-1}
+    if cost and _safe_cost(value.get('costUSD')):
+        out['costUSD'] = value['costUSD']
+    return out
+
+
+def _safe_cli_evidence(envelope, model):
+    """Project only bounded status/counters; never content or arbitrary model keys.
+
+    This describes reported evidence, not a diagnosis, billing or identity proof.
+    It deliberately does not interpret free-text errors as quota/access failures.
+    """
+    if not isinstance(envelope, dict):
+        return {}
+    status = {k: envelope[k] for k, allowed in _CLI_ENUMS.items()
+              if envelope.get(k) in allowed}
+    if type(envelope.get('is_error')) is bool:
+        status['is_error'] = envelope['is_error']
+    if type(envelope.get('num_turns')) is int and 0 <= envelope['num_turns'] <= 2**53-1:
+        status['num_turns'] = envelope['num_turns']
+    out = {'cli_status': status}
+    if isinstance(envelope.get('usage'), dict):
+        out['reported_usage'] = _safe_usage(envelope['usage'], _USAGE_FIELDS)
+    models = envelope.get('modelUsage')
+    if isinstance(models, dict) and set(models) == {model} and isinstance(models[model], dict):
+        out['reported_model'] = model
+        out['reported_model_usage'] = {model: _safe_usage(models[model], _MODEL_USAGE_FIELDS, True)}
+    if _safe_cost(envelope.get('total_cost_usd')):
+        out['estimated_cost_usd'] = envelope['total_cost_usd']
+        out['estimated_cost_note'] = 'CLI estimate, not billing proof'
+    return out
+
+
 def _schema_check(schema, depth=0):
     if depth > 30 or not isinstance(schema, dict) or set(schema) - _SCHEMA_KEYS:
         raise ValueError('Unsupported response schema')
@@ -55,10 +111,10 @@ def make_claude_personal_infer(*, executable, workdir, model, effort, run_budget
         subscription_and_usage_authorized=False, executable_reviewed=False,
         managed_runtime_reviewed=False, process_containment_reviewed=False, reviewed_cli_version=None,
         max_output_tokens=4096, max_request_bytes=20000, max_response_bytes=1000000,
-        timeout=90):
-    """Create a personal CLI callable whose process-launch seam remains disabled.
+        timeout=90, process_runner=None):
+    """Create a personal CLI callable with process launch disabled by default.
 
-    Authorization alone cannot enable the unconditional-disabled process stub.
+    A supplied runner is an operator selection, not evidence of containment.
 
     Each boolean is an operator assertion, not proof. Provider billing, extra usage,
     account identity, binary integrity, managed hooks and data permission require independent review.
@@ -66,6 +122,8 @@ def make_claude_personal_infer(*, executable, workdir, model, effort, run_budget
     The process-level attempt allowance is not durable across process restart. The
     CLI's estimated budget is per process, may overshoot, and is not a billing cap.
     """
+    if process_runner is not None and not callable(process_runner):
+        raise ValueError('Process runner must be callable or None')
     if any(v is not True for v in (runtime_authorized, data_authorized,
                                   subscription_and_usage_authorized, executable_reviewed, managed_runtime_reviewed,
                                   process_containment_reviewed)):
@@ -94,6 +152,7 @@ def make_claude_personal_infer(*, executable, workdir, model, effort, run_budget
         raise ValueError('Invalid timeout')
     config = {'backend':'claude-code-personal-cli', 'model':model, 'requested_effort':effort,
               'output_mode':output_mode,
+              'process_runner_selection':'explicit' if process_runner is not None else 'disabled_default',
               'executable':executable, 'workdir':workdir, 'reviewed_cli_version':reviewed_cli_version,
               'max_calls':run_budget.max_calls,
               'estimated_per_invocation_usd':estimated_per_invocation_usd,
@@ -161,9 +220,18 @@ def make_claude_personal_infer(*, executable, workdir, model, effort, run_budget
             # Existence checks are activation-time only, and do not assert binary integrity.
             if not Path(executable).is_file() or not Path(workdir).is_dir():
                 raise ValueError('Reviewed executable or isolated working directory unavailable')
-            status, raw = _run_process(argv, data, env, workdir, timeout, max_response_bytes)
+            runner = process_runner if process_runner is not None else _run_process
+            status, raw = runner(argv, data, env, workdir, timeout, max_response_bytes)
+            if type(status) is not int or not isinstance(raw, bytes) or len(raw) > max_response_bytes:
+                raise ValueError('Invalid process runner result')
             receipt.update(exit_code=status, response_sha256=hashlib.sha256(raw).hexdigest())
+            receipt['failure_reason'] = 'malformed_envelope'
             envelope = _decode(raw)
+            if isinstance(envelope, dict):
+                receipt.update(_safe_cli_evidence(envelope, model))
+                receipt['failure_reason'] = 'incomplete_success'
+            else:
+                receipt['failure_reason'] = 'invalid_envelope_type'
             if (status != 0 or not isinstance(envelope,dict) or envelope.get('type') != 'result'
                     or envelope.get('subtype') != 'success' or envelope.get('is_error') is not False
                     or type(envelope.get('num_turns')) is not int or envelope['num_turns'] != 1
@@ -173,7 +241,9 @@ def make_claude_personal_infer(*, executable, workdir, model, effort, run_budget
             usage_models=envelope.get('modelUsage')
             if (not isinstance(usage_models,dict) or set(usage_models)!={model}
                     or not isinstance(usage_models[model],dict)):
+                receipt['failure_reason'] = 'model_identity_validation_failed'
                 raise ValueError('CLI reported missing or different model identity')
+            receipt['failure_reason'] = 'invalid_metadata'
             _response_snapshot(envelope)  # all receipt metadata must be finite, bounded JSON
             usage=envelope['usage']
             for key in ('input_tokens','output_tokens'):
@@ -186,6 +256,7 @@ def make_claude_personal_infer(*, executable, workdir, model, effort, run_budget
             if estimate is not None and (type(estimate) not in (int,float)
                                          or not math.isfinite(estimate) or estimate < 0):
                 raise ValueError('Invalid estimated cost')
+            receipt['failure_reason'] = 'invalid_output'
             if output_mode == 'schema_tool':
                 if not isinstance(envelope.get('structured_output'),dict):
                     raise ValueError('Structured output missing')
@@ -196,12 +267,8 @@ def make_claude_personal_infer(*, executable, workdir, model, effort, run_budget
                 result=_response_snapshot(_decode(text.encode('utf-8')))
                 if not isinstance(result,dict):raise ValueError('Plain JSON object required')
             Draft202012Validator(schema).validate(result)
-            receipt.update(outcome='parsed_transport_only', reported_model=model,
-                           reported_usage=deepcopy(envelope.get('usage')),
-                           reported_model_usage=deepcopy(usage_models),
-                           estimated_cost_usd=envelope.get('total_cost_usd'),
-                           estimated_cost_note='CLI estimate, not billing proof',
-                           response_sha256=hashlib.sha256(raw).hexdigest())
+            receipt.pop('failure_reason', None)
+            receipt.update(outcome='parsed_transport_only')
             return deepcopy(result)
         except Exception as exc:
             receipt.update(outcome='error', error_type=type(exc).__name__)
