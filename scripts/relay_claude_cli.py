@@ -86,6 +86,56 @@ def strict_result_json(raw):
     return json.loads(raw, object_pairs_hook=pairs, parse_constant=constant, parse_float=finite_float)
 
 
+def failure_output_summary(stdout, stderr):
+    """Retain bounded structural evidence, never arbitrary diagnostic text.
+
+    Output may contain prompts, credentials, or private model text. Store only
+    lengths/digests and recognized terminal fields. This is evidence, not an
+    acceptance decision or an automatic retry classification.
+    """
+    summary = {}
+    for name, raw in (('stdout', stdout), ('stderr', stderr)):
+        if raw is None:
+            summary[name] = {'available': False}
+            continue
+        if isinstance(raw, str):
+            raw = raw.encode('utf-8', 'replace')
+        item = {'available': True, 'bytes': len(raw),
+                'sha256': hashlib.sha256(raw).hexdigest()}
+        summary[name] = item
+        if len(raw) > 65536:
+            item['json_status'] = 'over_limit'
+            continue
+        try:
+            envelope = strict_result_json(raw.decode('utf-8'))
+        except (UnicodeDecodeError, ValueError, RecursionError):
+            item['json_status'] = 'invalid'
+            continue
+        if not isinstance(envelope, dict):
+            item['json_status'] = 'not_object'
+            continue
+        item['json_status'] = 'object'
+        terminal = {}
+        choices = {
+            'type': ('result',),
+            'subtype': ('success', 'error_during_execution', 'error_max_turns',
+                        'error_max_budget_usd', 'error_max_structured_output_retries'),
+            'stop_reason': ('end_turn', 'refusal', 'max_tokens', 'tool_use',
+                            'stop_sequence', 'pause_turn'),
+        }
+        for key, allowed in choices.items():
+            if key in envelope:
+                value = envelope[key]
+                terminal[key] = value if isinstance(value, str) and value in allowed else 'unrecognized'
+        if type(envelope.get('is_error')) is bool:
+            terminal['is_error'] = envelope['is_error']
+        turns = envelope.get('num_turns')
+        if type(turns) is int and 0 <= turns <= 1000000:
+            terminal['num_turns'] = turns
+        item['terminal'] = terminal
+    return summary
+
+
 def terminal_result_problem(envelope):
     """The local one-turn operator only delivers an explicit normal completion."""
     if (envelope.get('type') != 'result' or envelope.get('subtype') != 'success'
@@ -142,15 +192,16 @@ def one_call(spool, ordinal, executable, args):
         try:
             done = subprocess.run([executable, *flags], input=text, capture_output=True,
                                   timeout=args.timeout, cwd=workdir, env=env)
-        except subprocess.TimeoutExpired:
+        except subprocess.TimeoutExpired as error:
+            record['failure_output'] = failure_output_summary(error.stdout, error.stderr)
             finish(f'the CLI did not finish within {args.timeout} s')
         except OSError as error:
             finish(f'the CLI could not be started ({error.__class__.__name__})')
     record.update(exit_code=done.returncode, stdout_sha256=hashlib.sha256(done.stdout).hexdigest(),
                   stdout_bytes=len(done.stdout))
     if done.returncode != 0:
-        tail = done.stderr.decode('utf-8', 'replace').strip().splitlines()[-1:] or ['no message']
-        finish(f'the CLI ended with exit code {done.returncode}: {tail[0][:300]}')
+        record['failure_output'] = failure_output_summary(done.stdout, done.stderr)
+        finish(f'the CLI ended with exit code {done.returncode}; see bounded failure_output in the receipt')
     try:
         envelope = strict_result_json(done.stdout.decode('utf-8'))
     except (UnicodeDecodeError, ValueError):
