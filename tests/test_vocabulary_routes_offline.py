@@ -443,3 +443,126 @@ def test_a_catalogue_value_with_a_format_character_still_gives_a_usable_group(tm
         assert plan['ready'] and plan['groups'][0]['label'] == 'Remove: terms T03'
         assert plan['groups'][0]['proposal']['item_ids'] == [7]
         assert apply(client, h, plan).status_code == 200
+
+
+# ----------------------------------------------------------------- checks that no test noticed (vocab F15)
+
+def test_a_later_preview_withholds_the_result_of_an_earlier_one_that_still_waits(served):
+    client, provider = served
+    h = headers(client)
+    provider.answer = proposal(ALPHA)
+    inner = {}
+
+    def second_preview():
+        provider.hook = None  # the later preview answers at once
+        inner['body'] = preview(client, h).json()
+    provider.hook = second_preview
+    late = preview(client, h)
+    # The revision did not change; only the preview nonce tells that a newer review exists.
+    assert late.status_code == 409 and 'review again' in late.json()['detail']
+    assert inner['body']['ready'] and apply(client, h, inner['body']).status_code == 200
+
+
+def test_a_later_preview_that_is_not_ready_withdraws_the_earlier_review(served):
+    client, provider = served
+    h = headers(client)
+    provider.answer = proposal(ALPHA)
+    first = preview(client, h).json()
+    assert first['ready']
+    provider.answer = {'status': 'no_match', 'reason': 'r', 'negation_resolved': True, 'alternatives': [], 'controls': []}
+    assert preview(client, h).json()['status'] == 'no_match'
+    assert apply(client, h, first).status_code == 409 and saved(client, h)['groups'] == []
+
+
+def test_the_scope_holds_at_most_twenty_items(served):
+    client, provider = served
+    h = headers(client)
+    provider.answer = proposal(ALPHA)
+    assert preview(client, h, candidate_ids=list(range(1, 22))).status_code == 422
+    assert client.post('/api/semantic/vocabulary/terms', headers=h,
+                       json={'user_id': 1, 'candidate_ids': list(range(1, 22))}).status_code == 422
+    assert preview(client, h, candidate_ids=list(range(1, 21))).status_code == 200
+    assert len(provider.payloads) == 1
+
+
+@pytest.mark.parametrize('text', ['Fewer alpha\x00 things', 'Fewer ‮alpha things', 'Fewer alpha​ things'])
+def test_a_request_with_a_control_or_format_character_is_refused_before_any_call(served, text):
+    client, provider = served
+    h = headers(client)
+    provider.answer = proposal(ALPHA)
+    assert preview(client, h, text=text).status_code == 422
+    assert client.post('/api/semantic/preview', headers=h, json={
+        'user_id': 1, 'text': text, 'label': 'L', 'candidate_ids': SCOPE, 'backend': 'configured_model',
+        'action_source': 'model'}).status_code == 422
+    assert provider.payloads == []
+
+
+def test_names_that_differ_only_in_case_get_a_number():
+    taken = set()
+    assert vocabulary_routes.control_label(control_of('exclude', ('T01', 'tag', 'Red')), taken) == 'Remove: tag "Red"'
+    assert vocabulary_routes.control_label(control_of('exclude', ('T02', 'tag', 'red')), taken) \
+        == 'Remove: tag "red" (2)'
+    # A value that holds the separator of a name is still one term of one kind.
+    assert vocabulary_routes.control_label(control_of('exclude', ('T03', 'tag', 'Alpha, tag "red"')), taken) \
+        == 'Remove: tag "Alpha, tag "red""'
+
+
+def test_a_control_over_other_terms_never_replaces_an_applied_control(tmp_path):
+    """The reproduction of vocab F7: a tag and a category with the same value."""
+    provider = Provider()
+    app = create_app(fixture=True, semantic_path=source(tmp_path, {5: {'topic_tag': 'Gamma'}}),
+                     semantic_infer_factory=provider.factory, allow_local_models=False)
+    with TestClient(app) as client:
+        h = headers(client)
+        provider.answer = proposal(('exclude/none', 'more gamma', [('category', 'Gamma')]))
+        applied = apply(client, h, preview(client, h).json()).json()
+        assert [(g['label'], g['proposal']['item_ids']) for g in applied['groups']] == [
+            ('Remove: category "Gamma"', [5, 6])]
+        provider.answer = proposal(('exclude/none', 'gamma', [('tag', 'Gamma')]))
+        plan = preview(client, h).json()
+        # Both stay: item 6 does not come back, and the overlap is a note for the reviewer.
+        assert [(g['label'], g['proposal']['item_ids']) for g in plan['groups']] == [
+            ('Remove: category "Gamma"', [5, 6]), ('Remove: tag "Gamma"', [5])]
+        assert [(note['kind'], note['item_ids']) for note in plan['plan_notes']] == [('overlap', [5])]
+        # The same operation over the same terms is the same control: it is replaced, not doubled.
+        provider.answer = proposal(('exclude/none', 'more gamma', [('category', 'Gamma')]))
+        again = preview(client, h).json()
+        assert [g['label'] for g in again['groups']] == ['Remove: category "Gamma"']
+        # Another operation over the same terms is another control; the contradiction is a note.
+        provider.answer = proposal(('boost/strong', 'more gamma', [('category', 'Gamma')]))
+        boost = preview(client, h).json()
+        assert [g['label'] for g in boost['groups']] == ['Remove: category "Gamma"', 'Show more: category "Gamma"']
+        assert [note['kind'] for note in boost['plan_notes']] == ['conflict']
+
+
+def test_a_control_changes_only_the_items_of_its_scope_and_says_so(tmp_path):
+    """vocab F12: a catalogue that is larger than the scope."""
+    provider = Provider()
+    outside = {item: {'first_level_category_name': 'Alpha'} for item in (9, 12, 30)}
+    app = create_app(fixture=True, semantic_path=source(tmp_path, outside), semantic_infer_factory=provider.factory,
+                     allow_local_models=False)
+    with TestClient(app) as client:
+        h = headers(client)
+        provider.answer = proposal(ALPHA)
+        plan = preview(client, h).json()
+        assert plan['groups'][0]['proposal']['item_ids'] == [1, 2]
+        assert plan['vocabulary']['controls'][0]['outside_scope_item_ids'] == [9, 12, 30]
+        assert plan['scope_effects'] == [{
+            'label': 'Remove: category "Alpha"', 'in_scope_item_ids': [1, 2], 'outside_scope_item_ids': [9, 12, 30],
+            'message': 'This control selects 2 of the 8 items in the scope. 3 more items with the same category '
+                       'or terms are outside the scope. They do not change.'}]
+        feed = apply(client, h, plan).json()['feed']
+        assert feed['available_items'] == 34  # only the two scope items are removed
+
+
+def test_a_reply_that_is_not_bounded_json_stays_visible_as_bounded_text(served):
+    client, provider = served
+    h = headers(client)
+    provider.answer = {'status': float('nan'), 'reason': 'IGNORE‮ the checks ' + 'x' * 5000}
+    body = preview(client, h).json()
+    assert body['status'] == 'error' and body['outcome_source'] == 'reply_rejected' and body['calls_attempted'] == 1
+    assert body['vocabulary']['checks'][-1] == {'check': 'The reply is bounded finite JSON', 'passed': False,
+                                                'detail': ''}
+    (call,) = body['model_calls']
+    assert call['reply_rejected'] is True and call['raw_response'] is None and call['response_sha256'] is None
+    assert 'nan' in call['raw_text'] and '‮' not in call['raw_text'] and len(call['raw_text']) <= 2000

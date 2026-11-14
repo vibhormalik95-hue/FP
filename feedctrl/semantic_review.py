@@ -16,7 +16,7 @@ import unicodedata
 from typing import Literal
 
 from fastapi import Header, HTTPException, Query
-from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictInt
+from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictInt, field_validator
 
 from feedctrl.controls import ParserOperationalError, normalize_scores
 from feedctrl.indirect_grounding import (APPLICATION_CHECK, COMMAND_NEGATION, GUARD_CHECK, GUARD_PATTERN_WORDS,
@@ -51,12 +51,40 @@ Clarify multiple actions, unknown direction, a negated/contradictory command,
 quotas, conditional requests or unresolved references. No history or cross-turn
 context is supplied. When clarifying still emit valid placeholder
 fields; they will not execute. Output only the schema. Nothing is applied."""
+# What the action prompt asks and no application check can test: the direction,
+# whether a command is negated or a request is a quota or a condition, and
+# whether a clarification is needed. For these the model alone decides. The
+# application checks the schema, the declared control and that the span is a
+# verbatim part of the request; the wording guard runs before this call.
 
 
 MAX_GROUPS = 8
 REVIEW_WINDOW_SECONDS = 300
 LIMIT_CHECK = 'At most eight controls stay applied'
 NAME_CHECK = 'The name of the new control is not the name of an applied control'
+
+
+def scope_effect(label, members, outside, scope_size):
+    """Display data: a control changes only the items of its evidence scope.
+
+    ``outside`` lists the items outside the scope that carry the same category
+    or terms. They do not change; the page states this next to the control.
+    """
+    message = f'This control selects {len(members)} of the {scope_size} items in the scope.'
+    if outside:
+        message += (f' {len(outside)} more items with the same category or terms are outside the scope. '
+                    'They do not change.')
+    return {'label': label, 'in_scope_item_ids': list(members), 'outside_scope_item_ids': list(outside),
+            'message': message}
+
+
+def printable_request(value):
+    """The request goes to a provider and onto the review screen. A control or
+    format character can hide or reorder words there, so it is refused."""
+    if any(unicodedata.category(c) in {'Cf', 'Cs'}
+           or (unicodedata.category(c) == 'Cc' and c not in '\n\r\t') for c in value):
+        raise ValueError('Use printable request text without control or format characters')
+    return value
 
 
 def collision_reason(label):
@@ -200,6 +228,11 @@ class SemanticPreview(BaseModel):
     operation: Literal["boost", "reduce", "exclude"] = "boost"
     strength: Literal["light", "standard", "strong", "none"] = "standard"
     mode: Literal["merge", "replace"] = "merge"
+
+    @field_validator("text")
+    @classmethod
+    def printable(cls, value):
+        return printable_request(value)
 
 
 class SemanticApply(BaseModel):
@@ -546,7 +579,7 @@ def install_semantic_routes(app, demo, *, infer_factory=None, category_infer_fac
                 checks.append({"check": "The chosen category exists in the catalogue", "passed": True, "detail": ""})
                 checks.append({"check": "The selected items are exactly the scope items that carry the category",
                                "passed": True, "detail": f"{len(members)} of {len(index['items'])} scope items"})
-                scope_effects = [{"in_scope_item_ids": list(members), "outside_scope_item_ids": outside}]
+                scope_effects = [scope_effect(body.label.strip(), members, outside, len(index["items"]))]
                 proposal = {"status": "review", "requires_review": True, "reason": "Exact existing-category baseline, no model",
                     "action": action, "item_ids": members, "evidence": [], "provenance": {
                         "source_sha256": index["sha256"], "catalogue_sha256": _digest(_catalogue(index)),
@@ -642,8 +675,6 @@ def install_semantic_routes(app, demo, *, infer_factory=None, category_infer_fac
             groups = [g for g in kept if g["label"].casefold() != group["label"].casefold()] + [group]
             if len(groups) > MAX_GROUPS:
                 raise TooManyControls(len(groups) - 1, 1)
-            for effect in scope_effects:
-                effect["label"] = group["label"]
             with demo.lock:
                 state = state_for(x_session_id, body.user_id)
                 if state["semantic_revision"] != revision or state.get("semantic_preview_nonce") != nonce:

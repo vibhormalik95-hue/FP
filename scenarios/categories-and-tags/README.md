@@ -62,8 +62,10 @@ A key that starts with `vocabulary` is for the method that matches a request to 
 
 - the indirect request selects the category `Cooking` and the tag `street food`, and so the items 61001, 61002, 61003 and 61009;
 - the literal request selects the category `Repair`, and so the items 61004 and 61005;
-- the mixed request gives two controls: an increase for `Music` (items 61007 and 61008 move up), and an exclusion for `Cooking` and `street food`;
+- the mixed request gives two controls: an increase for `Music`, and an exclusion for `Cooking` and `street food`. After Apply, item 61007 moves from rank 4 to rank 2 and item 61008 moves from rank 5 to rank 4;
 - the description request selects item 61004 with the quotation "between bites of a sandwich".
+
+The application names each control from its action and its terms, for example `Remove: category "Cooking", tag "street food"` and `Show more: category "Music"`. A name that is already in use gets a number, for example `(2)`.
 
 A real model can select other terms. Review each proposal before you apply it.
 
@@ -71,4 +73,5 @@ A real model can select other terms. Review each proposal before you apply it.
 
 - The negated-command pattern is one English pattern: do not, don't, never or not to, followed by hide, exclude, remove, reduce or boost. Another wording of a negated command is not detected. It goes to the model and then to the reviewer. "Do not show ..." is a plain request to remove and is not stopped.
 - A control changes only the items of the evidence scope. This scenario has ten items and the scope is the whole list, so the difference cannot be seen here.
-- The limits of one request (one control over at most half of the scope; the removals of one request over at most half of the scope) do not count controls that are already applied. The review lists such overlaps as notes.
+- The limits of one request (one control over at most half of the scope; the removals of one request over at most half of the scope) do not count controls that are already applied. The review lists overlaps, contradictions and a total removal of more than half of the items as notes. A note does not stop the request.
+- At most eight controls stay applied. A ninth control is refused before any model call, with a sentence that says what to do.

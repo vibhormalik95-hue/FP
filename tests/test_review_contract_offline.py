@@ -393,3 +393,33 @@ def test_the_conditions_scenario_serves_the_fixture_for_the_rule_parser(monkeypa
         # No language controls: no caption data is loaded.
         assert client.post('/api/semantic/vocabulary/terms', headers=h,
                            json={'user_id': 1, 'candidate_ids': [1, 2]}).status_code == 503
+
+
+# ----------------------------------------------------------------- texts of an invented scenario (ui m16, M13, N3)
+
+def test_an_invented_scenario_is_not_called_the_official_sidecar_and_an_empty_history_reads_well():
+    app, _, _, _ = run_demo.build_app(options(scenario='tags'))
+    with TestClient(app) as client:
+        status = client.get('/api/status').json()
+        assert status['semantic_topic'].startswith('Official-format caption file of an invented scenario')
+        assert status['caption_data'] == 'invented scenario file' and status['scenario'] == 'tags'
+        h = {'X-Session-ID': client.post('/api/session', json={}).json()['session_id']}
+        text = client.get('/api/feed?user_id=1&condition=D', headers=h).json()['profile_text']
+        assert text == 'My observed interaction history contains no items. No category preference is stated yet.'
+
+
+def test_a_review_lists_the_category_and_the_labels_of_each_scope_item(served):
+    client, provider, h = served
+    plan = manual(client, h, 'category_1', 'Scoped').json()
+    first = plan['scope_items'][0]
+    assert first['item_id'] == 1 and first['categories'] == ['category_1']
+    assert first['labels'] == [{'kind': 'category', 'level': 1, 'value': 'Alpha'},
+                               {'kind': 'tag', 'level': None, 'value': 'red'},
+                               {'kind': 'tag', 'level': None, 'value': 'round'}]
+
+
+@pytest.mark.parametrize('backend', ['manual_category', 'None', ' not_applicable '])
+def test_a_draft_provider_cannot_carry_a_name_that_means_no_model(backend):
+    from feedctrl import synthetic_drafts
+    assert synthetic_drafts._declared_backend(backend) is False
+    assert synthetic_drafts._declared_backend('openai-compatible') is True

@@ -8,7 +8,6 @@ group made here is validated, ranked and reversed exactly like every other one.
 from copy import deepcopy
 import secrets
 from typing import Literal
-import unicodedata
 
 from fastapi import Header, HTTPException
 from pydantic import BaseModel, ConfigDict, Field, StrictInt, field_validator
@@ -18,7 +17,7 @@ from feedctrl.indirect_grounding import (APPLICATION_CHECK, PROVIDER_FAILURE, RE
                                          _response_snapshot, clean_page_text, failure_sentence, rejected_call)
 from feedctrl.label_validation import is_printable_label
 from feedctrl.semantic_review import (LIMIT_CHECK, MAX_GROUPS, ProviderFailure, TooManyControls, limit_reason,
-                                      scoped_index, seal_group)
+                                      printable_request, scope_effect, scoped_index, seal_group)
 from feedctrl import vocabulary_grounding as grounding
 
 # The same words that the page uses for the three actions.
@@ -40,12 +39,7 @@ class VocabularyPreview(VocabularyScope):
     @field_validator('text')
     @classmethod
     def printable(cls, value):
-        # The request goes to a provider and onto the review screen. A control
-        # or format character can hide or reorder words there.
-        if any(unicodedata.category(c) in {'Cf', 'Cs'}
-               or (unicodedata.category(c) == 'Cc' and c not in '\n\r\t') for c in value):
-            raise ValueError('Use printable request text without control or format characters')
-        return value
+        return printable_request(value)
 
 
 def term_key(term):
@@ -66,16 +60,6 @@ def same_control(group, control):
             and proposal['action']['operation'] == control['action']['operation']
             and {term_key(term) for term in proposal.get('vocabulary_terms', [])}
             == {term_key(term) for term in control['terms']})
-
-
-def scope_effect(label, members, outside, scope_size):
-    """Display data: a control changes only the items of its evidence scope."""
-    message = f'This control selects {len(members)} of the {scope_size} items in the scope.'
-    if outside:
-        message += (f' {len(outside)} more items with the same terms are outside the scope. '
-                    'They do not change.')
-    return {'label': label, 'in_scope_item_ids': list(members), 'outside_scope_item_ids': list(outside),
-            'message': message}
 
 
 def control_label(control, taken):
