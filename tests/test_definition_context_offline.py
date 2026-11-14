@@ -1,9 +1,12 @@
 """Authored display/custody mechanics, not semantic accuracy or live acceptance."""
 import ast
 from copy import deepcopy
+import json
 from pathlib import Path
 from types import SimpleNamespace
 import unittest
+from unittest.mock import patch
+from feedctrl import staged_induction as staged
 import test_category_resolution_offline as fixtures
 
 
@@ -16,8 +19,8 @@ class DefinitionContextTests(unittest.TestCase):
     classify=fixtures.CategoryResolutionTests.classify
     conflict=fixtures.CategoryResolutionTests.conflict
 
-    def authored_sources(self, ordinary=False):
-        texts={1:'No glue or powered equipment is used.\n"Bread preparation" is quoted, not asserted. 🧭 cafe\u0301 <script>alert(1)</script> & '+('distant context ' * 200)+'Only an example.',
+    def authored_sources(self, ordinary=False, *, repeats=150):
+        texts={1:'No glue or powered equipment is used.\n"Bread preparation" is quoted, not asserted. 🧭 cafe\u0301 <script>alert(1)</script> & '+('distant context ' * repeats)+'Only an example.',
                3:'Bread preparation is described only with supervision.\nSeparate item, same field.'}
         for item,text in texts.items():self.demo.topic_index['items'][item]['fields']['caption']=text
         # An uncited field and an out-of-scope item must never appear in context.
@@ -54,6 +57,28 @@ class DefinitionContextTests(unittest.TestCase):
         self.assertTrue(p['definition_ready']);self.assert_context(p,texts)
         self.assertNotIn('evidence_context',p['definition'])
         self.assertEqual(self.calls,['definition']);self.assertFalse(p['applied'])
+
+    def test_long_context_within_budget_is_returned_in_full(self):
+        texts=self.authored_sources(ordinary=True);sizes=[];original=staged._budget
+        def measure(payload):
+            sizes.append(len(json.dumps(payload,ensure_ascii=False,allow_nan=False).encode('utf-8')))
+            return original(payload)
+        with patch.object(staged,'_budget',side_effect=measure):p=self.preview()
+        self.assertTrue(p['definition_ready']);self.assertEqual(len(sizes),1)
+        self.assertLessEqual(sizes[0],7000);self.assertGreater(len(texts[1].encode('utf-8')),2000)
+        self.assert_context(p,texts);self.assertTrue(p['evidence_context'][0]['supplied_field_text'].endswith('Only an example.'))
+        self.assertEqual(self.calls,['definition']);self.assertFalse(p['applied'])
+
+    def test_over_budget_context_is_rejected_before_inference(self):
+        self.authored_sources(ordinary=True,repeats=200);sizes=[];original=staged._budget
+        def measure(payload):
+            sizes.append(len(json.dumps(payload,ensure_ascii=False,allow_nan=False).encode('utf-8')))
+            return original(payload)
+        with patch.object(staged,'_budget',side_effect=measure):p=self.preview()
+        self.assertEqual(len(sizes),1);self.assertGreater(sizes[0],7000)
+        self.assertEqual(p['status'],'error');self.assertEqual(p['reason'],'Evidence budget exceeded; narrow the declared scope')
+        self.assertFalse(p['definition_ready']);self.assertFalse(p['applied']);self.assertEqual(self.calls,[])
+        self.assertIsNone(self.state['semantic_definition_pending']);self.assertEqual(self.state['semantic_groups'],[])
 
     def test_context_is_not_an_approval_or_persistent_mutable_source(self):
         texts=self.authored_sources();p=self.preview()
