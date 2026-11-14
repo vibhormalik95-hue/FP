@@ -31,6 +31,11 @@
  * Exit code 0 means every flow completed; 2 means a flow stopped early (for
  * example a declined review or a rejected reply); 1 means a check failed.
  *
+ * With --video the script records the page to <out>/video/<scenario>.webm. It
+ * then scrolls each thing that it checks into view and pauses, so that the
+ * recording shows it. It adds nothing to the page. The receipt lists the time
+ * of each step in the recording.
+ *
  * Needs the "playwright" package and its Chromium browser:
  *   npm install --no-save playwright && npx playwright install chromium
  */
@@ -50,6 +55,7 @@ const REVIEW = args.review || 'auto';
 const STAGE_TIMEOUT = Number(args['stage-timeout'] || 1200) * 1000;
 const GATE_TIMEOUT = Number(args['gate-timeout'] || 280) * 1000;
 const TOKEN = process.env[args['token-env'] || 'FEEDCTRL_OPERATOR_TOKEN'] || '';
+const VIDEO = Boolean(args.video) && args.video !== 'false';
 const FLOWS = (args.flows || (SCENARIO === 'category' ? 'manual,category' : 'manual,indirect')).split(',');
 const USER = 1;
 
@@ -90,8 +96,20 @@ function check(name, condition, detail) {
 
 (async () => {
   const browser = await chromium.launch();
-  const context = await browser.newContext({ viewport: { width: 1440, height: 1100 }, deviceScaleFactor: 1 });
+  const size = { width: 1440, height: VIDEO ? 1080 : 1100 };
+  const context = await browser.newContext({ viewport: size, deviceScaleFactor: 1,
+    ...(VIDEO ? { recordVideo: { dir: path.join(OUT, 'video'), size } } : {}) });
   const page = await context.newPage();
+  const videoStarted = Date.now();
+  if (VIDEO) receipt.video = { file: null, steps: [] };
+  // For the recording only: note the time of a step, bring its region into view and pause.
+  async function show(label, locator, pause = 2500) {
+    if (!VIDEO) return;
+    receipt.video.steps.push({ seconds: Number(((Date.now() - videoStarted) / 1000).toFixed(1)), step: label });
+    save();
+    if (locator) { try { await locator.first().scrollIntoViewIfNeeded({ timeout: 5000 }); } catch (_) { /* region not present */ } }
+    await page.waitForTimeout(pause);
+  }
   let session = null;
   const pageErrors = [];
   page.on('pageerror', error => pageErrors.push(error.message));
@@ -201,6 +219,9 @@ function check(name, condition, detail) {
         && /NOTHING IS APPLIED YET/.test(await table.innerText()),
       { rows: listed.length, marked });
     fs.writeFileSync(path.join(OUT, `${flow}-review-table.txt`), await table.innerText());
+    await show(`${flow}: review table of every supplied item (preview, nothing applied)`, table, 6000);
+    await show(`${flow}: the feed is unchanged during the preview`, page.locator('.item-card'), 3000);
+    await show(`${flow}: review block with the approve button; waiting for the reviewer`, pending.getByRole('button', { name: 'Approve this exact item set and apply' }), 2000);
     if (!await gate(`${flow}-apply`, pending)) { record.outcome = 'declined before apply; nothing applied'; return; }
 
     await pending.getByRole('button', { name: 'Approve this exact item set and apply' }).click();
@@ -216,6 +237,7 @@ function check(name, condition, detail) {
     check(`${flow}: page shows the reduced feed`, JSON.stringify(await shownIds()) === JSON.stringify(appliedIds), { shown: await shownIds() });
     record.shown_after_apply = await shownIds();
     await shot(`${flow}-applied`);
+    await show(`${flow}: applied; the feed shows the reduced item set`, page.locator('h2', { hasText: 'Your reviewed topic feed' }), 5000);
 
     // Undo is two explicit steps: ask for the undo review, then approve it.
     await panel.getByRole('button', { name: 'Review semantic undo' }).click();
@@ -223,6 +245,7 @@ function check(name, condition, detail) {
     const undoPreview = await serverState();
     check(`${flow}: undo review alone changed nothing`, JSON.stringify(undoPreview.feed) === JSON.stringify(applied.feed) && undoPreview.groups.length === applied.groups.length,
       { eligible: undoPreview.feed.available_items });
+    await show(`${flow}: undo review (step 1 of 2); nothing changed yet`, pending.getByRole('button', { name: 'Approve this exact item set and apply' }), 3000);
     if (!await gate(`${flow}-undo`, pending)) { record.outcome = 'undo declined; control still applied'; return; }
     await pending.getByRole('button', { name: 'Approve this exact item set and apply' }).click();
     await page.waitForFunction(count => document.querySelectorAll('.item-card').length === count, baseline.feed.items.length, { timeout: 30000 });
@@ -232,6 +255,7 @@ function check(name, condition, detail) {
       { eligible: restored.feed.available_items, identical_to_start: JSON.stringify(restored.feed) === JSON.stringify(baseline.feed), revision: restored.revision });
     check(`${flow}: page shows the starting items again`, JSON.stringify(await shownIds()) === JSON.stringify(record.shown_before), { shown: await shownIds() });
     await shot(`${flow}-restored`);
+    await show(`${flow}: undo approved (step 2 of 2); the starting feed is restored`, page.locator('h2', { hasText: 'Your reviewed topic feed' }), 5000);
     record.outcome = 'completed: preview unchanged, apply exact, undo restored';
   }
 
@@ -251,6 +275,7 @@ function check(name, condition, detail) {
       await panel.locator('#semantic-category').fill(scenario.manualCategory);
       await panel.locator('#semantic-operation').selectOption('exclude');
       const callsBefore = receipt.provider_calls.length;
+      await show('manual: existing category and action chosen by hand', panel.locator('#semantic-category'), 2500);
       await panel.getByRole('button', { name: 'Review semantic proposal' }).click();
       check('manual: review appears', await outcome({ review: reviewHeading() }, 30000) === 'review');
       check('manual: the server reported no model call for this review', receipt.provider_calls.length === callsBefore, { model_calls: receipt.provider_calls.length - callsBefore });
@@ -265,7 +290,9 @@ function check(name, condition, detail) {
       await insertRequest(scenario.objective);
       await panel.locator('#semantic-operation').selectOption('exclude');
       await shot('category-objective');
+      await show('category: natural-language objective entered', panel.locator('#semantic-text'), 4000);
       await panel.getByRole('button', { name: 'Propose a definition for review' }).click();
+      await show('category: waiting for the model (definition)', null, 1000);
       const definition = panel.locator('[aria-label="Category definition review"]');
       const resolution = panel.locator('[aria-label="Unresolved semantic interpretations"]');
       let result = await outcome({ definition, resolution }, STAGE_TIMEOUT);
@@ -273,6 +300,7 @@ function check(name, condition, detail) {
         // The model returned a primary definition with competing meanings.
         record.competing_meanings_shown = true;
         fs.writeFileSync(path.join(OUT, 'category-resolution.txt'), await resolution.innerText());
+        await show('category: the model returned competing meanings; waiting for the reviewer', resolution, 6000);
         if (!await gate('category-resolution', resolution)) { record.outcome = 'declined at competing meanings; nothing applied'; return; }
         await resolution.getByRole('radio').check();
         await resolution.getByRole('button', { name: 'Continue to definition review' }).click();
@@ -284,9 +312,12 @@ function check(name, condition, detail) {
       record.definition_label = (await definition.locator('strong').first().innerText()).trim();
       const afterDefinition = await serverState();
       check('category: definition proposal changed nothing', JSON.stringify(afterDefinition.feed) === JSON.stringify(baseline.feed) && afterDefinition.groups.length === 0, { label: record.definition_label });
+      await show('category: definition review (label and definition); waiting for the reviewer', definition.locator('strong'), 8000);
+      await show('category: definition review (approve box and button)', definition.getByRole('checkbox'), 3000);
       if (!await gate('category-definition', definition)) { record.outcome = 'definition declined by the reviewer; nothing classified or applied'; return; }
       await definition.getByRole('checkbox').check();
       await definition.getByRole('button', { name: 'Approve definition and classify supplied items' }).click();
+      await show('category: definition approved; waiting for the model (classification, then separate evidence assessment)', null, 1000);
       result = await outcome({ review: reviewHeading() }, STAGE_TIMEOUT);
       if (result !== 'review') { record.outcome = 'no membership to review: ' + (await status().innerText()); await shot('category-stopped'); return; }
       const reviewText = await reviewBlock().innerText();
@@ -307,7 +338,9 @@ function check(name, condition, detail) {
       await panel.locator('#semantic-label').fill(scenario.label);
       await insertRequest(scenario.request);
       await shot('indirect-request');
+      await show('indirect: request entered; it names no category', panel.locator('#semantic-text'), 4000);
       await panel.getByRole('button', { name: 'Review semantic proposal' }).click();
+      await show('indirect: waiting for the model (action, then items)', null, 1000);
       const result = await outcome({ review: reviewHeading() }, STAGE_TIMEOUT);
       if (result !== 'review') { record.outcome = 'no proposal to review: ' + (await status().innerText()); await shot('indirect-stopped'); return; }
       const reviewText = await reviewBlock().innerText();
@@ -344,6 +377,7 @@ function check(name, condition, detail) {
     await panel.waitFor({ state: 'visible' });
     await page.waitForFunction(() => !/Loading\.\.\./.test(document.querySelector('section[aria-label="Reviewed semantic groups"]').innerText), null, { timeout: 30000 });
     await shot('start');
+    await show('start: the status strip names the data and the provider', page.locator('.status-strip'), 4000);
     for (const flow of FLOWS) {
       if (!flows[flow]) throw new Error('Unknown flow ' + flow);
       await flows[flow]();
@@ -361,6 +395,17 @@ function check(name, condition, detail) {
   } finally {
     receipt.finished_utc = utc();
     save();
+    if (VIDEO) {
+      // The recording is complete only after the context is closed.
+      const video = page.video();
+      try {
+        await context.close();
+        const target = path.join(OUT, 'video', SCENARIO + '.webm');
+        fs.renameSync(await video.path(), target);
+        receipt.video.file = 'video/' + SCENARIO + '.webm';
+      } catch (error) { receipt.video.error = String(error.message || error); }
+      save();
+    }
     await browser.close();
     console.log('OUTCOME', receipt.outcome);
     console.log('RECEIPT', path.join(OUT, 'browser-receipt.json'));
