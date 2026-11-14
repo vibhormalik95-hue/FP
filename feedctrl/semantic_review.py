@@ -19,7 +19,11 @@ from fastapi import Header, HTTPException, Query
 from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictInt
 
 from feedctrl.controls import ParserOperationalError, normalize_scores
-from feedctrl.indirect_grounding import _catalogue, _digest, _response_snapshot, make_local_ollama_infer, propose_indirect
+from feedctrl.indirect_grounding import (APPLICATION_CHECK, COMMAND_NEGATION, GUARD_CHECK, GUARD_PATTERN_WORDS,
+                                         GUARD_REASON, MODEL_REPORT, PROVIDER_FAILURE, REPLY_REJECTED,
+                                         _catalogue, _digest, _response_snapshot, clean_page_text,
+                                         failure_sentence, make_local_ollama_infer, propose_indirect,
+                                         rejected_call)
 from feedctrl.label_validation import is_printable_label
 from feedctrl.semantic_controls import STRENGTH_WEIGHTS
 from feedctrl import induction_integration as induction
@@ -47,6 +51,139 @@ Clarify multiple actions, unknown direction, a negated/contradictory command,
 quotas, conditional requests or unresolved references. No history or cross-turn
 context is supplied. When clarifying still emit valid placeholder
 fields; they will not execute. Output only the schema. Nothing is applied."""
+
+
+MAX_GROUPS = 8
+REVIEW_WINDOW_SECONDS = 300
+LIMIT_CHECK = 'At most eight controls stay applied'
+NAME_CHECK = 'The name of the new control is not the name of an applied control'
+
+
+def collision_reason(label):
+    """The plain sentence for a name that an applied control already has."""
+    return (f'An applied control already has the name "{clean_page_text(label, 80)}". Nothing was applied. '
+            'Choose another name for this control, or remove the applied control first.')
+
+
+def same_manual_control(group, category, operation):
+    """True when an applied group is the manual control of this category and operation.
+
+    Such a group is the earlier version of the same control, so a new manual
+    control with the same name replaces it (the strength can differ).
+    """
+    proposal = group["proposal"]
+    return (proposal["provenance"]["model"].get("backend") == "manual_category"
+            and group["request"] == category and proposal["action"]["operation"] == operation)
+
+
+def limit_reason(applied, added):
+    """The plain sentence for a plan that would exceed the limit of applied controls."""
+    return (f'At most {MAX_GROUPS} controls can be applied at one time. {applied} stay applied and this request '
+            f'adds {added}. Remove a control first, or choose to replace the applied controls.')
+
+
+class TooManyControls(ValueError):
+    """A valid proposal that cannot be added: the limit of applied controls is reached."""
+
+    def __init__(self, applied, added):
+        super().__init__(limit_reason(applied, added))
+        self.applied, self.added = applied, added
+
+
+class OperatorMessage(ParserOperationalError):
+    """An operational sentence that this application wrote itself. It holds no provider text."""
+    page_safe = True
+
+
+class ProviderFailure(HTTPException):
+    """HTTP 502 for a provider call that failed before any reply could be used.
+
+    The status code and the text ``detail`` are what earlier callers read. The
+    response body also carries the fields of a not-ready answer (``body``), so
+    that the page can say that a call was made and that it failed.
+    """
+
+    def __init__(self, detail, body):
+        super().__init__(502, detail)
+        self.body = body
+
+
+def provider_failure_response(_request, exc):
+    from fastapi.responses import JSONResponse
+    return JSONResponse({'detail': exc.detail, **exc.body}, status_code=exc.status_code,
+                        headers={'Cache-Control': 'no-store'})
+
+
+def watch_provider(infer, raised):
+    """Wrap one stage callable so that an exception of the provider is kept as an object.
+
+    The category provider records only the text of a failure. The routes need
+    the exception itself to decide whether its sentence may be shown.
+    """
+    def watched(payload, schema):
+        try:
+            return infer(payload, schema)
+        except Exception as exc:
+            raised.append(exc)
+            raise
+    return watched
+
+
+def page_calls(calls, raised):
+    """Call records for a response: the raw failure text of a provider is not sent to the page."""
+    shown, failures = deepcopy(calls), list(raised)
+    for call in shown:
+        if isinstance(call, dict) and call.get('status') == 'error':
+            call['error'] = failure_sentence(failures.pop(0)) if failures else 'The call to the provider failed.'
+    return shown
+
+
+def stage_outcome(exc, calls, raised):
+    """``(reason, outcome_source)`` for an exception in a route that uses the category provider."""
+    if raised and raised[-1] is exc:
+        return failure_sentence(exc), PROVIDER_FAILURE
+    returned = any(isinstance(call, dict) and call.get('status') == 'returned_json' for call in calls)
+    if isinstance(exc, ParserOperationalError):
+        # Written by the application or by the provider wrapper, never by a reply.
+        return failure_sentence(exc), APPLICATION_CHECK if not calls else PROVIDER_FAILURE
+    return clean_page_text(exc), REPLY_REJECTED if returned else APPLICATION_CHECK
+
+
+def plan_notes(groups, catalogue_size):
+    """Things a reviewer should see about a whole plan. Display only; they never block.
+
+    A note names two controls that reach the same items, says what the policy
+    does with them (removal takes priority; rank adjustments add up), and one
+    note gives the total share of the catalogue that is removed when it is more
+    than half. The limits of one request are checked elsewhere; these notes
+    cover the controls that are already applied together with the new ones.
+    """
+    notes = []
+    for a, first in enumerate(groups):
+        for second in groups[a + 1:]:
+            shared = sorted(set(first['proposal']['item_ids']) & set(second['proposal']['item_ids']))
+            if not shared:
+                continue
+            kinds = {first['proposal']['action']['operation'], second['proposal']['action']['operation']}
+            names = f'"{first["label"]}" and "{second["label"]}"'
+            if kinds == {'boost', 'exclude'}:
+                kind, effect = 'conflict', 'One control shows more of them and the other removes them. Removal takes priority, so the increase has no effect on them.'
+            elif kinds == {'boost', 'reduce'}:
+                kind, effect = 'conflict', 'One control shows more of them and the other shows less. Both adjustments apply and partly cancel.'
+            elif kinds == {'reduce', 'exclude'}:
+                kind, effect = 'overlap', 'One control shows less of them and the other removes them. Removal takes priority.'
+            elif kinds == {'exclude'}:
+                kind, effect = 'overlap', 'Both controls remove them.'
+            else:
+                kind, effect = 'overlap', 'Both controls adjust their rank in the same direction, and the adjustments add up.'
+            notes.append({'kind': kind, 'controls': [first['label'], second['label']], 'item_ids': shared,
+                          'message': f'The controls {names} both reach the items {", ".join(map(str, shared))}. {effect}'})
+    removed = sorted({item for group in groups if group['proposal']['action']['operation'] == 'exclude'
+                      for item in group['proposal']['item_ids']})
+    if catalogue_size and len(removed) > catalogue_size / 2:
+        notes.append({'kind': 'broad_total', 'controls': [], 'item_ids': removed,
+                      'message': f'After this plan, {len(removed)} of the {catalogue_size} items of the catalogue are removed.'})
+    return notes
 
 
 class SemanticPreview(BaseModel):
@@ -186,6 +323,9 @@ def validate_group(group, index, eligible_ids, original_categories=None):
         raise ValueError('Confirmed target provenance is missing')
     if "induction" in proposal:
         induction.revalidate_category(proposal, scope, original_categories)
+    if proposal.get("grounding") == "vocabulary":
+        from feedctrl import vocabulary_grounding  # imported here: that module imports this one
+        vocabulary_grounding.revalidate_control(proposal, scope)
     return deepcopy(group)
 
 
@@ -232,7 +372,7 @@ def install_semantic_routes(app, demo, *, infer_factory=None, category_infer_fac
         with configured_adapter_lock:
             if configured_adapter is None:
                 if infer_factory is None:
-                    raise ParserOperationalError("No authorized configured model adapter is installed")
+                    raise OperatorMessage("No authorized configured model adapter is installed")
                 infer, provenance = infer_factory()
                 if (not callable(infer) or not isinstance(provenance, dict)
                         or not all(isinstance(provenance.get(k), str) and provenance[k]
@@ -290,12 +430,22 @@ def install_semantic_routes(app, demo, *, infer_factory=None, category_infer_fac
         state["semantic_pending"] = {"id": plan_id, "created": time.monotonic(),
             "revision": state["semantic_revision"], "groups": deepcopy(groups), "history_action": history_action}
         scope = sorted({item for group in groups for item in group["scope_ids"]})
+        from feedctrl import vocabulary_grounding  # imported here: that module imports this one
         return {"ready": True, "applied": False, "plan_id": plan_id, "history_action": history_action,
             "groups": deepcopy(groups), "proposal": proposal, "feed": preview_feed,
-            # Display only: what each item in the reviewed scope says. Not sealed, not approved.
-            "scope_items": [{"item_id": item, "source_text": demo.source_text(item)} for item in scope],
+            # Display only: what each item in the reviewed scope says and carries. Not sealed, not
+            # approved. ``categories`` is the catalogue category that the manual control reads;
+            # ``labels`` are the category and tag values of the source metadata.
+            "scope_items": [{"item_id": item, "source_text": demo.source_text(item),
+                             "categories": list(demo.items.get(item, [])),
+                             "labels": vocabulary_grounding.item_labels(demo.topic_index["items"][item]["fields"])}
+                            for item in scope],
             "evidence_context": (evidence_context(proposal) if proposals is None else
                                  [row for each in proposals for row in evidence_context(each)]),
+            # Display only: overlaps and contradictions between the controls of the whole plan.
+            "plan_notes": plan_notes(groups, len(demo.items)),
+            # The reviewer must approve within this time; Apply refuses an older review.
+            "review_window_seconds": REVIEW_WINDOW_SECONDS,
             "note": "Only the declared supplied items were assessed; quotes are not relevance proof."}
 
     def evidence_context(proposal, index=None):
@@ -335,7 +485,12 @@ def install_semantic_routes(app, demo, *, infer_factory=None, category_infer_fac
     def preview(body: SemanticPreview, x_session_id: str | None = Header(default=None)):
         if body.backend == "ollama" and not allow_local_models:
             raise HTTPException(403, "Local models are disabled in this application; no inference was attempted")
-        calls, provenance = [], None
+        manual = body.backend == "manual_category"
+        calls, provenance, checks = [], None, []
+        # One entry for each provider invocation that was begun, also one that
+        # raised. ``failed`` holds the exception that a provider call raised, so
+        # that a provider failure is never taken for an application check.
+        attempts, failed, stage = [], [], ["interpretation"]
         with demo.lock:
             state = state_for(x_session_id, body.user_id)
             revision = state["semantic_revision"]
@@ -347,13 +502,36 @@ def install_semantic_routes(app, demo, *, infer_factory=None, category_infer_fac
                 index = scoped_index(demo.topic_index, body.candidate_ids)
             except ValueError as exc:
                 raise HTTPException(422, str(exc)) from exc
+
+        def not_ready(status, reason, source, **extra):
+            value = {"ready": False, "applied": False, "status": status, "reason": reason,
+                     "item_ids": [], "checks": deepcopy(checks),
+                     "model_calls": deepcopy(calls), "model_provenance": deepcopy(provenance),
+                     "calls_attempted": len(attempts), "call_attempts": deepcopy(attempts),
+                     "outcome_source": source, "failed_stage": stage[0]}
+            value.update(extra)
+            return value
+
         try:
             confirmation = confirmed_target_context(body)
             if body.backend == "configured_model" and body.action_source not in ("model", "confirmed"):
                 raise ValueError("Configured adapter requires model-interpreted action; no fallback")
             if body.backend != "configured_model" and body.action_source == "model":
                 raise ValueError("Model action source requires the configured adapter")
-            if body.backend == "manual_category":
+            # The person names this control. In merge mode a name that an applied
+            # control already has is a collision, reported before any call: only
+            # the same manual control (same category and operation) is replaced
+            # by its new version. Every other applied control stays, so the
+            # limit is also known before any call.
+            name = body.label.strip().casefold()
+            named = [] if body.mode == "replace" else [g for g in existing if g["label"].casefold() == name]
+            if named and not (manual and all(same_manual_control(g, body.category, body.operation) for g in named)):
+                checks.append({"check": NAME_CHECK, "passed": False, "detail": clean_page_text(body.label, 80)})
+                return not_ready("label_collision", collision_reason(body.label.strip()), APPLICATION_CHECK)
+            kept = [] if body.mode == "replace" else [g for g in existing if g not in named]
+            if len(kept) + 1 > MAX_GROUPS:
+                raise TooManyControls(len(kept), 1)
+            if manual:
                 if body.category not in demo.categories:
                     raise ValueError("Manual baseline requires an existing category ID")
                 action = {"operation": body.operation, "strength": body.strength, "intent_span": body.category}
@@ -362,7 +540,13 @@ def install_semantic_routes(app, demo, *, infer_factory=None, category_infer_fac
                     raise ValueError("Invalid manual strength")
                 members = [i for i in index["items"] if body.category in demo.items[i]]
                 if not members:
-                    return {"ready": False, "applied": False, "status": "no_match", "reason": "No scoped item has that category"}
+                    return {"ready": False, "applied": False, "status": "no_match", "reason": "No scoped item has that category",
+                            "calls_attempted": 0, "outcome_source": APPLICATION_CHECK, "model_calls": []}
+                outside = sorted(i for i in demo.items if i not in index["items"] and body.category in demo.items[i])
+                checks.append({"check": "The chosen category exists in the catalogue", "passed": True, "detail": ""})
+                checks.append({"check": "The selected items are exactly the scope items that carry the category",
+                               "passed": True, "detail": f"{len(members)} of {len(index['items'])} scope items"})
+                scope_effects = [{"in_scope_item_ids": list(members), "outside_scope_item_ids": outside}]
                 proposal = {"status": "review", "requires_review": True, "reason": "Exact existing-category baseline, no model",
                     "action": action, "item_ids": members, "evidence": [], "provenance": {
                         "source_sha256": index["sha256"], "catalogue_sha256": _digest(_catalogue(index)),
@@ -370,6 +554,14 @@ def install_semantic_routes(app, demo, *, infer_factory=None, category_infer_fac
                         "model": {"backend": "manual_category", "model": "none", "digest": "not_applicable"}}}
                 request = body.category
             else:
+                grounding_request = body.confirmed_target if confirmation else body.text
+                # The wording guard runs before any provider is asked. A stated and
+                # confirmed target is the explicit interpretation that the guard asks
+                # for, so in that mode the guard reads the target, not the original words.
+                checks.append({"check": GUARD_CHECK, "passed": not COMMAND_NEGATION.search(grounding_request),
+                               "detail": GUARD_PATTERN_WORDS})
+                if not checks[-1]["passed"]:
+                    return not_ready("clarify", GUARD_REASON, APPLICATION_CHECK)
                 if body.backend == "configured_model":
                     # Operator-selected transport, never request-supplied URLs or keys.
                     infer, provenance = configured_infer()
@@ -377,14 +569,28 @@ def install_semantic_routes(app, demo, *, infer_factory=None, category_infer_fac
                     infer, provenance = make_local_ollama_infer(os.getenv("FEEDCTRL_STEERING_MODEL", "qwen2.5-coder:7b-instruct"), timeout=90)
                 def tracked_infer(payload, schema):
                     # Own raw receipts; these are returned only to this session's caller.
+                    attempt = {"stage": stage[0], "status": "started"}
+                    attempts.append(attempt)
                     try:
-                        raw = _response_snapshot(infer(deepcopy(payload), deepcopy(schema)))
-                    except RecursionError as exc:
-                        raise ValueError('Model response exceeds JSON nesting budget') from exc
+                        raw = infer(deepcopy(payload), deepcopy(schema))
+                    except Exception as exc:
+                        attempt.update(status="failed", error_type=type(exc).__name__)
+                        failed.append(exc)
+                        raise
+                    try:
+                        bounded = _response_snapshot(raw)
+                    except (TypeError, ValueError, RecursionError) as exc:
+                        # A reply came back and is not bounded JSON. It stays visible as text.
+                        attempt["status"] = "reply_rejected"
+                        calls.append(rejected_call(payload, schema, raw))
+                        if stage[0] == "evidence":
+                            return raw  # the evidence step rejects it itself and records the check
+                        raise ValueError("Response is not bounded finite JSON") from exc
+                    raw = bounded
+                    attempt["status"] = "returned"
                     calls.append({"request_sha256": _digest(payload), "schema_sha256": _digest(schema),
                         "response_sha256": _digest(raw), "raw_response": deepcopy(raw)})
                     return raw
-                grounding_request = body.confirmed_target if confirmation else body.text
                 if confirmation:
                     action = {'operation':body.operation,'strength':body.strength,
                               'intent_span':grounding_request}
@@ -394,7 +600,18 @@ def install_semantic_routes(app, demo, *, infer_factory=None, category_infer_fac
                     action = {"operation": body.operation, "strength": body.strength, "intent_span": body.text}
                     question = ""
                 else:
-                    action, question = interpret_action(body.text, tracked_infer)
+                    try:
+                        action, question = interpret_action(body.text, tracked_infer)
+                    except ValueError as exc:
+                        if not failed:
+                            # The reply came back and the application rejected it. Keep that visible.
+                            checks.append({"check": "The action reply has the declared fields, a declared control "
+                                                    "and a span that is a verbatim part of the request",
+                                           "passed": False, "detail": clean_page_text(exc, 200)})
+                        raise
+                    checks.append({"check": "The action reply has the declared fields, a declared control "
+                                            "and a span that is a verbatim part of the request",
+                                   "passed": True, "detail": ""})
                 # Do not start a second provider call for a request that a newer
                 # review or reset already superseded while action inference ran.
                 # Recheck under the state lock, then release it before inference.
@@ -403,35 +620,67 @@ def install_semantic_routes(app, demo, *, infer_factory=None, category_infer_fac
                     if state["semantic_revision"] != revision or state.get("semantic_preview_nonce") != nonce:
                         raise HTTPException(409, "Preferences changed during inference; review again")
                 if action is None:
-                    return {"ready": False, "applied": False, "status": "clarify", "reason": question,
-                            "model_calls": calls, "model_provenance": provenance}
+                    # The question is the reply's own text; the application did not write it.
+                    return not_ready("clarify", question, MODEL_REPORT, reply_reason=question)
+                stage[0] = "evidence"
                 proposal = propose_indirect(grounding_request, action, index, tracked_infer, model_provenance=provenance)
+                # Checks of the action stage first, then every check of the evidence stage
+                # (the evidence stage repeats the wording guard for callers that use it alone).
+                checks.extend(row for row in proposal.pop("checks") if row["check"] != GUARD_CHECK)
+                proposal.pop("call_attempted", None)
                 proposal["action_source"] = 'user_confirmed_target' if confirmation else body.action_source
                 if confirmation:
                     proposal['target_confirmation'] = deepcopy(confirmation)
                 if proposal["status"] != "review":
-                    return {"ready": False, "applied": False, **proposal, "model_calls": calls}
+                    source = proposal.pop("outcome_source")
+                    extra = {"reply_reason": proposal["reason"]} if source == MODEL_REPORT else {}
+                    return {**not_ready(proposal["status"], proposal["reason"], source, **extra),
+                            **{key: value for key, value in proposal.items() if key not in ("status", "reason")}}
+                scope_effects = []
                 request = grounding_request
             group = seal_group(body.label, request, proposal, index, demo.items)
-            groups = ([] if body.mode == "replace" else
-                      [g for g in existing if g["label"].casefold() != group["label"].casefold()]) + [group]
-            if len(groups) > 8:
-                raise ValueError("At most eight active semantic groups")
+            groups = [g for g in kept if g["label"].casefold() != group["label"].casefold()] + [group]
+            if len(groups) > MAX_GROUPS:
+                raise TooManyControls(len(groups) - 1, 1)
+            for effect in scope_effects:
+                effect["label"] = group["label"]
             with demo.lock:
                 state = state_for(x_session_id, body.user_id)
                 if state["semantic_revision"] != revision or state.get("semantic_preview_nonce") != nonce:
                     raise HTTPException(409, "Preferences changed during inference; review again")
                 return {**review(state, body.user_id, groups, proposal=proposal),
-                        "model_calls": calls if body.backend != "manual_category" else []}
+                        "model_calls": [] if manual else calls, "checks": deepcopy(checks),
+                        "calls_attempted": len(attempts), "call_attempts": deepcopy(attempts),
+                        "scope_effects": scope_effects}
+        except TooManyControls as exc:
+            # Its own outcome for every method, also the manual one: a plain sentence, not an error.
+            checks.append({"check": LIMIT_CHECK, "passed": False,
+                           "detail": f"{exc.applied} stay applied; this request adds {exc.added}"})
+            return not_ready("limit", str(exc), APPLICATION_CHECK)
         except ValueError as exc:
-            if body.backend != "manual_category":
-                return {"ready": False, "applied": False, "status": "error",
-                    "reason": f"Model proposal rejected ({type(exc).__name__}): {exc}",
-                    "model_calls": calls, "model_provenance": provenance}
-            raise HTTPException(422, str(exc)) from exc
+            if manual:
+                raise HTTPException(422, str(exc)) from exc
+            if failed and failed[-1] is exc:
+                return not_ready("error", failure_sentence(exc), PROVIDER_FAILURE)
+            # An application sentence about the request or about the reply; it holds no provider text.
+            return not_ready("error", f"Model proposal rejected ({type(exc).__name__}): {clean_page_text(exc)}",
+                             REPLY_REJECTED if attempts else APPLICATION_CHECK)
         except ParserOperationalError as exc:
-            raise HTTPException(422 if body.backend == "manual_category" else 502,
-                f"Semantic proposal failed ({type(exc).__name__}); no preferences changed: {exc}") from exc
+            if manual:
+                raise HTTPException(422, str(exc)) from exc
+            # HTTP 502: the provider could not be reached or its call failed. The
+            # text names the failure only through a page-safe sentence or type names.
+            sentence = failure_sentence(exc)
+            raise ProviderFailure(
+                f"Semantic proposal failed ({type(exc).__name__}); no preferences changed: {sentence}",
+                not_ready("error", sentence, PROVIDER_FAILURE)) from exc
+        except HTTPException:
+            raise
+        except Exception as exc:
+            if failed and failed[-1] is exc:
+                # A provider raised an unexpected type: a failed call, not a crash of the application.
+                return not_ready("error", failure_sentence(exc), PROVIDER_FAILURE)
+            raise
 
     @app.post("/api/semantic/induction/preview")
     def induction_preview(body: InductionPreview, x_session_id: str | None = Header(default=None)):
@@ -453,22 +702,43 @@ def install_semantic_routes(app, demo, *, infer_factory=None, category_infer_fac
                 raise HTTPException(422, str(exc)) from exc
         if (body.strength != "none" if body.operation == "exclude" else body.strength not in STRENGTH_WEIGHTS):
             raise HTTPException(422, "Exclusion has strength none; boost/reduce need a graded strength")
+        raised = []
+
+        def not_ready(status, reason, source, **extra):
+            return {"ready": False, "applied": False, "status": status, "reason": reason,
+                    "model_calls": page_calls(calls, raised), "calls_attempted": len(calls),
+                    "outcome_source": source, "failed_stage": "combined", **extra}
+
+        if body.mode != "replace" and len(existing) + 1 > MAX_GROUPS:
+            # A new category always adds a control, so the limit is known before the call.
+            return not_ready("limit", limit_reason(len(existing), 1), APPLICATION_CHECK,
+                             checks=[{"check": LIMIT_CHECK, "passed": False,
+                                      "detail": f"{len(existing)} stay applied; this request adds 1"}])
         try:
             infer, provenance, calls = category_provider.stage(
                 "combined", os.getenv("FEEDCTRL_STEERING_MODEL", "qwen2.5-coder:7b-instruct"))
-            envelope = induction.producer.propose_category(body.objective, index, infer,
+            envelope = induction.producer.propose_category(body.objective, index, watch_provider(infer, raised),
                 model_provenance=provenance, existing_categories=inventory,
                 max_items=induction.MAX_ITEMS, max_bytes=induction.PRODUCER_BYTES)
             if envelope["status"] != "review":
-                return {"ready": False, "applied": False, "status": envelope["status"],
-                    "reason": envelope["reason"], "induction": envelope, "model_calls": deepcopy(calls)}
+                if raised:
+                    # The producer keeps only the type of a failed call; show the provider's sentence.
+                    return not_ready("error", failure_sentence(raised[-1]), PROVIDER_FAILURE, induction=envelope)
+                source = (APPLICATION_CHECK if not calls else
+                          REPLY_REJECTED if envelope["status"] in ("error", "duplicate") else MODEL_REPORT)
+                if envelope["status"] == "duplicate" and envelope["reason"].startswith("Label already exists"):
+                    # A name collision is its own outcome with a plain sentence.
+                    from feedctrl.staged_routes import duplicate_name  # that module imports this one
+                    reason, name_checks = duplicate_name(calls)
+                    return not_ready("duplicate", reason, source, induction=envelope, checks=name_checks)
+                return not_ready(envelope["status"], envelope["reason"], source, induction=envelope)
             control = induction.category_as_control(envelope, body.objective, index, inventory,
                                                     body.operation, body.strength, provenance)
             control["induction"]["model_calls"] = deepcopy(calls)
             group = seal_group(envelope["proposal"]["label"], body.objective, control, index, demo.items)
             groups = ([] if body.mode == "replace" else existing) + [group]
-            if len(groups) > 8:
-                raise ValueError("At most eight active semantic groups")
+            if len(groups) > MAX_GROUPS:
+                raise TooManyControls(len(groups) - 1, 1)
             with demo.lock:
                 state = state_for(x_session_id, body.user_id)
                 if state["semantic_revision"] != revision or state.get("semantic_preview_nonce") != nonce:
@@ -480,11 +750,15 @@ def install_semantic_routes(app, demo, *, infer_factory=None, category_infer_fac
                 state["semantic_pending"]["induction_context"] = {
                     "candidate_ids": sorted(body.candidate_ids), "inventory_sha256": _digest(inventory)}
                 return {**result, "induction": deepcopy(envelope), "model_calls": deepcopy(calls),
+                        "calls_attempted": len(calls),
                         "action_source": "manual", "research_note": "Generated definition and membership are hypotheses; review is mandatory."}
+        except TooManyControls as exc:
+            return not_ready("limit", str(exc), APPLICATION_CHECK,
+                             checks=[{"check": LIMIT_CHECK, "passed": False,
+                                      "detail": f"{exc.applied} stay applied; this request adds {exc.added}"}])
         except (ValueError, ParserOperationalError) as exc:
-            return {"ready": False, "applied": False, "status": "error",
-                "reason": f"Category induction rejected ({type(exc).__name__}): {exc}",
-                "model_calls": deepcopy(calls)}
+            reason, source = stage_outcome(exc, calls, raised)
+            return not_ready("error", f"Category induction rejected ({type(exc).__name__}): {reason}", source)
 
     @app.post("/api/semantic/history/preview")
     def history(body: SemanticHistory, x_session_id: str | None = Header(default=None)):
@@ -506,7 +780,7 @@ def install_semantic_routes(app, demo, *, infer_factory=None, category_infer_fac
             state = state_for(x_session_id, body.user_id)
             pending = state["semantic_pending"]
             if (not pending or pending["id"] != body.plan_id or pending["revision"] != state["semantic_revision"]
-                    or time.monotonic() - pending["created"] > 300):
+                    or time.monotonic() - pending["created"] > REVIEW_WINDOW_SECONDS):
                 raise HTTPException(409, "Review expired or changed; review again")
             try:
                 context = pending.get("induction_context")
@@ -527,6 +801,7 @@ def install_semantic_routes(app, demo, *, infer_factory=None, category_infer_fac
             state["semantic_pending"] = None
             return {"applied": True, **response(state, body.user_id)}
 
+    app.add_exception_handler(ProviderFailure, provider_failure_response)
     from feedctrl.staged_routes import install_staged_routes
     install_staged_routes(app,demo,state_for,review,evidence_context=evidence_context,category_provider=category_provider)
     from feedctrl.vocabulary_routes import install_vocabulary_routes

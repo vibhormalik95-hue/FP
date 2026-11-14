@@ -4,7 +4,7 @@
   "requests": {
     "vocabulary": "I'm not hungry, remove all the stuff that makes me hungry.",
     "vocabulary:literal": "Hide the Repair category.",
-    "vocabulary:mixed": "Show me more repair videos, and remove anything about food.",
+    "vocabulary:mixed": "Show me more music videos, and remove anything about food.",
     "vocabulary:ambiguous": "I have had enough of the heavy stuff.",
     "vocabulary:unsupported": "Show me at most two cooking videos per day.",
     "vocabulary:negated": "Do not hide the cooking videos.",

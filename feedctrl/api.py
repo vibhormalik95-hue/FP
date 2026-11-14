@@ -167,6 +167,9 @@ class DemoState:
         history = list(user["train"]) + list(user["request_history"])
         counts = Counter(c for i in history for c in self.items.get(i, []))
         top = ", ".join(f"{c} ({n} occurrences)" for c, n in counts.most_common(8))
+        if not history:
+            # An invented scenario user has no history; do not print a sentence with an empty list.
+            return "My observed interaction history contains no items. No category preference is stated yet."
         return (f"My observed interaction history contains {len(history)} items. "
                 f"The most frequent category IDs in that history are {top}. "
                 "These are historical observations, not stated current preferences.")
@@ -353,11 +356,17 @@ def create_app(data_path=None, model_path=None, fixture=False, semantic_path=Non
     def scenario_requests():
         # Optional exact request texts supplied by the launcher for its bundled
         # scenario, so the operator can insert them without retyping. Display only.
+        # None: no launcher scenario. An empty mapping: a scenario without requests.
         value = getattr(app.state, "scenario_requests", None)
         if not isinstance(value, dict):
             return None
         return {key: text for key, text in value.items()
-                if isinstance(key, str) and isinstance(text, str) and 0 < len(text) <= 2000} or None
+                if isinstance(key, str) and isinstance(text, str) and 0 < len(text) <= 2000}
+
+    def scenario_name():
+        # Set by the launcher: the name of the bundled scenario that is served. Display only.
+        value = getattr(app.state, "scenario_name", None)
+        return value if isinstance(value, str) and 0 < len(value) <= 40 and value.isascii() and value.isprintable() else None
 
     def source_fingerprint():
         # Set by the launcher: one hash over the served source, for run receipts.
@@ -383,13 +392,19 @@ def create_app(data_path=None, model_path=None, fixture=False, semantic_path=Non
                 "local_models_allowed": allow_local_models,
                 "provider": configured_provider(),
                 "scenario_requests": scenario_requests(),
+                "scenario": scenario_name(),
                 "source_fingerprint": source_fingerprint(),
                 "ollama_status": ("Not checked; selecting Ollama makes a real request. Failures remain visible."
                                   if allow_local_models else "Disabled by hosted-only application policy."),
                 "research_note": "Synthetic category controls measure offline behavior; this demo does not establish human agency or satisfaction.",
                 "category_note": "Opaque dataset category IDs; no invented topic names.",
-                "semantic_topic": ("Official caption sidecar loaded; exploratory preview only"
+                # The text starts with "Official" whenever a sidecar is loaded: the page reads that
+                # word. For invented scenario data it says that only the format is the official one.
+                "semantic_topic": (("Official-format caption file of an invented scenario loaded; exploratory preview only"
+                                    if demo.fixture else "Official caption sidecar loaded; exploratory preview only")
                                    if demo.topic_index else "Unavailable until FEEDCTRL_CAPTION_SIDECAR is configured"),
+                "caption_data": ("invented scenario file" if demo.fixture else "official caption sidecar")
+                                if demo.topic_index else None,
                 "asset_note": "Metadata cards only; no original video assets are distributed."}
 
     @app.post("/api/session", status_code=201)
