@@ -276,9 +276,11 @@ const SOURCES = ['application_check', 'provider_failure', 'reply_rejected', 'mod
 export function outcomeKind(outcome) {
   if (!outcome) return 'unknown';
   if (outcome.page) return outcome.page;                              // expired | session | network: states that the page itself found
+  if (outcome.thrown) return 'request_failed';                        // the server answered with an error status, not with a result
   if (outcome.method === 'manual_category') return 'manual';
   if (SOURCES.includes(outcome.outcome_source)) return outcome.outcome_source;
-  if (outcome.thrown) return 'request_failed';
+  // A server without `outcome_source`: competing meanings or a reason from a reply can only come from a reply.
+  if (outcome.clarification && (outcome.clarification.model_reason || outcome.clarification.alternatives?.length)) return 'model_report';
   return 'unknown';
 }
 

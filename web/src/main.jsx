@@ -41,6 +41,10 @@ function App({client, personal, onLock}) {
   // Each message stands next to the control that caused it: the instruction, the profile, the topic preview, or the page.
   const [messages, setMessages] = useState({});
   const [showSignals, setShowSignals] = useState(true), [view, setView] = useState('feed');
+  // On a one-column layout the review stays directly below the panel; on a wide layout it is in the main area.
+  const [narrow, setNarrow] = useState(() => typeof window !== 'undefined' && Boolean(window.matchMedia?.('(max-width: 760px)').matches));
+  useEffect(() => { const query = window.matchMedia?.('(max-width: 760px)'); if (!query) return undefined;
+    const change = () => setNarrow(query.matches); query.addEventListener('change', change); return () => query.removeEventListener('change', change); }, []);
   const token = useRef(null), requestId = useRef(0);
   const say = (where, kind, text) => setMessages(all => ({...all, [where]: text ? {kind, text} : null}));
 
@@ -70,7 +74,7 @@ function App({client, personal, onLock}) {
       token.current = (await api('session', {})).session_id;
       setStatus(s); setUsers(u); setCats(c.categories); setUser(u[0].user_id);
       // A bundled scenario is served for the language controls: open that view first.
-      if (s.scenario_requests) setView('steering');
+      if (s.scenario_requests && Object.keys(s.scenario_requests).length) setView('steering');
       await refresh(u[0].user_id, 'E', true);
     } catch (e) {say('page', 'error', e.message);} finally {setBusy(false);}
   })(); }, []);
@@ -179,7 +183,7 @@ function App({client, personal, onLock}) {
             <h2 className="aside-title">Language controls</h2>
             <SemanticPanel api={api} user={user} resetKey={steeringReset} defaultOpen categories={cats} scenarioRequests={status?.scenario_requests} provider={status?.provider} dataNote={dataNote}
               onFeed={(f, groups) => {setSemanticFeed(f); setSemanticGroups(groups || []); setFeedTool('semantic');}} onActive={() => setFeedTool('semantic')} onUnavailable={setLanguageMissing}
-              portal={createPortal} reviewHost={language ? reviewHost : null}/>
+              portal={createPortal} reviewHost={language && !narrow ? reviewHost : null}/>
           </div>
           <div hidden={!language}>
             <h2 className="aside-title">Fictional items (separate list)</h2>

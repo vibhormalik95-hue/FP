@@ -28,7 +28,8 @@ test('displays exact unapproved candidate, rationale, evidence and nonselectable
   const {calls,ui}=fixture();await show(ui);
   for(const value of [proposal.label,proposal.definition,proposal.rationale,proposal.evidence[0].quote,...clar.clarification.alternatives])assert.ok(ui.text().includes(value));
   assert.equal(ui.button('Continue to definition review').props.disabled,true);
-  assert.equal(ui.nodes().filter(n=>n.type==='input'&&n.props.type==='radio').length,1);
+  // One explicit choice: a check box, not a radio button with one option (m15).
+  assert.deepEqual(ui.nodes().filter(n=>n.type==='input'&&n.props.name==='category-resolution').map(n=>n.props.type),['checkbox']);
   assert.equal(ui.find(n=>n.props.name==='category-resolution').props.checked,false);
   const before=calls.length;ui.render();ui.render();assert.equal(calls.length,before);
   assert.equal(calls.filter(c=>c.path==='semantic/definition/preview').length,1);

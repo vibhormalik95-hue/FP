@@ -53,6 +53,8 @@ export default function SemanticPanel({api,user,resetKey,onFeed,onActive,onUnava
   const [busyStage,setBusyStage]=useState(null),[busyCall,setBusyCall]=useState(false),[stoppedStage,setStoppedStage]=useState(null),[terms,setTerms]=useState(null),[termsError,setTermsError]=useState('');
   // The time at which the open review ends, whether it has ended, the seconds of a running call, and a counter that moves focus to a new result.
   const [deadline,setDeadline]=useState(null),[expired,setExpired]=useState(false),[elapsed,setElapsed]=useState(0),[focusKey,setFocusKey]=useState(0);
+  // A field that changed outside the view of the person: bring it into view after the next render.
+  const [fieldFocus,setFieldFocus]=useState(null);
   // Until the person types a name, the control is named after what it does.
   const label=typedLabel!==null?typedLabel:backend==='manual_category'?`Manual: ${category}`:'My request';
   const setLabel=setTypedLabel;
@@ -61,7 +63,8 @@ export default function SemanticPanel({api,user,resetKey,onFeed,onActive,onUnava
   // `generation` cancels a review that is in flight when an input changes. The first load of the
   // applied controls has its own counter, so that a default value set during the load does not discard it.
   const generation=useRef(0),activeRequest=useRef(null),termsRequest=useRef(0),loadRequest=useRef(0);
-  const reviewOpen=useRef(false),mounted=useRef(false);
+  // `notice` is a message that the next change of an input shows in place of the plain "changed" message.
+  const reviewOpen=useRef(false),mounted=useRef(false),notice=useRef(null);
   reviewOpen.current=Boolean(pending||definition||resolution);
   const authored=provider?.live_model===false,words=sourceWords(authored);
   const choices=scopeChoices(saved?saved.feed.baseline_items.length:10);
@@ -87,7 +90,7 @@ export default function SemanticPanel({api,user,resetKey,onFeed,onActive,onUnava
   const inputKey=JSON.stringify([backend,text,label,count,operation,strength,mode,actionSource,category,target,explicitTarget]);
   useEffect(()=>{if(!mounted.current){mounted.current=true;return;}
     ++generation.current;activeRequest.current=null;setWorking(false);const had=reviewOpen.current;clearReview();setFailure(null);setRecordFresh(false);setStoppedStage(null);
-    setMessage(had?'You changed the request. The review was discarded. Nothing was applied.':'');},[inputKey]);
+    setMessage(notice.current||(had?'You changed the request. The review was discarded. Nothing was applied.':''));notice.current=null;},[inputKey]);
   useEffect(()=>{setTargetConfirmed(false);},[backend,text,target,count,operation,strength,mode,explicitTarget]);
   useEffect(()=>{setOutcome(null);},[backend]);
   useEffect(()=>{if(Array.isArray(categories)&&categories.length&&!categories.includes(category))setCategory(categories[0]);},[categories,category]);
@@ -109,6 +112,8 @@ export default function SemanticPanel({api,user,resetKey,onFeed,onActive,onUnava
     const board=document.getElementById('review-board'),title=document.getElementById('review-heading');
     if(board&&board.scrollIntoView)board.scrollIntoView({block:'start'});
     if(title&&title.focus)title.focus({preventScroll:true});},[focusKey]);
+  useEffect(()=>{if(!fieldFocus||typeof document==='undefined')return;const field=document.getElementById(fieldFocus);
+    if(field){if(field.scrollIntoView)field.scrollIntoView({block:'center'});if(field.focus)field.focus({preventScroll:true});}setFieldFocus(null);},[fieldFocus]);
   const arm=()=>{setDeadline(timers.now()+(REVIEW_SECONDS-REVIEW_MARGIN_SECONDS)*1000);setExpired(false);};
   const shown=()=>setFocusKey(n=>n+1);
   function fail(e,stage){
@@ -187,8 +192,9 @@ export default function SemanticPanel({api,user,resetKey,onFeed,onActive,onUnava
     setMessage(late?'The expired review is closed. Nothing was applied.':'Review discarded. Nothing was applied.');}
   // A meaning that the reply named becomes part of the person's own request. Nothing is sent until the person submits it.
   function adoptAlternative(value){if(typeof value!=='string'||!value.trim())return;
-    if(backend==='vocabulary'){setText(adoptText(text,value));setMessage('The meaning is added to your request in the panel. Nothing was sent. Submit it when you are ready.');}
-    else{setExplicitTarget(true);setTarget(value);setMessage('The meaning is now your stated target in the panel. Confirm it and choose the action. Nothing was sent.');}}
+    if(backend==='vocabulary'){notice.current='The meaning is added to your request in the panel. Nothing was sent. Submit it when you are ready.';setText(adoptText(text,value));}
+    else{notice.current='The meaning is now your stated target in the panel. Confirm it and choose the action. Nothing was sent.';setExplicitTarget(true);setTarget(value);}
+    setFieldFocus(backend==='vocabulary'?'semantic-text':'semantic-confirmed-target');}
   function insertExample(option){setText(option.text);if(scenarioRequests?.label&&backend==='configured_model')setLabel(scenarioRequests.label);}
   const disabled=working||user===null;
   const category_method=['induction','staged'].includes(backend);
@@ -294,7 +300,7 @@ export default function SemanticPanel({api,user,resetKey,onFeed,onActive,onUnava
       {working&&busyCall&&<button type="button" className="secondary" onClick={stopWaiting}>Stop waiting</button>}
       {working&&busyCall&&<p className="help">{authored?'The server reads a hand-written reply.':'A call can take minutes. "Stop waiting" does not stop the call on the server. It only discards the result on this page.'}</p>}
       {message&&<p role="status" className="alert">{message}</p>}
-      {(variant||failure)&&portal&&reviewHost&&<p className="help"><span className="wide-only">The result is in the main area, above the feed.</span><span className="narrow-only">The result is below this panel.</span></p>}
+      {(variant||failure)&&<p className="help" data-role="result-place">{portal&&reviewHost?'The result is in the main area, above the feed.':'The result is below this panel.'}</p>}
       <h3>Applied controls</h3>
       {saved?(saved.groups.length?<ul className="applied-controls">{saved.groups.map(g=><li key={g.revision}><b>{g.label}</b>: {actionWords(g.proposal.action)}; {g.proposal.item_ids.length===1?'item':'items'} {g.proposal.item_ids.join(', ')}</li>)}</ul>
         :<p className="help">None.</p>):<p className="help">{working?'Loading...':'Not available.'}</p>}
