@@ -144,11 +144,11 @@ def make_claude_personal_infer(*, executable, workdir, model, effort, run_budget
         raise ValueError('Explicit supported effort required')
     if type(estimated_per_invocation_usd) not in (int, float) or not math.isfinite(estimated_per_invocation_usd) or estimated_per_invocation_usd <= 0:
         raise ValueError('Explicit positive estimated per-invocation threshold required')
-    for v, low, high in ((max_output_tokens,1,5000), (max_request_bytes,1,50000),
+    for v, low, high in ((max_output_tokens,1,16384), (max_request_bytes,1,50000),
                          (max_response_bytes,1,2000000)):
         if type(v) is not int or not low <= v <= high:
             raise ValueError('Invalid bounded transport setting')
-    if type(timeout) not in (int,float) or not math.isfinite(timeout) or not 0 < timeout <= 300:
+    if type(timeout) not in (int,float) or not math.isfinite(timeout) or not 0 < timeout <= 600:
         raise ValueError('Invalid timeout')
     config = {'backend':'claude-code-personal-cli', 'model':model, 'requested_effort':effort,
               'output_mode':output_mode,

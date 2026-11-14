@@ -35,7 +35,7 @@ def run_with_backend(argv, input_bytes, env, cwd, timeout, output_limit, *, back
     if (not isinstance(argv,list) or not argv or not all(isinstance(x,str) and '\x00' not in x for x in argv)
             or not isinstance(input_bytes,bytes) or not isinstance(env,dict) or not isinstance(cwd,str)
             or type(output_limit) is not int or not 1 <= output_limit <= 2000000
-            or type(timeout) not in (int,float) or not math.isfinite(timeout) or not 0 < timeout <= 300
+            or type(timeout) not in (int,float) or not math.isfinite(timeout) or not 0 < timeout <= 600
             or type(cleanup_timeout) not in (int,float) or not math.isfinite(cleanup_timeout)
             or not 0 < cleanup_timeout <= 30):
         raise ValueError('Invalid process-runner inputs')

@@ -1,4 +1,39 @@
-# Current hosted validation profile: 2026-11-11
+# Hosted validation: current source and historical profile
+
+## Current source and manual setup
+
+The application source now has later reviewed changes to its definition prompt,
+literal-reference handling and bounded review window. The 11 November scaffold
+below pins the earlier definition prompt in `inputs/01-category-discovery/first-model-input.json`.
+Its exact first-request check therefore rejects the revised application's prompt
+before a runner call. Keep the historical input and manifest unchanged; neither its
+saved results nor its incomplete configuration are a runnable current profile.
+
+For offline verification, use a Python environment with the project dependencies
+from `pyproject.toml` installed, then run from the project root:
+
+```text
+python -m unittest discover -s tests -p "test_*_regression_offline.py"
+```
+
+These tests use synthetic data and fake runners. They do not call a model, start a
+server or demonstrate semantic accuracy. For the interactive workflow, follow the
+[app guide](../../docs/app.md) and [hosted configuration](../../docs/hosted-only-configuration.md)
+using a separately reviewed provider, data and runtime configuration. The personal
+Claude adapter has no enabled default process launcher; a reviewed runner must be
+supplied explicitly. This repository does not provide a current ready-to-run hosted
+category scaffold or establish hosted acceptance. Review the definition, every
+membership and its evidence before Apply, and review Undo separately.
+
+The following sections describe the **11 November historical profile** and its
+dated observations. Their pins, suggested commands and test counts apply to that
+matching historical source, not to the revised application source above. To inspect
+the scaffold as published immediately before this integration, use a separate checkout
+of `bef8e1afea5222a35e3a89be722b15d2424c30be`. Reproducing a dated test count requires
+the exact source identified in the profile provenance, not merely that later checkout.
+Do not overwrite frozen inputs or reuse a consumed run.
+
+## Historical profile: 11 November 2026
 
 **Offline readiness only. No fresh hosted batch is authorized.** Both configuration templates are incomplete and all six execution gates remain false. No approved configuration, authorization receipt or consumed marker is supplied. Do not reuse any previous configuration/receipt/consumed marker, import a previous response, or resume an ended run. A new authorized run requires separate review of the exact new driver, source, input pins, current runtime/containment, cost estimate and permissions. Existing spend thresholds, bounded calls, Fable 5.2/max, no retry/fallback and containment requirements remain unchanged.
 
@@ -22,13 +57,13 @@ Review notes, all facts/unknowns and provenance are operator-only material. They
 4. A separate APPROVE after viewing the exact resolved definition, original clarification and resolution record allows classification with `evidence_reviewed:true`. Full tri-state membership and blind evidence assessment remain unchanged, within the three-call category cap.
 5. Separate explicit reviews still gate Apply and Undo. No automatic target/semantic score is asserted.
 
-The server enforces single-use, monotonic 300-second expiry and session/user/request/source/inventory/revision/nonce binding. Delays, stale state or consumed tokens fail closed; the helper does not recover by generating or resuming automatically. Save the incomplete report and seek fresh authorization if a new batch is needed.
+The 11 November profile enforced single-use, monotonic 300-second expiry and session/user/request/source/inventory/revision/nonce binding. Delays, stale state or consumed tokens failed closed; the helper did not recover by generating or resuming automatically. The revised source keeps the initial 300-second review window and uses a separately bounded in-flight classification window; its other binding and review checks remain in force.
 
-## Offline checks
+## Historical offline checks
 
-Recommended current aggregate from source root: `PYTHONDONTWRITEBYTECODE=1 python tools/hosted_validation_current/run_guarded.py .`
+The following commands describe the historical profile and are not the current-source regression command above. Historical aggregate from its matching source root: `PYTHONDONTWRITEBYTECODE=1 python tools/hosted_validation_current/run_guarded.py .`
 
-Focused current helper only: `PYTHONDONTWRITEBYTECODE=1 python tools/hosted_validation_current/run_guarded.py . test_current_driver`
+Historical focused helper only: `PYTHONDONTWRITEBYTECODE=1 python tools/hosted_validation_current/run_guarded.py . test_current_driver`
 
 The default current aggregate deliberately does not import historical `test_driver`. To reproduce its retained compatibility failure separately: `PYTHONDONTWRITEBYTECODE=1 python tools/hosted_validation/run_guarded.py . test_driver`. That historical suite is 8 passed / 8 failed against the corrected prompt, not green. Neither aggregate is the full legacy pytest suite; pytest is absent in this environment. These commands run authored offline tests only, never a hosted invocation.
 

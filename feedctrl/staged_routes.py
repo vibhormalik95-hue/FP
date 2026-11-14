@@ -15,6 +15,19 @@ from feedctrl.controls import ParserOperationalError
 from feedctrl.semantic_controls import STRENGTH_WEIGHTS
 from feedctrl.semantic_review import InductionPreview,scoped_index,seal_group
 
+# The operator must start classification within the original review window.
+# Once started, two bounded calls and cleanup have one fixed in-flight deadline;
+# revision, nonce, source, inventory and sealed-record checks remain mandatory.
+_DEFINITION_REVIEW_TTL_SECONDS = 300
+_CLASSIFICATION_INFLIGHT_SECONDS = 2 * 600 + 30
+
+
+def _within_review_window(created, now, *, inflight_deadline=None):
+    if inflight_deadline is None:
+        return now - created <= _DEFINITION_REVIEW_TTL_SECONDS
+    return now <= inflight_deadline
+
+
 class DefinitionApproval(BaseModel):
     model_config=ConfigDict(extra='forbid')
     user_id:int=Field(ge=0)
@@ -42,9 +55,10 @@ def install_staged_routes(app,demo,state_for,review,*,evidence_context,category_
         return _digest({k:pending[k] for k in ('id','created','revision','nonce','body','definition',
                                              'eligible_sha256','definition_model_calls','session_id')})
 
-    def current(pending,state,session_id,user_id,*,clarification=False):
+    def current(pending,state,session_id,user_id,*,clarification=False,inflight_deadline=None):
         if (not pending or pending.get('used') or pending['session_id']!=session_id
-                or pending['body']['user_id']!=user_id or time.monotonic()-pending['created']>300
+                or pending['body']['user_id']!=user_id
+                or not _within_review_window(pending['created'],time.monotonic(),inflight_deadline=inflight_deadline)
                 or state['semantic_revision']!=pending['revision']
                 or state.get('semantic_preview_nonce')!=pending['nonce']):
             raise ValueError('Definition review expired, consumed or superseded')
@@ -141,6 +155,7 @@ def install_staged_routes(app,demo,state_for,review,*,evidence_context,category_
             try: scope,inventory=current(pending,state,x_session_id,body.user_id)
             except ValueError as exc: raise HTTPException(409,str(exc)) from exc
             owned=deepcopy(pending);pending['used']=True
+            inflight_deadline=time.monotonic()+_CLASSIFICATION_INFLIGHT_SECONDS
         try:
             infer,model,calls=category_provider.stage('membership',owned['definition']['provenance']['model_id'],
                 expected=owned['definition']['provenance'])
@@ -149,7 +164,7 @@ def install_staged_routes(app,demo,state_for,review,*,evidence_context,category_
             if envelope['status']!='review':
                 return {'ready':False,'applied':False,**envelope,'model_calls':deepcopy(calls)}
             with demo.lock:
-                current(owned,state_for(x_session_id,body.user_id),x_session_id,body.user_id)
+                current(owned,state_for(x_session_id,body.user_id),x_session_id,body.user_id,inflight_deadline=inflight_deadline)
             audit_infer,audit_model,audit_calls=category_provider.stage('evidence_audit',model['model_id'],expected=model)
             if audit_model!=model:raise ValueError('Model identity changed before evidence assessment')
             envelope=evidence_audit.audit_membership_envelope(envelope,request['objective'],scope,inventory,audit_infer,audit_model)
@@ -160,7 +175,7 @@ def install_staged_routes(app,demo,state_for,review,*,evidence_context,category_
                 state=state_for(x_session_id,body.user_id)
                 # Validate again with a separate unused copy: a consumed token cannot
                 # start another call, while its in-flight result can still be checked.
-                scope,inventory=current(owned,state,x_session_id,body.user_id)
+                scope,inventory=current(owned,state,x_session_id,body.user_id,inflight_deadline=inflight_deadline)
                 staged.revalidate_membership_envelope(envelope,request['objective'],scope,inventory)
                 control=ii.category_as_control(envelope,request['objective'],scope,inventory,
                     request['operation'],request['strength'],model)
