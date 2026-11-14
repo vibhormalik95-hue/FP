@@ -309,7 +309,15 @@ def main(argv=None):
     step.add_argument('--record-dir', help='a new folder for the call records, or "none"; default: a new folder under runs/')
     step.set_defaults(run=start)
     args = parser.parse_args(argv)
+    if args.run in (rehearse, live, start) and __name__ == '__main__':
+        # A stop signal to this launcher alone (for example from a process
+        # manager) ends it through its "finally" steps, which stop the server.
+        signal.signal(signal.SIGTERM, _ended_by_signal)
     args.run(args)
+
+
+def _ended_by_signal(number, frame):
+    raise SystemExit(128 + number)
 
 
 if __name__ == '__main__':

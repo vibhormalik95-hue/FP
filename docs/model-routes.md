@@ -198,6 +198,7 @@ Press Ctrl+C in the window of the server, or of `quickstart.py`.
 - The application then refuses every new model call.
 - A running HTTP call is ended: its connection is closed. A running program is ended, together with the programs that it started. Its temporary folder is removed.
 - The server waits at most 10 seconds for open requests, then it stops. A second Ctrl+C stops the wait at once.
+- A stop signal (SIGTERM) to `quickstart.py` alone also stops the server in this way.
 - A call that was ended fails with the message "The application is stopping".
 
 What was tested: on Linux, Ctrl+C ended the server and a running CLI program in less than 2 seconds, and no second call started (`tests/test_route_launcher_offline.py`). A stop also ended a running HTTP call to a slow stand-in server.

@@ -456,3 +456,49 @@ def test_w3_on_windows_the_launcher_asks_the_server_to_stop_with_ctrl_break(monk
     monkeypatch.setattr(subprocess, 'Popen', lambda *args, **kwargs: started.update(kwargs) or Server())
     quickstart.run_demo('--scenario', 'tags')
     assert started['creationflags'] == 0x200
+
+
+@pytest.mark.skipif(not Path('/proc').is_dir(), reason='reads the process table of Linux')
+def test_f05_a_stop_signal_to_the_launcher_alone_also_stops_the_server():
+    import signal
+    import socket
+    import subprocess
+    import time
+    with socket.socket() as probe:
+        probe.bind(('127.0.0.1', 0))
+        port = probe.getsockname()[1]
+    launcher = subprocess.Popen([sys.executable, str(ROOT / 'scripts' / 'quickstart.py'), 'rehearse', '--scenario', 'hunger',
+                                 '--port', str(port)], cwd=str(ROOT), stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                                env={**os.environ, 'PYTHONUNBUFFERED': '1'})
+    children = []
+    try:
+        for _ in range(120):
+            try:
+                if _local_get(f'http://127.0.0.1:{port}/')[0] == 200:
+                    break
+            except OSError:
+                time.sleep(0.25)
+        for entry in Path('/proc').iterdir():
+            try:
+                if entry.name.isdigit() and int((entry / 'stat').read_text().rsplit(')', 1)[1].split()[1]) == launcher.pid:
+                    children.append(int(entry.name))
+            except (OSError, ValueError, IndexError):
+                pass
+        assert children
+        launcher.send_signal(signal.SIGTERM)       # to the launcher only, not to its process group
+        code = launcher.wait(timeout=30)
+        assert code == 128 + signal.SIGTERM
+        for _ in range(50):
+            if all(_gone(pid) for pid in children):
+                break
+            time.sleep(0.1)
+        assert all(_gone(pid) for pid in children)
+    finally:
+        for pid in children:
+            try:
+                os.kill(pid, signal.SIGKILL)
+            except ProcessLookupError:
+                pass
+        if launcher.poll() is None:
+            launcher.kill()
+            launcher.wait()
