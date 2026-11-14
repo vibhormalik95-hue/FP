@@ -1,4 +1,6 @@
-# Requirement and evidence worksheet
+# Requirement and evidence worksheet: 11 November 2026
+
+**Historical snapshot.** The results and runtime descriptions below belong to 11 November. They are preserved as recorded, not a statement of current availability or acceptance. See [current progress](current-progress.md) for later evidence and [the code walkthrough](current-code-walkthrough.md) for the implementation map.
 
 ## Category definition update, 11 November 2026
 
