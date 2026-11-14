@@ -1,64 +1,236 @@
-% Additional references of the 14 November 2026 revision.
-% The entries of references.bib are unchanged and are used together with this file.
-% Each record below was checked on 14 November 2026 (UTC) on the publisher,
-% registry or author page that its url or doi names. The check covers the
-% metadata and the abstract or landing page, not the full text.
+% Bibliography of the 14 November 2026 revision. This file is complete for that
+% revision: research-paper-2026-11-14.tex uses this file only.
+% references.bib is the bibliography of the October paper and stays unchanged.
+%
+% Every record was checked on 14 November 2026 (UTC) on the publisher, registry
+% or author page that its DOI, URL or arXiv identifier names. The check covers
+% the metadata and the abstract or landing page, not the full text.
+% Exception: the English page of the Mozilla report (ricks2022button) did not
+% open in the check. Its title, authors and date were confirmed on the German
+% page of the same report, and its two percentages through press reports.
+%
+% Corrections against references.bib, each confirmed on its Crossref record:
+%   radlinski2022profiles  pages added
+%   sanner2023competitive  pages and DOI added
+%   chen2012critiquing     issue added
+%   mysore2023editable     the SIGIR 2023 paper is cited, not the arXiv version
+%   ricks2022button, niu2025chat  capital letters in the title protected
+% Not carried over from references.bib: the two SciPy manual entries. The
+% paper names SciPy in the text and cites no manual page.
+%
+% Form (IEEE reference style):
+%   - a DOI is printed through the note field; such an entry has no url field;
+%   - an arXiv preprint is printed as "arXiv:<identifier>";
+%   - names of journals and proceedings use the IEEE abbreviations;
+%   - an entry with more than six authors prints the first author and "et al."
+%     (set in the control entry below; the author field keeps every name).
 
+@IEEEtranBSTCTL{paperBSTcontrol,
+  CTLdash_repeated_names = "no",
+  CTLuse_forced_etal = "yes",
+  CTLmax_names_forced_etal = "6",
+  CTLnames_show_etal = "1"
+}
+
+@techreport{ricks2022button,
+  author = {Ricks, Becca and McCrosky, Jesse},
+  title = {Does This Button Work? {I}nvestigating {YouTube}'s Ineffective User Controls},
+  institution = {Mozilla Foundation},
+  year = {2022},
+  month = sep,
+  url = {https://www.mozillafoundation.org/en/research/library/user-controls/report/}
+}
+@inproceedings{radlinski2022profiles,
+  author = {Radlinski, Filip and Balog, Krisztian and Diaz, Fernando and Dixon, Lucas and Wedin, Ben},
+  title = {On Natural Language User Profiles for Transparent and Scrutable Recommendation},
+  booktitle = {Proc. 45th Int. ACM SIGIR Conf. Res. Develop. Inf. Retrieval},
+  pages = {2863--2874},
+  year = {2022},
+  doi = {10.1145/3477495.3531873},
+  note = {doi: \url{10.1145/3477495.3531873}}
+}
 @inproceedings{balog2019transparent,
   author = {Balog, Krisztian and Radlinski, Filip and Arakelyan, Shushan},
   title = {Transparent, Scrutable and Explainable User Models for Personalized Recommendation},
-  booktitle = {Proceedings of the 42nd International ACM SIGIR Conference on Research and Development in Information Retrieval},
+  booktitle = {Proc. 42nd Int. ACM SIGIR Conf. Res. Develop. Inf. Retrieval},
   pages = {265--274},
   year = {2019},
   doi = {10.1145/3331184.3331211},
-  url = {https://doi.org/10.1145/3331184.3331211}
+  note = {doi: \url{10.1145/3331184.3331211}}
+}
+@inproceedings{ramos2024transparent,
+  author = {Ramos, Jerome and Rahmani, Hossein A. and Wang, Xi and Fu, Xiao and Lipani, Aldo},
+  title = {Transparent and Scrutable Recommendations Using Natural Language User Profiles},
+  booktitle = {Proc. 62nd Annu. Meeting Assoc. Comput. Linguistics},
+  pages = {13971--13984},
+  year = {2024},
+  doi = {10.18653/v1/2024.acl-long.753},
+  note = {doi: \url{10.18653/v1/2024.acl-long.753}}
+}
+@inproceedings{wozniak2025profiles,
+  author = {Wo{\'z}niak, Stanis{\l}aw and Duszenko, Jacek and Koco{\'n}, Jan and Kazienko, Przemys{\l}aw},
+  title = {Improving {LLM}-Based Recommender Systems with User-Controllable Profiles},
+  booktitle = {Companion Proc. ACM Web Conf. 2025},
+  pages = {2102--2111},
+  year = {2025},
+  doi = {10.1145/3701716.3717734},
+  note = {doi: \url{10.1145/3701716.3717734}}
+}
+@misc{zhou2024language,
+  author = {Zhou, Joyce and Dai, Yijia and Joachims, Thorsten},
+  title = {Language-Based User Profiles for Recommendation},
+  howpublished = {arXiv:2402.15623},
+  year = {2024},
+  eprint = {2402.15623},
+  archivePrefix = {arXiv},
+  primaryClass = {cs.CL}
+}
+@inproceedings{mysore2023editable,
+  author = {Mysore, Sheshera and Jasim, Mahmood and McCallum, Andrew and Zamani, Hamed},
+  title = {Editable User Profiles for Controllable Text Recommendations},
+  booktitle = {Proc. 46th Int. ACM SIGIR Conf. Res. Develop. Inf. Retrieval},
+  pages = {993--1003},
+  year = {2023},
+  doi = {10.1145/3539618.3591677},
+  note = {doi: \url{10.1145/3539618.3591677}}
+}
+@inproceedings{sanner2023competitive,
+  author = {Sanner, Scott and Balog, Krisztian and Radlinski, Filip and Wedin, Ben and Dixon, Lucas},
+  title = {Large Language Models are Competitive Near Cold-start Recommenders for Language- and Item-based Preferences},
+  booktitle = {Proc. 17th ACM Conf. Recommender Syst.},
+  pages = {890--896},
+  year = {2023},
+  doi = {10.1145/3604915.3608845},
+  note = {doi: \url{10.1145/3604915.3608845}}
+}
+@article{chen2012critiquing,
+  author = {Chen, Li and Pu, Pearl},
+  title = {Critiquing-based recommenders: survey and emerging trends},
+  journal = {User Model. User-Adapted Interact.},
+  volume = {22},
+  number = {1-2},
+  pages = {125--150},
+  year = {2012},
+  doi = {10.1007/s11257-011-9108-6},
+  note = {doi: \url{10.1007/s11257-011-9108-6}}
 }
 @inproceedings{harper2015control,
   author = {Harper, F. Maxwell and Xu, Funing and Kaur, Harmanpreet and Condiff, Kyle and Chang, Shuo and Terveen, Loren},
   title = {Putting Users in Control of their Recommendations},
-  booktitle = {Proceedings of the 9th ACM Conference on Recommender Systems},
+  booktitle = {Proc. 9th ACM Conf. Recommender Syst.},
   pages = {3--10},
   year = {2015},
   doi = {10.1145/2792838.2800179},
-  url = {https://doi.org/10.1145/2792838.2800179}
+  note = {doi: \url{10.1145/2792838.2800179}}
 }
-@misc{mysore2023editable,
-  author = {Mysore, Sheshera and Jasim, Mahmood and McCallum, Andrew and Zamani, Hamed},
-  title = {Editable User Profiles for Controllable Text Recommendation},
-  year = {2023},
-  eprint = {2304.04250},
+@inproceedings{lu2024aligning,
+  author = {Lu, Wensheng and Lian, Jianxun and Zhang, Wei and Li, Guanghua and Zhou, Mingyang and Liao, Hao and Xie, Xing},
+  title = {Aligning Large Language Models for Controllable Recommendations},
+  booktitle = {Proc. 62nd Annu. Meeting Assoc. Comput. Linguistics},
+  pages = {8159--8172},
+  year = {2024},
+  doi = {10.18653/v1/2024.acl-long.443},
+  note = {doi: \url{10.18653/v1/2024.acl-long.443}}
+}
+@misc{dai2025token,
+  author = {Dai, Wenxi and Xu, Wujiang and Wang, Pinhuan and Metaxas, Dimitris N.},
+  title = {Token-Controlled Re-ranking for Sequential Recommendation via {LLMs}},
+  howpublished = {arXiv:2511.17913v1},
+  year = {2025},
+  eprint = {2511.17913},
   archivePrefix = {arXiv},
-  primaryClass = {cs.IR},
-  url = {https://arxiv.org/abs/2304.04250},
-  note = {Extended version of a SIGIR 2023 paper}
+  primaryClass = {cs.IR}
 }
 @inproceedings{he2023zeroshot,
   author = {He, Zhankui and Xie, Zhouhang and Jha, Rahul and Steck, Harald and Liang, Dawen and Feng, Yesu and Majumder, Bodhisattwa Prasad and Kallus, Nathan and McAuley, Julian},
   title = {Large Language Models as Zero-Shot Conversational Recommenders},
-  booktitle = {Proceedings of the 32nd ACM International Conference on Information and Knowledge Management},
+  booktitle = {Proc. 32nd ACM Int. Conf. Inf. Knowl. Manage.},
   pages = {720--730},
   year = {2023},
   doi = {10.1145/3583780.3614949},
-  url = {https://arxiv.org/abs/2308.10053}
+  note = {doi: \url{10.1145/3583780.3614949}}
+}
+@inproceedings{niu2025chat,
+  author = {Niu, Shuo and Vishnuvardhan, Dikshith and Punnam, Venkata Sai Reddy},
+  title = {Chat with the '{For You}' Algorithm: An {LLM}-Enhanced Chatbot for Controlling Video Recommendation Flow},
+  booktitle = {Proc. 7th ACM Conf. Conversational User Interfaces},
+  year = {2025},
+  pages = {1--16},
+  doi = {10.1145/3719160.3736628},
+  note = {doi: \url{10.1145/3719160.3736628}}
+}
+@article{fabbri2026feeding,
+  author = {Fabbri, Matteo and Jia, Jingyi and Jerez Arnau, Pablo and W{\"o}rndl, Wolfgang},
+  title = {Feeding the (short-video) feed: A design proposal for user control of social media recommender systems under the {Digital Services Act}},
+  journal = {Int. J. Human-Comput. Stud.},
+  volume = {214},
+  pages = {103811},
+  year = {2026},
+  doi = {10.1016/j.ijhcs.2026.103811},
+  note = {doi: \url{10.1016/j.ijhcs.2026.103811}}
 }
 @article{rashkin2023attribution,
   author = {Rashkin, Hannah and Nikolaev, Vitaly and Lamm, Matthew and Aroyo, Lora and Collins, Michael and Das, Dipanjan and Petrov, Slav and Tomar, Gaurav Singh and Turc, Iulia and Reitter, David},
   title = {Measuring Attribution in Natural Language Generation Models},
-  journal = {Computational Linguistics},
+  journal = {Comput. Linguistics},
   volume = {49},
   number = {4},
   pages = {777--840},
   year = {2023},
   doi = {10.1162/coli_a_00486},
-  url = {https://aclanthology.org/2023.cl-4.2/}
+  note = {doi: \url{10.1162/coli_a_00486}}
 }
 @inproceedings{kamath2020selective,
   author = {Kamath, Amita and Jia, Robin and Liang, Percy},
   title = {Selective Question Answering under Domain Shift},
-  booktitle = {Proceedings of the 58th Annual Meeting of the Association for Computational Linguistics},
+  booktitle = {Proc. 58th Annu. Meeting Assoc. Comput. Linguistics},
   pages = {5684--5696},
   year = {2020},
-  publisher = {Association for Computational Linguistics},
   doi = {10.18653/v1/2020.acl-main.503},
-  url = {https://aclanthology.org/2020.acl-main.503}
+  note = {doi: \url{10.18653/v1/2020.acl-main.503}}
+}
+@article{ji2023leakage,
+  author = {Ji, Yitong and Sun, Aixin and Zhang, Jie and Li, Chenliang},
+  title = {A Critical Study on Data Leakage in Recommender System Offline Evaluation},
+  journal = {ACM Trans. Inf. Syst.},
+  volume = {41},
+  number = {3},
+  pages = {1--27},
+  year = {2023},
+  doi = {10.1145/3569930},
+  note = {doi: \url{10.1145/3569930}}
+}
+@misc{zhang2026context,
+  author = {Zhang, Weizhi and Yang, Wooseong and Cui, Yuxin and Guo, Zhaohui and Hu, Hins and Yang, Liangwei and Zou, Henry Peng and Wang, Qifei and Zeng, Hanqing and Liu, Jiayi and Xia, Yinglong and Yu, Philip S.},
+  title = {Towards User Preference Alignment in {LLM} Recommendation via Explicit Context Feedback},
+  howpublished = {arXiv:2605.29141v1},
+  year = {2026},
+  eprint = {2605.29141},
+  archivePrefix = {arXiv},
+  primaryClass = {cs.IR}
+}
+@inproceedings{kang2018sasrec,
+  author = {Kang, Wang-Cheng and McAuley, Julian},
+  title = {Self-Attentive Sequential Recommendation},
+  booktitle = {Proc. 2018 IEEE Int. Conf. Data Mining (ICDM)},
+  pages = {197--206},
+  year = {2018},
+  doi = {10.1109/ICDM.2018.00035},
+  note = {doi: \url{10.1109/ICDM.2018.00035}}
+}
+@inproceedings{gao2022kuairec,
+  author = {Gao, Chongming and Li, Shijun and Lei, Wenqiang and Chen, Jiawei and Li, Biao and Jiang, Peng and He, Xiangnan and Mao, Jiaxin and Chua, Tat-Seng},
+  title = {{KuaiRec}: A Fully-Observed Dataset and Insights for Evaluating Recommender Systems},
+  booktitle = {Proc. 31st ACM Int. Conf. Inf. Knowl. Manage.},
+  pages = {540--550},
+  year = {2022},
+  doi = {10.1145/3511808.3557220},
+  note = {doi: \url{10.1145/3511808.3557220}}
+}
+@misc{kuairecdocs,
+  author = {{KuaiRec Authors}},
+  title = {{KuaiRec} Official Dataset Documentation},
+  year = {2026},
+  url = {https://github.com/chongminggao/KuaiRec},
+  note = {Accessed 28 September 2026; dataset is originally from 2022}
 }
