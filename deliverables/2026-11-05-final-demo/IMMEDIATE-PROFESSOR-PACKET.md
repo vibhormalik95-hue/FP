@@ -7,8 +7,7 @@ paper is separate work.
 
 ## Transcript acceptance checklist
 
-Source: user-supplied 4 November meeting transcript, message
-`Sentinel_5930d876eac081918acf2f665e470b4f`, supplied at 22:57:15 UTC.
+Source: user-supplied 4 November meeting transcript, supplied at 22:57:15 UTC.
 Speaker 1 is Vibhor; Speaker 2 is the professor. Timestamps below are recording
 offsets. They identify the request, not a new execution or academic approval.
 

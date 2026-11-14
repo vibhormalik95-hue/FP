@@ -1,70 +1,36 @@
-# Current progress and remaining work
+# Application progress and remaining work
 
-## Category definition update, 11 November 2026
+Updated 14 November 2026 (UTC). This page separates published implementation from development evidence. It does not declare the professor's requirements complete.
 
-This successor recognizes the existing counted-list form `all three conditions:` without treating its structural labels as factual numbers. It also asks definition generation to preserve source modality and tense: purpose or capability does not establish an outcome that actually occurred. The instruction applies to each rationale and evidence reason under the exact definition, including its alternatives. It adds no semantic detector, automatic repair, approval or preferred category.
+## Published implementation
 
-The latest v4 one-call attempt returned a primary definition and alternatives. Explicit primary selection worked; human evidence review rejected an unsupported capability-to-actual-use claim. No classification, audit, Apply or Undo followed. This successor has no live observation. Earlier hunger and Lunaria successes are bounded direct Python endpoint examples, not browser acceptance or general semantic accuracy. No recording is included.
+Commit `acbf5895b05cf44c1a11676cbd71b83d2337ada7` publishes the reviewed interface and documentation update on `codex/comp9500-llm-upgrades-20261110`. The interface distinguishes authored fixture data from verified dataset provenance and reports category availability explicitly. The replacement frontend asset and its source are included; two obsolete assets were removed. Seven research-label tests passed in the publication checkout. This is an incremental source release, not a deployment or live-model acceptance result.
 
-The current profile is `current-definition-context-20261111`. Its only model-bound request change from the notes-r3 source is `payload.system`; descriptions, metadata, objectives, actions, inventory, schemas, category membership and audit instructions are unchanged. Both configuration templates remain incomplete with all six execution gates false. No approved runtime configuration is supplied.
+## Evidence for the three control paths
 
+- **Manual category filtering:** a guarded direct-Python check on 14 November used an authored 36-item catalogue. Preview selected items 1 and 7, Apply reduced eligibility to 34, and Undo restored the exact 36-item baseline. Three fixture checks passed. These checks made no model call and did not run a browser or server. The earlier [manual demonstration](../deliverables/2026-11-05-final-demo/README.md) remains a separate dated record.
+- **New categories from language:** the earlier local-model example created “offline practice without account creation” across existing Coding, Design and Language categories, then recorded 8 → 5 → 8 through reviewed Apply and Undo. See the [staged-induction record](../deliverables/2026-11-05-staged-induction/README.md). The current hosted successor has not established the full definition → membership → evidence review → Apply → Undo flow in the evidence reviewed for this update. A new input-binding candidate passed a guarded admission probe with synthetic responses and a blocked fake runner; it is not a real-model success.
+- **Indirect requests:** the [11 November hosted summary](evidence/2026-11-11/HOSTED-TWO-SCENARIO-SUMMARY.md) records a hunger-related request selecting the described pasta, bread and salad items, with direct-Python Apply and Undo changing 8 → 5 → 8. It is a bounded development example, not browser acceptance, general language accuracy, or evidence about personal appetite. Earlier operator-copied examples remain in the [5 November walkthrough](../deliverables/2026-11-05-final-demo/README.md).
 
-This page describes the recent application work as of 11 November 2026. The recent work follows the three directions agreed at the last meeting: manual category controls with measurable effects, new LLM-proposed categories that feed the filter, and natural-language requests that map intended meaning to existing categories or tags. The project also explores fictional item metadata and stronger-model comparisons. The [dated requirement audit](../deliverables/2026-11-05-final-demo/CLAIM-MATRIX.md) records that distinction.
+## Recording preparation
 
-## Manual category controls
+A separate isolated recording fixture now accepts explicitly supplied inference factories while leaving them disabled by default. Source review passed. Guarded checks confirmed that supplied adapters are visible, absent adapters remain unavailable, and invalid factory values are rejected. No inference was invoked in these checks. The fixture is preparation for a real demonstration, not the demonstration itself.
 
-The app can filter by a selected category while leaving the recommender's scores unchanged. The recovered 6 November synthetic HTTP/state record shows Design exclusion reducing 8 items to 5 (31001, 31002 and 31008 removed), reviewed clear restoring 8, Undo of clear returning to 5, and reset restoring 8. The restored full feed was checked for equality. No new model generation occurred. This is not direct Undo of the original exclusion. This checks that the selected control is enforced and can be reversed. It does not show that an LLM is needed or that the resulting recommendations are better.
+The latest runtime changes are developed separately from the published interface snapshot. They must be integrated and checked together before claiming that the published application provides the final hosted workflow. No final video is included in this release.
 
-The earlier A–E benchmark remains available as a separate comparison of item feedback, explanations, category commands and profiles. Its results have not been changed by the recent interface work.
+## Remaining acceptance
 
-## Creating a new category
+1. Complete the actual hosted new-category flow, including source-evidence review, Apply and exact Undo restoration.
+2. Verify the three required controls in the actual demonstration interface, retaining the requests, source items and observed results.
+3. Integrate the accepted runtime with the published interface and rerun the relevant tests and build checks.
+4. Record the verified application and provide the professor with the video and accurate requirement-to-evidence summary.
 
-The model first proposes a category definition. The user reviews it before the model classifies the items. A separate evidence check then examines the source text before the final proposal can be applied.
+A passing offline suite, configured adapter, or published commit does not substitute for these observations. Historical failed calls and their original outcomes remain in the dated evidence and repository history.
 
-The recorded category “offline practice without account creation” crossed the existing Coding, Design and Language categories and was absent from the category registry. Three local model calls produced the development example. Applying the reviewed group changed eligibility from 8 to 5; undo restored 8. See the [category demonstration](../deliverables/2026-11-05-staged-induction/README.md) and [integration record](../deliverables/2026-11-05-induction-integration/README.md).
+## Research results and related work
 
-This is evidence of a new category entering the filter, not a broad test of category quality. A quote can exist in the source and still be irrelevant to the proposed membership. The reviewer must check the meaning, missing information and excluded items, not just whether a quote matches.
+The original A–E comparison, Experiment 1 and revised Experiment 2 remain separate from application-development examples. Their results and limitations have not been changed by interface work. See the [evaluation protocol](evaluation-protocol.md), [Experiment 2 results](ai-reference-e2-results-2026-10-14.md), and [research provenance](academic-use.md).
 
-## Understanding indirect requests
+Fictional-item metadata is a separate extension. A historical hosted Lunaria example completed preview, admission, removal and restoration through direct Python methods; it generated no real video and did not establish trained cold-start recommendation quality. See the [public-safe summary](evidence/2026-11-11/FABLE-LUNARIA-PUBLIC-SAFE-SUMMARY.json).
 
-The professor asked about expressing a cooking-related preference without using the word “cooking”. The student then suggested hunger as an example. The implementation explores this kind of indirect meaning by matching supplied source items into reviewed groups, without rewriting the original category labels.
-
-The request “Hide desk tools that would tie me to a wall socket” did not name Lighting, Stationery, Comfort or Timing. In the recorded example, Claude identified the exclusion request and selected the three records that explicitly required mains power. Battery-powered and manual items remained eligible, along with two items whose power source was unknown.
-
-The application recorded eligibility changing 8 → 5 → 8 → 5 → 8 through apply, clear, undo-clear and undo-original-apply. The original A–E controls, source records and category mappings were preserved. The [5 November walkthrough](../deliverables/2026-11-05-final-demo/README.md) contains the full evidence.
-
-An operator copied the requests and replies between the app and two fresh Claude browser chats with the observed Opus 5.5 Medium selector. This was a real model-assisted example, but not an automatic API integration or a held-out accuracy test. The default launch remains disabled; a separate explicit runner path now has bounded headless evidence, described below.
-
-The historical local-model cooking/hunger request did not produce a successful automatic selection. Later code displays the model's unresolved alternatives and lets the user explicitly confirm a concrete target. That clarification path has offline tests; it does not turn the earlier failed request into a success. See the [clarification change](../deliverables/2026-11-06-clarification-development/README.md) and [confirmed-target change](../deliverables/2026-11-06-confirmed-target-budget/README.md).
-
-## Fictional item metadata
-
-A separate recorded local-model example created fictional Lunaria Pod metadata, which could be reviewed, admitted to a separate feed, removed and restored. It created no real video or factual source record. The separate feed gives every item a neutral score and does not test trained cold-start recommendation quality.
-
-The latest source adds a hosted adapter for this feature. Both hosted app factories reuse their existing provider and shared call allowance. The generation request contains the drafting instruction, fictional brief and schema, without sending the catalogue or falling back to a local model. Independent review passed 92 guarded Python checks, including 3 ASGI checks covering both hosted constructors and the request, session, isolation, lifecycle and error-handling paths. All 7 frontend index checks passed after the build pins were corrected. These checks use authored replies, not real generated output. A later real Claude Code run completed the fictional Lunaria preview/admit/remove/restore lifecycle through the application’s Python methods. It made one logical invocation, targeted and reported Fable5.2, and requested max effort; effective effort was not independently established. Restore replayed the removed record without another model call. The default launcher remains disabled; this run used an explicitly selected runner. This is operator-reviewed headless synthetic evidence, not browser acceptance or trained recommendation evidence. The [public-safe receipt](evidence/2026-11-11/FABLE-LUNARIA-PUBLIC-SAFE-SUMMARY.json) records the limits. Without a configured adapter and with local models disabled, the endpoint still returns HTTP 403 before inference. See [fictional item drafts](synthetic-item-drafts.md).
-
-## Stronger-model comparison
-
-The [saved comparison summary](../deliverables/2026-11-05-final-demo/IMMEDIATE-PROFESSOR-PACKET.md) reports Claude matching 6/6 tasks and 36/36 item dispositions in a standalone six-case batch. The batch contained two proposals and four abstentions. Llama and the later Qwen extension failed strict JSON validation, leaving semantic answers missing; those failures are not a measured zero semantic-accuracy score.
-
-This was a small synthetic comparison with different transports and settings. It was not an automatic app-to-app comparison or a general ranking of models. The original scoring and sealed archives remain unchanged.
-
-## Latest validation and remaining work
-
-The early 11 November category attempt failed with CLI exit 1 before definition or Apply. Its missing failure details remain unknown in the [retained failure record](evidence/2026-11-11/SAFE-FAILURE-SUMMARY.json). A later separate batch proposed “Repaired and kept in use” but stopped for clarification. No membership, evidence audit or Apply occurred, and its missing-description exclusion conflicts with the existing unknown-facts rule. Current code offers explicit unchanged-primary selection followed by separate evidence review, states the existing unknown rule in the definition prompt, and corrects structural numbering without removing factual digits. These changes do not repair or approve that recorded proposal.
-
-In that later batch, the exact request “I'm not hungry, remove all the stuff that makes me hungry.” was interpreted as food preparation. Two calls selected pasta, bread and salad (81001, 81003 and 81006). Scripted reviews and direct Python endpoints recorded Apply/Undo 8→5→8, not browser or HTTP execution. Two undescribed records remain unknown. This supports the reviewed interpretation, not personal appetite truth or general accuracy. The receipts report Fable 5.2 with max effort requested; effective effort is unknown and CLI estimates are not verified billing. See the [two-scenario summary](evidence/2026-11-11/HOSTED-TWO-SCENARIO-SUMMARY.md).
-
-A later manual 36→34→36 check is reported in earlier project summaries but is not independently verified here. It is not used as primary evidence. The latest Windows offline run reported 61 tests and 41 errors because the guard blocked `ctypes.dlopen` during the Windows import of kernel32. No model ran and no guard changed. That broad-suite failure remains separate from the passing cloud suite. A later portable diagnostic subset passed seven tests on Windows, Python 3.14.0, at 02:42:26–27 UTC on 11 November. It tested actual adapter/helper behavior with authored envelopes and an injected callable. Its six guard events were deliberate audit probes, not operations. It does not verify native containment, whole-app behavior or live-provider use. The relocated repository variant passed its focused cloud check but has not been rerun on Windows. See the [portable diagnostic result](evidence/2026-11-11/WINDOWS-PORTABLE-DIAGNOSTIC-SUMMARY.json). No browser acceptance result is claimed. Local model and trained recommender execution remain disabled for these checks.
-
-The current default aggregate passed 176 guarded tests. Runtime/privacy/mocked-Windows checks passed 62 additional identities and integration preflight passed two, for 240 distinct successful Python tests. The historical helper still has eight passes and eight expected failures. The scoped definition context is now displayed beside the exact quotation and reason. All 59 Node checks passed using existing lock-matched cached dependencies; the Vite build reproduced the context patch author's assets exactly. These are offline UI checks, not browser acceptance. Earlier missing-esbuild failures remain retained as historical records. See the [validation guide](../tools/hosted_validation_current/README.md).
-
-## Research limitations
-
-The recorded examples do not establish general reliability for nuanced requests or new categories, improved recommendation quality, or user satisfaction. These are limits on the conclusions, not additional requirements for finishing the current implementation. The historical next-item results and negative language results remain part of the project.
-
-The [hosted configuration guide](hosted-only-configuration.md) and [personal Claude status](../CLAUDE-PERSONAL-CANDIDATE.md) describe these implementation limits. Offline tests and a successful frontend build check software behavior; they do not replace live model or browser evidence. The dated studies, failures and sealed records remain unchanged.
-
-The [current validation guide](../tools/hosted_validation_current/README.md) distinguishes software tests from model evidence. This modality/counting successor has no fresh hosted observation; the preceding v4 attempt reached primary selection but was rejected at evidence review. No demo recording is supplied. The original reports and failed model outputs remain unchanged.
-
-Definition review now shows the full cited field beside each exact quotation and reason, including clarification and resolved-primary review. Context is limited to the validated candidate scope; missing or mismatched context is shown as unavailable. It is a read-only display addition, outside model payloads and sealed proposals. Existing approval and expiry rules are unchanged. This fixes an API/UI context gap; the last headless review already displayed scoped records, so the gap did not cause its rejected model claim.
+The [validation guide](../tools/hosted_validation_current/README.md) and [provider implementation notes](../CLAUDE-PERSONAL-CANDIDATE.md) retain dated technical details. Their older profile and test descriptions are historical unless a newer, explicitly dated result identifies the exact successor. No general model ranking, recommendation-quality improvement or user-satisfaction result is claimed here.
