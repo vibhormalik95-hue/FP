@@ -108,7 +108,7 @@ _SECRET_NAME = re.compile(r'(?i)(api[_-]?key$|secret|passw(or)?d|authorization|b
 _SECRET_VALUE = re.compile(r'(?i)^\s*(sk-[A-Za-z0-9_\-]{8,}|bearer\s+\S{8,})')
 _MASK = re.compile(r'(?i)(bearer\s+)[A-Za-z0-9_\-.=*]{8,}|\b(sk|pk|rk)-[A-Za-z0-9_\-*.]{8,}')
 ENV_NAME = re.compile(r'[A-Za-z_][A-Za-z0-9_]{0,63}')
-MODEL_NAME = re.compile(r'[A-Za-z0-9][A-Za-z0-9_.:/@+\-]{0,199}')
+MODEL_NAME = re.compile(r'[A-Za-z0-9][A-Za-z0-9_.:/@+\-\[\]]{0,199}')
 
 
 def utc():

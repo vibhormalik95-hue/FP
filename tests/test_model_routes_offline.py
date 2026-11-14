@@ -51,6 +51,8 @@ def test_every_built_in_route_validates_and_fills_its_defaults():
     assert ollama['timeout_seconds'] == anthropic['timeout_seconds'] == 600
     relay = model_routes.validate_config({'route': 'relay', 'declared_model': 'x', 'transport_note': 'by hand'})
     assert relay['max_calls'] == 10
+    for name in ('llama3.1:8b', 'qwen/qwen3-4b', 'hf.co/user/repo:Q4_K_M', 'claude-some-model[1m]', 'provider/model@2026-01-01'):
+        assert model_routes.validate_config({**OLLAMA, 'model': name})['model'] == name
     # Validation is stable: a normalised configuration validates to itself.
     for config in (ollama, openai, anthropic, cli, relay):
         assert model_routes.validate_config(config) == config
