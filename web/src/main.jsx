@@ -5,13 +5,14 @@ import SteeringPanel from './SteeringPanel';
 import SemanticPanel from './SemanticPanel';
 import SyntheticDraftPanel from './SyntheticDraftPanel';
 import { createApiClient } from './personalApi';
+import { describeResearchMode } from './researchLabels';
 
 const conditions = {
   A: ['Item feedback', 'Direct feedback on individual items.'],
   B: ['Explanations', 'A + verified signal explanations. Rankings stay the same.'],
-  C: ['Free text', 'Frozen scorer + your latest category instruction. Item feedback does not apply.'],
-  D: ['Editable profile', 'Frozen scorer + your saved category preferences. Item feedback does not apply.'],
-  E: ['All channels', 'Frozen scorer + explanation, instruction and profile. Latest instruction wins conflicts.'],
+  C: ['Free text', 'Baseline scorer + your latest category instruction. Item feedback does not apply.'],
+  D: ['Editable profile', 'Baseline scorer + your saved category preferences. Item feedback does not apply.'],
+  E: ['All channels', 'Baseline scorer + explanation, instruction and profile. Latest instruction wins conflicts.'],
 };
 
 function App({client, personal, onLock}) {
@@ -67,6 +68,8 @@ function App({client, personal, onLock}) {
       setNotice(result.applied ? `Exploratory topic preview: ${result.candidate_matches} catalog items matched source text.` : result.message);
     } catch(e) {setError(e.message);} finally {setBusy(false);}
   }
+  const researchMode = describeResearchMode(status);
+  const conditionDescription = conditions[condition][1].replace(/^Baseline scorer/, researchMode.scorer);
   const shownFeed = view === 'steering' ? reviewedFeed : feed;
   const profile = feed?.profile || {};
   const profileWords = profileText.trim() ? profileText.trim().split(/\s+/).length : 0;
@@ -76,7 +79,7 @@ function App({client, personal, onLock}) {
   return <div className="app-shell">
     <header className="header"><a href="#main" className="brand"><span className="brand-mark">f<span>↗</span></span><span>feed control<span className="brand-sub">RESEARCH LAB</span></span></a><div className="header-right"><span className="research-tag">COMP 9500 · OFFLINE PROTOTYPE</span>{personal ? <button type="button" className="text-button" onClick={onLock}>Lock session</button> : <a href="/docs" target="_blank" rel="noreferrer">API reference ↗</a>}</div></header>
     <main id="main">
-      <section className="intro"><div><p className="eyebrow">YOUR PREFERENCES, MADE VISIBLE</p><h1>A feed you can<br/><em>steer.</em></h1><p className="lede">Explore how explanations, natural-language instructions and an editable profile change a recommendation list.</p></div><div className="intro-note"><span className="big-number">05</span><span>conditions.<br/>One frozen scorer.<br/>Every control visible.</span></div></section>
+      <section className="intro"><div><p className="eyebrow">YOUR PREFERENCES, MADE VISIBLE</p><h1>A feed you can<br/><em>steer.</em></h1><p className="lede">Explore how explanations, natural-language instructions and an editable profile change a recommendation list.</p></div><div className="intro-note"><span className="big-number">05</span><span>interface conditions.<br/>{researchMode.scorer}.<br/>{researchMode.data}.</span></div></section>
       {status && <section className="status-strip" aria-label="Research environment"><span className={`status-chip ${status.data_mode === 'fixture' ? 'fixture' : ''}`}><i/>{status.data_mode === 'fixture' ? 'FIXTURE DATA' : 'PROCESSED DATASET'}</span><span>{status.model_mode}</span><span>{view === 'steering' ? 'Reviewed catalogue controls; model shown in the panel' : backend === 'rule' ? 'Rule parser · diagnostic only' : 'Ollama parser · actual request on submit'}</span><span>{status.items.toLocaleString()} items · {status.users.toLocaleString()} users</span></section>}
       <div className="disclosure">Metadata cards represent item IDs, not playable videos. Categories retain their original opaque IDs. This demonstrator makes no claim about human agency or satisfaction.</div>
       <div className="toolbar"><label className="user-select">Research user<select value={user ?? ''} onChange={e => selectUser(e.target.value)} disabled={busy || !users.length}>{users.map(u => <option key={u.user_id} value={u.user_id}>User {u.user_id} · {u.history_items} history items</option>)}</select></label><div className="view-tabs" aria-label="Display mode"><button className={view === 'feed' ? 'active' : ''} onClick={() => setView('feed')}>Explore feed</button><button className={view === 'compare' ? 'active' : ''} onClick={() => setView('compare')}>Compare A–E</button><button className={view === 'steering' ? 'active' : ''} disabled={!reviewedFeed} onClick={() => {setError(''); setNotice(''); setView('steering');}}>Reviewed topic feed</button></div><button className="text-button" disabled={busy || user === null} onClick={() => act(() => api('reset', {user_id:user}).then(r => {setSteeringReset(n=>n+1);return r;}), 'All controls and item feedback cleared for this user.', true)}>Reset this user ↺</button></div>
@@ -85,7 +88,7 @@ function App({client, personal, onLock}) {
       <div className="workspace">
         <aside className="controls">
           {view !== 'steering' && <>
-          <section className="panel"><div className="section-heading"><span className="step">01</span><h2>Choose a condition</h2></div><div className="conditions">{Object.entries(conditions).map(([key, [label]]) => <button key={key} aria-pressed={condition === key} className={`condition ${condition === key ? 'selected' : ''}`} disabled={busy || user === null} onClick={() => selectCondition(key)}><b>{key}</b><span>{label}</span><span className="radio-dot"/></button>)}</div><p className="help">{conditions[condition][1]}</p></section>
+          <section className="panel"><div className="section-heading"><span className="step">01</span><h2>Choose a condition</h2></div><div className="conditions">{Object.entries(conditions).map(([key, [label]]) => <button key={key} aria-pressed={condition === key} className={`condition ${condition === key ? 'selected' : ''}`} disabled={busy || user === null} onClick={() => selectCondition(key)}><b>{key}</b><span>{label}</span><span className="radio-dot"/></button>)}</div><p className="help">{conditionDescription}</p></section>
           <section className="panel"><div className="section-heading"><span className="step">02</span><h2>Original category control</h2></div><label className="field-label" htmlFor="parser">Interpretation backend</label><select id="parser" value={backend} disabled={busy} onChange={e => {setBackend(e.target.value); setNotice('');}}><option value="rule">Rule parser (diagnostic)</option>{status?.local_models_allowed!==false&&<option value="ollama">Ollama (local LLM)</option>}</select><p className="help">{backend === 'rule' ? 'Original A–E: one explicit existing category_N per instruction. This diagnostic parser is not an LLM.' : `Uses ${status?.ollama_model || 'the configured model'}. Original A–E accepts one explicit existing category_N. Backend errors are shown; no silent fallback.`}</p><form onSubmit={e => {e.preventDefault(); act(() => api('control', {user_id:user, text:control, backend}), r => r.applied ? `${r.command.operation} ${r.command.category || ''} applied via ${r.command.source}.` : 'Please clarify: name one existing category_N and ask for more, less, mute or reset. For named topics, use Reviewed topic feed.');}}><label className="field-label" htmlFor="control">What would you like to change?</label><textarea id="control" aria-describedby="control-shortcut" onKeyDown={e => {if ((e.ctrlKey || e.metaKey) && e.key === 'Enter' && !e.nativeEvent.isComposing) {e.preventDefault(); if (!busy && control.trim() && user !== null) e.currentTarget.form.requestSubmit();}}} maxLength={500} value={control} onChange={e => setControl(e.target.value)} placeholder={`Show me more ${cats[0] || 'category_0'}`} rows={3}/><div className="suggestions"><button type="button" onClick={() => setControl(`Show me more ${cats[0]}`)} disabled={!cats.length}>More {cats[0]}</button><button type="button" onClick={() => setControl(`Mute ${cats[1]}`)} disabled={cats.length < 2}>Mute {cats[1]}</button></div><button className="primary" disabled={busy || !control.trim() || user === null}>Apply instruction <span>↗</span></button></form><p className="help">Used by C and E. <span id="control-shortcut">Ctrl/Cmd+Enter applies the instruction.</span> One existing category_N per instruction; the latest replaces the previous one. Less/fewer means hard mute. New names and graded decreases belong in Reviewed topic feed.</p><button type="button" className="secondary" disabled={!reviewedFeed || busy} onClick={() => {setError(''); setNotice(''); setView('steering');}}>Use named topics and graded controls</button></section>
           <section className="panel"><div className="section-heading"><span className="step">03</span><h2>Your editable profile</h2></div><form onSubmit={e => {e.preventDefault(); act(() => api('profile/text', {user_id:user, text:profileText, backend}), r => r.applied ? `Profile saved via ${r.source}.` : 'Profile was ambiguous. State explicit category preferences and try again.');}}><label className="field-label" htmlFor="profile">History context + your current preferences</label><textarea id="profile" maxLength={2000} rows={4} value={profileText} onChange={e => setProfileText(e.target.value)} placeholder={`More ${cats[0] || 'category_0'}. Mute ${cats[1] || 'category_1'}.`}/><div className="word-count">{profileWords}/200 words · Used by D and E</div><button className="secondary" disabled={busy || !profileText.trim() || profileWords > 200 || user === null}>Save profile</button></form><div className="saved-profile"><span className="field-label">Parsed current preferences</span>{Object.keys(profile).length ? Object.entries(profile).map(([c,v]) => <div className="preference" key={c}><span><i style={{background:color(c)}}/>{c}</span><b>{v < 0 ? 'Muted' : `+${v.toFixed(2)}`}</b><button aria-label={`Remove ${c} preference`} disabled={busy} onClick={() => {const next={...profile}; delete next[c]; act(() => api('profile', {user_id:user,profile:next}, 'PUT'), `Removed ${c} from profile.`, true);}}>×</button></div>) : <p className="help">No saved category preferences.</p>}</div></section>
           </>}
@@ -95,7 +98,7 @@ function App({client, personal, onLock}) {
           <details hidden={view === 'steering'}><summary>Earlier single-topic diagnostic</summary>
           <section className="panel" aria-label="Exploratory semantic topic control">
             <div className="section-heading"><span className="step">04</span><h2>Explore a new topic</h2></div>
-            <p className="help">Optional source-text preview outside the frozen A-E study. It uses the official KuaiRec caption sidecar when configured. No new video or ground-truth category is created.</p>
+            <p className="help">Optional source-text preview outside the frozen A-E study. It uses a configured caption sidecar; its origin is not verified here. No new video or ground-truth category is created.</p>
             <p className="help">{status?.semantic_topic}</p>
             <form onSubmit={e => {e.preventDefault(); previewTopic();}}>
               <label className="field-label" htmlFor="topic-backend">Interpretation</label>
@@ -116,7 +119,7 @@ function App({client, personal, onLock}) {
               <textarea id="topic-text" maxLength={500} rows={3} value={topicText}
                 onChange={e => setTopicText(e.target.value)}
                 placeholder={topicBackend === 'manual' ? '美食' : 'Show me more cooking videos'}/>
-              <button className="secondary" disabled={busy || !topicText.trim() || user === null || !status?.semantic_topic?.startsWith('Official')}>Preview topic feed</button>
+              <button className="secondary" disabled={busy || !topicText.trim() || user === null || !status?.semantic_topic_available}>Preview topic feed</button>
             </form>
             {topicResult?.applied && <div className="saved-profile" role="status">
               <strong>{topicResult.command.operation} {topicResult.command.topic}</strong>

@@ -244,7 +244,7 @@ def install_semantic_routes(app, demo, *, infer_factory=None, category_infer_fac
     def state_for(token, user):
         state = demo.user_state(token, user)
         if demo.topic_index is None:
-            raise HTTPException(503, "Official source metadata is required")
+            raise HTTPException(503, "Caption sidecar metadata is required")
         for key, value in (("semantic_groups", []), ("semantic_revision", 0),
                            ("semantic_pending", None), ("semantic_history", []),
                            ("semantic_definition_pending", None)):

@@ -1,4 +1,4 @@
-"""Optional, exploratory topic control grounded in KuaiRec item text.
+"""Optional, exploratory topic control grounded in supplied item text.
 
 This module is separate from the frozen category-ID experiments. A topic is an
 ad-hoc set of candidate items whose supplied text contains validated terms; it
@@ -91,7 +91,7 @@ def load_topic_index(path: str | Path, candidate_ids: set[int]) -> dict:
             items[item_id] = {"fields": fields, "search_text": " ".join(fields.values()).casefold()}
     if set(items) != candidate_ids:
         raise ValueError(f"Caption sidecar covers {len(items)} of {len(candidate_ids)} candidate items")
-    return {"items": items, "sha256": source_hash, "source": SOURCE_URL,
+    return {"items": items, "sha256": source_hash, "source": "Configured caption sidecar; origin not verified",
             "candidate_items": len(candidate_ids),
             "ignored_non_item_rows": ignored_non_item_rows,
             "items_with_caption": sum(bool(item["fields"].get("caption")) for item in items.values())}
