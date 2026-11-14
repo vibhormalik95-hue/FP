@@ -12,7 +12,7 @@ The recent application work covers three controls:
 - **New categories from natural language:** review a proposed definition, item membership and supporting source evidence before applying the category to the filter.
 - **Indirect requests:** translate a preference that does not name an existing category into a reviewable selection of source items.
 
-The [app guide](docs/app.md) explains the workflow. The [code walkthrough](docs/current-code-walkthrough.md) and [requirement worksheet](docs/requirement-worksheet-2026-11-11.md) connect requirements to implementation and evidence.
+Start with the [bundled demonstration commands](docs/app.md#start-the-bundled-demonstration). The [app guide](docs/app.md) explains the workflow. The [code walkthrough](docs/current-code-walkthrough.md) and [requirement worksheet](docs/requirement-worksheet-2026-11-11.md) connect requirements to implementation and evidence.
 
 Recorded development examples establish particular behaviors, not general language accuracy or improved recommendation quality. Some examples used operator-copied model replies or direct Python calls rather than the complete browser workflow. End-to-end acceptance of the current hosted new-category flow remains unfinished in the evidence reviewed for this overview. See the explicitly dated [progress record](docs/current-progress.md) and [validation guide](tools/hosted_validation_current/README.md) for successful examples, retained failures and remaining checks. A configured connector or passing offline test is not a substitute for a successful application run.
 

@@ -4,7 +4,43 @@ Feed Control Lab is a React/FastAPI research app for changing a recommendation f
 
 The recent work adds manual category selection, model-proposed categories and indirect language requests alongside the original A–E comparison. [Current progress](current-progress.md) separates observed examples from untested behavior.
 
-**Current availability:** the default personal Claude launch is disabled; an explicitly selected runner has bounded headless evidence. Local models and the local recommender are not authorized for the current personal configuration. The local startup instructions later on this page are historical reproduction instructions. See [hosted configuration](hosted-only-configuration.md) and [personal Claude status](../CLAUDE-PERSONAL-CANDIDATE.md).
+## Start the bundled demonstration
+
+Run from the repository root. Use a Python 3.11 or newer interpreter supported by the package dependencies. The commands below use an isolated `.venv-demo` and call its interpreter directly; no activation or PowerShell execution-policy change is needed. If that environment already contains this project's dependencies, skip creation and installation.
+
+**Windows PowerShell** (example with Python 3.12 already installed):
+
+```powershell
+py -3.12 -m venv .venv-demo
+.\.venv-demo\Scripts\python.exe -m pip install -e .
+.\.venv-demo\Scripts\python.exe scripts/quickstart.py check
+.\.venv-demo\Scripts\python.exe scripts/run_demo.py --scenario category --provider manual --port 8765
+```
+
+**macOS Terminal** (with a suitable `python3` installed):
+
+```sh
+python3 -m venv .venv-demo
+./.venv-demo/bin/python -m pip install -e .
+./.venv-demo/bin/python scripts/quickstart.py check
+./.venv-demo/bin/python scripts/run_demo.py --scenario category --provider manual --port 8765
+```
+
+Installation uses the dependencies declared in `pyproject.toml` and needs package-index access. It can install PyTorch as a project dependency; these demo commands do not train or load the research recommender. This is a setup procedure, not a claim that a fresh installation or macOS execution has been verified. Record the installed versions for your run.
+
+Open <http://127.0.0.1:8765> in Opera or another browser. Select **Reviewed topic feed**, then **Experimental semantic groups**. The `manual` provider offers only the manual category control and makes no model call. Stop this server with Ctrl+C in its terminal before starting another one on the same port.
+
+The check command prints the source fingerprint and installed dependency versions and checks that the built interface files exist. A successful check is not a browser test or proof of model access. If the check reports missing dependencies, complete the installation above in the same environment. The committed interface can be used without rebuilding; frontend source changes require a new build.
+
+To learn the other screens with explicitly authored replies, stop the manual server and run:
+
+```powershell
+.\.venv-demo\Scripts\python.exe scripts/quickstart.py rehearse --scenario category
+```
+
+On macOS, use `./.venv-demo/bin/python scripts/quickstart.py rehearse --scenario category` instead. Use `--scenario hunger` for the indirect-request rehearsal. Rehearsal is not model inference. Both bundled scenarios use eight invented items and a diagnostic scorer, not the original trained recommender or a recommendation-quality experiment.
+
+The quick-start also implements `live --scenario category --operator manual` for file-relayed model responses and `live --scenario category --operator cli` for a locally installed Claude Code CLI. These routes require an actual model/operator setup; shipped code does not establish that it works on a particular computer. The `manual` operator is different from the no-model `manual` provider above. Real Windows CLI acceptance remains unverified in the current progress record. The separate `personal-cli` provider uses the reviewed configuration and validation driver; it is not enabled by the commands above. See [current progress](current-progress.md), [hosted configuration](hosted-only-configuration.md) and [personal Claude status](../CLAUDE-PERSONAL-CANDIDATE.md).
 
 ## The recent controls
 
