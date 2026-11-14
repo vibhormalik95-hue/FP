@@ -338,7 +338,7 @@ def test_another_adapter_needs_one_registration_and_no_change_elsewhere():
 
 def answers(*values):
     queue = list(values)
-    return lambda prompt='': queue.pop(0) if queue else ''
+    return lambda prompt='': queue.pop(0)
 
 
 def test_the_wizard_builds_each_kind_of_route_from_numbered_choices():
@@ -349,9 +349,9 @@ def test_the_wizard_builds_each_kind_of_route_from_numbered_choices():
     listed = model_route.wizard(answers('3', '2', '2'), quiet, {}, lambda config, key=None: ['first-model', 'second-model'])
     assert listed == {'route': 'openai-compatible', 'preset': 'lm-studio', 'base_url': 'http://127.0.0.1:1234/v1',
                       'model': 'second-model'}
-    hosted = model_route.wizard(answers('2', '2', '', 'claude-some-model'), quiet, {}, no_models)
+    hosted = model_route.wizard(answers('2', '2', '', 'claude-some-model', ''), quiet, {}, no_models)
     assert hosted == {'route': 'anthropic', 'api_key_env': 'ANTHROPIC_API_KEY', 'model': 'claude-some-model'}
-    openai = model_route.wizard(answers('2', '1', 'MY_OPENAI_KEY', '1'), quiet, {'MY_OPENAI_KEY': KEY},
+    openai = model_route.wizard(answers('2', '1', 'MY_OPENAI_KEY', 'y', '1'), quiet, {'MY_OPENAI_KEY': KEY},
                                 lambda config, key=None: ['listed-with-key'] if key == KEY else [])
     assert openai == {'route': 'openai-compatible', 'preset': 'openai', 'api_key_env': 'MY_OPENAI_KEY', 'model': 'listed-with-key'}
     claude = model_route.wizard(answers('1', '1', '', 'claude-some-model', 'high'), quiet, {}, no_models)

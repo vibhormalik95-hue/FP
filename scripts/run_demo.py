@@ -355,10 +355,22 @@ def main(argv=None):
     app.state.source_fingerprint = summary['source_fingerprint'] = source_fingerprint()
     import uvicorn
     print(json.dumps({'serving': f'http://127.0.0.1:{port}', **summary}, indent=2, default=str), flush=True)
+    from feedctrl import model_routes
+
+    class RouteServer(uvicorn.Server):
+        def handle_exit(self, sig, frame):
+            # Stop admission before Uvicorn waits for outstanding requests.
+            model_routes.request_stop()
+            super().handle_exit(sig, frame)
+
+    server = RouteServer(uvicorn.Config(
+        app, host='127.0.0.1', port=port, proxy_headers=False, server_header=False,
+        log_level='warning', timeout_graceful_shutdown=5))
     try:
-        uvicorn.run(app, host='127.0.0.1', port=port, proxy_headers=False, server_header=False,
-                    log_level='warning')
+        server.run()
     finally:
+        model_routes.request_stop()
+        model_routes.cancel_running()
         finish()
 
 

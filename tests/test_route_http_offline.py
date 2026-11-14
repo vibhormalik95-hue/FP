@@ -36,7 +36,7 @@ def openai_config(server, **settings):
 
 
 def anthropic_config(server, **settings):
-    return {'route': 'anthropic', 'base_url': server.url, 'model': MODEL, **settings}
+    return {'route': 'anthropic', 'api_key_env': 'ANTHROPIC_API_KEY', 'base_url': server.url, 'model': MODEL, **settings}
 
 
 def call(config, *, api_key=None, record_dir=None, payload=PAYLOAD, schema=SCHEMA):

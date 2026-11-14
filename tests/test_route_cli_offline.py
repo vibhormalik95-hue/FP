@@ -77,7 +77,7 @@ def test_one_print_mode_call_with_the_request_on_standard_input_and_a_small_flag
     names = set(seen[0]['environment_names'])
     assert 'ANTHROPIC_API_KEY' not in names and 'OPENAI_API_KEY' not in names and 'STANDIN_REPLIES' in names
     # The shell of the launcher file adds a few names of its own.
-    assert 'PATH' in names and names <= set(route_cli.ENV_ALLOW) | set(PASSED) | {'PWD', 'OLDPWD', 'SHLVL', '_'}
+    assert 'PATH' in names and names <= set(route_cli.ENV_ALLOW) | set(route_cli.ENV_SET) | set(PASSED) | {'PWD', 'OLDPWD', 'SHLVL', '_'}
     assert seen[0]['cwd_entries'] == [] and Path(seen[0]['cwd']).resolve() != ROOT and not Path(seen[0]['cwd']).exists()
     assert identity['backend'] == 'local-cli-claude-code' and identity['model'] == MODEL and identity['live_model'] is True
     receipt = receipts[0]

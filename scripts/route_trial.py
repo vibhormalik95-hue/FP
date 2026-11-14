@@ -337,18 +337,23 @@ def send(client, url, headers, body):
     Ctrl+C reaches this program at once, and the finished cases can be recorded.
     """
     box = {}
+    done = threading.Event()
 
     def work():
         try:
             box['response'] = client.post(url, headers=headers, json=body)
         except BaseException as problem:  # handed to the caller below
             box['problem'] = problem
+        finally:
+            done.set()
 
     thread = threading.Thread(target=work, daemon=True, name='route-trial-request')
     thread.start()
     try:
-        while thread.is_alive():
-            thread.join(0.2)
+        # An interrupted Thread.join can mark a still-running thread stopped
+        # on CPython. Wait on explicit completion instead.
+        while not done.wait(0.2):
+            pass
     except KeyboardInterrupt:
         _IN_FLIGHT.append(thread)
         raise
