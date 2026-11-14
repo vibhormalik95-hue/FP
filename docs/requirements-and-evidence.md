@@ -168,17 +168,19 @@ Software checks with authored replies and stand-ins. They are not model evidence
 | Browser, authored replies, scenario `category` | `node tests/browser/demo_flows.cjs --scenario category --flows manual,category` | 29 of 29 assertions |
 | Browser, authored replies, scenario `hunger` | `node tests/browser/demo_flows.cjs --scenario hunger --flows manual,indirect` | 27 of 27 assertions |
 
-**Final revision.**
+**Integrated revision `0efeee1faf0474048715582103c04e26510acd89`, checked 14 November 2026 (UTC).**
+
+These checks cover the isolated Linux integration candidate. They do not establish Windows, browser or real-provider acceptance.
 
 | Check | Command | Result |
 | --- | --- | --- |
-| Python tests | `python -m pytest -q -p no:cacheprovider` | Not yet run on the integrated final revision |
+| Python tests | `python -m pytest -q -p no:cacheprovider` | 1,601 passed; 530 subtests passed; 2 skipped (Torch unavailable; private parser banks absent); 1 warning |
 | Guarded checks | `python tools/hosted_validation_current/run_guarded.py .` | Not yet run on the integrated final revision |
-| Interface logic | `node --test "web/tests/*.mjs"` | Not yet run on the integrated final revision |
+| Interface logic | `node --test "web/tests/*.mjs"` | 102 passed |
 | Browser, authored replies, scenarios `tags`, `category`, `hunger` | `node tests/browser/demo_flows.cjs --scenario NAME` | Not yet run on the integrated final revision |
 | Source fingerprint | `python scripts/run_demo.py --fingerprint` | Not yet recorded for the integrated final revision. |
 
-No final integrated-build environment or results are established here.
+The candidate also passed its production frontend build, UI pin check and 497 source-manifest hashes. Independent review reproduced 204 focused Python checks and 102 interface checks. The full run is software validation, not model evidence. The browser launch failed at a host socket-permission restriction; no integrated browser run is claimed.
 
 ## Defects that real runs found, corrected on 13 November
 
