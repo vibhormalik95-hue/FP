@@ -42,7 +42,7 @@ Only items in the evidence scope change. Other items with the same category, tag
 
 Nothing has changed yet. The feed below stays as it is until you approve.
 
-Approve before 12:10:05 PM. After that time the server no longer accepts this review.
+Approve before 1:10:56 PM. After that time the server no longer accepts this review.
 
 Approve this exact item set and apply
 Discard this review and apply nothing

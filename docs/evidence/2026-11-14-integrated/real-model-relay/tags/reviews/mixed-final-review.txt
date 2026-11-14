@@ -8,7 +8,7 @@ Your request: “Show me more music videos, and remove anything about food.”
 
 Model output (not verified)
 
-Reason that the model gave: The request states two separate preferences with no negation, quota, time condition or exception. 'Show me more music videos' maps to a standard boost of the music terms. 'remove anything about food' maps to an exclusion of the cooking and food terms. The two spans do not overlap and the two term sets are disjoint. Terms that only weakly suggest the preferences (live, practice, night market) are left out.
+Reason that the model gave: The request states two separate preferences with no negation, metaphor or open scope. 'Show me more music videos' is a boost over the music terms; 'more' without an intensity word maps to standard strength. 'remove anything about food' is an explicit removal over the food and cooking terms. Weakly related terms such as the tags 'live', 'practice' and 'night market' are left out because the spans do not clearly cover them. The two term sets are disjoint.
 
 Show more: category "Music", category "Guitar", category "Live sessi... [5705b2]
 
@@ -16,7 +16,7 @@ Direction and strength, read from your request by the model: Show more (standard
 
 Part of your request that names the subject: “Show me more music videos”.
 
-Reason that the model gave for this control: Music videos are music content. The Music category and its subcategories Guitar and Live sessions, plus the instrument tags guitar and piano, directly express music. 'More' without an intensifier maps to standard strength.
+Reason that the model gave for this control: The span asks for more music content. The Music category and its subcategories Guitar and Live sessions, and the instrument tags guitar and piano, are music terms.
 
 Existing names that the model chose: category "Music"; category (level 2) "Guitar"; category (level 2) "Live sessions"; tag "guitar"; tag "piano".
 
@@ -26,7 +26,7 @@ Direction and strength, read from your request by the model: Remove from the fee
 
 Part of your request that names the subject: “remove anything about food”.
 
-Reason that the model gave for this control: 'Remove' requests removal. Food is directly expressed by the Cooking category, its subcategories Baking and Home recipes, and the food tags baking, bread, dinner, recipe, salad and street food.
+Reason that the model gave for this control: The span asks to remove all food content. Cooking, Baking and Home recipes are food categories, and baking, bread, dinner, recipe, salad and street food are food tags.
 
 Existing names that the model chose: category "Cooking"; category (level 2) "Baking"; category (level 2) "Home recipes"; tag "baking"; tag "bread"; tag "dinner"; tag "recipe"; tag "salad"; tag "street food".
 
@@ -90,7 +90,7 @@ Only items in the evidence scope change. Other items with the same category, tag
 
 Nothing has changed yet. The feed below stays as it is until you approve.
 
-Approve before 12:13:05 PM. After that time the server no longer accepts this review.
+Approve before 1:13:50 PM. After that time the server no longer accepts this review.
 
 Approve this exact item set and apply
 Discard this review and apply nothing

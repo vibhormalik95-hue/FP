@@ -8,9 +8,9 @@
     "Each case ran one time. Nothing was approved and nothing was applied."
   ],
   "scenario": "tags",
-  "started_utc": "2026-11-14T19:14:35+00:00",
-  "finished_utc": "2026-11-14T19:14:35+00:00",
-  "source_fingerprint": "24d0a8246edc2f0bc261e163795da55ee24ce2b364a566b8fa2edc603c146cd3",
+  "started_utc": "2026-11-14T20:05:20+00:00",
+  "finished_utc": "2026-11-14T20:05:20+00:00",
+  "source_fingerprint": "22ba794e2091685fa879dcc43b68233dae1963fa4231c38dd73a36f13639068a",
   "provider": {
     "kind": "scripted",
     "identity": {
@@ -61,7 +61,7 @@
       ],
       "http_status": 200,
       "model_calls": 1,
-      "seconds": 0.02,
+      "seconds": 0.015,
       "outcome": "review",
       "reason": null,
       "controls": [
@@ -243,7 +243,7 @@
           "request_sha256": "aa9425615212ddb92a86a4d7a51ef54fd5b33a193ad53af9a0bea0fe8cf7dbbb",
           "schema_sha256": "c17ffdc323270f920ba024c26cc4976e9218fd921434497083e53296935ccf3e",
           "answered": true,
-          "utc": "2026-11-14T19:14:35+00:00"
+          "utc": "2026-11-14T20:05:20+00:00"
         }
       ],
       "authored": {
@@ -294,7 +294,7 @@
       ],
       "http_status": 200,
       "model_calls": 1,
-      "seconds": 0.024,
+      "seconds": 0.014,
       "outcome": "review",
       "reason": null,
       "controls": [
@@ -457,7 +457,7 @@
           "request_sha256": "ed0511c27efa0c4f88024f64115d9c55af08759739467424d2d973e55ca21ef8",
           "schema_sha256": "c17ffdc323270f920ba024c26cc4976e9218fd921434497083e53296935ccf3e",
           "answered": true,
-          "utc": "2026-11-14T19:14:35+00:00"
+          "utc": "2026-11-14T20:05:20+00:00"
         }
       ],
       "authored": {
@@ -504,7 +504,7 @@
       ],
       "http_status": 200,
       "model_calls": 1,
-      "seconds": 0.023,
+      "seconds": 0.015,
       "outcome": "review",
       "reason": null,
       "controls": [
@@ -730,7 +730,7 @@
           "request_sha256": "0b0c222e31f5fae0c3ed4fd3293c28de7342c16b6dba7cdaf1e56b57182df08c",
           "schema_sha256": "c17ffdc323270f920ba024c26cc4976e9218fd921434497083e53296935ccf3e",
           "answered": true,
-          "utc": "2026-11-14T19:14:35+00:00"
+          "utc": "2026-11-14T20:05:20+00:00"
         }
       ],
       "authored": {
@@ -791,7 +791,7 @@
       ],
       "http_status": 200,
       "model_calls": 1,
-      "seconds": 0.016,
+      "seconds": 0.013,
       "outcome": "clarify",
       "reason": "Semantic scope or negation has competing interpretations",
       "controls": [],
@@ -864,7 +864,7 @@
           "request_sha256": "4fb72daadd19b9efbab8bcb346e1d85a613d29473eba72cdf1c0438aedeff8e0",
           "schema_sha256": "c17ffdc323270f920ba024c26cc4976e9218fd921434497083e53296935ccf3e",
           "answered": true,
-          "utc": "2026-11-14T19:14:35+00:00"
+          "utc": "2026-11-14T20:05:20+00:00"
         }
       ],
       "authored": {
@@ -899,7 +899,7 @@
       ],
       "http_status": 200,
       "model_calls": 1,
-      "seconds": 0.02,
+      "seconds": 0.013,
       "outcome": "unsupported",
       "reason": "Authored rehearsal reply, not model output. A limit for each day is a quota. The controls can increase, decrease or exclude whole terms. They cannot count items or use the date.",
       "controls": [],
@@ -959,7 +959,7 @@
           "request_sha256": "78d59e9a6be8c7c9eac101383fe155165f0ec52db0903976b66110b8086de8d8",
           "schema_sha256": "c17ffdc323270f920ba024c26cc4976e9218fd921434497083e53296935ccf3e",
           "answered": true,
-          "utc": "2026-11-14T19:14:35+00:00"
+          "utc": "2026-11-14T20:05:20+00:00"
         }
       ],
       "authored": {
@@ -994,7 +994,7 @@
       ],
       "http_status": 200,
       "model_calls": 0,
-      "seconds": 0.017,
+      "seconds": 0.012,
       "outcome": "clarify",
       "reason": "The request matches the negated-command pattern (for example \"do not hide ...\"). The application does not guess what a negated control means. Write a positive instruction, for example \"show more ...\", \"show less ...\" or \"remove ...\", and send it again.",
       "controls": [],
@@ -1118,7 +1118,7 @@
           "request_sha256": "84c371751d1579f645813660fd7a7d8d896c7b37e8838b64a9c000d512ea0bfd",
           "schema_sha256": "c17ffdc323270f920ba024c26cc4976e9218fd921434497083e53296935ccf3e",
           "answered": true,
-          "utc": "2026-11-14T19:14:35+00:00"
+          "utc": "2026-11-14T20:05:20+00:00"
         }
       ],
       "authored": {
@@ -1153,7 +1153,7 @@
       ],
       "http_status": 200,
       "model_calls": 2,
-      "seconds": 0.016,
+      "seconds": 0.018,
       "outcome": "review",
       "reason": null,
       "controls": [
@@ -1228,14 +1228,14 @@
           "request_sha256": "5baa3e88ac12d241b79587a715037757bfa73e3f47dd9634381e1c99ad49aeb4",
           "schema_sha256": "507fd5c22672c98068a7b4dd36ae2dc2ba1c667ad8ca4dba2aa958bcd1b4f8cf",
           "answered": true,
-          "utc": "2026-11-14T19:14:35+00:00"
+          "utc": "2026-11-14T20:05:20+00:00"
         },
         {
           "ordinal": 8,
           "request_sha256": "eca96702a9e3fefbb7f719cfac7502358bc635d87c796d387eefd14ee3ee5d30",
           "schema_sha256": "83b0904d7080ec852d2c6177c3671e69f2263c8939df770c2d2cbe50ae9388a9",
           "answered": true,
-          "utc": "2026-11-14T19:14:35+00:00"
+          "utc": "2026-11-14T20:05:20+00:00"
         }
       ],
       "authored": {
@@ -1280,7 +1280,7 @@
       ],
       "http_status": 200,
       "model_calls": 1,
-      "seconds": 0.02,
+      "seconds": 0.016,
       "outcome": "draft_ready",
       "reason": null,
       "controls": [],
@@ -1318,7 +1318,7 @@
           "request_sha256": "15e8afc0a636b4b644e7966b676fdcd9a6b3edc345cbc0018e8487aea63abdbc",
           "schema_sha256": "f7ae795a25341b338d9ac52d9b879e410dd66e3e3535a2be1c69a194799b568e",
           "answered": true,
-          "utc": "2026-11-14T19:14:35+00:00"
+          "utc": "2026-11-14T20:05:20+00:00"
         }
       ],
       "authored": {

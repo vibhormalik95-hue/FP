@@ -1,6 +1,6 @@
 {
   "kind": "browser run of the served application",
-  "started_utc": "2026-11-14T19:05:03.825Z",
+  "started_utc": "2026-11-14T20:06:06.565Z",
   "base": "http://127.0.0.1:8873",
   "scenario": "hunger",
   "flows": [
@@ -9,7 +9,7 @@
   ],
   "review_mode": "wait",
   "reviewer": "AI operator: a Claude Opus sub-agent of the Cowork lead session; not a person",
-  "source_fingerprint": "24d0a8246edc2f0bc261e163795da55ee24ce2b364a566b8fa2edc603c146cd3",
+  "source_fingerprint": "22ba794e2091685fa879dcc43b68233dae1963fa4231c38dd73a36f13639068a",
   "status": {
     "data_mode": "fixture",
     "source": "synthetic://friday-historical-hunger-continuation-20261110",
@@ -30,7 +30,7 @@
       "label": "Reviewed indirect request"
     },
     "scenario": "hunger",
-    "source_fingerprint": "24d0a8246edc2f0bc261e163795da55ee24ce2b364a566b8fa2edc603c146cd3",
+    "source_fingerprint": "22ba794e2091685fa879dcc43b68233dae1963fa4231c38dd73a36f13639068a",
     "ollama_status": "Disabled by hosted-only application policy.",
     "research_note": "Synthetic category controls measure offline behavior; this demo does not establish human agency or satisfaction.",
     "category_note": "Opaque dataset category IDs; no invented topic names.",
@@ -44,7 +44,7 @@
       "name": "session established",
       "passed": true,
       "detail": null,
-      "utc": "2026-11-14T19:05:05.009Z"
+      "utc": "2026-11-14T20:06:07.545Z"
     },
     {
       "name": "automatic review is used only when no model is connected",
@@ -53,13 +53,13 @@
         "review_mode": "wait",
         "provider": "operator-relay-file-queue"
       },
-      "utc": "2026-11-14T19:05:05.012Z"
+      "utc": "2026-11-14T20:06:07.546Z"
     },
     {
       "name": "the language view names what it is and makes no accuracy claim",
       "passed": true,
       "detail": null,
-      "utc": "2026-11-14T19:05:05.078Z"
+      "utc": "2026-11-14T20:06:07.604Z"
     },
     {
       "name": "manual: starts with no applied control",
@@ -67,13 +67,13 @@
       "detail": {
         "eligible": 8
       },
-      "utc": "2026-11-14T19:05:13.472Z"
+      "utc": "2026-11-14T20:06:15.914Z"
     },
     {
       "name": "manual: the stage line marks the interpretation stage as not used",
       "passed": true,
       "detail": null,
-      "utc": "2026-11-14T19:05:13.556Z"
+      "utc": "2026-11-14T20:06:15.990Z"
     },
     {
       "name": "manual: review appears",
@@ -81,7 +81,7 @@
       "detail": {
         "http": 200
       },
-      "utc": "2026-11-14T19:05:16.274Z"
+      "utc": "2026-11-14T20:06:18.881Z"
     },
     {
       "name": "manual: the server reported no model call for this review",
@@ -89,13 +89,13 @@
       "detail": {
         "model_calls": 0
       },
-      "utc": "2026-11-14T19:05:16.277Z"
+      "utc": "2026-11-14T20:06:18.883Z"
     },
     {
       "name": "manual: the first block is \"Your selection\", says that no model is used, and no model block exists",
       "passed": true,
       "detail": null,
-      "utc": "2026-11-14T19:05:16.288Z"
+      "utc": "2026-11-14T20:06:18.893Z"
     },
     {
       "name": "manual: the page moves the focus to the heading of the review and shows it in the window",
@@ -105,7 +105,7 @@
         "text": "Proposed change: Manual: Repair",
         "in_view": true
       },
-      "utc": "2026-11-14T19:05:16.513Z"
+      "utc": "2026-11-14T20:06:19.219Z"
     },
     {
       "name": "manual: the preview left the applied groups, the revision and the applied feed unchanged",
@@ -115,13 +115,13 @@
         "revision": 0,
         "eligible": 8
       },
-      "utc": "2026-11-14T19:05:16.524Z"
+      "utc": "2026-11-14T20:06:19.235Z"
     },
     {
       "name": "manual: the preview left the conditions A to E, the topic tool and the fictional items unchanged",
       "passed": true,
       "detail": null,
-      "utc": "2026-11-14T19:05:16.542Z"
+      "utc": "2026-11-14T20:06:19.270Z"
     },
     {
       "name": "manual: page still shows the starting items during preview",
@@ -138,7 +138,7 @@
           81008
         ]
       },
-      "utc": "2026-11-14T19:05:16.576Z"
+      "utc": "2026-11-14T20:06:19.304Z"
     },
     {
       "name": "manual: the review names at least one item that would change",
@@ -157,7 +157,7 @@
           }
         ]
       },
-      "utc": "2026-11-14T19:05:16.580Z"
+      "utc": "2026-11-14T20:06:19.308Z"
     },
     {
       "name": "manual: the review has three separate blocks (Your selection, application checks, decision) and says that nothing is applied",
@@ -167,7 +167,7 @@
         "Application checks": 1,
         "Your decision": 1
       },
-      "utc": "2026-11-14T19:05:16.619Z"
+      "utc": "2026-11-14T20:06:19.378Z"
     },
     {
       "name": "manual: no check line of the review is shown as failed",
@@ -175,7 +175,7 @@
       "detail": {
         "failed": []
       },
-      "utc": "2026-11-14T19:05:16.637Z"
+      "utc": "2026-11-14T20:06:19.518Z"
     },
     {
       "name": "manual: the decision block names the control \"Manual: Repair\" and each of its items",
@@ -186,7 +186,7 @@
           81004
         ]
       },
-      "utc": "2026-11-14T19:05:16.644Z"
+      "utc": "2026-11-14T20:06:19.526Z"
     },
     {
       "name": "manual: the evidence table lists every supplied item once for \"Manual: Repair\", with its own description, and marks exactly the approved ones",
@@ -198,13 +198,13 @@
           81004
         ]
       },
-      "utc": "2026-11-14T19:05:16.655Z"
+      "utc": "2026-11-14T20:06:19.544Z"
     },
     {
       "name": "manual: preview order and eligible count match independently calculated effects",
       "passed": true,
       "detail": null,
-      "utc": "2026-11-14T19:05:16.656Z"
+      "utc": "2026-11-14T20:06:19.546Z"
     },
     {
       "name": "manual: the table states the result for each item that the approved controls remove",
@@ -215,7 +215,7 @@
           81004
         ]
       },
-      "utc": "2026-11-14T19:05:16.659Z"
+      "utc": "2026-11-14T20:06:19.548Z"
     },
     {
       "name": "manual: the table says \"ranked higher\" or \"ranked lower\" only for an item that moves in the preview feed",
@@ -223,7 +223,7 @@
       "detail": {
         "moved": []
       },
-      "utc": "2026-11-14T19:05:16.661Z"
+      "utc": "2026-11-14T20:06:19.549Z"
     },
     {
       "name": "manual: the preview feed of the server has the order that the approved controls give",
@@ -246,7 +246,7 @@
           81008
         ]
       },
-      "utc": "2026-11-14T19:05:16.672Z"
+      "utc": "2026-11-14T20:06:19.554Z"
     },
     {
       "name": "manual: the preview lists the feed now and after approval, as the server computed them, and says that the applied feed is unchanged",
@@ -261,13 +261,13 @@
           81008
         ]
       },
-      "utc": "2026-11-14T19:05:16.681Z"
+      "utc": "2026-11-14T20:06:19.571Z"
     },
     {
       "name": "manual: after Apply the focus is on the heading \"What changed\", in the window",
       "passed": true,
       "detail": null,
-      "utc": "2026-11-14T19:05:45.545Z"
+      "utc": "2026-11-14T20:06:48.805Z"
     },
     {
       "name": "manual: Apply removed exactly the items of the approved removal controls",
@@ -280,7 +280,7 @@
           81004
         ]
       },
-      "utc": "2026-11-14T19:05:45.546Z"
+      "utc": "2026-11-14T20:06:48.808Z"
     },
     {
       "name": "manual: Apply changed the score of exactly the items of the approved rank controls, by the stated amount",
@@ -288,7 +288,7 @@
       "detail": {
         "changed": []
       },
-      "utc": "2026-11-14T19:05:45.556Z"
+      "utc": "2026-11-14T20:06:48.809Z"
     },
     {
       "name": "manual: the applied feed has the order that the approved controls give, and it is the preview feed",
@@ -303,7 +303,7 @@
           81008
         ]
       },
-      "utc": "2026-11-14T19:05:45.558Z"
+      "utc": "2026-11-14T20:06:48.812Z"
     },
     {
       "name": "manual: exactly the approved controls are applied, with exactly their items",
@@ -314,13 +314,13 @@
         ],
         "revision": 1
       },
-      "utc": "2026-11-14T19:05:45.560Z"
+      "utc": "2026-11-14T20:06:48.812Z"
     },
     {
       "name": "manual: Apply left the conditions A to E, the topic tool and the fictional items unchanged",
       "passed": true,
       "detail": null,
-      "utc": "2026-11-14T19:05:45.579Z"
+      "utc": "2026-11-14T20:06:48.851Z"
     },
     {
       "name": "manual: page shows the feed that the server holds",
@@ -335,13 +335,13 @@
           81008
         ]
       },
-      "utc": "2026-11-14T19:05:45.589Z"
+      "utc": "2026-11-14T20:06:48.865Z"
     },
     {
       "name": "manual: the page records what changed and how to undo it",
       "passed": true,
       "detail": null,
-      "utc": "2026-11-14T19:05:45.594Z"
+      "utc": "2026-11-14T20:06:48.868Z"
     },
     {
       "name": "manual: the list of applied controls in the panel is the list of the server",
@@ -351,7 +351,7 @@
           "Manual: Repair: Remove from the feed; items 81002, 81004"
         ]
       },
-      "utc": "2026-11-14T19:05:45.600Z"
+      "utc": "2026-11-14T20:06:48.876Z"
     },
     {
       "name": "manual: undo review alone changed nothing",
@@ -359,7 +359,7 @@
       "detail": {
         "eligible": 6
       },
-      "utc": "2026-11-14T19:05:53.908Z"
+      "utc": "2026-11-14T20:06:57.289Z"
     },
     {
       "name": "manual: Undo restored the exact earlier feed and the exact earlier controls",
@@ -369,13 +369,13 @@
         "identical_to_start": true,
         "revision": 2
       },
-      "utc": "2026-11-14T19:06:04.497Z"
+      "utc": "2026-11-14T20:07:07.841Z"
     },
     {
       "name": "manual: Undo left the conditions A to E, the topic tool and the fictional items unchanged",
       "passed": true,
       "detail": null,
-      "utc": "2026-11-14T19:06:04.530Z"
+      "utc": "2026-11-14T20:07:07.902Z"
     },
     {
       "name": "manual: page shows the starting items again and says that the earlier feed is restored",
@@ -392,7 +392,7 @@
           81008
         ]
       },
-      "utc": "2026-11-14T19:06:04.555Z"
+      "utc": "2026-11-14T20:07:07.920Z"
     },
     {
       "name": "indirect: starts with no applied control",
@@ -400,25 +400,25 @@
       "detail": {
         "eligible": 8
       },
-      "utc": "2026-11-14T19:06:08.855Z"
+      "utc": "2026-11-14T20:07:12.288Z"
     },
     {
       "name": "the server supplies the bundled request \"configured_model\"",
       "passed": true,
       "detail": null,
-      "utc": "2026-11-14T19:06:08.878Z"
+      "utc": "2026-11-14T20:07:12.337Z"
     },
     {
       "name": "the request text is the exact bundled request \"configured_model\"",
       "passed": true,
       "detail": null,
-      "utc": "2026-11-14T19:06:09.026Z"
+      "utc": "2026-11-14T20:07:12.460Z"
     },
     {
       "name": "indirect: the original request is shown unchanged above the three blocks",
       "passed": true,
       "detail": null,
-      "utc": "2026-11-14T19:07:05.225Z"
+      "utc": "2026-11-14T20:08:01.239Z"
     },
     {
       "name": "indirect: the page moves the focus to the heading of the review and shows it in the window",
@@ -428,7 +428,7 @@
         "text": "Proposed change: Reviewed indirect request",
         "in_view": true
       },
-      "utc": "2026-11-14T19:07:05.628Z"
+      "utc": "2026-11-14T20:08:01.565Z"
     },
     {
       "name": "indirect: the preview left the applied groups, the revision and the applied feed unchanged",
@@ -438,13 +438,13 @@
         "revision": 2,
         "eligible": 8
       },
-      "utc": "2026-11-14T19:07:05.637Z"
+      "utc": "2026-11-14T20:08:01.576Z"
     },
     {
       "name": "indirect: the preview left the conditions A to E, the topic tool and the fictional items unchanged",
       "passed": true,
       "detail": null,
-      "utc": "2026-11-14T19:07:05.650Z"
+      "utc": "2026-11-14T20:08:01.589Z"
     },
     {
       "name": "indirect: page still shows the starting items during preview",
@@ -461,7 +461,7 @@
           81008
         ]
       },
-      "utc": "2026-11-14T19:07:05.657Z"
+      "utc": "2026-11-14T20:08:01.603Z"
     },
     {
       "name": "indirect: the review names at least one item that would change",
@@ -481,7 +481,7 @@
           }
         ]
       },
-      "utc": "2026-11-14T19:07:05.657Z"
+      "utc": "2026-11-14T20:08:01.604Z"
     },
     {
       "name": "indirect: the review has three separate blocks (Model output (not verified), application checks, decision) and says that nothing is applied",
@@ -491,7 +491,7 @@
         "Application checks": 1,
         "Your decision": 1
       },
-      "utc": "2026-11-14T19:07:05.674Z"
+      "utc": "2026-11-14T20:08:01.613Z"
     },
     {
       "name": "indirect: no check line of the review is shown as failed",
@@ -499,7 +499,7 @@
       "detail": {
         "failed": []
       },
-      "utc": "2026-11-14T19:07:05.683Z"
+      "utc": "2026-11-14T20:08:01.622Z"
     },
     {
       "name": "indirect: the decision block names the control \"Reviewed indirect request\" and each of its items",
@@ -511,7 +511,7 @@
           81006
         ]
       },
-      "utc": "2026-11-14T19:07:05.685Z"
+      "utc": "2026-11-14T20:08:01.625Z"
     },
     {
       "name": "indirect: the evidence table lists every supplied item once for \"Reviewed indirect request\", with its own description, and marks exactly the approved ones",
@@ -524,7 +524,7 @@
           81006
         ]
       },
-      "utc": "2026-11-14T19:07:05.698Z"
+      "utc": "2026-11-14T20:08:01.632Z"
     },
     {
       "name": "indirect: each quotation of \"Reviewed indirect request\" is a part of the text of its own item on the server",
@@ -532,13 +532,13 @@
       "detail": {
         "quotations": 3
       },
-      "utc": "2026-11-14T19:07:05.698Z"
+      "utc": "2026-11-14T20:08:01.633Z"
     },
     {
       "name": "indirect: preview order and eligible count match independently calculated effects",
       "passed": true,
       "detail": null,
-      "utc": "2026-11-14T19:07:05.699Z"
+      "utc": "2026-11-14T20:08:01.633Z"
     },
     {
       "name": "indirect: the table states the result for each item that the approved controls remove",
@@ -550,7 +550,7 @@
           81006
         ]
       },
-      "utc": "2026-11-14T19:07:05.699Z"
+      "utc": "2026-11-14T20:08:01.634Z"
     },
     {
       "name": "indirect: the table says \"ranked higher\" or \"ranked lower\" only for an item that moves in the preview feed",
@@ -558,7 +558,7 @@
       "detail": {
         "moved": []
       },
-      "utc": "2026-11-14T19:07:05.699Z"
+      "utc": "2026-11-14T20:08:01.634Z"
     },
     {
       "name": "indirect: the preview feed of the server has the order that the approved controls give",
@@ -579,7 +579,7 @@
           81008
         ]
       },
-      "utc": "2026-11-14T19:07:05.703Z"
+      "utc": "2026-11-14T20:08:01.637Z"
     },
     {
       "name": "indirect: the preview lists the feed now and after approval, as the server computed them, and says that the applied feed is unchanged",
@@ -593,13 +593,13 @@
           81008
         ]
       },
-      "utc": "2026-11-14T19:07:05.710Z"
+      "utc": "2026-11-14T20:08:01.645Z"
     },
     {
       "name": "indirect: after Apply the focus is on the heading \"What changed\", in the window",
       "passed": true,
       "detail": null,
-      "utc": "2026-11-14T19:07:38.508Z"
+      "utc": "2026-11-14T20:08:34.459Z"
     },
     {
       "name": "indirect: Apply removed exactly the items of the approved removal controls",
@@ -613,7 +613,7 @@
           81006
         ]
       },
-      "utc": "2026-11-14T19:07:38.509Z"
+      "utc": "2026-11-14T20:08:34.460Z"
     },
     {
       "name": "indirect: Apply changed the score of exactly the items of the approved rank controls, by the stated amount",
@@ -621,7 +621,7 @@
       "detail": {
         "changed": []
       },
-      "utc": "2026-11-14T19:07:38.510Z"
+      "utc": "2026-11-14T20:08:34.464Z"
     },
     {
       "name": "indirect: the applied feed has the order that the approved controls give, and it is the preview feed",
@@ -635,7 +635,7 @@
           81008
         ]
       },
-      "utc": "2026-11-14T19:07:38.512Z"
+      "utc": "2026-11-14T20:08:34.464Z"
     },
     {
       "name": "indirect: exactly the approved controls are applied, with exactly their items",
@@ -646,13 +646,13 @@
         ],
         "revision": 3
       },
-      "utc": "2026-11-14T19:07:38.513Z"
+      "utc": "2026-11-14T20:08:34.466Z"
     },
     {
       "name": "indirect: Apply left the conditions A to E, the topic tool and the fictional items unchanged",
       "passed": true,
       "detail": null,
-      "utc": "2026-11-14T19:07:38.550Z"
+      "utc": "2026-11-14T20:08:34.509Z"
     },
     {
       "name": "indirect: page shows the feed that the server holds",
@@ -666,13 +666,13 @@
           81008
         ]
       },
-      "utc": "2026-11-14T19:07:38.583Z"
+      "utc": "2026-11-14T20:08:34.516Z"
     },
     {
       "name": "indirect: the page records what changed and how to undo it",
       "passed": true,
       "detail": null,
-      "utc": "2026-11-14T19:07:38.589Z"
+      "utc": "2026-11-14T20:08:34.521Z"
     },
     {
       "name": "indirect: the list of applied controls in the panel is the list of the server",
@@ -682,7 +682,7 @@
           "Reviewed indirect request: Remove from the feed; items 81001, 81003, 81006"
         ]
       },
-      "utc": "2026-11-14T19:07:38.592Z"
+      "utc": "2026-11-14T20:08:34.524Z"
     },
     {
       "name": "indirect: undo review alone changed nothing",
@@ -690,7 +690,7 @@
       "detail": {
         "eligible": 5
       },
-      "utc": "2026-11-14T19:07:47.247Z"
+      "utc": "2026-11-14T20:08:42.996Z"
     },
     {
       "name": "indirect: Undo restored the exact earlier feed and the exact earlier controls",
@@ -700,13 +700,13 @@
         "identical_to_start": true,
         "revision": 4
       },
-      "utc": "2026-11-14T19:07:57.970Z"
+      "utc": "2026-11-14T20:08:54.229Z"
     },
     {
       "name": "indirect: Undo left the conditions A to E, the topic tool and the fictional items unchanged",
       "passed": true,
       "detail": null,
-      "utc": "2026-11-14T19:07:57.992Z"
+      "utc": "2026-11-14T20:08:54.248Z"
     },
     {
       "name": "indirect: page shows the starting items again and says that the earlier feed is restored",
@@ -723,44 +723,44 @@
           81008
         ]
       },
-      "utc": "2026-11-14T19:07:58.021Z"
+      "utc": "2026-11-14T20:08:54.288Z"
     },
     {
       "name": "no script error was raised by the page",
       "passed": true,
       "detail": [],
-      "utc": "2026-11-14T19:08:02.448Z"
+      "utc": "2026-11-14T20:08:58.612Z"
     }
   ],
   "review_decisions": [
     {
       "gate": "manual-apply",
       "decision": "APPROVE",
-      "seconds_to_decide": 7.3,
-      "utc": "2026-11-14T19:05:45.408Z"
+      "seconds_to_decide": 7.8,
+      "utc": "2026-11-14T20:06:48.707Z"
     },
     {
       "gate": "manual-undo",
       "decision": "APPROVE",
       "seconds_to_decide": 7.3,
-      "utc": "2026-11-14T19:06:04.409Z"
+      "utc": "2026-11-14T20:07:07.762Z"
     },
     {
       "gate": "indirect-apply",
       "decision": "APPROVE",
-      "seconds_to_decide": 11.3,
-      "utc": "2026-11-14T19:07:38.413Z"
+      "seconds_to_decide": 10.8,
+      "utc": "2026-11-14T20:08:34.385Z"
     },
     {
       "gate": "indirect-undo",
       "decision": "APPROVE",
-      "seconds_to_decide": 7.3,
-      "utc": "2026-11-14T19:07:57.874Z"
+      "seconds_to_decide": 7.8,
+      "utc": "2026-11-14T20:08:54.145Z"
     }
   ],
   "flows_result": {
     "manual": {
-      "started_utc": "2026-11-14T19:05:13.465Z",
+      "started_utc": "2026-11-14T20:06:15.900Z",
       "eligible_before": 8,
       "shown_before": [
         81001,
@@ -789,7 +789,7 @@
         81002,
         81004
       ],
-      "review_text_sha256": "94c2d51face138e0d8d314dab5eace26dc433f73390fa12fc8df041a8bb2ec5f",
+      "review_text_sha256": "5689ab55ef8bb446fc9f0459bf1670bac878f3aa804dc8a994b22f42d369f27a",
       "eligible_after_apply": 6,
       "shown_after_apply": [
         81001,
@@ -801,10 +801,10 @@
       ],
       "eligible_after_undo": 8,
       "provider_calls": 0,
-      "finished_utc": "2026-11-14T19:06:08.771Z"
+      "finished_utc": "2026-11-14T20:07:12.236Z"
     },
     "indirect": {
-      "started_utc": "2026-11-14T19:06:08.850Z",
+      "started_utc": "2026-11-14T20:07:12.271Z",
       "eligible_before": 8,
       "shown_before": [
         81001,
@@ -837,7 +837,7 @@
         81003,
         81006
       ],
-      "review_text_sha256": "78ee0c4d4d2b8602d6e94d9839da364c961ac6d8c101151705cad23f8ff6d1ae",
+      "review_text_sha256": "2201ec08229c4b291efd614fe82da4c8525a2bd4bd0665a653aff7157b4dc23d",
       "eligible_after_apply": 5,
       "shown_after_apply": [
         81002,
@@ -847,7 +847,7 @@
         81008
       ],
       "eligible_after_undo": 8,
-      "finished_utc": "2026-11-14T19:08:02.447Z"
+      "finished_utc": "2026-11-14T20:08:58.611Z"
     }
   },
   "provider_calls": [
@@ -860,7 +860,7 @@
       "request_sha256": "fe001f76fa356b23a4ca5b8220d4e07dfdbb2f7222f1a2e7f0401cbe39f0047e",
       "response_sha256": "25e14f0844daa9bcbea9bb670185aa650da037284bd961aadd81d7a021bc0c73",
       "declared_provider": null,
-      "observed_utc": "2026-11-14T19:07:05.188Z"
+      "observed_utc": "2026-11-14T20:08:01.228Z"
     },
     {
       "route": "/api/semantic/preview",
@@ -869,9 +869,9 @@
       "status": null,
       "elapsed_seconds": null,
       "request_sha256": "f9a30891c1991a47dfccc97c51ac264a724a82e60b4bce61868d3ab5f73ca246",
-      "response_sha256": "4694d1b66d8be349ade4f54534bccd98352f329420fe0887b73d40222b577a64",
+      "response_sha256": "fc4b63a45714784d174b8721b4caad861280e92834b177f1640e9b7be1fe556c",
       "declared_provider": null,
-      "observed_utc": "2026-11-14T19:07:05.189Z"
+      "observed_utc": "2026-11-14T20:08:01.228Z"
     }
   ],
   "calls_attempted": [
@@ -880,14 +880,14 @@
       "calls_attempted": 0,
       "outcome_source": null,
       "ready": true,
-      "observed_utc": "2026-11-14T19:05:16.230Z"
+      "observed_utc": "2026-11-14T20:06:18.820Z"
     },
     {
       "route": "/api/semantic/preview",
       "calls_attempted": 2,
       "outcome_source": null,
       "ready": true,
-      "observed_utc": "2026-11-14T19:07:05.188Z"
+      "observed_utc": "2026-11-14T20:08:01.228Z"
     }
   ],
   "provider_attempts": [
@@ -895,7 +895,7 @@
       "route": "/api/semantic/preview",
       "attempts": [],
       "outcome_source": null,
-      "observed_utc": "2026-11-14T19:05:16.230Z"
+      "observed_utc": "2026-11-14T20:06:18.820Z"
     },
     {
       "route": "/api/semantic/preview",
@@ -910,7 +910,7 @@
         }
       ],
       "outcome_source": null,
-      "observed_utc": "2026-11-14T19:07:05.188Z"
+      "observed_utc": "2026-11-14T20:08:01.228Z"
     }
   ],
   "screenshots": [
@@ -927,101 +927,101 @@
     "11-gate-indirect-undo.png",
     "12-indirect-restored.png"
   ],
-  "finished_utc": "2026-11-14T19:08:02.449Z",
+  "finished_utc": "2026-11-14T20:08:58.613Z",
   "outcome": "all flows completed",
   "video": {
     "file": "video/hunger.webm",
     "steps": [
       {
-        "seconds": 1.4,
+        "seconds": 1.1,
         "step": "start: the status strip names the data and the provider"
       },
       {
-        "seconds": 5.4,
+        "seconds": 5.1,
         "step": "start: the language controls and their six stages"
       },
       {
-        "seconds": 9.6,
+        "seconds": 9.3,
         "step": "manual: existing category and action chosen by hand"
       },
       {
-        "seconds": 12.7,
+        "seconds": 12.9,
         "step": "manual: three review blocks (reply, application checks, your decision); nothing applied"
       },
       {
-        "seconds": 18.7,
+        "seconds": 18.9,
         "step": "manual: evidence table of every supplied item"
       },
       {
-        "seconds": 24.7,
+        "seconds": 24.9,
         "step": "manual: the feed now and after approval"
       },
       {
-        "seconds": 28.7,
+        "seconds": 28.9,
         "step": "manual: the feed is unchanged during the preview"
       },
       {
-        "seconds": 31.7,
+        "seconds": 31.9,
         "step": "manual: the decision block with the approve button; waiting for the reviewer"
       },
       {
-        "seconds": 41.8,
+        "seconds": 42.4,
         "step": "manual: applied; the page records what changed"
       },
       {
-        "seconds": 45.8,
+        "seconds": 46.5,
         "step": "manual: the feed shows the applied result"
       },
       {
-        "seconds": 49.9,
+        "seconds": 50.6,
         "step": "manual: undo review (step 1 of 2); nothing changed yet"
       },
       {
-        "seconds": 60.7,
+        "seconds": 61.5,
         "step": "manual: undo approved (step 2 of 2); the starting feed is restored"
       },
       {
-        "seconds": 65.2,
+        "seconds": 66.1,
         "step": "indirect: request entered; it names no category"
       },
       {
-        "seconds": 69.3,
+        "seconds": 70.1,
         "step": "indirect: waiting for the model (action, then items)"
       },
       {
-        "seconds": 121.7,
+        "seconds": 114.9,
         "step": "indirect: three review blocks (reply, application checks, your decision); nothing applied"
       },
       {
-        "seconds": 127.7,
+        "seconds": 121,
         "step": "indirect: evidence table of every supplied item"
       },
       {
-        "seconds": 133.7,
+        "seconds": 127,
         "step": "indirect: the feed now and after approval"
       },
       {
-        "seconds": 137.8,
+        "seconds": 131,
         "step": "indirect: the feed is unchanged during the preview"
       },
       {
-        "seconds": 140.8,
+        "seconds": 134,
         "step": "indirect: the decision block with the approve button; waiting for the reviewer"
       },
       {
-        "seconds": 155.1,
+        "seconds": 148.2,
         "step": "indirect: applied; the page records what changed"
       },
       {
-        "seconds": 159.1,
+        "seconds": 152.2,
         "step": "indirect: the feed shows the applied result"
       },
       {
-        "seconds": 163.2,
+        "seconds": 156.3,
         "step": "indirect: undo review (step 1 of 2); nothing changed yet"
       },
       {
-        "seconds": 174.4,
+        "seconds": 167.9,
         "step": "indirect: undo approved (step 2 of 2); the starting feed is restored"
       }
     ]

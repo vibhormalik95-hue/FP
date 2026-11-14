@@ -5,8 +5,8 @@
 - An outcome that equals the authored rehearsal reply is not proof of a correct interpretation.
 - Each case ran one time. Nothing was approved and nothing was applied.
 
-- Started (UTC): 2026-11-14T19:14:36+00:00. Finished (UTC): 2026-11-14T19:14:37+00:00.
-- Source fingerprint: `24d0a8246edc2f0bc261e163795da55ee24ce2b364a566b8fa2edc603c146cd3`
+- Started (UTC): 2026-11-14T20:05:21+00:00. Finished (UTC): 2026-11-14T20:05:22+00:00.
+- Source fingerprint: `22ba794e2091685fa879dcc43b68233dae1963fa4231c38dd73a36f13639068a`
 - Provider: model route; backend openai-compatible-chat; model standin-model (the name that the route declares; the application cannot attest it)
 - Route: openai-compatible
 - Endpoint: http://127.0.0.1:8874/v1/chat/completions

@@ -5,29 +5,29 @@
 - An outcome that equals the authored rehearsal reply is not proof of a correct interpretation.
 - Each case ran one time. Nothing was approved and nothing was applied.
 
-- Started (UTC): 2026-11-14T19:14:38+00:00. Finished (UTC): 2026-11-14T19:14:40+00:00.
-- Source fingerprint: `24d0a8246edc2f0bc261e163795da55ee24ce2b364a566b8fa2edc603c146cd3`
+- Started (UTC): 2026-11-14T20:05:23+00:00. Finished (UTC): 2026-11-14T20:05:25+00:00.
+- Source fingerprint: `22ba794e2091685fa879dcc43b68233dae1963fa4231c38dd73a36f13639068a`
 - Provider: model route; backend local-cli-claude-code; model standin-model (the name that the route declares; the application cannot attest it)
 - Route: cli
-- Program: /home/claude/work/runs/merged/route-checks/files/bin/claude (Claude Code CLI, print mode, one process for each call)
+- Program: /home/claude/work/runs/build-22ba794/route-checks/files/bin/claude (Claude Code CLI, print mode, one process for each call)
 - Model: standin-model
 - Structured output: prompt; 600 s for one call
 - Call allowance for one run: 40 (a counter in this program, not a billing limit)
-- Configuration digest: 3a1c06b48b62fd7af9eaa21b323c6eb090430353d5e343403a90db8115fb49f4
+- Configuration digest: b7344ec3275177613eee5fc620bfeada1357cbb814f62928c3cd9cdffa52aef8
 - Cases: 9. Model calls: 9. Cases that ended in an error: 0.
 - The applied state was read back after each case: nothing was applied.
 
 | Case | Method in the page | Model calls | Outcome | Selection or reason | Application checks | Same as the authored rehearsal reply | Seconds |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | vocabulary | categories and tags | 1 | review | exclude through category "Cooking", tag "street food": 61001, 61002, 61003, 61009 | 16 of 16 passed | same outcome, same selection | 0.2 |
-| vocabulary:literal | categories and tags | 1 | review | exclude through category "Repair": 61004, 61005 | 16 of 16 passed | same outcome, same selection | 0.1 |
-| vocabulary:mixed | categories and tags | 1 | review | boost standard through category "Music": 61007, 61008; exclude through category "Cooking", tag "street food": 61001, 61002, 61003, 61009 | 16 of 16 passed | same outcome, same selection | 0.2 |
+| vocabulary:literal | categories and tags | 1 | review | exclude through category "Repair": 61004, 61005 | 16 of 16 passed | same outcome, same selection | 0.2 |
+| vocabulary:mixed | categories and tags | 1 | review | boost standard through category "Music": 61007, 61008; exclude through category "Cooking", tag "street food": 61001, 61002, 61003, 61009 | 16 of 16 passed | same outcome, same selection | 0.1 |
 | vocabulary:ambiguous | categories and tags | 1 | clarify | 3 alternatives; Semantic scope or negation has competing interpretations | 5 of 5 passed | same outcome | 0.2 |
-| vocabulary:unsupported | categories and tags | 1 | unsupported | Authored rehearsal reply, not model output. A limit for each day is a quota. The controls can increase, decrease or exclude whole terms. They cannot count items or use the date. | 5 of 5 passed | same outcome | 0.2 |
+| vocabulary:unsupported | categories and tags | 1 | unsupported | Authored rehearsal reply, not model output. A limit for each day is a quota. The controls can increase, decrease or exclude whole terms. They cannot count items or use the date. | 5 of 5 passed | same outcome | 0.1 |
 | vocabulary:negated | categories and tags | 0 | clarify | The request matches the negated-command pattern (for example "do not hide ..."). The application does not guess what a negated control means. Write a positive instruction, for example "show more ..... | 1 of 2 passed; failed: The request text does not match the negated-command pattern | same outcome | 0.0 |
 | vocabulary:no_match | categories and tags | 1 | no match | Authored rehearsal reply, not model output. No existing category or tag is about astronomy. | 5 of 5 passed | same outcome | 0.2 |
 | configured_model | item descriptions | 2 | review | exclude: 61004 (quotation "between bites of a sandwich") | no list | same outcome, same selection | 0.3 |
-| synthetic | fictional item draft | 1 | draft ready | title "Kite repair clip (authored rehearsal)" | no list | same outcome | 0.2 |
+| synthetic | fictional item draft | 1 | draft ready | title "Kite repair clip (authored rehearsal)" | no list | same outcome | 0.1 |
 
 ## How to read the table
 

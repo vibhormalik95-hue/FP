@@ -8,7 +8,7 @@ Your request: “I'm not hungry, remove all the stuff that makes me hungry.”
 
 Model output (not verified)
 
-Reason that the model gave: The phrase 'I'm not hungry' is a negated personal state, not a negated command, so the requested direction stays: remove. 'Stuff that makes me hungry' indirectly means food content. The supplied terms that clearly name food or food preparation are Cooking, Baking, Home recipes and the tags baking, bread, dinner, recipe, salad and street food. 'night market' only weakly suggests food (it can also be a travel or shopping scene), so it is not selected. Music, Repair, Travel and their subterms do not relate to hunger. This is one preference, so one exclude control is proposed; the application checks whether the removal covers more than half of the items.
+Reason that the model gave: The request has one preference: remove items that cause hunger. The phrase I'm not hungry is a negated personal state and does not negate the command, so the direction stays exclude. Hunger is caused by food content, so the food and cooking terms express the span even though no literal food word appears. Night market is only weakly food related (it is a place or travel term), so it is not selected. Music, repair and travel terms do not relate.
 
 Remove: category "Cooking", category "Baking", category "Home recipe... [25c4f8]
 
@@ -16,7 +16,7 @@ Direction and strength, read from your request by the model: Remove from the fee
 
 Part of your request that names the subject: “remove all the stuff that makes me hungry”.
 
-Reason that the model gave for this control: Things that make a person hungry are food and food preparation content. Cooking, Baking and Home recipes are food categories; baking, bread, dinner, recipe, salad and street food are tags that directly name food or cooking. 'remove' maps to exclude.
+Reason that the model gave for this control: Content that makes a person hungry is food content. Cooking, Baking, Home recipes and the tags baking, bread, dinner, recipe, salad and street food all name food or food preparation, so they clearly cover the span. Remove is an exclude command.
 
 Existing names that the model chose: category "Cooking"; category (level 2) "Baking"; category (level 2) "Home recipes"; tag "baking"; tag "bread"; tag "dinner"; tag "recipe"; tag "salad"; tag "street food".
 
@@ -69,7 +69,7 @@ Only items in the evidence scope change. Other items with the same category, tag
 
 Nothing has changed yet. The feed below stays as it is until you approve.
 
-Approve before 12:11:31 PM. After that time the server no longer accepts this review.
+Approve before 1:12:25 PM. After that time the server no longer accepts this review.
 
 Approve this exact item set and apply
 Discard this review and apply nothing

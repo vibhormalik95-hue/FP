@@ -1,19 +1,19 @@
 {
   "kind": "run records of the integrated revision, 14 November 2026 (UTC)",
-  "revision": "e797ce1eb04be5abec5cd2446de9ae6f542bdb37",
+  "revision": "ff92666bc877f8c12d091aadd5bf8e9a8759eac2",
   "runs": [
     {
       "kind": "real model output through the file relay; AI operator as reviewer",
       "scenario": "tags",
-      "source_fingerprint": "24d0a8246edc2f0bc261e163795da55ee24ce2b364a566b8fa2edc603c146cd3",
+      "source_fingerprint": "22ba794e2091685fa879dcc43b68233dae1963fa4231c38dd73a36f13639068a",
       "provider": {
         "backend": "operator-relay-file-queue",
         "model": "claude-opus (sub-agent alias opus of the Cowork session; version not attested)",
         "live_model": "operator_declared"
       },
       "reviewer": "AI operator: a Claude Opus sub-agent of the Cowork lead session; not a person",
-      "started_utc": "2026-11-14T19:04:58.398Z",
-      "finished_utc": "2026-11-14T19:12:43.032Z",
+      "started_utc": "2026-11-14T20:05:48.803Z",
+      "finished_utc": "2026-11-14T20:13:41.144Z",
       "outcome": "all flows completed",
       "checks_passed": 184,
       "checks": 184,
@@ -21,56 +21,56 @@
         {
           "gate": "manual-apply",
           "decision": "APPROVE",
-          "seconds_to_decide": 7.8,
-          "utc": "2026-11-14T19:05:40.413Z"
+          "seconds_to_decide": 8.3,
+          "utc": "2026-11-14T20:06:31.309Z"
         },
         {
           "gate": "manual-undo",
           "decision": "APPROVE",
-          "seconds_to_decide": 8.3,
-          "utc": "2026-11-14T19:06:00.377Z"
+          "seconds_to_decide": 7.3,
+          "utc": "2026-11-14T20:06:50.389Z"
         },
         {
           "gate": "vocabulary-apply",
           "decision": "APPROVE",
-          "seconds_to_decide": 14.3,
-          "utc": "2026-11-14T19:07:13.218Z"
+          "seconds_to_decide": 10.3,
+          "utc": "2026-11-14T20:08:02.822Z"
         },
         {
           "gate": "vocabulary-undo",
           "decision": "APPROVE",
-          "seconds_to_decide": 7.8,
-          "utc": "2026-11-14T19:07:33.266Z"
+          "seconds_to_decide": 7.3,
+          "utc": "2026-11-14T20:08:21.940Z"
         },
         {
           "gate": "mixed-apply",
           "decision": "APPROVE",
-          "seconds_to_decide": 9.3,
-          "utc": "2026-11-14T19:08:42.297Z"
+          "seconds_to_decide": 8.8,
+          "utc": "2026-11-14T20:09:27.345Z"
         },
         {
           "gate": "mixed-undo",
           "decision": "APPROVE",
-          "seconds_to_decide": 8.3,
-          "utc": "2026-11-14T19:09:02.542Z"
+          "seconds_to_decide": 7.3,
+          "utc": "2026-11-14T20:09:46.476Z"
         },
         {
           "gate": "description-apply",
           "decision": "APPROVE",
-          "seconds_to_decide": 11.8,
-          "utc": "2026-11-14T19:11:36.603Z"
+          "seconds_to_decide": 9.3,
+          "utc": "2026-11-14T20:12:30.439Z"
         },
         {
           "gate": "description-undo",
           "decision": "APPROVE",
-          "seconds_to_decide": 7.8,
-          "utc": "2026-11-14T19:11:56.302Z"
+          "seconds_to_decide": 8.3,
+          "utc": "2026-11-14T20:12:50.466Z"
         },
         {
           "gate": "fictional-admit",
           "decision": "APPROVE",
-          "seconds_to_decide": 7.3,
-          "utc": "2026-11-14T19:12:37.275Z"
+          "seconds_to_decide": 6.8,
+          "utc": "2026-11-14T20:13:35.555Z"
         }
       ],
       "model_calls": 8,
@@ -197,7 +197,7 @@
               "reason": "Semantic scope or negation has competing interpretations",
               "calls_attempted": 1,
               "outcome_source": "model_report",
-              "alternatives_shown": 4
+              "alternatives_shown": 5
             },
             {
               "case": "unsupported",
@@ -206,7 +206,7 @@
               "observed": "unsupported",
               "matches_authored_expectation": true,
               "model_calls_reported": 1,
-              "reason": "The request asks for at most two cooking videos per day. This is a quota (a count limit) with a time condition (per day). Boost, reduce and exclude over whole terms cannot express a count cap or a daily window, so no control is proposed. The Cooking term exists, but excluding or reducing it would no",
+              "reason": "The request asks for at most two cooking videos per day. This is a quota (a count limit) with a time condition (per day). Boost, reduce and exclude over whole terms cannot express a count limit or a daily window. The Cooking term exists, but no supported control gives the requested behavior, so no c",
               "calls_attempted": 1,
               "outcome_source": "model_report",
               "alternatives_shown": 0
@@ -230,7 +230,7 @@
               "observed": "no_match",
               "matches_authored_expectation": true,
               "model_calls_reported": 1,
-              "reason": "The request asks for fewer videos about astronomy. No supplied category or tag term relates to astronomy, space, stars or the night sky. The terms cover cooking, music, repair and travel topics. The tag night market is about street food and travel, not astronomy, so it is not a match. No control is ",
+              "reason": "The request asks to see fewer videos about astronomy. No supplied category or tag relates to astronomy, space, stars, planets or the night sky. The vocabulary covers cooking, music, repair and travel topics only. The tag night market refers to a travel or food setting, not astronomy, so it does not ",
               "calls_attempted": 1,
               "outcome_source": "model_report",
               "alternatives_shown": 0
@@ -268,15 +268,15 @@
     {
       "kind": "real model output through the file relay; AI operator as reviewer",
       "scenario": "category",
-      "source_fingerprint": "24d0a8246edc2f0bc261e163795da55ee24ce2b364a566b8fa2edc603c146cd3",
+      "source_fingerprint": "22ba794e2091685fa879dcc43b68233dae1963fa4231c38dd73a36f13639068a",
       "provider": {
         "backend": "operator-relay-file-queue",
         "model": "claude-opus (sub-agent alias opus of the Cowork session; version not attested)",
         "live_model": "operator_declared"
       },
       "reviewer": "AI operator: a Claude Opus sub-agent of the Cowork lead session; not a person",
-      "started_utc": "2026-11-14T19:04:55.358Z",
-      "finished_utc": "2026-11-14T19:08:59.993Z",
+      "started_utc": "2026-11-14T20:05:53.558Z",
+      "finished_utc": "2026-11-14T20:10:04.255Z",
       "outcome": "all flows completed",
       "checks_passed": 69,
       "checks": 69,
@@ -285,37 +285,37 @@
           "gate": "manual-apply",
           "decision": "APPROVE",
           "seconds_to_decide": 7.3,
-          "utc": "2026-11-14T19:05:36.703Z"
+          "utc": "2026-11-14T20:06:34.807Z"
         },
         {
           "gate": "manual-undo",
           "decision": "APPROVE",
-          "seconds_to_decide": 6.3,
-          "utc": "2026-11-14T19:05:54.672Z"
+          "seconds_to_decide": 6.8,
+          "utc": "2026-11-14T20:06:53.432Z"
         },
         {
           "gate": "category-resolution",
           "decision": "APPROVE",
-          "seconds_to_decide": 10.8,
-          "utc": "2026-11-14T19:06:51.728Z"
+          "seconds_to_decide": 9.3,
+          "utc": "2026-11-14T20:07:55.247Z"
         },
         {
           "gate": "category-definition",
           "decision": "APPROVE",
-          "seconds_to_decide": 10.8,
-          "utc": "2026-11-14T19:07:14.191Z"
+          "seconds_to_decide": 8.8,
+          "utc": "2026-11-14T20:08:15.693Z"
         },
         {
           "gate": "category-apply",
           "decision": "APPROVE",
-          "seconds_to_decide": 9.3,
-          "utc": "2026-11-14T19:08:34.972Z"
+          "seconds_to_decide": 10.3,
+          "utc": "2026-11-14T20:09:40.691Z"
         },
         {
           "gate": "category-undo",
           "decision": "APPROVE",
-          "seconds_to_decide": 8.8,
-          "utc": "2026-11-14T19:08:55.645Z"
+          "seconds_to_decide": 7.3,
+          "utc": "2026-11-14T20:09:59.773Z"
         }
       ],
       "model_calls": 3,
@@ -443,15 +443,15 @@
     {
       "kind": "real model output through the file relay; AI operator as reviewer",
       "scenario": "hunger",
-      "source_fingerprint": "24d0a8246edc2f0bc261e163795da55ee24ce2b364a566b8fa2edc603c146cd3",
+      "source_fingerprint": "22ba794e2091685fa879dcc43b68233dae1963fa4231c38dd73a36f13639068a",
       "provider": {
         "backend": "operator-relay-file-queue",
         "model": "claude-opus (sub-agent alias opus of the Cowork session; version not attested)",
         "live_model": "operator_declared"
       },
       "reviewer": "AI operator: a Claude Opus sub-agent of the Cowork lead session; not a person",
-      "started_utc": "2026-11-14T19:05:03.825Z",
-      "finished_utc": "2026-11-14T19:08:02.449Z",
+      "started_utc": "2026-11-14T20:06:06.565Z",
+      "finished_utc": "2026-11-14T20:08:58.613Z",
       "outcome": "all flows completed",
       "checks_passed": 68,
       "checks": 68,
@@ -459,26 +459,26 @@
         {
           "gate": "manual-apply",
           "decision": "APPROVE",
-          "seconds_to_decide": 7.3,
-          "utc": "2026-11-14T19:05:45.408Z"
+          "seconds_to_decide": 7.8,
+          "utc": "2026-11-14T20:06:48.707Z"
         },
         {
           "gate": "manual-undo",
           "decision": "APPROVE",
           "seconds_to_decide": 7.3,
-          "utc": "2026-11-14T19:06:04.409Z"
+          "utc": "2026-11-14T20:07:07.762Z"
         },
         {
           "gate": "indirect-apply",
           "decision": "APPROVE",
-          "seconds_to_decide": 11.3,
-          "utc": "2026-11-14T19:07:38.413Z"
+          "seconds_to_decide": 10.8,
+          "utc": "2026-11-14T20:08:34.385Z"
         },
         {
           "gate": "indirect-undo",
           "decision": "APPROVE",
-          "seconds_to_decide": 7.3,
-          "utc": "2026-11-14T19:07:57.874Z"
+          "seconds_to_decide": 7.8,
+          "utc": "2026-11-14T20:08:54.145Z"
         }
       ],
       "model_calls": 2,
@@ -536,7 +536,7 @@
     {
       "kind": "authored replies (no model), or no provider for the scenario conditions",
       "scenario": "tags",
-      "source_fingerprint": "24d0a8246edc2f0bc261e163795da55ee24ce2b364a566b8fa2edc603c146cd3",
+      "source_fingerprint": "22ba794e2091685fa879dcc43b68233dae1963fa4231c38dd73a36f13639068a",
       "provider": {
         "backend": "scripted-authored-replies",
         "model": "none (replies written by hand)",
@@ -561,7 +561,7 @@
     {
       "kind": "authored replies (no model), or no provider for the scenario conditions",
       "scenario": "category",
-      "source_fingerprint": "24d0a8246edc2f0bc261e163795da55ee24ce2b364a566b8fa2edc603c146cd3",
+      "source_fingerprint": "22ba794e2091685fa879dcc43b68233dae1963fa4231c38dd73a36f13639068a",
       "provider": {
         "backend": "scripted-authored-replies",
         "model": "none (replies written by hand)",
@@ -583,7 +583,7 @@
     {
       "kind": "authored replies (no model), or no provider for the scenario conditions",
       "scenario": "hunger",
-      "source_fingerprint": "24d0a8246edc2f0bc261e163795da55ee24ce2b364a566b8fa2edc603c146cd3",
+      "source_fingerprint": "22ba794e2091685fa879dcc43b68233dae1963fa4231c38dd73a36f13639068a",
       "provider": {
         "backend": "scripted-authored-replies",
         "model": "none (replies written by hand)",
@@ -604,7 +604,7 @@
     {
       "kind": "authored replies (no model), or no provider for the scenario conditions",
       "scenario": "conditions",
-      "source_fingerprint": "24d0a8246edc2f0bc261e163795da55ee24ce2b364a566b8fa2edc603c146cd3",
+      "source_fingerprint": "22ba794e2091685fa879dcc43b68233dae1963fa4231c38dd73a36f13639068a",
       "provider": null,
       "outcome": "all flows completed",
       "checks_passed": 12,

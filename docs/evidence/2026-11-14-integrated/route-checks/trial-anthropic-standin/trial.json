@@ -8,9 +8,9 @@
     "Each case ran one time. Nothing was approved and nothing was applied."
   ],
   "scenario": "tags",
-  "started_utc": "2026-11-14T19:14:37+00:00",
-  "finished_utc": "2026-11-14T19:14:38+00:00",
-  "source_fingerprint": "24d0a8246edc2f0bc261e163795da55ee24ce2b364a566b8fa2edc603c146cd3",
+  "started_utc": "2026-11-14T20:05:22+00:00",
+  "finished_utc": "2026-11-14T20:05:23+00:00",
+  "source_fingerprint": "22ba794e2091685fa879dcc43b68233dae1963fa4231c38dd73a36f13639068a",
   "provider": {
     "kind": "route",
     "identity": {
@@ -83,7 +83,7 @@
       ],
       "http_status": 200,
       "model_calls": 1,
-      "seconds": 0.036,
+      "seconds": 0.034,
       "outcome": "review",
       "reason": null,
       "controls": [
@@ -263,7 +263,7 @@
         {
           "ordinal": 1,
           "route": "anthropic",
-          "started_utc": "2026-11-14T19:14:37+00:00",
+          "started_utc": "2026-11-14T20:05:22+00:00",
           "request_sha256": "12794f6137e453c0665b9e5a7658dd6fede6b693296ae5a2cae9fbe82a90d064",
           "schema_sha256": "c17ffdc323270f920ba024c26cc4976e9218fd921434497083e53296935ccf3e",
           "requested_model": "standin-model",
@@ -282,8 +282,8 @@
           },
           "stop_reason": "end_turn",
           "model_match_rule": "equal",
-          "elapsed_seconds": 0.01,
-          "finished_utc": "2026-11-14T19:14:37+00:00"
+          "elapsed_seconds": 0.011,
+          "finished_utc": "2026-11-14T20:05:22+00:00"
         }
       ],
       "authored": {
@@ -334,7 +334,7 @@
       ],
       "http_status": 200,
       "model_calls": 1,
-      "seconds": 0.033,
+      "seconds": 0.028,
       "outcome": "review",
       "reason": null,
       "controls": [
@@ -495,7 +495,7 @@
         {
           "ordinal": 2,
           "route": "anthropic",
-          "started_utc": "2026-11-14T19:14:37+00:00",
+          "started_utc": "2026-11-14T20:05:22+00:00",
           "request_sha256": "106009e545dec5cc175850b590c1b82ddc41fbaae85b56eed67d67f1a444f6ea",
           "schema_sha256": "c17ffdc323270f920ba024c26cc4976e9218fd921434497083e53296935ccf3e",
           "requested_model": "standin-model",
@@ -514,8 +514,8 @@
           },
           "stop_reason": "end_turn",
           "model_match_rule": "equal",
-          "elapsed_seconds": 0.009,
-          "finished_utc": "2026-11-14T19:14:37+00:00"
+          "elapsed_seconds": 0.007,
+          "finished_utc": "2026-11-14T20:05:22+00:00"
         }
       ],
       "authored": {
@@ -562,7 +562,7 @@
       ],
       "http_status": 200,
       "model_calls": 1,
-      "seconds": 0.036,
+      "seconds": 0.025,
       "outcome": "review",
       "reason": null,
       "controls": [
@@ -786,7 +786,7 @@
         {
           "ordinal": 3,
           "route": "anthropic",
-          "started_utc": "2026-11-14T19:14:37+00:00",
+          "started_utc": "2026-11-14T20:05:22+00:00",
           "request_sha256": "db87db60d147ebbf73814d5d84c65869f2e70ff6f8ca9de6323d8ad56247370d",
           "schema_sha256": "c17ffdc323270f920ba024c26cc4976e9218fd921434497083e53296935ccf3e",
           "requested_model": "standin-model",
@@ -805,8 +805,8 @@
           },
           "stop_reason": "end_turn",
           "model_match_rule": "equal",
-          "elapsed_seconds": 0.009,
-          "finished_utc": "2026-11-14T19:14:37+00:00"
+          "elapsed_seconds": 0.006,
+          "finished_utc": "2026-11-14T20:05:22+00:00"
         }
       ],
       "authored": {
@@ -867,7 +867,7 @@
       ],
       "http_status": 200,
       "model_calls": 1,
-      "seconds": 0.026,
+      "seconds": 0.03,
       "outcome": "clarify",
       "reason": "Semantic scope or negation has competing interpretations",
       "controls": [],
@@ -938,7 +938,7 @@
         {
           "ordinal": 4,
           "route": "anthropic",
-          "started_utc": "2026-11-14T19:14:37+00:00",
+          "started_utc": "2026-11-14T20:05:22+00:00",
           "request_sha256": "f49dfeb39b23d8cb55f1c17785699b623843c19aecf6abc58257c71e5c11681a",
           "schema_sha256": "c17ffdc323270f920ba024c26cc4976e9218fd921434497083e53296935ccf3e",
           "requested_model": "standin-model",
@@ -957,8 +957,8 @@
           },
           "stop_reason": "end_turn",
           "model_match_rule": "equal",
-          "elapsed_seconds": 0.007,
-          "finished_utc": "2026-11-14T19:14:37+00:00"
+          "elapsed_seconds": 0.008,
+          "finished_utc": "2026-11-14T20:05:22+00:00"
         }
       ],
       "authored": {
@@ -993,7 +993,7 @@
       ],
       "http_status": 200,
       "model_calls": 1,
-      "seconds": 0.032,
+      "seconds": 0.031,
       "outcome": "unsupported",
       "reason": "Authored rehearsal reply, not model output. A limit for each day is a quota. The controls can increase, decrease or exclude whole terms. They cannot count items or use the date.",
       "controls": [],
@@ -1051,7 +1051,7 @@
         {
           "ordinal": 5,
           "route": "anthropic",
-          "started_utc": "2026-11-14T19:14:37+00:00",
+          "started_utc": "2026-11-14T20:05:22+00:00",
           "request_sha256": "6ccb683dcc358c23271b6f6510cdec42a980fe286c87a9676c3f97dc26621bb9",
           "schema_sha256": "c17ffdc323270f920ba024c26cc4976e9218fd921434497083e53296935ccf3e",
           "requested_model": "standin-model",
@@ -1071,7 +1071,7 @@
           "stop_reason": "end_turn",
           "model_match_rule": "equal",
           "elapsed_seconds": 0.008,
-          "finished_utc": "2026-11-14T19:14:37+00:00"
+          "finished_utc": "2026-11-14T20:05:22+00:00"
         }
       ],
       "authored": {
@@ -1106,7 +1106,7 @@
       ],
       "http_status": 200,
       "model_calls": 0,
-      "seconds": 0.016,
+      "seconds": 0.015,
       "outcome": "clarify",
       "reason": "The request matches the negated-command pattern (for example \"do not hide ...\"). The application does not guess what a negated control means. Write a positive instruction, for example \"show more ...\", \"show less ...\" or \"remove ...\", and send it again.",
       "controls": [],
@@ -1170,7 +1170,7 @@
       ],
       "http_status": 200,
       "model_calls": 1,
-      "seconds": 0.033,
+      "seconds": 0.026,
       "outcome": "no_match",
       "reason": "Authored rehearsal reply, not model output. No existing category or tag is about astronomy.",
       "controls": [],
@@ -1228,7 +1228,7 @@
         {
           "ordinal": 6,
           "route": "anthropic",
-          "started_utc": "2026-11-14T19:14:37+00:00",
+          "started_utc": "2026-11-14T20:05:22+00:00",
           "request_sha256": "6dade0a5e0bace3a16b8c04aa5baf80ec58d971fac6859d9fd8c05c4dea4f897",
           "schema_sha256": "c17ffdc323270f920ba024c26cc4976e9218fd921434497083e53296935ccf3e",
           "requested_model": "standin-model",
@@ -1247,8 +1247,8 @@
           },
           "stop_reason": "end_turn",
           "model_match_rule": "equal",
-          "elapsed_seconds": 0.008,
-          "finished_utc": "2026-11-14T19:14:37+00:00"
+          "elapsed_seconds": 0.006,
+          "finished_utc": "2026-11-14T20:05:22+00:00"
         }
       ],
       "authored": {
@@ -1283,7 +1283,7 @@
       ],
       "http_status": 200,
       "model_calls": 2,
-      "seconds": 0.042,
+      "seconds": 0.037,
       "outcome": "review",
       "reason": null,
       "controls": [
@@ -1356,7 +1356,7 @@
         {
           "ordinal": 7,
           "route": "anthropic",
-          "started_utc": "2026-11-14T19:14:37+00:00",
+          "started_utc": "2026-11-14T20:05:22+00:00",
           "request_sha256": "9a8bcf9178c27c003f793e604a0de7f882af60e4d0071df737f229661a6d2668",
           "schema_sha256": "507fd5c22672c98068a7b4dd36ae2dc2ba1c667ad8ca4dba2aa958bcd1b4f8cf",
           "requested_model": "standin-model",
@@ -1375,13 +1375,13 @@
           },
           "stop_reason": "end_turn",
           "model_match_rule": "equal",
-          "elapsed_seconds": 0.008,
-          "finished_utc": "2026-11-14T19:14:37+00:00"
+          "elapsed_seconds": 0.006,
+          "finished_utc": "2026-11-14T20:05:22+00:00"
         },
         {
           "ordinal": 8,
           "route": "anthropic",
-          "started_utc": "2026-11-14T19:14:37+00:00",
+          "started_utc": "2026-11-14T20:05:22+00:00",
           "request_sha256": "3e3837988da8a2631efc54c71f6816f8ced70730ab453374f357e994b9cda3fb",
           "schema_sha256": "83b0904d7080ec852d2c6177c3671e69f2263c8939df770c2d2cbe50ae9388a9",
           "requested_model": "standin-model",
@@ -1400,8 +1400,8 @@
           },
           "stop_reason": "end_turn",
           "model_match_rule": "equal",
-          "elapsed_seconds": 0.008,
-          "finished_utc": "2026-11-14T19:14:37+00:00"
+          "elapsed_seconds": 0.007,
+          "finished_utc": "2026-11-14T20:05:22+00:00"
         }
       ],
       "authored": {
@@ -1446,7 +1446,7 @@
       ],
       "http_status": 200,
       "model_calls": 1,
-      "seconds": 0.028,
+      "seconds": 0.034,
       "outcome": "draft_ready",
       "reason": null,
       "controls": [],
@@ -1482,7 +1482,7 @@
         {
           "ordinal": 9,
           "route": "anthropic",
-          "started_utc": "2026-11-14T19:14:37+00:00",
+          "started_utc": "2026-11-14T20:05:22+00:00",
           "request_sha256": "2b87effee265f84b5c2043f9141a575e89abf0baebf1773e67d49d5c056cb6a0",
           "schema_sha256": "f7ae795a25341b338d9ac52d9b879e410dd66e3e3535a2be1c69a194799b568e",
           "requested_model": "standin-model",
@@ -1501,8 +1501,8 @@
           },
           "stop_reason": "end_turn",
           "model_match_rule": "equal",
-          "elapsed_seconds": 0.007,
-          "finished_utc": "2026-11-14T19:14:38+00:00"
+          "elapsed_seconds": 0.012,
+          "finished_utc": "2026-11-14T20:05:22+00:00"
         }
       ],
       "authored": {

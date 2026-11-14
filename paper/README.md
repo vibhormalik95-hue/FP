@@ -1,6 +1,6 @@
 # Paper sources
 
-**Draft, not ready for submission.** The fifteen run values are filled with the runs of 14 November 2026 on the integrated revision `e797ce1` (records: `docs/evidence/2026-11-14-integrated/`). An earlier build of this paper held the values of revision `b7c5a91`; those records stay in `docs/evidence/2026-11-14/`.
+**Draft, not ready for submission.** The fifteen run values are filled with the runs of 14 November 2026 on the integrated revision `ff92666` (records: `docs/evidence/2026-11-14-integrated/`). An earlier build of this paper held the values of revision `b7c5a91`; those records stay in `docs/evidence/2026-11-14/`.
 
 | File | Content |
 | --- | --- |

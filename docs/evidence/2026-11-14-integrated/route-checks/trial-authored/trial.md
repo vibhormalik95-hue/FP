@@ -5,8 +5,8 @@
 - An outcome that equals the authored rehearsal reply is not proof of a correct interpretation.
 - Each case ran one time. Nothing was approved and nothing was applied.
 
-- Started (UTC): 2026-11-14T19:14:35+00:00. Finished (UTC): 2026-11-14T19:14:35+00:00.
-- Source fingerprint: `24d0a8246edc2f0bc261e163795da55ee24ce2b364a566b8fa2edc603c146cd3`
+- Started (UTC): 2026-11-14T20:05:20+00:00. Finished (UTC): 2026-11-14T20:05:20+00:00.
+- Source fingerprint: `22ba794e2091685fa879dcc43b68233dae1963fa4231c38dd73a36f13639068a`
 - Provider: hand-written rehearsal replies. No model.
 - Configuration digest: 0d746e68d25ba67d501d549ebd4985b8806fb1f29902345616371098af5ff577
 - Cases: 9. Model calls: 9. Cases that ended in an error: 0.

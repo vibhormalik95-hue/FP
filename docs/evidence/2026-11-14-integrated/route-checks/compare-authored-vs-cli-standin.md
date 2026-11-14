@@ -1,27 +1,27 @@
-Scenario: tags. Source fingerprint: 24d0a8246edc2f0bc261e163795da55ee24ce2b364a566b8fa2edc603c146cd3
-Trial A: /home/claude/work/runs/merged/route-checks/trial-authored (started 2026-11-14T19:14:35+00:00 UTC)
+Scenario: tags. Source fingerprint: 22ba794e2091685fa879dcc43b68233dae1963fa4231c38dd73a36f13639068a
+Trial A: /home/claude/work/runs/build-22ba794/route-checks/trial-authored (started 2026-11-14T20:05:20+00:00 UTC)
   Provider: hand-written rehearsal replies. No model.
   Configuration digest: 0d746e68d25ba67d501d549ebd4985b8806fb1f29902345616371098af5ff577
-Trial B: /home/claude/work/runs/merged/route-checks/trial-cli-standin (started 2026-11-14T19:14:38+00:00 UTC)
+Trial B: /home/claude/work/runs/build-22ba794/route-checks/trial-cli-standin (started 2026-11-14T20:05:23+00:00 UTC)
   Provider: model route; backend local-cli-claude-code; model standin-model (the name that the route declares; the application cannot attest it)
   Route: cli
-  Program: /home/claude/work/runs/merged/route-checks/files/bin/claude (Claude Code CLI, print mode, one process for each call)
+  Program: /home/claude/work/runs/build-22ba794/route-checks/files/bin/claude (Claude Code CLI, print mode, one process for each call)
   Model: standin-model
   Structured output: prompt; 600 s for one call
   Call allowance for one run: 40 (a counter in this program, not a billing limit)
-  Configuration digest: 3a1c06b48b62fd7af9eaa21b323c6eb090430353d5e343403a90db8115fb49f4
+  Configuration digest: b7344ec3275177613eee5fc620bfeada1357cbb814f62928c3cd9cdffa52aef8
 
 Case                    Outcome A    Outcome B    Same outcome  Same items and action  Seconds A  Seconds B
 ----------------------  -----------  -----------  ------------  ---------------------  ---------  ---------
 vocabulary              review       review       yes           yes                    0.0        0.2
-vocabulary:literal      review       review       yes           yes                    0.0        0.1
-vocabulary:mixed        review       review       yes           yes                    0.0        0.2
+vocabulary:literal      review       review       yes           yes                    0.0        0.2
+vocabulary:mixed        review       review       yes           yes                    0.0        0.1
 vocabulary:ambiguous    clarify      clarify      yes           not applicable         0.0        0.2
-vocabulary:unsupported  unsupported  unsupported  yes           not applicable         0.0        0.2
+vocabulary:unsupported  unsupported  unsupported  yes           not applicable         0.0        0.1
 vocabulary:negated      clarify      clarify      yes           not applicable         0.0        0.0
 vocabulary:no_match     no match     no match     yes           not applicable         0.0        0.2
 configured_model        review       review       yes           yes                    0.0        0.3
-synthetic               draft ready  draft ready  yes           not applicable         0.0        0.2
+synthetic               draft ready  draft ready  yes           not applicable         0.0        0.1
 
 Cases that both trials ran: 9. Same outcome: 9. Both gave a review: 4; same items and action in 4 of them.
 "Same items and action" compares two reviews: the same action and the same items in each control.

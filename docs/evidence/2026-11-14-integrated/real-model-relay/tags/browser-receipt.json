@@ -1,6 +1,6 @@
 {
   "kind": "browser run of the served application",
-  "started_utc": "2026-11-14T19:04:58.398Z",
+  "started_utc": "2026-11-14T20:05:48.803Z",
   "base": "http://127.0.0.1:8871",
   "scenario": "tags",
   "flows": [
@@ -13,7 +13,7 @@
   ],
   "review_mode": "wait",
   "reviewer": "AI operator: a Claude Opus sub-agent of the Cowork lead session; not a person",
-  "source_fingerprint": "24d0a8246edc2f0bc261e163795da55ee24ce2b364a566b8fa2edc603c146cd3",
+  "source_fingerprint": "22ba794e2091685fa879dcc43b68233dae1963fa4231c38dd73a36f13639068a",
   "status": {
     "data_mode": "fixture",
     "source": "synthetic://categories-and-tags-scenario-20261114",
@@ -42,7 +42,7 @@
       "synthetic": "A fictional 40-second clip about repairing a kite, for a test feed."
     },
     "scenario": "tags",
-    "source_fingerprint": "24d0a8246edc2f0bc261e163795da55ee24ce2b364a566b8fa2edc603c146cd3",
+    "source_fingerprint": "22ba794e2091685fa879dcc43b68233dae1963fa4231c38dd73a36f13639068a",
     "ollama_status": "Disabled by hosted-only application policy.",
     "research_note": "Synthetic category controls measure offline behavior; this demo does not establish human agency or satisfaction.",
     "category_note": "Opaque dataset category IDs; no invented topic names.",
@@ -56,7 +56,7 @@
       "name": "session established",
       "passed": true,
       "detail": null,
-      "utc": "2026-11-14T19:04:59.337Z"
+      "utc": "2026-11-14T20:05:49.997Z"
     },
     {
       "name": "automatic review is used only when no model is connected",
@@ -65,13 +65,13 @@
         "review_mode": "wait",
         "provider": "operator-relay-file-queue"
       },
-      "utc": "2026-11-14T19:04:59.337Z"
+      "utc": "2026-11-14T20:05:49.997Z"
     },
     {
       "name": "the language view names what it is and makes no accuracy claim",
       "passed": true,
       "detail": null,
-      "utc": "2026-11-14T19:04:59.379Z"
+      "utc": "2026-11-14T20:05:50.056Z"
     },
     {
       "name": "manual: starts with no applied control",
@@ -79,13 +79,13 @@
       "detail": {
         "eligible": 10
       },
-      "utc": "2026-11-14T19:05:07.761Z"
+      "utc": "2026-11-14T20:05:58.317Z"
     },
     {
       "name": "manual: the stage line marks the interpretation stage as not used",
       "passed": true,
       "detail": null,
-      "utc": "2026-11-14T19:05:07.898Z"
+      "utc": "2026-11-14T20:05:58.381Z"
     },
     {
       "name": "manual: review appears",
@@ -93,7 +93,7 @@
       "detail": {
         "http": 200
       },
-      "utc": "2026-11-14T19:05:10.724Z"
+      "utc": "2026-11-14T20:06:01.140Z"
     },
     {
       "name": "manual: the server reported no model call for this review",
@@ -101,13 +101,13 @@
       "detail": {
         "model_calls": 0
       },
-      "utc": "2026-11-14T19:05:10.725Z"
+      "utc": "2026-11-14T20:06:01.141Z"
     },
     {
       "name": "manual: the first block is \"Your selection\", says that no model is used, and no model block exists",
       "passed": true,
       "detail": null,
-      "utc": "2026-11-14T19:05:10.737Z"
+      "utc": "2026-11-14T20:06:01.149Z"
     },
     {
       "name": "manual: the page moves the focus to the heading of the review and shows it in the window",
@@ -117,7 +117,7 @@
         "text": "Proposed change: Manual: Cooking",
         "in_view": true
       },
-      "utc": "2026-11-14T19:05:11.031Z"
+      "utc": "2026-11-14T20:06:01.423Z"
     },
     {
       "name": "manual: the preview left the applied groups, the revision and the applied feed unchanged",
@@ -127,13 +127,13 @@
         "revision": 0,
         "eligible": 10
       },
-      "utc": "2026-11-14T19:05:11.051Z"
+      "utc": "2026-11-14T20:06:01.438Z"
     },
     {
       "name": "manual: the preview left the conditions A to E, the topic tool and the fictional items unchanged",
       "passed": true,
       "detail": null,
-      "utc": "2026-11-14T19:05:11.134Z"
+      "utc": "2026-11-14T20:06:01.455Z"
     },
     {
       "name": "manual: page still shows the starting items during preview",
@@ -152,7 +152,7 @@
           61003
         ]
       },
-      "utc": "2026-11-14T19:05:11.177Z"
+      "utc": "2026-11-14T20:06:01.520Z"
     },
     {
       "name": "manual: the review names at least one item that would change",
@@ -172,7 +172,7 @@
           }
         ]
       },
-      "utc": "2026-11-14T19:05:11.178Z"
+      "utc": "2026-11-14T20:06:01.529Z"
     },
     {
       "name": "manual: the review has three separate blocks (Your selection, application checks, decision) and says that nothing is applied",
@@ -182,7 +182,7 @@
         "Application checks": 1,
         "Your decision": 1
       },
-      "utc": "2026-11-14T19:05:11.186Z"
+      "utc": "2026-11-14T20:06:01.589Z"
     },
     {
       "name": "manual: no check line of the review is shown as failed",
@@ -190,7 +190,7 @@
       "detail": {
         "failed": []
       },
-      "utc": "2026-11-14T19:05:11.191Z"
+      "utc": "2026-11-14T20:06:01.594Z"
     },
     {
       "name": "manual: the decision block names the control \"Manual: Cooking\" and each of its items",
@@ -202,7 +202,7 @@
           61009
         ]
       },
-      "utc": "2026-11-14T19:05:11.194Z"
+      "utc": "2026-11-14T20:06:01.597Z"
     },
     {
       "name": "manual: the evidence table lists every supplied item once for \"Manual: Cooking\", with its own description, and marks exactly the approved ones",
@@ -215,13 +215,13 @@
           61009
         ]
       },
-      "utc": "2026-11-14T19:05:11.199Z"
+      "utc": "2026-11-14T20:06:01.603Z"
     },
     {
       "name": "manual: preview order and eligible count match independently calculated effects",
       "passed": true,
       "detail": null,
-      "utc": "2026-11-14T19:05:11.200Z"
+      "utc": "2026-11-14T20:06:01.603Z"
     },
     {
       "name": "manual: the table states the result for each item that the approved controls remove",
@@ -233,7 +233,7 @@
           61009
         ]
       },
-      "utc": "2026-11-14T19:05:11.200Z"
+      "utc": "2026-11-14T20:06:01.604Z"
     },
     {
       "name": "manual: the table says \"ranked higher\" or \"ranked lower\" only for an item that moves in the preview feed",
@@ -241,7 +241,7 @@
       "detail": {
         "moved": []
       },
-      "utc": "2026-11-14T19:05:11.200Z"
+      "utc": "2026-11-14T20:06:01.604Z"
     },
     {
       "name": "manual: the preview feed of the server has the order that the approved controls give",
@@ -266,7 +266,7 @@
           61003
         ]
       },
-      "utc": "2026-11-14T19:05:11.203Z"
+      "utc": "2026-11-14T20:06:01.607Z"
     },
     {
       "name": "manual: the preview lists the feed now and after approval, as the server computed them, and says that the applied feed is unchanged",
@@ -282,13 +282,13 @@
           61003
         ]
       },
-      "utc": "2026-11-14T19:05:11.211Z"
+      "utc": "2026-11-14T20:06:01.616Z"
     },
     {
       "name": "manual: after Apply the focus is on the heading \"What changed\", in the window",
       "passed": true,
       "detail": null,
-      "utc": "2026-11-14T19:05:40.488Z"
+      "utc": "2026-11-14T20:06:31.386Z"
     },
     {
       "name": "manual: Apply removed exactly the items of the approved removal controls",
@@ -302,7 +302,7 @@
           61009
         ]
       },
-      "utc": "2026-11-14T19:05:40.488Z"
+      "utc": "2026-11-14T20:06:31.387Z"
     },
     {
       "name": "manual: Apply changed the score of exactly the items of the approved rank controls, by the stated amount",
@@ -310,7 +310,7 @@
       "detail": {
         "changed": []
       },
-      "utc": "2026-11-14T19:05:40.489Z"
+      "utc": "2026-11-14T20:06:31.387Z"
     },
     {
       "name": "manual: the applied feed has the order that the approved controls give, and it is the preview feed",
@@ -326,7 +326,7 @@
           61003
         ]
       },
-      "utc": "2026-11-14T19:05:40.489Z"
+      "utc": "2026-11-14T20:06:31.387Z"
     },
     {
       "name": "manual: exactly the approved controls are applied, with exactly their items",
@@ -337,13 +337,13 @@
         ],
         "revision": 1
       },
-      "utc": "2026-11-14T19:05:40.490Z"
+      "utc": "2026-11-14T20:06:31.388Z"
     },
     {
       "name": "manual: Apply left the conditions A to E, the topic tool and the fictional items unchanged",
       "passed": true,
       "detail": null,
-      "utc": "2026-11-14T19:05:40.499Z"
+      "utc": "2026-11-14T20:06:31.400Z"
     },
     {
       "name": "manual: page shows the feed that the server holds",
@@ -359,13 +359,13 @@
           61003
         ]
       },
-      "utc": "2026-11-14T19:05:40.507Z"
+      "utc": "2026-11-14T20:06:31.432Z"
     },
     {
       "name": "manual: the page records what changed and how to undo it",
       "passed": true,
       "detail": null,
-      "utc": "2026-11-14T19:05:40.510Z"
+      "utc": "2026-11-14T20:06:31.436Z"
     },
     {
       "name": "manual: the list of applied controls in the panel is the list of the server",
@@ -375,7 +375,7 @@
           "Manual: Cooking: Remove from the feed; items 61001, 61002, 61009"
         ]
       },
-      "utc": "2026-11-14T19:05:40.513Z"
+      "utc": "2026-11-14T20:06:31.442Z"
     },
     {
       "name": "manual: undo review alone changed nothing",
@@ -383,7 +383,7 @@
       "detail": {
         "eligible": 7
       },
-      "utc": "2026-11-14T19:05:48.846Z"
+      "utc": "2026-11-14T20:06:39.796Z"
     },
     {
       "name": "manual: Undo restored the exact earlier feed and the exact earlier controls",
@@ -393,13 +393,13 @@
         "identical_to_start": true,
         "revision": 2
       },
-      "utc": "2026-11-14T19:06:00.441Z"
+      "utc": "2026-11-14T20:06:50.528Z"
     },
     {
       "name": "manual: Undo left the conditions A to E, the topic tool and the fictional items unchanged",
       "passed": true,
       "detail": null,
-      "utc": "2026-11-14T19:06:00.454Z"
+      "utc": "2026-11-14T20:06:50.563Z"
     },
     {
       "name": "manual: page shows the starting items again and says that the earlier feed is restored",
@@ -418,7 +418,7 @@
           61003
         ]
       },
-      "utc": "2026-11-14T19:06:00.499Z"
+      "utc": "2026-11-14T20:06:50.594Z"
     },
     {
       "name": "vocabulary: starts with no applied control",
@@ -426,7 +426,7 @@
       "detail": {
         "eligible": 10
       },
-      "utc": "2026-11-14T19:06:04.863Z"
+      "utc": "2026-11-14T20:06:54.891Z"
     },
     {
       "name": "vocabulary: the page lists every existing category and tag of the scope before any model call",
@@ -435,19 +435,19 @@
         "terms": 28,
         "note": "Existing category and tag values of the supplied items. A tag field is split on commas, semicolons and vertical bars. No model was called."
       },
-      "utc": "2026-11-14T19:06:04.992Z"
+      "utc": "2026-11-14T20:06:55.020Z"
     },
     {
       "name": "the server supplies the bundled request \"vocabulary\"",
       "passed": true,
       "detail": null,
-      "utc": "2026-11-14T19:06:04.996Z"
+      "utc": "2026-11-14T20:06:55.036Z"
     },
     {
       "name": "the request text is the exact bundled request \"vocabulary\"",
       "passed": true,
       "detail": null,
-      "utc": "2026-11-14T19:06:05.051Z"
+      "utc": "2026-11-14T20:06:55.115Z"
     },
     {
       "name": "vocabulary: the items of \"Remove: category \"Cooking\", category \"Baking\", category \"Home recipe... [25c4f8]\" are exactly the items that carry its chosen names in the term list of the server",
@@ -466,7 +466,7 @@
           61009
         ]
       },
-      "utc": "2026-11-14T19:06:36.727Z"
+      "utc": "2026-11-14T20:07:30.353Z"
     },
     {
       "name": "vocabulary: every check that the server made is shown as passed in the application checks block",
@@ -474,7 +474,7 @@
       "detail": {
         "checks": 16
       },
-      "utc": "2026-11-14T19:06:36.733Z"
+      "utc": "2026-11-14T20:07:30.359Z"
     },
     {
       "name": "vocabulary: the reply block shows the span of the request and each chosen name",
@@ -495,19 +495,19 @@
           ]
         }
       ],
-      "utc": "2026-11-14T19:06:36.746Z"
+      "utc": "2026-11-14T20:07:30.364Z"
     },
     {
       "name": "vocabulary: the server sends the reason of the whole reply, and the page shows it in the reply block and not under the application checks",
       "passed": true,
       "detail": null,
-      "utc": "2026-11-14T19:06:36.746Z"
+      "utc": "2026-11-14T20:07:30.364Z"
     },
     {
       "name": "vocabulary: the chosen names are categories or tags, and the request text is not changed",
       "passed": true,
       "detail": null,
-      "utc": "2026-11-14T19:06:36.747Z"
+      "utc": "2026-11-14T20:07:30.365Z"
     },
     {
       "name": "vocabulary: an item that no chosen name selects is listed with its own categories and tags and the reason",
@@ -522,7 +522,7 @@
           61010
         ]
       },
-      "utc": "2026-11-14T19:06:36.753Z"
+      "utc": "2026-11-14T20:07:30.371Z"
     },
     {
       "name": "vocabulary: the page moves the focus to the heading of the review and shows it in the window",
@@ -532,7 +532,7 @@
         "text": "Proposed change: Remove: category \"Cooking\", category \"Baking\", category \"Home recipe... [25c4f8]",
         "in_view": true
       },
-      "utc": "2026-11-14T19:06:37.179Z"
+      "utc": "2026-11-14T20:07:30.700Z"
     },
     {
       "name": "vocabulary: the preview left the applied groups, the revision and the applied feed unchanged",
@@ -542,13 +542,13 @@
         "revision": 2,
         "eligible": 10
       },
-      "utc": "2026-11-14T19:06:37.184Z"
+      "utc": "2026-11-14T20:07:30.711Z"
     },
     {
       "name": "vocabulary: the preview left the conditions A to E, the topic tool and the fictional items unchanged",
       "passed": true,
       "detail": null,
-      "utc": "2026-11-14T19:06:37.192Z"
+      "utc": "2026-11-14T20:07:30.742Z"
     },
     {
       "name": "vocabulary: page still shows the starting items during preview",
@@ -567,7 +567,7 @@
           61003
         ]
       },
-      "utc": "2026-11-14T19:06:37.198Z"
+      "utc": "2026-11-14T20:07:30.840Z"
     },
     {
       "name": "vocabulary: the review names at least one item that would change",
@@ -588,7 +588,7 @@
           }
         ]
       },
-      "utc": "2026-11-14T19:06:37.199Z"
+      "utc": "2026-11-14T20:07:30.844Z"
     },
     {
       "name": "vocabulary: the review has three separate blocks (Model output (not verified), application checks, decision) and says that nothing is applied",
@@ -598,7 +598,7 @@
         "Application checks": 1,
         "Your decision": 1
       },
-      "utc": "2026-11-14T19:06:37.207Z"
+      "utc": "2026-11-14T20:07:30.868Z"
     },
     {
       "name": "vocabulary: no check line of the review is shown as failed",
@@ -606,7 +606,7 @@
       "detail": {
         "failed": []
       },
-      "utc": "2026-11-14T19:06:37.210Z"
+      "utc": "2026-11-14T20:07:30.881Z"
     },
     {
       "name": "vocabulary: the decision block names the control \"Remove: category \"Cooking\", category \"Baking\", category \"Home recipe... [25c4f8]\" and each of its items",
@@ -619,7 +619,7 @@
           61009
         ]
       },
-      "utc": "2026-11-14T19:06:37.213Z"
+      "utc": "2026-11-14T20:07:30.885Z"
     },
     {
       "name": "vocabulary: the evidence table lists every supplied item once for \"Remove: category \"Cooking\", category \"Baking\", category \"Home recipe... [25c4f8]\", with its own description, and marks exactly the approved ones",
@@ -633,7 +633,7 @@
           61009
         ]
       },
-      "utc": "2026-11-14T19:06:37.218Z"
+      "utc": "2026-11-14T20:07:30.906Z"
     },
     {
       "name": "vocabulary: membership equals the union of chosen term members",
@@ -653,13 +653,13 @@
           61009
         ]
       },
-      "utc": "2026-11-14T19:06:37.218Z"
+      "utc": "2026-11-14T20:07:30.907Z"
     },
     {
       "name": "vocabulary: preview order and eligible count match independently calculated effects",
       "passed": true,
       "detail": null,
-      "utc": "2026-11-14T19:06:37.219Z"
+      "utc": "2026-11-14T20:07:30.910Z"
     },
     {
       "name": "vocabulary: the table states the result for each item that the approved controls remove",
@@ -672,7 +672,7 @@
           61009
         ]
       },
-      "utc": "2026-11-14T19:06:37.220Z"
+      "utc": "2026-11-14T20:07:30.915Z"
     },
     {
       "name": "vocabulary: the table says \"ranked higher\" or \"ranked lower\" only for an item that moves in the preview feed",
@@ -680,7 +680,7 @@
       "detail": {
         "moved": []
       },
-      "utc": "2026-11-14T19:06:37.221Z"
+      "utc": "2026-11-14T20:07:30.920Z"
     },
     {
       "name": "vocabulary: the preview feed of the server has the order that the approved controls give",
@@ -703,7 +703,7 @@
           61010
         ]
       },
-      "utc": "2026-11-14T19:06:37.225Z"
+      "utc": "2026-11-14T20:07:30.928Z"
     },
     {
       "name": "vocabulary: the preview lists the feed now and after approval, as the server computed them, and says that the applied feed is unchanged",
@@ -718,13 +718,13 @@
           61010
         ]
       },
-      "utc": "2026-11-14T19:06:37.235Z"
+      "utc": "2026-11-14T20:07:30.962Z"
     },
     {
       "name": "vocabulary: after Apply the focus is on the heading \"What changed\", in the window",
       "passed": true,
       "detail": null,
-      "utc": "2026-11-14T19:07:13.361Z"
+      "utc": "2026-11-14T20:08:02.908Z"
     },
     {
       "name": "vocabulary: Apply removed exactly the items of the approved removal controls",
@@ -739,7 +739,7 @@
           61009
         ]
       },
-      "utc": "2026-11-14T19:07:13.361Z"
+      "utc": "2026-11-14T20:08:02.912Z"
     },
     {
       "name": "vocabulary: Apply changed the score of exactly the items of the approved rank controls, by the stated amount",
@@ -747,7 +747,7 @@
       "detail": {
         "changed": []
       },
-      "utc": "2026-11-14T19:07:13.362Z"
+      "utc": "2026-11-14T20:08:02.924Z"
     },
     {
       "name": "vocabulary: the applied feed has the order that the approved controls give, and it is the preview feed",
@@ -762,7 +762,7 @@
           61010
         ]
       },
-      "utc": "2026-11-14T19:07:13.368Z"
+      "utc": "2026-11-14T20:08:02.926Z"
     },
     {
       "name": "vocabulary: exactly the approved controls are applied, with exactly their items",
@@ -773,13 +773,13 @@
         ],
         "revision": 3
       },
-      "utc": "2026-11-14T19:07:13.372Z"
+      "utc": "2026-11-14T20:08:02.926Z"
     },
     {
       "name": "vocabulary: Apply left the conditions A to E, the topic tool and the fictional items unchanged",
       "passed": true,
       "detail": null,
-      "utc": "2026-11-14T19:07:13.387Z"
+      "utc": "2026-11-14T20:08:02.958Z"
     },
     {
       "name": "vocabulary: page shows the feed that the server holds",
@@ -794,13 +794,13 @@
           61010
         ]
       },
-      "utc": "2026-11-14T19:07:13.396Z"
+      "utc": "2026-11-14T20:08:02.974Z"
     },
     {
       "name": "vocabulary: the page records what changed and how to undo it",
       "passed": true,
       "detail": null,
-      "utc": "2026-11-14T19:07:13.398Z"
+      "utc": "2026-11-14T20:08:02.978Z"
     },
     {
       "name": "vocabulary: the list of applied controls in the panel is the list of the server",
@@ -810,7 +810,7 @@
           "Remove: category \"Cooking\", category \"Baking\", category \"Home recipe... [25c4f8]: Remove from the feed; items 61001, 61002, 61003, 61009"
         ]
       },
-      "utc": "2026-11-14T19:07:13.401Z"
+      "utc": "2026-11-14T20:08:02.981Z"
     },
     {
       "name": "vocabulary: undo review alone changed nothing",
@@ -818,7 +818,7 @@
       "detail": {
         "eligible": 6
       },
-      "utc": "2026-11-14T19:07:22.063Z"
+      "utc": "2026-11-14T20:08:11.382Z"
     },
     {
       "name": "vocabulary: Undo restored the exact earlier feed and the exact earlier controls",
@@ -828,13 +828,13 @@
         "identical_to_start": true,
         "revision": 4
       },
-      "utc": "2026-11-14T19:07:33.438Z"
+      "utc": "2026-11-14T20:08:22.070Z"
     },
     {
       "name": "vocabulary: Undo left the conditions A to E, the topic tool and the fictional items unchanged",
       "passed": true,
       "detail": null,
-      "utc": "2026-11-14T19:07:33.462Z"
+      "utc": "2026-11-14T20:08:22.090Z"
     },
     {
       "name": "vocabulary: page shows the starting items again and says that the earlier feed is restored",
@@ -853,7 +853,7 @@
           61003
         ]
       },
-      "utc": "2026-11-14T19:07:33.475Z"
+      "utc": "2026-11-14T20:08:22.106Z"
     },
     {
       "name": "mixed: starts with no applied control",
@@ -861,25 +861,25 @@
       "detail": {
         "eligible": 10
       },
-      "utc": "2026-11-14T19:07:37.857Z"
+      "utc": "2026-11-14T20:08:26.349Z"
     },
     {
       "name": "the server supplies the bundled request \"vocabulary:mixed\"",
       "passed": true,
       "detail": null,
-      "utc": "2026-11-14T19:07:37.869Z"
+      "utc": "2026-11-14T20:08:26.364Z"
     },
     {
       "name": "the request text is the exact bundled request \"vocabulary:mixed\"",
       "passed": true,
       "detail": null,
-      "utc": "2026-11-14T19:07:37.884Z"
+      "utc": "2026-11-14T20:08:26.408Z"
     },
     {
       "name": "mixed: the bundled request produces both distinct controls",
       "passed": true,
       "detail": null,
-      "utc": "2026-11-14T19:08:10.596Z"
+      "utc": "2026-11-14T20:08:56.042Z"
     },
     {
       "name": "mixed: the items of \"Show more: category \"Music\", category \"Guitar\", category \"Live sessi... [5705b2]\" are exactly the items that carry its chosen names in the term list of the server",
@@ -894,7 +894,7 @@
           61008
         ]
       },
-      "utc": "2026-11-14T19:08:10.609Z"
+      "utc": "2026-11-14T20:08:56.058Z"
     },
     {
       "name": "mixed: the items of \"Remove: category \"Cooking\", category \"Baking\", category \"Home recipe... [25c4f8]\" are exactly the items that carry its chosen names in the term list of the server",
@@ -913,7 +913,7 @@
           61009
         ]
       },
-      "utc": "2026-11-14T19:08:10.611Z"
+      "utc": "2026-11-14T20:08:56.059Z"
     },
     {
       "name": "mixed: the rank control \"Show more: category \"Music\", category \"Guitar\", category \"Live sessi... [5705b2]\" moves at least one of its items in the preview feed",
@@ -944,7 +944,7 @@
           61010
         ]
       },
-      "utc": "2026-11-14T19:08:10.613Z"
+      "utc": "2026-11-14T20:08:56.060Z"
     },
     {
       "name": "mixed: the review shows one row group for each control of the request",
@@ -955,13 +955,13 @@
           "Remove: category \"Cooking\", category \"Baking\", category \"Home recipe... [25c4f8]: exclude"
         ]
       },
-      "utc": "2026-11-14T19:08:10.629Z"
+      "utc": "2026-11-14T20:08:56.068Z"
     },
     {
       "name": "mixed: the decision block says that one approval applies all controls together",
       "passed": true,
       "detail": null,
-      "utc": "2026-11-14T19:08:10.635Z"
+      "utc": "2026-11-14T20:08:56.071Z"
     },
     {
       "name": "mixed: the page moves the focus to the heading of the review and shows it in the window",
@@ -971,7 +971,7 @@
         "text": "Proposed change: 2 controls",
         "in_view": true
       },
-      "utc": "2026-11-14T19:08:11.147Z"
+      "utc": "2026-11-14T20:08:56.849Z"
     },
     {
       "name": "mixed: the preview left the applied groups, the revision and the applied feed unchanged",
@@ -981,13 +981,13 @@
         "revision": 4,
         "eligible": 10
       },
-      "utc": "2026-11-14T19:08:11.170Z"
+      "utc": "2026-11-14T20:08:56.858Z"
     },
     {
       "name": "mixed: the preview left the conditions A to E, the topic tool and the fictional items unchanged",
       "passed": true,
       "detail": null,
-      "utc": "2026-11-14T19:08:11.217Z"
+      "utc": "2026-11-14T20:08:56.890Z"
     },
     {
       "name": "mixed: page still shows the starting items during preview",
@@ -1006,7 +1006,7 @@
           61003
         ]
       },
-      "utc": "2026-11-14T19:08:11.356Z"
+      "utc": "2026-11-14T20:08:56.902Z"
     },
     {
       "name": "mixed: the review names at least one item that would change",
@@ -1037,7 +1037,7 @@
           }
         ]
       },
-      "utc": "2026-11-14T19:08:11.357Z"
+      "utc": "2026-11-14T20:08:56.908Z"
     },
     {
       "name": "mixed: the review has three separate blocks (Model output (not verified), application checks, decision) and says that nothing is applied",
@@ -1047,7 +1047,7 @@
         "Application checks": 1,
         "Your decision": 1
       },
-      "utc": "2026-11-14T19:08:11.374Z"
+      "utc": "2026-11-14T20:08:56.948Z"
     },
     {
       "name": "mixed: no check line of the review is shown as failed",
@@ -1055,7 +1055,7 @@
       "detail": {
         "failed": []
       },
-      "utc": "2026-11-14T19:08:11.381Z"
+      "utc": "2026-11-14T20:08:56.954Z"
     },
     {
       "name": "mixed: the decision block names the control \"Show more: category \"Music\", category \"Guitar\", category \"Live sessi... [5705b2]\" and each of its items",
@@ -1066,7 +1066,7 @@
           61008
         ]
       },
-      "utc": "2026-11-14T19:08:11.389Z"
+      "utc": "2026-11-14T20:08:56.963Z"
     },
     {
       "name": "mixed: the decision block names the control \"Remove: category \"Cooking\", category \"Baking\", category \"Home recipe... [25c4f8]\" and each of its items",
@@ -1079,7 +1079,7 @@
           61009
         ]
       },
-      "utc": "2026-11-14T19:08:11.391Z"
+      "utc": "2026-11-14T20:08:56.963Z"
     },
     {
       "name": "mixed: the evidence table lists every supplied item once for \"Show more: category \"Music\", category \"Guitar\", category \"Live sessi... [5705b2]\", with its own description, and marks exactly the approved ones",
@@ -1091,7 +1091,7 @@
           61008
         ]
       },
-      "utc": "2026-11-14T19:08:11.410Z"
+      "utc": "2026-11-14T20:08:56.985Z"
     },
     {
       "name": "mixed: the evidence table lists every supplied item once for \"Remove: category \"Cooking\", category \"Baking\", category \"Home recipe... [25c4f8]\", with its own description, and marks exactly the approved ones",
@@ -1105,7 +1105,7 @@
           61009
         ]
       },
-      "utc": "2026-11-14T19:08:11.416Z"
+      "utc": "2026-11-14T20:08:56.985Z"
     },
     {
       "name": "mixed: membership equals the union of chosen term members",
@@ -1121,7 +1121,7 @@
           61008
         ]
       },
-      "utc": "2026-11-14T19:08:11.419Z"
+      "utc": "2026-11-14T20:08:56.986Z"
     },
     {
       "name": "mixed: membership equals the union of chosen term members",
@@ -1141,19 +1141,19 @@
           61009
         ]
       },
-      "utc": "2026-11-14T19:08:11.420Z"
+      "utc": "2026-11-14T20:08:56.987Z"
     },
     {
       "name": "mixed: preview order and eligible count match independently calculated effects",
       "passed": true,
       "detail": null,
-      "utc": "2026-11-14T19:08:11.424Z"
+      "utc": "2026-11-14T20:08:56.987Z"
     },
     {
       "name": "mixed: at least one boosted item moves higher",
       "passed": true,
       "detail": null,
-      "utc": "2026-11-14T19:08:11.428Z"
+      "utc": "2026-11-14T20:08:56.988Z"
     },
     {
       "name": "mixed: the table states the result for each item that the approved controls remove",
@@ -1166,7 +1166,7 @@
           61009
         ]
       },
-      "utc": "2026-11-14T19:08:11.432Z"
+      "utc": "2026-11-14T20:08:56.988Z"
     },
     {
       "name": "mixed: the table says \"ranked higher\" or \"ranked lower\" only for an item that moves in the preview feed",
@@ -1179,7 +1179,7 @@
           61008
         ]
       },
-      "utc": "2026-11-14T19:08:11.444Z"
+      "utc": "2026-11-14T20:08:56.989Z"
     },
     {
       "name": "mixed: the preview feed of the server has the order that the approved controls give",
@@ -1202,7 +1202,7 @@
           61010
         ]
       },
-      "utc": "2026-11-14T19:08:11.448Z"
+      "utc": "2026-11-14T20:08:57.003Z"
     },
     {
       "name": "mixed: the preview lists the feed now and after approval, as the server computed them, and says that the applied feed is unchanged",
@@ -1217,13 +1217,13 @@
           61010
         ]
       },
-      "utc": "2026-11-14T19:08:11.470Z"
+      "utc": "2026-11-14T20:08:57.022Z"
     },
     {
       "name": "mixed: after Apply the focus is on the heading \"What changed\", in the window",
       "passed": true,
       "detail": null,
-      "utc": "2026-11-14T19:08:42.412Z"
+      "utc": "2026-11-14T20:09:27.444Z"
     },
     {
       "name": "mixed: Apply removed exactly the items of the approved removal controls",
@@ -1238,7 +1238,7 @@
           61009
         ]
       },
-      "utc": "2026-11-14T19:08:42.413Z"
+      "utc": "2026-11-14T20:09:27.445Z"
     },
     {
       "name": "mixed: Apply changed the score of exactly the items of the approved rank controls, by the stated amount",
@@ -1255,7 +1255,7 @@
           }
         ]
       },
-      "utc": "2026-11-14T19:08:42.414Z"
+      "utc": "2026-11-14T20:09:27.445Z"
     },
     {
       "name": "mixed: the applied feed has the order that the approved controls give, and it is the preview feed",
@@ -1270,7 +1270,7 @@
           61010
         ]
       },
-      "utc": "2026-11-14T19:08:42.415Z"
+      "utc": "2026-11-14T20:09:27.446Z"
     },
     {
       "name": "mixed: exactly the approved controls are applied, with exactly their items",
@@ -1282,13 +1282,13 @@
         ],
         "revision": 5
       },
-      "utc": "2026-11-14T19:08:42.416Z"
+      "utc": "2026-11-14T20:09:27.446Z"
     },
     {
       "name": "mixed: Apply left the conditions A to E, the topic tool and the fictional items unchanged",
       "passed": true,
       "detail": null,
-      "utc": "2026-11-14T19:08:42.441Z"
+      "utc": "2026-11-14T20:09:27.461Z"
     },
     {
       "name": "mixed: page shows the feed that the server holds",
@@ -1303,13 +1303,13 @@
           61010
         ]
       },
-      "utc": "2026-11-14T19:08:42.452Z"
+      "utc": "2026-11-14T20:09:27.496Z"
     },
     {
       "name": "mixed: the page records what changed and how to undo it",
       "passed": true,
       "detail": null,
-      "utc": "2026-11-14T19:08:42.456Z"
+      "utc": "2026-11-14T20:09:27.510Z"
     },
     {
       "name": "mixed: the list of applied controls in the panel is the list of the server",
@@ -1320,7 +1320,7 @@
           "Remove: category \"Cooking\", category \"Baking\", category \"Home recipe... [25c4f8]: Remove from the feed; items 61001, 61002, 61003, 61009"
         ]
       },
-      "utc": "2026-11-14T19:08:42.460Z"
+      "utc": "2026-11-14T20:09:27.516Z"
     },
     {
       "name": "mixed: undo review alone changed nothing",
@@ -1328,7 +1328,7 @@
       "detail": {
         "eligible": 6
       },
-      "utc": "2026-11-14T19:08:50.992Z"
+      "utc": "2026-11-14T20:09:35.898Z"
     },
     {
       "name": "mixed: Undo restored the exact earlier feed and the exact earlier controls",
@@ -1338,13 +1338,13 @@
         "identical_to_start": true,
         "revision": 6
       },
-      "utc": "2026-11-14T19:09:02.611Z"
+      "utc": "2026-11-14T20:09:46.546Z"
     },
     {
       "name": "mixed: Undo left the conditions A to E, the topic tool and the fictional items unchanged",
       "passed": true,
       "detail": null,
-      "utc": "2026-11-14T19:09:02.630Z"
+      "utc": "2026-11-14T20:09:46.561Z"
     },
     {
       "name": "mixed: page shows the starting items again and says that the earlier feed is restored",
@@ -1363,7 +1363,7 @@
           61003
         ]
       },
-      "utc": "2026-11-14T19:09:02.643Z"
+      "utc": "2026-11-14T20:09:46.585Z"
     },
     {
       "name": "outcomes: starts with no applied control",
@@ -1371,19 +1371,19 @@
       "detail": {
         "eligible": 10
       },
-      "utc": "2026-11-14T19:09:06.973Z"
+      "utc": "2026-11-14T20:09:50.971Z"
     },
     {
       "name": "the server supplies the bundled request \"vocabulary:ambiguous\"",
       "passed": true,
       "detail": null,
-      "utc": "2026-11-14T19:09:06.983Z"
+      "utc": "2026-11-14T20:09:50.978Z"
     },
     {
       "name": "the request text is the exact bundled request \"vocabulary:ambiguous\"",
       "passed": true,
       "detail": null,
-      "utc": "2026-11-14T19:09:07.008Z"
+      "utc": "2026-11-14T20:09:51.000Z"
     },
     {
       "name": "outcomes: ambiguous: the server names the source of the result, and a call was begun",
@@ -1392,7 +1392,7 @@
         "outcome_source": "model_report",
         "calls_attempted": 1
       },
-      "utc": "2026-11-14T19:09:25.642Z"
+      "utc": "2026-11-14T20:10:12.701Z"
     },
     {
       "name": "outcomes: ambiguous: the page shows a result without a change (clarify) and offers no Apply",
@@ -1401,19 +1401,19 @@
         "observed": "clarify",
         "expected": "clarify"
       },
-      "utc": "2026-11-14T19:09:25.656Z"
+      "utc": "2026-11-14T20:10:12.722Z"
     },
     {
       "name": "outcomes: ambiguous: the reason of the reply stands in the reply block, not under the application checks",
       "passed": true,
       "detail": null,
-      "utc": "2026-11-14T19:09:25.673Z"
+      "utc": "2026-11-14T20:10:12.739Z"
     },
     {
       "name": "outcomes: ambiguous: the page does not say that no call was made",
       "passed": true,
       "detail": null,
-      "utc": "2026-11-14T19:09:25.676Z"
+      "utc": "2026-11-14T20:10:12.740Z"
     },
     {
       "name": "outcomes: ambiguous: the applied feed and the applied controls are unchanged",
@@ -1421,19 +1421,19 @@
       "detail": {
         "observed": "clarify"
       },
-      "utc": "2026-11-14T19:09:30.915Z"
+      "utc": "2026-11-14T20:10:18.029Z"
     },
     {
       "name": "the server supplies the bundled request \"vocabulary:unsupported\"",
       "passed": true,
       "detail": null,
-      "utc": "2026-11-14T19:09:30.916Z"
+      "utc": "2026-11-14T20:10:18.030Z"
     },
     {
       "name": "the request text is the exact bundled request \"vocabulary:unsupported\"",
       "passed": true,
       "detail": null,
-      "utc": "2026-11-14T19:09:30.940Z"
+      "utc": "2026-11-14T20:10:18.053Z"
     },
     {
       "name": "outcomes: unsupported: the server names the source of the result, and a call was begun",
@@ -1442,7 +1442,7 @@
         "outcome_source": "model_report",
         "calls_attempted": 1
       },
-      "utc": "2026-11-14T19:09:46.090Z"
+      "utc": "2026-11-14T20:10:37.453Z"
     },
     {
       "name": "outcomes: unsupported: the page shows a result without a change (unsupported) and offers no Apply",
@@ -1451,19 +1451,19 @@
         "observed": "unsupported",
         "expected": "unsupported"
       },
-      "utc": "2026-11-14T19:09:46.145Z"
+      "utc": "2026-11-14T20:10:37.467Z"
     },
     {
       "name": "outcomes: unsupported: the reason of the reply stands in the reply block, not under the application checks",
       "passed": true,
       "detail": null,
-      "utc": "2026-11-14T19:09:46.153Z"
+      "utc": "2026-11-14T20:10:37.478Z"
     },
     {
       "name": "outcomes: unsupported: the page does not say that no call was made",
       "passed": true,
       "detail": null,
-      "utc": "2026-11-14T19:09:46.154Z"
+      "utc": "2026-11-14T20:10:37.479Z"
     },
     {
       "name": "outcomes: unsupported: the applied feed and the applied controls are unchanged",
@@ -1471,19 +1471,19 @@
       "detail": {
         "observed": "unsupported"
       },
-      "utc": "2026-11-14T19:09:51.576Z"
+      "utc": "2026-11-14T20:10:42.868Z"
     },
     {
       "name": "the server supplies the bundled request \"vocabulary:negated\"",
       "passed": true,
       "detail": null,
-      "utc": "2026-11-14T19:09:51.577Z"
+      "utc": "2026-11-14T20:10:42.870Z"
     },
     {
       "name": "the request text is the exact bundled request \"vocabulary:negated\"",
       "passed": true,
       "detail": null,
-      "utc": "2026-11-14T19:09:51.592Z"
+      "utc": "2026-11-14T20:10:42.880Z"
     },
     {
       "name": "outcomes: the negated command is stopped by an application check before any call, and the failed check is listed",
@@ -1493,7 +1493,7 @@
         "outcome_source": "application_check",
         "calls_attempted": 0
       },
-      "utc": "2026-11-14T19:09:51.728Z"
+      "utc": "2026-11-14T20:10:42.991Z"
     },
     {
       "name": "outcomes: negated: the page shows a result without a change (clarify) and offers no Apply",
@@ -1502,13 +1502,13 @@
         "observed": "clarify",
         "expected": "clarify"
       },
-      "utc": "2026-11-14T19:09:51.762Z"
+      "utc": "2026-11-14T20:10:43.029Z"
     },
     {
       "name": "outcomes: negated: the page says that no call was made, and only for a stop before any call",
       "passed": true,
       "detail": null,
-      "utc": "2026-11-14T19:09:51.768Z"
+      "utc": "2026-11-14T20:10:43.054Z"
     },
     {
       "name": "outcomes: negated: the applied feed and the applied controls are unchanged",
@@ -1516,19 +1516,19 @@
       "detail": {
         "observed": "clarify"
       },
-      "utc": "2026-11-14T19:09:57.026Z"
+      "utc": "2026-11-14T20:10:48.286Z"
     },
     {
       "name": "the server supplies the bundled request \"vocabulary:no_match\"",
       "passed": true,
       "detail": null,
-      "utc": "2026-11-14T19:09:57.028Z"
+      "utc": "2026-11-14T20:10:48.287Z"
     },
     {
       "name": "the request text is the exact bundled request \"vocabulary:no_match\"",
       "passed": true,
       "detail": null,
-      "utc": "2026-11-14T19:09:57.045Z"
+      "utc": "2026-11-14T20:10:48.305Z"
     },
     {
       "name": "outcomes: no_match: the server names the source of the result, and a call was begun",
@@ -1537,7 +1537,7 @@
         "outcome_source": "model_report",
         "calls_attempted": 1
       },
-      "utc": "2026-11-14T19:10:15.377Z"
+      "utc": "2026-11-14T20:11:06.667Z"
     },
     {
       "name": "outcomes: no_match: the page shows a result without a change (no_match) and offers no Apply",
@@ -1546,19 +1546,19 @@
         "observed": "no_match",
         "expected": "no_match"
       },
-      "utc": "2026-11-14T19:10:15.404Z"
+      "utc": "2026-11-14T20:11:06.675Z"
     },
     {
       "name": "outcomes: no_match: the reason of the reply stands in the reply block, not under the application checks",
       "passed": true,
       "detail": null,
-      "utc": "2026-11-14T19:10:15.432Z"
+      "utc": "2026-11-14T20:11:06.686Z"
     },
     {
       "name": "outcomes: no_match: the page does not say that no call was made",
       "passed": true,
       "detail": null,
-      "utc": "2026-11-14T19:10:15.433Z"
+      "utc": "2026-11-14T20:11:06.687Z"
     },
     {
       "name": "outcomes: no_match: the applied feed and the applied controls are unchanged",
@@ -1566,7 +1566,7 @@
       "detail": {
         "observed": "no_match"
       },
-      "utc": "2026-11-14T19:10:20.676Z"
+      "utc": "2026-11-14T20:11:11.953Z"
     },
     {
       "name": "description: starts with no applied control",
@@ -1574,25 +1574,25 @@
       "detail": {
         "eligible": 10
       },
-      "utc": "2026-11-14T19:10:20.728Z"
+      "utc": "2026-11-14T20:11:12.015Z"
     },
     {
       "name": "the server supplies the bundled request \"configured_model\"",
       "passed": true,
       "detail": null,
-      "utc": "2026-11-14T19:10:20.755Z"
+      "utc": "2026-11-14T20:11:12.045Z"
     },
     {
       "name": "the request text is the exact bundled request \"configured_model\"",
       "passed": true,
       "detail": null,
-      "utc": "2026-11-14T19:10:20.905Z"
+      "utc": "2026-11-14T20:11:12.167Z"
     },
     {
       "name": "description: the original request is shown unchanged above the three blocks",
       "passed": true,
       "detail": null,
-      "utc": "2026-11-14T19:11:02.801Z"
+      "utc": "2026-11-14T20:11:59.061Z"
     },
     {
       "name": "description: the page moves the focus to the heading of the review and shows it in the window",
@@ -1602,7 +1602,7 @@
         "text": "Proposed change: Reviewed description request",
         "in_view": true
       },
-      "utc": "2026-11-14T19:11:03.176Z"
+      "utc": "2026-11-14T20:11:59.567Z"
     },
     {
       "name": "description: the preview left the applied groups, the revision and the applied feed unchanged",
@@ -1612,13 +1612,13 @@
         "revision": 6,
         "eligible": 10
       },
-      "utc": "2026-11-14T19:11:03.182Z"
+      "utc": "2026-11-14T20:11:59.577Z"
     },
     {
       "name": "description: the preview left the conditions A to E, the topic tool and the fictional items unchanged",
       "passed": true,
       "detail": null,
-      "utc": "2026-11-14T19:11:03.224Z"
+      "utc": "2026-11-14T20:11:59.604Z"
     },
     {
       "name": "description: page still shows the starting items during preview",
@@ -1637,7 +1637,7 @@
           61003
         ]
       },
-      "utc": "2026-11-14T19:11:03.241Z"
+      "utc": "2026-11-14T20:11:59.619Z"
     },
     {
       "name": "description: the review names at least one item that would change",
@@ -1655,7 +1655,7 @@
           }
         ]
       },
-      "utc": "2026-11-14T19:11:03.242Z"
+      "utc": "2026-11-14T20:11:59.620Z"
     },
     {
       "name": "description: the review has three separate blocks (Model output (not verified), application checks, decision) and says that nothing is applied",
@@ -1665,7 +1665,7 @@
         "Application checks": 1,
         "Your decision": 1
       },
-      "utc": "2026-11-14T19:11:03.254Z"
+      "utc": "2026-11-14T20:11:59.638Z"
     },
     {
       "name": "description: no check line of the review is shown as failed",
@@ -1673,7 +1673,7 @@
       "detail": {
         "failed": []
       },
-      "utc": "2026-11-14T19:11:03.267Z"
+      "utc": "2026-11-14T20:11:59.644Z"
     },
     {
       "name": "description: the decision block names the control \"Reviewed description request\" and each of its items",
@@ -1683,7 +1683,7 @@
           61004
         ]
       },
-      "utc": "2026-11-14T19:11:03.272Z"
+      "utc": "2026-11-14T20:11:59.652Z"
     },
     {
       "name": "description: the evidence table lists every supplied item once for \"Reviewed description request\", with its own description, and marks exactly the approved ones",
@@ -1694,7 +1694,7 @@
           61004
         ]
       },
-      "utc": "2026-11-14T19:11:03.279Z"
+      "utc": "2026-11-14T20:11:59.660Z"
     },
     {
       "name": "description: each quotation of \"Reviewed description request\" is a part of the text of its own item on the server",
@@ -1702,13 +1702,13 @@
       "detail": {
         "quotations": 1
       },
-      "utc": "2026-11-14T19:11:03.280Z"
+      "utc": "2026-11-14T20:11:59.661Z"
     },
     {
       "name": "description: preview order and eligible count match independently calculated effects",
       "passed": true,
       "detail": null,
-      "utc": "2026-11-14T19:11:03.281Z"
+      "utc": "2026-11-14T20:11:59.662Z"
     },
     {
       "name": "description: the table states the result for each item that the approved controls remove",
@@ -1718,7 +1718,7 @@
           61004
         ]
       },
-      "utc": "2026-11-14T19:11:03.282Z"
+      "utc": "2026-11-14T20:11:59.662Z"
     },
     {
       "name": "description: the table says \"ranked higher\" or \"ranked lower\" only for an item that moves in the preview feed",
@@ -1726,7 +1726,7 @@
       "detail": {
         "moved": []
       },
-      "utc": "2026-11-14T19:11:03.288Z"
+      "utc": "2026-11-14T20:11:59.664Z"
     },
     {
       "name": "description: the preview feed of the server has the order that the approved controls give",
@@ -1755,7 +1755,7 @@
           61003
         ]
       },
-      "utc": "2026-11-14T19:11:03.291Z"
+      "utc": "2026-11-14T20:11:59.669Z"
     },
     {
       "name": "description: the preview lists the feed now and after approval, as the server computed them, and says that the applied feed is unchanged",
@@ -1773,13 +1773,13 @@
           61003
         ]
       },
-      "utc": "2026-11-14T19:11:03.302Z"
+      "utc": "2026-11-14T20:11:59.693Z"
     },
     {
       "name": "description: after Apply the focus is on the heading \"What changed\", in the window",
       "passed": true,
       "detail": null,
-      "utc": "2026-11-14T19:11:36.687Z"
+      "utc": "2026-11-14T20:12:30.531Z"
     },
     {
       "name": "description: Apply removed exactly the items of the approved removal controls",
@@ -1791,7 +1791,7 @@
           61004
         ]
       },
-      "utc": "2026-11-14T19:11:36.692Z"
+      "utc": "2026-11-14T20:12:30.532Z"
     },
     {
       "name": "description: Apply changed the score of exactly the items of the approved rank controls, by the stated amount",
@@ -1799,7 +1799,7 @@
       "detail": {
         "changed": []
       },
-      "utc": "2026-11-14T19:11:36.693Z"
+      "utc": "2026-11-14T20:12:30.532Z"
     },
     {
       "name": "description: the applied feed has the order that the approved controls give, and it is the preview feed",
@@ -1817,7 +1817,7 @@
           61003
         ]
       },
-      "utc": "2026-11-14T19:11:36.696Z"
+      "utc": "2026-11-14T20:12:30.533Z"
     },
     {
       "name": "description: exactly the approved controls are applied, with exactly their items",
@@ -1828,13 +1828,13 @@
         ],
         "revision": 7
       },
-      "utc": "2026-11-14T19:11:36.700Z"
+      "utc": "2026-11-14T20:12:30.536Z"
     },
     {
       "name": "description: Apply left the conditions A to E, the topic tool and the fictional items unchanged",
       "passed": true,
       "detail": null,
-      "utc": "2026-11-14T19:11:36.718Z"
+      "utc": "2026-11-14T20:12:30.556Z"
     },
     {
       "name": "description: page shows the feed that the server holds",
@@ -1852,13 +1852,13 @@
           61003
         ]
       },
-      "utc": "2026-11-14T19:11:36.733Z"
+      "utc": "2026-11-14T20:12:30.589Z"
     },
     {
       "name": "description: the page records what changed and how to undo it",
       "passed": true,
       "detail": null,
-      "utc": "2026-11-14T19:11:36.737Z"
+      "utc": "2026-11-14T20:12:30.600Z"
     },
     {
       "name": "description: the list of applied controls in the panel is the list of the server",
@@ -1868,7 +1868,7 @@
           "Reviewed description request: Remove from the feed; item 61004"
         ]
       },
-      "utc": "2026-11-14T19:11:36.741Z"
+      "utc": "2026-11-14T20:12:30.607Z"
     },
     {
       "name": "description: undo review alone changed nothing",
@@ -1876,7 +1876,7 @@
       "detail": {
         "eligible": 9
       },
-      "utc": "2026-11-14T19:11:45.230Z"
+      "utc": "2026-11-14T20:12:38.975Z"
     },
     {
       "name": "description: Undo restored the exact earlier feed and the exact earlier controls",
@@ -1886,13 +1886,13 @@
         "identical_to_start": true,
         "revision": 8
       },
-      "utc": "2026-11-14T19:11:56.389Z"
+      "utc": "2026-11-14T20:12:50.549Z"
     },
     {
       "name": "description: Undo left the conditions A to E, the topic tool and the fictional items unchanged",
       "passed": true,
       "detail": null,
-      "utc": "2026-11-14T19:11:56.404Z"
+      "utc": "2026-11-14T20:12:50.560Z"
     },
     {
       "name": "description: page shows the starting items again and says that the earlier feed is restored",
@@ -1911,7 +1911,7 @@
           61003
         ]
       },
-      "utc": "2026-11-14T19:11:56.442Z"
+      "utc": "2026-11-14T20:12:50.592Z"
     },
     {
       "name": "fictional: starts with no applied control",
@@ -1919,13 +1919,13 @@
       "detail": {
         "eligible": 10
       },
-      "utc": "2026-11-14T19:12:00.842Z"
+      "utc": "2026-11-14T20:12:54.855Z"
     },
     {
       "name": "fictional: the server supplies an example brief",
       "passed": true,
       "detail": null,
-      "utc": "2026-11-14T19:12:00.844Z"
+      "utc": "2026-11-14T20:12:54.857Z"
     },
     {
       "name": "fictional: starts with no fictional item",
@@ -1933,13 +1933,13 @@
       "detail": {
         "provider": "operator-relay-file-queue"
       },
-      "utc": "2026-11-14T19:12:00.940Z"
+      "utc": "2026-11-14T20:12:54.942Z"
     },
     {
       "name": "fictional: the brief is the exact example brief",
       "passed": true,
       "detail": null,
-      "utc": "2026-11-14T19:12:00.997Z"
+      "utc": "2026-11-14T20:12:55.029Z"
     },
     {
       "name": "fictional: the draft is shown for review and adds nothing",
@@ -1947,23 +1947,23 @@
       "detail": {
         "origin": "model_generated_synthetic"
       },
-      "utc": "2026-11-14T19:12:23.446Z"
+      "utc": "2026-11-14T20:13:22.311Z"
     },
     {
       "name": "fictional: the draft is marked as generated fictional metadata without a media asset",
       "passed": true,
       "detail": null,
-      "utc": "2026-11-14T19:12:23.447Z"
+      "utc": "2026-11-14T20:13:22.312Z"
     },
     {
       "name": "fictional: the approved item is in the separate feed only",
       "passed": true,
       "detail": {
         "separate_feed_ids": [
-          "synthetic-0f1927ebed2b3478deb92f2b"
+          "synthetic-3357a935da27ff1da50ced27"
         ]
       },
-      "utc": "2026-11-14T19:12:37.320Z"
+      "utc": "2026-11-14T20:13:35.603Z"
     },
     {
       "name": "fictional: the observed feed and its items are unchanged",
@@ -1971,80 +1971,80 @@
       "detail": {
         "eligible": 10
       },
-      "utc": "2026-11-14T19:12:37.338Z"
+      "utc": "2026-11-14T20:13:35.616Z"
     },
     {
       "name": "fictional: removal empties the separate feed",
       "passed": true,
       "detail": null,
-      "utc": "2026-11-14T19:12:42.818Z"
+      "utc": "2026-11-14T20:13:40.927Z"
     },
     {
       "name": "no script error was raised by the page",
       "passed": true,
       "detail": [],
-      "utc": "2026-11-14T19:12:43.030Z"
+      "utc": "2026-11-14T20:13:41.143Z"
     }
   ],
   "review_decisions": [
     {
       "gate": "manual-apply",
       "decision": "APPROVE",
-      "seconds_to_decide": 7.8,
-      "utc": "2026-11-14T19:05:40.413Z"
+      "seconds_to_decide": 8.3,
+      "utc": "2026-11-14T20:06:31.309Z"
     },
     {
       "gate": "manual-undo",
       "decision": "APPROVE",
-      "seconds_to_decide": 8.3,
-      "utc": "2026-11-14T19:06:00.377Z"
+      "seconds_to_decide": 7.3,
+      "utc": "2026-11-14T20:06:50.389Z"
     },
     {
       "gate": "vocabulary-apply",
       "decision": "APPROVE",
-      "seconds_to_decide": 14.3,
-      "utc": "2026-11-14T19:07:13.218Z"
+      "seconds_to_decide": 10.3,
+      "utc": "2026-11-14T20:08:02.822Z"
     },
     {
       "gate": "vocabulary-undo",
       "decision": "APPROVE",
-      "seconds_to_decide": 7.8,
-      "utc": "2026-11-14T19:07:33.266Z"
+      "seconds_to_decide": 7.3,
+      "utc": "2026-11-14T20:08:21.940Z"
     },
     {
       "gate": "mixed-apply",
       "decision": "APPROVE",
-      "seconds_to_decide": 9.3,
-      "utc": "2026-11-14T19:08:42.297Z"
+      "seconds_to_decide": 8.8,
+      "utc": "2026-11-14T20:09:27.345Z"
     },
     {
       "gate": "mixed-undo",
       "decision": "APPROVE",
-      "seconds_to_decide": 8.3,
-      "utc": "2026-11-14T19:09:02.542Z"
+      "seconds_to_decide": 7.3,
+      "utc": "2026-11-14T20:09:46.476Z"
     },
     {
       "gate": "description-apply",
       "decision": "APPROVE",
-      "seconds_to_decide": 11.8,
-      "utc": "2026-11-14T19:11:36.603Z"
+      "seconds_to_decide": 9.3,
+      "utc": "2026-11-14T20:12:30.439Z"
     },
     {
       "gate": "description-undo",
       "decision": "APPROVE",
-      "seconds_to_decide": 7.8,
-      "utc": "2026-11-14T19:11:56.302Z"
+      "seconds_to_decide": 8.3,
+      "utc": "2026-11-14T20:12:50.466Z"
     },
     {
       "gate": "fictional-admit",
       "decision": "APPROVE",
-      "seconds_to_decide": 7.3,
-      "utc": "2026-11-14T19:12:37.275Z"
+      "seconds_to_decide": 6.8,
+      "utc": "2026-11-14T20:13:35.555Z"
     }
   ],
   "flows_result": {
     "manual": {
-      "started_utc": "2026-11-14T19:05:07.747Z",
+      "started_utc": "2026-11-14T20:05:58.313Z",
       "eligible_before": 10,
       "shown_before": [
         61004,
@@ -2077,7 +2077,7 @@
         61002,
         61009
       ],
-      "review_text_sha256": "6a5b50727ce836b04bad1fab8ddd86dfbe2670ef0d2a8a99fa6bf881621dde1a",
+      "review_text_sha256": "9f2d4d22ae45298e3553485db72b37d85c6b20bf95eb869d08f0ac37f5721409",
       "eligible_after_apply": 7,
       "shown_after_apply": [
         61004,
@@ -2090,10 +2090,10 @@
       ],
       "eligible_after_undo": 10,
       "provider_calls": 0,
-      "finished_utc": "2026-11-14T19:06:04.752Z"
+      "finished_utc": "2026-11-14T20:06:54.808Z"
     },
     "vocabulary": {
-      "started_utc": "2026-11-14T19:06:04.857Z",
+      "started_utc": "2026-11-14T20:06:54.888Z",
       "eligible_before": 10,
       "shown_before": [
         61004,
@@ -2211,7 +2211,7 @@
         61003,
         61009
       ],
-      "review_text_sha256": "058a8154c74c026ec900b49a76e14e0bfeb58d2191e17e3fd2b49406709aca1f",
+      "review_text_sha256": "a99577735171ac57603f12ccfbb4b2f1d942c8701fb1d7419c846339f9dbd5ec",
       "eligible_after_apply": 6,
       "shown_after_apply": [
         61004,
@@ -2222,10 +2222,10 @@
         61010
       ],
       "eligible_after_undo": 10,
-      "finished_utc": "2026-11-14T19:07:37.800Z"
+      "finished_utc": "2026-11-14T20:08:26.300Z"
     },
     "mixed": {
-      "started_utc": "2026-11-14T19:07:37.845Z",
+      "started_utc": "2026-11-14T20:08:26.346Z",
       "eligible_before": 10,
       "shown_before": [
         61004,
@@ -2276,7 +2276,7 @@
         61008,
         61009
       ],
-      "review_text_sha256": "99bb0b14d0a22dfb403af2430c5c17f3eb342ebcf037a5fb0fe624258efcc475",
+      "review_text_sha256": "0053d90093c206b25d2ab6e1d2d45ce586f7992063053cd1c408b96b0307f062",
       "eligible_after_apply": 6,
       "shown_after_apply": [
         61004,
@@ -2287,10 +2287,10 @@
         61010
       ],
       "eligible_after_undo": 10,
-      "finished_utc": "2026-11-14T19:09:06.896Z"
+      "finished_utc": "2026-11-14T20:09:50.894Z"
     },
     "outcomes": {
-      "started_utc": "2026-11-14T19:09:06.954Z",
+      "started_utc": "2026-11-14T20:09:50.968Z",
       "eligible_before": 10,
       "shown_before": [
         61004,
@@ -2316,7 +2316,7 @@
           "reason": "Semantic scope or negation has competing interpretations",
           "calls_attempted": 1,
           "outcome_source": "model_report",
-          "alternatives_shown": 4
+          "alternatives_shown": 5
         },
         {
           "case": "unsupported",
@@ -2325,7 +2325,7 @@
           "observed": "unsupported",
           "matches_authored_expectation": true,
           "model_calls_reported": 1,
-          "reason": "The request asks for at most two cooking videos per day. This is a quota (a count limit) with a time condition (per day). Boost, reduce and exclude over whole terms cannot express a count cap or a daily window, so no control is proposed. The Cooking term exists, but excluding or reducing it would no",
+          "reason": "The request asks for at most two cooking videos per day. This is a quota (a count limit) with a time condition (per day). Boost, reduce and exclude over whole terms cannot express a count limit or a daily window. The Cooking term exists, but no supported control gives the requested behavior, so no c",
           "calls_attempted": 1,
           "outcome_source": "model_report",
           "alternatives_shown": 0
@@ -2349,17 +2349,17 @@
           "observed": "no_match",
           "matches_authored_expectation": true,
           "model_calls_reported": 1,
-          "reason": "The request asks for fewer videos about astronomy. No supplied category or tag term relates to astronomy, space, stars or the night sky. The terms cover cooking, music, repair and travel topics. The tag night market is about street food and travel, not astronomy, so it is not a match. No control is ",
+          "reason": "The request asks to see fewer videos about astronomy. No supplied category or tag relates to astronomy, space, stars, planets or the night sky. The vocabulary covers cooking, music, repair and travel topics only. The tag night market refers to a travel or food setting, not astronomy, so it does not ",
           "calls_attempted": 1,
           "outcome_source": "model_report",
           "alternatives_shown": 0
         }
       ],
       "provider_calls": 3,
-      "finished_utc": "2026-11-14T19:10:20.677Z"
+      "finished_utc": "2026-11-14T20:11:11.954Z"
     },
     "description": {
-      "started_utc": "2026-11-14T19:10:20.718Z",
+      "started_utc": "2026-11-14T20:11:12.006Z",
       "eligible_before": 10,
       "shown_before": [
         61004,
@@ -2390,7 +2390,7 @@
       "selected_ids": [
         61004
       ],
-      "review_text_sha256": "b033a7b6274dfb0a737201dbf72e44b84edf7b175337c16c24bc84266d744da5",
+      "review_text_sha256": "73b9884cdf5ccfb7595a275bc8bd7a1bfea21c5daff038ccb644d1215b0a0123",
       "eligible_after_apply": 9,
       "shown_after_apply": [
         61005,
@@ -2404,10 +2404,10 @@
         61003
       ],
       "eligible_after_undo": 10,
-      "finished_utc": "2026-11-14T19:12:00.760Z"
+      "finished_utc": "2026-11-14T20:12:54.809Z"
     },
     "fictional": {
-      "started_utc": "2026-11-14T19:12:00.807Z",
+      "started_utc": "2026-11-14T20:12:54.852Z",
       "eligible_before": 10,
       "shown_before": [
         61004,
@@ -2424,11 +2424,11 @@
       "outcome": "completed: draft reviewed, admitted to the separate feed, removed; observed feed unchanged",
       "provider_calls": 1,
       "draft": {
-        "item_id": "synthetic-0f1927ebed2b3478deb92f2b",
+        "item_id": "synthetic-3357a935da27ff1da50ced27",
         "origin": "model_generated_synthetic",
-        "title_sha256": "623cfe52c7efb0847a30c2114e8ad30853682482fed0e9c9174118b1db71741d"
+        "title_sha256": "68dd032d29848c4809c8ae3a1b4af9a0e5ec3d671bff6acf0fc96d83869f22b9"
       },
-      "finished_utc": "2026-11-14T19:12:43.030Z"
+      "finished_utc": "2026-11-14T20:13:41.142Z"
     }
   },
   "provider_calls": [
@@ -2439,7 +2439,7 @@
       "status": null,
       "elapsed_seconds": null,
       "request_sha256": "aa9425615212ddb92a86a4d7a51ef54fd5b33a193ad53af9a0bea0fe8cf7dbbb",
-      "response_sha256": "a9921faa6bdb2b56b0b4b4ea9f23ec37d3aa6f5ca36e0b2b19b63e063b8cbc91",
+      "response_sha256": "26390475e13d53ae6facfada065139ea25269df7380e4ace8a14d25bd6f13365",
       "declared_provider": {
         "backend": "operator-relay-file-queue",
         "model": "claude-opus (sub-agent alias opus of the Cowork session; version not attested)",
@@ -2452,7 +2452,7 @@
         "identity_limit": "Model name is an operator declaration; the relay cannot attest it",
         "live_model": "operator_declared"
       },
-      "observed_utc": "2026-11-14T19:06:36.600Z"
+      "observed_utc": "2026-11-14T20:07:30.321Z"
     },
     {
       "route": "/api/semantic/vocabulary/preview",
@@ -2461,7 +2461,7 @@
       "status": null,
       "elapsed_seconds": null,
       "request_sha256": "0b0c222e31f5fae0c3ed4fd3293c28de7342c16b6dba7cdaf1e56b57182df08c",
-      "response_sha256": "266681eaec5dcb0ad36e613181931ddddd0abe7fd728ec701c416e51a2f4a393",
+      "response_sha256": "c6d215ef25059f8715793473a9f4344c442309cdd69166bd347f2c61436720b5",
       "declared_provider": {
         "backend": "operator-relay-file-queue",
         "model": "claude-opus (sub-agent alias opus of the Cowork session; version not attested)",
@@ -2474,7 +2474,7 @@
         "identity_limit": "Model name is an operator declaration; the relay cannot attest it",
         "live_model": "operator_declared"
       },
-      "observed_utc": "2026-11-14T19:08:10.565Z"
+      "observed_utc": "2026-11-14T20:08:55.895Z"
     },
     {
       "route": "/api/semantic/vocabulary/preview",
@@ -2483,7 +2483,7 @@
       "status": null,
       "elapsed_seconds": null,
       "request_sha256": "4fb72daadd19b9efbab8bcb346e1d85a613d29473eba72cdf1c0438aedeff8e0",
-      "response_sha256": "57f4e50b6f65a34de05bf2879d8a5645ff9fb7f75079ab8f9ddad9a5adf6d7bb",
+      "response_sha256": "f672235e50e907fe4e4d306dbbc45e55842ec63a6ee1a1cf13cb21a8d6f7663d",
       "declared_provider": {
         "backend": "operator-relay-file-queue",
         "model": "claude-opus (sub-agent alias opus of the Cowork session; version not attested)",
@@ -2496,7 +2496,7 @@
         "identity_limit": "Model name is an operator declaration; the relay cannot attest it",
         "live_model": "operator_declared"
       },
-      "observed_utc": "2026-11-14T19:09:25.626Z"
+      "observed_utc": "2026-11-14T20:10:12.655Z"
     },
     {
       "route": "/api/semantic/vocabulary/preview",
@@ -2505,7 +2505,7 @@
       "status": null,
       "elapsed_seconds": null,
       "request_sha256": "78d59e9a6be8c7c9eac101383fe155165f0ec52db0903976b66110b8086de8d8",
-      "response_sha256": "3aa703b487a8df10070a5093846767b2d22a99e2083c6cd1242ef6909362166f",
+      "response_sha256": "5576a71d669268fa933d9e64407d8ac5171e45d801ae4a7cbc67cc9af4460bbf",
       "declared_provider": {
         "backend": "operator-relay-file-queue",
         "model": "claude-opus (sub-agent alias opus of the Cowork session; version not attested)",
@@ -2518,7 +2518,7 @@
         "identity_limit": "Model name is an operator declaration; the relay cannot attest it",
         "live_model": "operator_declared"
       },
-      "observed_utc": "2026-11-14T19:09:46.069Z"
+      "observed_utc": "2026-11-14T20:10:37.444Z"
     },
     {
       "route": "/api/semantic/vocabulary/preview",
@@ -2527,7 +2527,7 @@
       "status": null,
       "elapsed_seconds": null,
       "request_sha256": "84c371751d1579f645813660fd7a7d8d896c7b37e8838b64a9c000d512ea0bfd",
-      "response_sha256": "1d2f44c02c6338491a7f4701dbd89fc130c2be4616a4a165e97f6fcabb341366",
+      "response_sha256": "111a41cbbd85db8857b187a6eae8facf3fdbf2a18ff9709c7d4502542dbd034d",
       "declared_provider": {
         "backend": "operator-relay-file-queue",
         "model": "claude-opus (sub-agent alias opus of the Cowork session; version not attested)",
@@ -2540,7 +2540,7 @@
         "identity_limit": "Model name is an operator declaration; the relay cannot attest it",
         "live_model": "operator_declared"
       },
-      "observed_utc": "2026-11-14T19:10:15.369Z"
+      "observed_utc": "2026-11-14T20:11:06.654Z"
     },
     {
       "route": "/api/semantic/preview",
@@ -2551,7 +2551,7 @@
       "request_sha256": "5baa3e88ac12d241b79587a715037757bfa73e3f47dd9634381e1c99ad49aeb4",
       "response_sha256": "98bfcef88f036cf0c8165896498c2a9a12f5ec4c848ebf0f354cb2199c0d900b",
       "declared_provider": null,
-      "observed_utc": "2026-11-14T19:11:02.771Z"
+      "observed_utc": "2026-11-14T20:11:59.004Z"
     },
     {
       "route": "/api/semantic/preview",
@@ -2560,9 +2560,9 @@
       "status": null,
       "elapsed_seconds": null,
       "request_sha256": "2214d73d03b3fdda0ee9bec7d9348f162cf5b7b62841c69c51b78f15b66a0a32",
-      "response_sha256": "12563e49c5472a13e5f33563fe3b2dbae5615148b8e6d55072098392154a7d68",
+      "response_sha256": "165e7c30ae4579dca3b3ab61ab854b3ca3ef0a759e6d16509cb529a442be62bc",
       "declared_provider": null,
-      "observed_utc": "2026-11-14T19:11:02.771Z"
+      "observed_utc": "2026-11-14T20:11:59.004Z"
     },
     {
       "route": "/api/synthetic/preview",
@@ -2573,7 +2573,7 @@
       "request_sha256": "15e8afc0a636b4b644e7966b676fdcd9a6b3edc345cbc0018e8487aea63abdbc",
       "response_sha256": null,
       "declared_provider": null,
-      "observed_utc": "2026-11-14T19:12:23.408Z"
+      "observed_utc": "2026-11-14T20:13:22.287Z"
     }
   ],
   "calls_attempted": [
@@ -2582,56 +2582,56 @@
       "calls_attempted": 0,
       "outcome_source": null,
       "ready": true,
-      "observed_utc": "2026-11-14T19:05:10.653Z"
+      "observed_utc": "2026-11-14T20:06:01.051Z"
     },
     {
       "route": "/api/semantic/vocabulary/preview",
       "calls_attempted": 1,
       "outcome_source": null,
       "ready": true,
-      "observed_utc": "2026-11-14T19:06:36.600Z"
+      "observed_utc": "2026-11-14T20:07:30.321Z"
     },
     {
       "route": "/api/semantic/vocabulary/preview",
       "calls_attempted": 1,
       "outcome_source": null,
       "ready": true,
-      "observed_utc": "2026-11-14T19:08:10.565Z"
+      "observed_utc": "2026-11-14T20:08:55.895Z"
     },
     {
       "route": "/api/semantic/vocabulary/preview",
       "calls_attempted": 1,
       "outcome_source": "model_report",
       "ready": false,
-      "observed_utc": "2026-11-14T19:09:25.626Z"
+      "observed_utc": "2026-11-14T20:10:12.655Z"
     },
     {
       "route": "/api/semantic/vocabulary/preview",
       "calls_attempted": 1,
       "outcome_source": "model_report",
       "ready": false,
-      "observed_utc": "2026-11-14T19:09:46.069Z"
+      "observed_utc": "2026-11-14T20:10:37.444Z"
     },
     {
       "route": "/api/semantic/vocabulary/preview",
       "calls_attempted": 0,
       "outcome_source": "application_check",
       "ready": false,
-      "observed_utc": "2026-11-14T19:09:51.700Z"
+      "observed_utc": "2026-11-14T20:10:42.981Z"
     },
     {
       "route": "/api/semantic/vocabulary/preview",
       "calls_attempted": 1,
       "outcome_source": "model_report",
       "ready": false,
-      "observed_utc": "2026-11-14T19:10:15.369Z"
+      "observed_utc": "2026-11-14T20:11:06.654Z"
     },
     {
       "route": "/api/semantic/preview",
       "calls_attempted": 2,
       "outcome_source": null,
       "ready": true,
-      "observed_utc": "2026-11-14T19:11:02.771Z"
+      "observed_utc": "2026-11-14T20:11:59.004Z"
     }
   ],
   "provider_attempts": [
@@ -2639,7 +2639,7 @@
       "route": "/api/semantic/preview",
       "attempts": [],
       "outcome_source": null,
-      "observed_utc": "2026-11-14T19:05:10.653Z"
+      "observed_utc": "2026-11-14T20:06:01.051Z"
     },
     {
       "route": "/api/semantic/vocabulary/preview",
@@ -2650,7 +2650,7 @@
         }
       ],
       "outcome_source": null,
-      "observed_utc": "2026-11-14T19:06:36.600Z"
+      "observed_utc": "2026-11-14T20:07:30.321Z"
     },
     {
       "route": "/api/semantic/vocabulary/preview",
@@ -2661,7 +2661,7 @@
         }
       ],
       "outcome_source": null,
-      "observed_utc": "2026-11-14T19:08:10.565Z"
+      "observed_utc": "2026-11-14T20:08:55.895Z"
     },
     {
       "route": "/api/semantic/vocabulary/preview",
@@ -2672,7 +2672,7 @@
         }
       ],
       "outcome_source": "model_report",
-      "observed_utc": "2026-11-14T19:09:25.626Z"
+      "observed_utc": "2026-11-14T20:10:12.655Z"
     },
     {
       "route": "/api/semantic/vocabulary/preview",
@@ -2683,13 +2683,13 @@
         }
       ],
       "outcome_source": "model_report",
-      "observed_utc": "2026-11-14T19:09:46.069Z"
+      "observed_utc": "2026-11-14T20:10:37.444Z"
     },
     {
       "route": "/api/semantic/vocabulary/preview",
       "attempts": [],
       "outcome_source": "application_check",
-      "observed_utc": "2026-11-14T19:09:51.700Z"
+      "observed_utc": "2026-11-14T20:10:42.981Z"
     },
     {
       "route": "/api/semantic/vocabulary/preview",
@@ -2700,7 +2700,7 @@
         }
       ],
       "outcome_source": "model_report",
-      "observed_utc": "2026-11-14T19:10:15.369Z"
+      "observed_utc": "2026-11-14T20:11:06.654Z"
     },
     {
       "route": "/api/semantic/preview",
@@ -2715,7 +2715,7 @@
         }
       ],
       "outcome_source": null,
-      "observed_utc": "2026-11-14T19:11:02.771Z"
+      "observed_utc": "2026-11-14T20:11:59.004Z"
     }
   ],
   "screenshots": [
@@ -2752,17 +2752,17 @@
     "31-fictional-admitted.png",
     "32-fictional-removed.png"
   ],
-  "finished_utc": "2026-11-14T19:12:43.032Z",
+  "finished_utc": "2026-11-14T20:13:41.144Z",
   "outcome": "all flows completed",
   "video": {
     "file": "video/tags.webm",
     "steps": [
       {
-        "seconds": 1,
+        "seconds": 1.3,
         "step": "start: the status strip names the data and the provider"
       },
       {
-        "seconds": 5.1,
+        "seconds": 5.3,
         "step": "start: the language controls and their six stages"
       },
       {
@@ -2790,19 +2790,19 @@
         "step": "manual: the decision block with the approve button; waiting for the reviewer"
       },
       {
-        "seconds": 42.2,
+        "seconds": 42.7,
         "step": "manual: applied; the page records what changed"
       },
       {
-        "seconds": 46.2,
+        "seconds": 46.7,
         "step": "manual: the feed shows the applied result"
       },
       {
-        "seconds": 50.3,
+        "seconds": 50.8,
         "step": "manual: undo review (step 1 of 2); nothing changed yet"
       },
       {
-        "seconds": 62.2,
+        "seconds": 61.8,
         "step": "manual: undo approved (step 2 of 2); the starting feed is restored"
       },
       {
@@ -2810,155 +2810,155 @@
         "step": "vocabulary: the existing categories and tags, and a request that names none of them"
       },
       {
-        "seconds": 71.9,
+        "seconds": 72,
         "step": "vocabulary: waiting for the model (one call)"
       },
       {
-        "seconds": 98.7,
+        "seconds": 102,
         "step": "vocabulary: three review blocks (reply, application checks, your decision); nothing applied"
       },
       {
-        "seconds": 104.7,
+        "seconds": 108,
         "step": "vocabulary: evidence table of every supplied item"
       },
       {
-        "seconds": 110.7,
+        "seconds": 114.1,
         "step": "vocabulary: the feed now and after approval"
       },
       {
-        "seconds": 114.7,
+        "seconds": 118.1,
         "step": "vocabulary: the feed is unchanged during the preview"
       },
       {
-        "seconds": 117.7,
+        "seconds": 121.2,
         "step": "vocabulary: the decision block with the approve button; waiting for the reviewer"
       },
       {
-        "seconds": 135.3,
+        "seconds": 134.3,
         "step": "vocabulary: applied; the page records what changed"
       },
       {
-        "seconds": 139.4,
+        "seconds": 138.3,
         "step": "vocabulary: the feed shows the applied result"
       },
       {
-        "seconds": 143.5,
+        "seconds": 142.4,
         "step": "vocabulary: undo review (step 1 of 2); nothing changed yet"
       },
       {
-        "seconds": 155.3,
+        "seconds": 153.3,
         "step": "vocabulary: undo approved (step 2 of 2); the starting feed is restored"
       },
       {
-        "seconds": 159.6,
+        "seconds": 157.7,
         "step": "mixed: one request with two preferences"
       },
       {
-        "seconds": 192.9,
+        "seconds": 188.1,
         "step": "mixed: three review blocks (reply, application checks, your decision); nothing applied"
       },
       {
-        "seconds": 199,
+        "seconds": 194.1,
         "step": "mixed: evidence table of every supplied item"
       },
       {
-        "seconds": 205,
+        "seconds": 200.1,
         "step": "mixed: the feed now and after approval"
       },
       {
-        "seconds": 209,
+        "seconds": 204.1,
         "step": "mixed: the feed is unchanged during the preview"
       },
       {
-        "seconds": 212,
+        "seconds": 207.1,
         "step": "mixed: the decision block with the approve button; waiting for the reviewer"
       },
       {
-        "seconds": 224.3,
+        "seconds": 218.8,
         "step": "mixed: applied; the page records what changed"
       },
       {
-        "seconds": 228.4,
+        "seconds": 222.8,
         "step": "mixed: the feed shows the applied result"
       },
       {
-        "seconds": 232.5,
+        "seconds": 226.9,
         "step": "mixed: undo review (step 1 of 2); nothing changed yet"
       },
       {
-        "seconds": 244.4,
+        "seconds": 237.9,
         "step": "mixed: undo approved (step 2 of 2); the starting feed is restored"
       },
       {
-        "seconds": 267.3,
+        "seconds": 264,
         "step": "outcomes: ambiguous: clarify; nothing applied"
       },
       {
-        "seconds": 288,
+        "seconds": 288.9,
         "step": "outcomes: unsupported: unsupported; nothing applied"
       },
       {
-        "seconds": 293.4,
+        "seconds": 294.3,
         "step": "outcomes: negated: clarify; nothing applied"
       },
       {
-        "seconds": 317.1,
+        "seconds": 318,
         "step": "outcomes: no_match: no_match; nothing applied"
       },
       {
-        "seconds": 322.6,
+        "seconds": 323.4,
         "step": "description: request entered; it names no category"
       },
       {
-        "seconds": 326.6,
+        "seconds": 327.4,
         "step": "description: waiting for the model (action, then items)"
       },
       {
-        "seconds": 364.8,
+        "seconds": 370.7,
         "step": "description: three review blocks (reply, application checks, your decision); nothing applied"
       },
       {
-        "seconds": 370.8,
+        "seconds": 376.8,
         "step": "description: evidence table of every supplied item"
       },
       {
-        "seconds": 376.8,
+        "seconds": 382.8,
         "step": "description: the feed now and after approval"
       },
       {
-        "seconds": 380.8,
+        "seconds": 386.8,
         "step": "description: the feed is unchanged during the preview"
       },
       {
-        "seconds": 383.8,
+        "seconds": 389.8,
         "step": "description: the decision block with the approve button; waiting for the reviewer"
       },
       {
-        "seconds": 398.5,
+        "seconds": 401.9,
         "step": "description: applied; the page records what changed"
       },
       {
-        "seconds": 402.6,
+        "seconds": 405.9,
         "step": "description: the feed shows the applied result"
       },
       {
-        "seconds": 406.7,
+        "seconds": 410,
         "step": "description: undo review (step 1 of 2); nothing changed yet"
       },
       {
-        "seconds": 418.2,
+        "seconds": 421.8,
         "step": "description: undo approved (step 2 of 2); the starting feed is restored"
       },
       {
-        "seconds": 422.5,
+        "seconds": 426.2,
         "step": "fictional: a brief for an item that does not exist"
       },
       {
-        "seconds": 445.2,
+        "seconds": 453.6,
         "step": "fictional: the draft; waiting for the reviewer"
       },
       {
-        "seconds": 459.2,
+        "seconds": 466.9,
         "step": "fictional: admitted to the separate feed; the observed feed is unchanged"
       }
     ]

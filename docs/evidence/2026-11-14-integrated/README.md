@@ -1,9 +1,24 @@
 # Run records of the integrated revision, 14 November 2026
 
-These records belong to revision `e797ce1` (source fingerprint `24d0a8246edc2f0bc261e163795da55ee24ce2b364a566b8fa2edc603c146cd3`).
-That revision is the merge of two lines of work of 14 November: the published work branch (`c84e2cd`) and the package line (`6dd3486`).
+These records belong to revision `ff92666` (source fingerprint `22ba794e2091685fa879dcc43b68233dae1963fa4231c38dd73a36f13639068a`).
+That revision is the merge of two lines of work of 14 November, the published work branch (`c84e2cd`) and the package line (`6dd3486`), with the corrections that followed the merge.
 The folder [`../2026-11-14/`](../2026-11-14/README.md) holds the records of the package line before the merge (revision `b7c5a91`, another fingerprint, other prompts for the new category).
-The runs here were made again on the merged source. The times in the records are UTC. `SUMMARY.json` is generated from the receipts. `SHA256SUMS.txt` lists every other file.
+The times in the records are UTC. `SUMMARY.json` is generated from the receipts. `SHA256SUMS.txt` lists every other file.
+
+## Earlier runs on the merged source
+
+The same runs were made two times before on 14 November 2026. Each time a correction then replaced the build, so the runs were made again.
+
+| Pass | Revision | Source fingerprint | Runs with real model output (UTC) | Result | Records |
+| --- | --- | --- | --- | --- | --- |
+| 1 | `e797ce1`, the merge commit | `24d0a8246edc...` | 19:04 to 19:12 | 321 of 321 checks, 13 model calls, 19 approvals | In revision `7678016` of this repository, in this folder |
+| 2 | `615dd55` | `516be14ae8ac...` | 19:49 to 19:57 | 321 of 321 checks, 13 model calls, 19 approvals | Not in the repository |
+| 3 | `ff92666` | `22ba794e2091...` | 20:05 to 20:13 | The records of this folder | This folder |
+
+The application code is the same in the three builds. After pass 1, two style rules of the published branch were added to the page; the script file of the page has the same bytes in the three builds. After pass 2, two sentences were corrected in the guide of the scenario `tags`, a file that the source fingerprint counts.
+
+In the three passes the selected items, the item counts and the class of each outcome were the same. The words of the model differed: the name of the new category was "Damaged object repaired and kept in use" in passes 1 and 3 and "Repaired and kept in use" in pass 2; the ambiguous request got four, five and five alternatives; the fictional item got another title each time.
+Three equal passes on scenarios that were written for these requests are not an accuracy result.
 
 ## What these records are
 
@@ -17,9 +32,9 @@ The runs here were made again on the merged source. The times in the records are
 
 - The items are invented: ten in scenario `tags`, eight in `category` and in `hunger`. The scorer is a diagnostic formula, not the trained recommender.
 - The runs show that each step executes: a preview changes nothing, Apply changes exactly the approved items, and Undo restores the earlier feed. They are not accuracy results.
-- The reviewer was an AI agent. The model agents and the operator agent belong to the same AI session, and they start with the project instructions, so they were probably not blind to the purpose of the scenarios. Each model agent read only its instruction file and the text of its own request, and then wrote its answer file; the session transcripts of the agents show no other program.
-- No real provider API, no local model server and no command-line program of a provider was called. The HTTP and command-line routes ran against stand-ins only. Nothing ran on Windows or macOS.
-- Each request ran one time.
+- The reviewer was an AI agent. The model agents and the operator agent belong to the same AI session, and they start with the project instructions, so they were probably not blind to the purpose of the scenarios. Each model agent read two files, its instruction file and the text of its own request. It ran only the commands of its instructions: it waited for its request, wrote the request text, wrote its answer file, checked that the file parses as JSON, and renamed it. The session transcripts of the agents show no other tool call.
+- No real provider API, no local model server and no command-line program of a provider was called. The HTTP and command-line routes ran against stand-ins only. These runs were made on Linux. None was made on Windows or macOS.
+- Each request ran one time in this pass.
 
 ## Real model output through the relay: what each flow did
 

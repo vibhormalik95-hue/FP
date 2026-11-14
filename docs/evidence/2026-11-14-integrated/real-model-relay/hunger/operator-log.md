@@ -1,3 +1,4 @@
-- 2026-11-14T19:06:37Z request 1: check said 'OK: the app would accept this answer file as a transport reply'; delivered unchanged with deliver (no --force). Request file 19:06:14Z, answer file 19:06:27Z (about 13 s).
-- 2026-11-14T19:07:04Z request 2: check said 'OK: the app would accept this answer file as a transport reply'; delivered unchanged with deliver (no --force). Request file 19:06:38Z, answer file 19:06:54Z (about 16 s).
-- 2026-11-14T19:08:24Z finish: browser check ended (OUTCOME all flows completed). Exit code not captured: the browser process was not a child of the operator shell, so wait was not possible. Server stopped: wrapper PID 371, server PID 374 (kill). Created DONE-hunger.
+- 2026-11-14T20:06:02Z setup: first stored PID 17815 was a bash wrapper (compound command); real server python PID 17817 (child of 17815) written to server.pid. Server answered HTTP 200 on port 8873.
+- 2026-11-14T20:07:37Z request 1: request-0001.json written 20:07:17Z, answer-1.json 20:07:27Z (about 10 s); check said 'OK: the app would accept this answer file as a transport reply'; delivered unchanged with deliver.
+- 2026-11-14T20:08:00Z request 2: request-0002.json written 20:07:38Z, answer-2.json 20:07:51Z (about 13 s); check said 'OK: the app would accept this answer file as a transport reply'; delivered unchanged with deliver.
+- 2026-11-14T20:09:05Z finish: browser exit code 0; stopped server PID 17817 with kill; created DONE-hunger.

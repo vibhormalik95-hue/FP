@@ -8,7 +8,7 @@ Your request: “I'm not hungry, remove all the stuff that makes me hungry.”
 
 Model output (not verified)
 
-Reason that the model gave: The request negates a personal state ("I'm not hungry"), not the command; the command "remove all the stuff that makes me hungry" is affirmative, so the caller's exclude operation with strength none (hard exclusion) applies. Content that makes a viewer hungry is content showing appetizing food being prepared or served. Items 81001 (tomato-and-pasta dinner with finished plate), 81003 (bread baked and sliced for eating) and 81006 (salad intended to be eaten) each show edible food in their own caption, so they are selected. Items 81002, 81004 and 81007 explicitly state no food is shown. Items 81005 and 81008 have no subject description, so there is no evidence they show food and they are not selected. Category names (Evening, Afternoon, Repair) are time or topic labels and are not used as evidence.
+Reason that the model gave: The request contains a negated personal state ('I'm not hungry'), not a negated command; the command itself is affirmative: remove stuff that makes me hungry. The caller's operation is exclude with strength none, meaning hard exclusion of the selected items. Content that makes a viewer hungry is inferred to be appetizing food preparation shown on screen. Items 81001 (tomato-and-pasta dinner with finished plate), 81003 (baking and slicing bread for eating) and 81006 (chopping vegetables and mixing a salad to be eaten) each show edible food being prepared, which directly supports the intent. Items 81002, 81004 and 81007 explicitly state that no food or cooking is shown. Items 81005 and 81008 have no content description, so there is no evidence they contain food and they are not selected. Category labels (Evening, Afternoon) are time-of-day tags and are not used as evidence. This is a review proposal and does not execute the control.
 
 Reviewed indirect request
 
@@ -16,7 +16,7 @@ Direction and strength: Remove from the feed, read from your request by the mode
 
 Part of your request that names the subject: “stuff that makes me hungry”.
 
-Reason that the model gave for this control: The request negates a personal state ("I'm not hungry"), not the command; the command "remove all the stuff that makes me hungry" is affirmative, so the caller's exclude operation with strength none (hard exclusion) applies. Content that makes a viewer hungry is content showing appetizing food being prepared or served. Items 81001 (tomato-and-pasta dinner with finished plate), 81003 (bread baked and sliced for eating) and 81006 (salad intended to be eaten) each show edible food in their own caption, so they are selected. Items 81002, 81004 and 81007 explicitly state no food is shown. Items 81005 and 81008 have no subject description, so there is no evidence they show food and they are not selected. Category names (Evening, Afternoon, Repair) are time or topic labels and are not used as evidence.
+Reason that the model gave for this control: The request contains a negated personal state ('I'm not hungry'), not a negated command; the command itself is affirmative: remove stuff that makes me hungry. The caller's operation is exclude with strength none, meaning hard exclusion of the selected items. Content that makes a viewer hungry is inferred to be appetizing food preparation shown on screen. Items 81001 (tomato-and-pasta dinner with finished plate), 81003 (baking and slicing bread for eating) and 81006 (chopping vegetables and mixing a salad to be eaten) each show edible food being prepared, which directly supports the intent. Items 81002, 81004 and 81007 explicitly state that no food or cooking is shown. Items 81005 and 81008 have no content description, so there is no evidence they contain food and they are not selected. Category labels (Evening, Afternoon) are time-of-day tags and are not used as evidence. This is a review proposal and does not execute the control.
 
 Quotations that the model cited: item 81001, description: “A cook prepares an edible tomato-and-pasta dinner, showing the ingredients and finished plate.”; item 81003, description: “A baker shapes edible bread dough, bakes the loaf, and slices it for eating.”; item 81006, description: “A cook chops edible vegetables and mixes a salad intended to be eaten.”.
 
@@ -72,7 +72,7 @@ Only items in the evidence scope change. Other items with the same category, tag
 
 Nothing has changed yet. The feed below stays as it is until you approve.
 
-Approve before 12:12:00 PM. After that time the server no longer accepts this review.
+Approve before 1:12:56 PM. After that time the server no longer accepts this review.
 
 Approve this exact item set and apply
 Discard this review and apply nothing

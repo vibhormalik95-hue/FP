@@ -8,15 +8,15 @@
     "Each case ran one time. Nothing was approved and nothing was applied."
   ],
   "scenario": "tags",
-  "started_utc": "2026-11-14T19:14:38+00:00",
-  "finished_utc": "2026-11-14T19:14:40+00:00",
-  "source_fingerprint": "24d0a8246edc2f0bc261e163795da55ee24ce2b364a566b8fa2edc603c146cd3",
+  "started_utc": "2026-11-14T20:05:23+00:00",
+  "finished_utc": "2026-11-14T20:05:25+00:00",
+  "source_fingerprint": "22ba794e2091685fa879dcc43b68233dae1963fa4231c38dd73a36f13639068a",
   "provider": {
     "kind": "route",
     "identity": {
       "backend": "local-cli-claude-code",
       "model": "standin-model",
-      "digest": "3a1c06b48b62fd7af9eaa21b323c6eb090430353d5e343403a90db8115fb49f4",
+      "digest": "b7344ec3275177613eee5fc620bfeada1357cbb814f62928c3cd9cdffa52aef8",
       "digest_kind": "configuration_sha256_not_model_weights",
       "identity_limit": "Model name as requested; the models that the CLI reports for each call are in its receipt. One process for each call; the requests that the CLI itself sends are not counted. No attestation of weights or account.",
       "live_model": true,
@@ -33,13 +33,13 @@
         "structured_output": "prompt",
         "timeout_seconds": 600,
         "settings_shown_as_sha256": {
-          "command": "67e56512d4541f49756f821bf2ccf5ccb167851cf60a729233b80c3be0bb7766"
+          "command": "186bc43f4d4e6dca60d36840d1136a806c9836fd17fddd8c564894fad7b028ed"
         }
       }
     },
     "route_description": [
       "Route: cli",
-      "Program: /home/claude/work/runs/merged/route-checks/files/bin/claude (Claude Code CLI, print mode, one process for each call)",
+      "Program: /home/claude/work/runs/build-22ba794/route-checks/files/bin/claude (Claude Code CLI, print mode, one process for each call)",
       "Model: standin-model",
       "Structured output: prompt; 600 s for one call",
       "Call allowance for one run: 40 (a counter in this program, not a billing limit)"
@@ -84,7 +84,7 @@
       ],
       "http_status": 200,
       "model_calls": 1,
-      "seconds": 0.194,
+      "seconds": 0.164,
       "outcome": "review",
       "reason": null,
       "controls": [
@@ -264,7 +264,7 @@
         {
           "ordinal": 1,
           "route": "cli",
-          "started_utc": "2026-11-14T19:14:38+00:00",
+          "started_utc": "2026-11-14T20:05:23+00:00",
           "request_sha256": "12794f6137e453c0665b9e5a7658dd6fede6b693296ae5a2cae9fbe82a90d064",
           "schema_sha256": "c17ffdc323270f920ba024c26cc4976e9218fd921434497083e53296935ccf3e",
           "requested_model": "standin-model",
@@ -330,8 +330,8 @@
           "model_match_rule": "equal",
           "estimated_cost_usd": 0.0,
           "estimated_cost_note": "estimate of the CLI, not a bill",
-          "elapsed_seconds": 0.167,
-          "finished_utc": "2026-11-14T19:14:39+00:00"
+          "elapsed_seconds": 0.136,
+          "finished_utc": "2026-11-14T20:05:23+00:00"
         }
       ],
       "authored": {
@@ -382,7 +382,7 @@
       ],
       "http_status": 200,
       "model_calls": 1,
-      "seconds": 0.145,
+      "seconds": 0.162,
       "outcome": "review",
       "reason": null,
       "controls": [
@@ -543,7 +543,7 @@
         {
           "ordinal": 2,
           "route": "cli",
-          "started_utc": "2026-11-14T19:14:39+00:00",
+          "started_utc": "2026-11-14T20:05:24+00:00",
           "request_sha256": "106009e545dec5cc175850b590c1b82ddc41fbaae85b56eed67d67f1a444f6ea",
           "schema_sha256": "c17ffdc323270f920ba024c26cc4976e9218fd921434497083e53296935ccf3e",
           "requested_model": "standin-model",
@@ -609,8 +609,8 @@
           "model_match_rule": "equal",
           "estimated_cost_usd": 0.0,
           "estimated_cost_note": "estimate of the CLI, not a bill",
-          "elapsed_seconds": 0.121,
-          "finished_utc": "2026-11-14T19:14:39+00:00"
+          "elapsed_seconds": 0.138,
+          "finished_utc": "2026-11-14T20:05:24+00:00"
         }
       ],
       "authored": {
@@ -657,7 +657,7 @@
       ],
       "http_status": 200,
       "model_calls": 1,
-      "seconds": 0.159,
+      "seconds": 0.144,
       "outcome": "review",
       "reason": null,
       "controls": [
@@ -881,7 +881,7 @@
         {
           "ordinal": 3,
           "route": "cli",
-          "started_utc": "2026-11-14T19:14:39+00:00",
+          "started_utc": "2026-11-14T20:05:24+00:00",
           "request_sha256": "db87db60d147ebbf73814d5d84c65869f2e70ff6f8ca9de6323d8ad56247370d",
           "schema_sha256": "c17ffdc323270f920ba024c26cc4976e9218fd921434497083e53296935ccf3e",
           "requested_model": "standin-model",
@@ -947,8 +947,8 @@
           "model_match_rule": "equal",
           "estimated_cost_usd": 0.0,
           "estimated_cost_note": "estimate of the CLI, not a bill",
-          "elapsed_seconds": 0.135,
-          "finished_utc": "2026-11-14T19:14:39+00:00"
+          "elapsed_seconds": 0.12,
+          "finished_utc": "2026-11-14T20:05:24+00:00"
         }
       ],
       "authored": {
@@ -1009,7 +1009,7 @@
       ],
       "http_status": 200,
       "model_calls": 1,
-      "seconds": 0.191,
+      "seconds": 0.226,
       "outcome": "clarify",
       "reason": "Semantic scope or negation has competing interpretations",
       "controls": [],
@@ -1080,7 +1080,7 @@
         {
           "ordinal": 4,
           "route": "cli",
-          "started_utc": "2026-11-14T19:14:39+00:00",
+          "started_utc": "2026-11-14T20:05:24+00:00",
           "request_sha256": "f49dfeb39b23d8cb55f1c17785699b623843c19aecf6abc58257c71e5c11681a",
           "schema_sha256": "c17ffdc323270f920ba024c26cc4976e9218fd921434497083e53296935ccf3e",
           "requested_model": "standin-model",
@@ -1146,8 +1146,8 @@
           "model_match_rule": "equal",
           "estimated_cost_usd": 0.0,
           "estimated_cost_note": "estimate of the CLI, not a bill",
-          "elapsed_seconds": 0.168,
-          "finished_utc": "2026-11-14T19:14:39+00:00"
+          "elapsed_seconds": 0.203,
+          "finished_utc": "2026-11-14T20:05:24+00:00"
         }
       ],
       "authored": {
@@ -1182,7 +1182,7 @@
       ],
       "http_status": 200,
       "model_calls": 1,
-      "seconds": 0.224,
+      "seconds": 0.133,
       "outcome": "unsupported",
       "reason": "Authored rehearsal reply, not model output. A limit for each day is a quota. The controls can increase, decrease or exclude whole terms. They cannot count items or use the date.",
       "controls": [],
@@ -1240,7 +1240,7 @@
         {
           "ordinal": 5,
           "route": "cli",
-          "started_utc": "2026-11-14T19:14:39+00:00",
+          "started_utc": "2026-11-14T20:05:24+00:00",
           "request_sha256": "6ccb683dcc358c23271b6f6510cdec42a980fe286c87a9676c3f97dc26621bb9",
           "schema_sha256": "c17ffdc323270f920ba024c26cc4976e9218fd921434497083e53296935ccf3e",
           "requested_model": "standin-model",
@@ -1306,8 +1306,8 @@
           "model_match_rule": "equal",
           "estimated_cost_usd": 0.0,
           "estimated_cost_note": "estimate of the CLI, not a bill",
-          "elapsed_seconds": 0.203,
-          "finished_utc": "2026-11-14T19:14:39+00:00"
+          "elapsed_seconds": 0.111,
+          "finished_utc": "2026-11-14T20:05:24+00:00"
         }
       ],
       "authored": {
@@ -1342,7 +1342,7 @@
       ],
       "http_status": 200,
       "model_calls": 0,
-      "seconds": 0.013,
+      "seconds": 0.015,
       "outcome": "clarify",
       "reason": "The request matches the negated-command pattern (for example \"do not hide ...\"). The application does not guess what a negated control means. Write a positive instruction, for example \"show more ...\", \"show less ...\" or \"remove ...\", and send it again.",
       "controls": [],
@@ -1406,7 +1406,7 @@
       ],
       "http_status": 200,
       "model_calls": 1,
-      "seconds": 0.159,
+      "seconds": 0.188,
       "outcome": "no_match",
       "reason": "Authored rehearsal reply, not model output. No existing category or tag is about astronomy.",
       "controls": [],
@@ -1464,7 +1464,7 @@
         {
           "ordinal": 6,
           "route": "cli",
-          "started_utc": "2026-11-14T19:14:39+00:00",
+          "started_utc": "2026-11-14T20:05:24+00:00",
           "request_sha256": "6dade0a5e0bace3a16b8c04aa5baf80ec58d971fac6859d9fd8c05c4dea4f897",
           "schema_sha256": "c17ffdc323270f920ba024c26cc4976e9218fd921434497083e53296935ccf3e",
           "requested_model": "standin-model",
@@ -1530,8 +1530,8 @@
           "model_match_rule": "equal",
           "estimated_cost_usd": 0.0,
           "estimated_cost_note": "estimate of the CLI, not a bill",
-          "elapsed_seconds": 0.138,
-          "finished_utc": "2026-11-14T19:14:40+00:00"
+          "elapsed_seconds": 0.168,
+          "finished_utc": "2026-11-14T20:05:24+00:00"
         }
       ],
       "authored": {
@@ -1566,7 +1566,7 @@
       ],
       "http_status": 200,
       "model_calls": 2,
-      "seconds": 0.325,
+      "seconds": 0.275,
       "outcome": "review",
       "reason": null,
       "controls": [
@@ -1639,7 +1639,7 @@
         {
           "ordinal": 7,
           "route": "cli",
-          "started_utc": "2026-11-14T19:14:40+00:00",
+          "started_utc": "2026-11-14T20:05:24+00:00",
           "request_sha256": "9a8bcf9178c27c003f793e604a0de7f882af60e4d0071df737f229661a6d2668",
           "schema_sha256": "507fd5c22672c98068a7b4dd36ae2dc2ba1c667ad8ca4dba2aa958bcd1b4f8cf",
           "requested_model": "standin-model",
@@ -1705,13 +1705,13 @@
           "model_match_rule": "equal",
           "estimated_cost_usd": 0.0,
           "estimated_cost_note": "estimate of the CLI, not a bill",
-          "elapsed_seconds": 0.167,
-          "finished_utc": "2026-11-14T19:14:40+00:00"
+          "elapsed_seconds": 0.136,
+          "finished_utc": "2026-11-14T20:05:25+00:00"
         },
         {
           "ordinal": 8,
           "route": "cli",
-          "started_utc": "2026-11-14T19:14:40+00:00",
+          "started_utc": "2026-11-14T20:05:25+00:00",
           "request_sha256": "3e3837988da8a2631efc54c71f6816f8ced70730ab453374f357e994b9cda3fb",
           "schema_sha256": "83b0904d7080ec852d2c6177c3671e69f2263c8939df770c2d2cbe50ae9388a9",
           "requested_model": "standin-model",
@@ -1777,8 +1777,8 @@
           "model_match_rule": "equal",
           "estimated_cost_usd": 0.0,
           "estimated_cost_note": "estimate of the CLI, not a bill",
-          "elapsed_seconds": 0.134,
-          "finished_utc": "2026-11-14T19:14:40+00:00"
+          "elapsed_seconds": 0.118,
+          "finished_utc": "2026-11-14T20:05:25+00:00"
         }
       ],
       "authored": {
@@ -1823,7 +1823,7 @@
       ],
       "http_status": 200,
       "model_calls": 1,
-      "seconds": 0.223,
+      "seconds": 0.15,
       "outcome": "draft_ready",
       "reason": null,
       "controls": [],
@@ -1859,7 +1859,7 @@
         {
           "ordinal": 9,
           "route": "cli",
-          "started_utc": "2026-11-14T19:14:40+00:00",
+          "started_utc": "2026-11-14T20:05:25+00:00",
           "request_sha256": "2b87effee265f84b5c2043f9141a575e89abf0baebf1773e67d49d5c056cb6a0",
           "schema_sha256": "f7ae795a25341b338d9ac52d9b879e410dd66e3e3535a2be1c69a194799b568e",
           "requested_model": "standin-model",
@@ -1925,8 +1925,8 @@
           "model_match_rule": "equal",
           "estimated_cost_usd": 0.0,
           "estimated_cost_note": "estimate of the CLI, not a bill",
-          "elapsed_seconds": 0.202,
-          "finished_utc": "2026-11-14T19:14:40+00:00"
+          "elapsed_seconds": 0.135,
+          "finished_utc": "2026-11-14T20:05:25+00:00"
         }
       ],
       "authored": {
