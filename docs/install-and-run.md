@@ -141,9 +141,9 @@ See [route trial](route-trial.md).
 
 Run these checks from the source folder. They use no model.
 
-1. **The files.** `python scripts/quickstart.py check` prints the source fingerprint. For the final revision the value is `ab1a9d846b33bf0e7e3840b91b69f65747386daec2cf5d38fc621d455c8fcefd`.
-2. **The Python tests.** `python -m pytest -q -p no:cacheprovider`. Expected on the final revision: 1659 passed and 1 skipped with PyTorch; 1655 passed and 2 skipped in a fresh environment without PyTorch.
-3. **The guarded checks of the reviewed CLI profile.** `python tools/hosted_validation_current/run_guarded.py .` The output must end with `OK` and `GUARD intercepted events: []`.
+1. **The files.** `python scripts/quickstart.py check` prints the source fingerprint. For this revision (the integrated revision) the value is `24d0a8246edc2f0bc261e163795da55ee24ce2b364a566b8fa2edc603c146cd3`.
+2. **The Python tests.** `python -m pytest -q -p no:cacheprovider`. Expected on this revision: 1786 passed and 1 skipped with PyTorch; 1782 passed and 2 skipped in a fresh environment without PyTorch.
+3. **The guarded driver checks.** `python scripts/run_guarded_current_contract.py`. The last line must start with `PASS`. The script runs the guarded checks two times: on the frozen profile of 11 November 2026 in `tools/hosted_validation_current/`, and on a temporary copy with the current-contract test inputs. On the frozen profile 16 of the 180 checks have a failure, because the prompts changed after that date. That is expected, and the script says so. No reviewed profile exists for the current source.
 4. **The interface tests.** They need Node.js.
 
    ```
@@ -153,7 +153,7 @@ Run these checks from the source folder. They use no model.
    node --test "web/tests/*.mjs"
    ```
 
-   Expected on the final revision: 114 passed.
+   Expected on this revision: 128 passed.
 5. **The browser check.** It drives the page in a real browser and compares the page with the state of the server. Install the browser once:
 
    ```
@@ -168,7 +168,7 @@ Run these checks from the source folder. They use no model.
    ```
 
    The last lines must be `OUTCOME all flows completed` and the path of the receipt. `--out` must name a new or empty folder.
-   Do the same for the scenarios `category`, `hunger` and `conditions`, each with its own rehearsal server and its own `--out` folder. Expected on the final revision: with authored replies on Linux: `tags` 209 checks, `category` 104, `hunger` 96, `conditions` 12; all passed, exit code 0 each.
+   Do the same for the scenarios `category`, `hunger` and `conditions`, each with its own rehearsal server and its own `--out` folder. Expected on this revision: with authored replies on Linux: `tags` 222 checks, `category` 106, `hunger` 98, `conditions` 12; all passed, exit code 0 each.
    With a model in place of the rehearsal, add `--review wait --reviewer "your name"`. The script then stops at each review and waits for your decision. See [check a run in a real browser](demo.md#check-a-run-in-a-real-browser).
 
 The two commands that install the browser were not run for this page: the workspace that produced it already had Playwright and Chromium.

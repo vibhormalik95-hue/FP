@@ -1,0 +1,222 @@
+PREVIEW · NOTHING IS APPLIED YET
+
+Proposed change: 2 controls
+
+Go to your decision
+
+Your request: “Show me more music videos, and remove anything about food.”
+
+Model output (not verified)
+
+Reason that the model gave: The request states two separate preferences with no negation, quota, time condition or exception. 'Show me more music videos' maps to a standard boost of the music terms. 'remove anything about food' maps to an exclusion of the cooking and food terms. The two spans do not overlap and the two term sets are disjoint. Terms that only weakly suggest the preferences (live, practice, night market) are left out.
+
+Show more: category "Music", category "Guitar", category "Live sessi... [5705b2]
+
+Direction and strength, read from your request by the model: Show more (standard, +0.25).
+
+Part of your request that names the subject: “Show me more music videos”.
+
+Reason that the model gave for this control: Music videos are music content. The Music category and its subcategories Guitar and Live sessions, plus the instrument tags guitar and piano, directly express music. 'More' without an intensifier maps to standard strength.
+
+Existing names that the model chose: category "Music"; category (level 2) "Guitar"; category (level 2) "Live sessions"; tag "guitar"; tag "piano".
+
+Remove: category "Cooking", category "Baking", category "Home recipe... [25c4f8]
+
+Direction and strength, read from your request by the model: Remove from the feed.
+
+Part of your request that names the subject: “remove anything about food”.
+
+Reason that the model gave for this control: 'Remove' requests removal. Food is directly expressed by the Cooking category, its subcategories Baking and Home recipes, and the food tags baking, bread, dinner, recipe, salad and street food.
+
+Existing names that the model chose: category "Cooking"; category (level 2) "Baking"; category (level 2) "Home recipes"; tag "baking"; tag "bread"; tag "dinner"; tag "recipe"; tag "salad"; tag "street food".
+
+Raw model reply
+
+The model can be wrong. This block repeats what it returned. Nothing here is approved.
+
+Application checks
+
+Checks of the reply
+
+Passed: The vocabulary fits the stated budget (28 terms of at most 120; 2474 bytes of at most 12000)
+Passed: The request text does not match the negated-command pattern (do not, don't, never or not to, followed by hide, exclude, remove, reduce, boost or show ... more/less; one English pattern, checked before any model call; other wordings are not detected)
+Passed: The scope has at least one category or tag (28 terms in 10 items)
+Passed: The reply has the declared fields and bounded values
+Passed: A proposal has no open negation and no competing interpretation (negation_resolved True; 0 alternatives)
+Passed: A proposal selects at least one control
+Passed: Each control value is one of the declared choices
+Passed: Each intent span is a verbatim part of the request with at least one word
+Passed: The intent spans of different controls do not overlap ('Show me more music videos'; 'remove anything about food')
+Passed: Each selected term exists with exactly the supplied value
+Passed: No term is repeated in a control
+Passed: Each control selects at least one item
+Passed: No term is used by more than one control
+Passed: No two controls give different instructions to the same items
+Passed: No control selects more than half of the supplied items
+Passed: The removals of this request together remove at most half of the supplied items (4 of 10 items)
+
+Show more: category "Music", category "Guitar", category "Live sessi... [5705b2]
+
+Items that each chosen name selects: category "Music": 61007, 61008; category (level 2) "Guitar": 61007; category (level 2) "Live sessions": 61008; tag "guitar": 61007; tag "piano": 61008.
+
+This control selects 2 of the 10 items in the scope.
+
+Selected items: 61007, 61008. Evidence scope: 61001, 61002, 61003, 61004, 61005, 61006, 61007, 61008, 61009, 61010.
+
+Remove: category "Cooking", category "Baking", category "Home recipe... [25c4f8]
+
+Items that each chosen name selects: category "Cooking": 61001, 61002, 61009; category (level 2) "Baking": 61002; category (level 2) "Home recipes": 61001, 61009; tag "baking": 61002; tag "bread": 61002; tag "dinner": 61001; tag "recipe": 61001, 61009; tag "salad": 61009; tag "street food": 61003.
+
+This control selects 4 of the 10 items in the scope.
+
+Selected items: 61001, 61002, 61003, 61009. Evidence scope: 61001, 61002, 61003, 61004, 61005, 61006, 61007, 61008, 61009, 61010.
+
+Provider and model, as the server settings name them: operator-relay-file-queue / claude-opus (sub-agent alias opus of the Cowork session; version not attested). Settings hash 626908420210 (it identifies the settings, not the model). The application did not verify which model answered.
+
+The complete field of each selected item that carries a chosen name (6)
+
+These checks are mechanical. A passed check shows that names, IDs and quotations exist in the item data. It does not show that the meaning is right.
+
+Your decision
+
+If you approve:
+
+Show more: category "Music", category "Guitar", category "Live sessi... [5705b2]: Show more (standard, +0.25) for items 61007, 61008.
+Remove: category "Cooking", category "Baking", category "Home recipe... [25c4f8]: Remove from the feed for items 61001, 61002, 61003, 61009.
+
+One approval applies all 2 new controls together.
+
+Only items in the evidence scope change. Other items with the same category, tag or subject stay as they are.
+
+Nothing has changed yet. The feed below stays as it is until you approve.
+
+Approve before 12:13:05 PM. After that time the server no longer accepts this review.
+
+Approve this exact item set and apply
+Discard this review and apply nothing
+Evidence for every item in the scope
+
+Each row is one item of the evidence scope. A marked row is selected. An unmarked row is not selected, and the row says why.
+
+Control: Show more: category "Music", category "Guitar", category "Live sessi... [5705b2] · Show more (standard, +0.25) · new in this review
+Item	Description in the item data	Its categories and tags	Selected or not, and through what	Net result if approved
+61001	Episode 12 of a weeknight series. Running time 58 seconds.	
+Cooking > Home recipes
+tags: dinner, recipe
+	not selected: none of its categories or tags was chosen	Removed from the feed
+61002	Part 3 of a weekend series. Running time 45 seconds.	
+Cooking > Baking
+tags: baking, bread
+	not selected: none of its categories or tags was chosen	Removed from the feed
+61003	An evening walk between stalls. Running time 62 seconds.	
+Travel > City walks
+tags: night market, street food
+	not selected: none of its categories or tags was chosen	Removed from the feed
+61004	A mechanic cleans a bicycle chain between bites of a sandwich.	
+Repair > Bicycle repair
+tags: bicycle, tools
+	not selected: none of its categories or tags was chosen	Unchanged
+61005	An electrician replaces a desk lamp switch.	
+Repair > Home repair
+tags: lamp, tools
+	not selected: none of its categories or tags was chosen	Unchanged
+61006	The camera follows a train crossing a bridge.	
+Travel > Rail journeys
+tags: bridge, train
+	not selected: none of its categories or tags was chosen	Unchanged
+61007
+SELECTED
+	A player repeats a short guitar exercise.	
+Music > Guitar
+tags: guitar, practice
+	selected through category "Music" and category (level 2) "Guitar" and tag "guitar"	Score +0.25; ranked higher: position 4 to 2
+61008
+SELECTED
+	A pianist plays one piece in a small room.	
+Music > Live sessions
+tags: live, piano
+	selected through category "Music" and category (level 2) "Live sessions" and tag "piano"	Score +0.25; ranked higher: position 5 to 4
+61009	Episode 13 of a weeknight series. Running time 51 seconds.	
+Cooking > Home recipes
+tags: recipe, salad
+	not selected: none of its categories or tags was chosen	Removed from the feed
+61010	Untitled clip: no category or tag is supplied.	no category and no tag	not selected: this item has no category and no tag	Unchanged
+Control: Remove: category "Cooking", category "Baking", category "Home recipe... [25c4f8] · Remove from the feed · new in this review
+Item	Description in the item data	Its categories and tags	Selected or not, and through what	Net result if approved
+61001
+SELECTED
+	Episode 12 of a weeknight series. Running time 58 seconds.	
+Cooking > Home recipes
+tags: dinner, recipe
+	selected through category "Cooking" and category (level 2) "Home recipes" and tag "dinner" and tag "recipe"	Removed from the feed
+61002
+SELECTED
+	Part 3 of a weekend series. Running time 45 seconds.	
+Cooking > Baking
+tags: baking, bread
+	selected through category "Cooking" and category (level 2) "Baking" and tag "baking" and tag "bread"	Removed from the feed
+61003
+SELECTED
+	An evening walk between stalls. Running time 62 seconds.	
+Travel > City walks
+tags: night market, street food
+	selected through tag "street food"	Removed from the feed
+61004	A mechanic cleans a bicycle chain between bites of a sandwich.	
+Repair > Bicycle repair
+tags: bicycle, tools
+	not selected: none of its categories or tags was chosen	Unchanged
+61005	An electrician replaces a desk lamp switch.	
+Repair > Home repair
+tags: lamp, tools
+	not selected: none of its categories or tags was chosen	Unchanged
+61006	The camera follows a train crossing a bridge.	
+Travel > Rail journeys
+tags: bridge, train
+	not selected: none of its categories or tags was chosen	Unchanged
+61007	A player repeats a short guitar exercise.	
+Music > Guitar
+tags: guitar, practice
+	not selected: none of its categories or tags was chosen	Score +0.25; ranked higher: position 4 to 2
+61008	A pianist plays one piece in a small room.	
+Music > Live sessions
+tags: live, piano
+	not selected: none of its categories or tags was chosen	Score +0.25; ranked higher: position 5 to 4
+61009
+SELECTED
+	Episode 13 of a weeknight series. Running time 51 seconds.	
+Cooking > Home recipes
+tags: recipe, salad
+	selected through category "Cooking" and category (level 2) "Home recipes" and tag "recipe" and tag "salad"	Removed from the feed
+61010	Untitled clip: no category or tag is supplied.	no category and no tag	not selected: this item has no category and no tag	Unchanged
+
+An item in several controls shows one net result. Removal takes priority over a rank change.
+
+A quotation or a category name shows that the words exist in the item data. It does not show that the decision is right. Read each row before you approve.
+
+Preview: the first ten items now and after approval
+Now (applied feed)
+Item 61004
+Item 61005
+Item 61006
+Item 61007
+Item 61008
+Item 61009 (leaves)
+Item 61010
+Item 61001 (leaves)
+Item 61002 (leaves)
+Item 61003 (leaves)
+After approval
+Item 61004
+Item 61007 (up 2)
+Item 61005 (down 1)
+Item 61008 (up 1)
+Item 61006 (down 2)
+Item 61010 (up 1)
+
+Leaves the list: 61009, 61001, 61002, 61003. Changes position: 61007 (4 to 2), 61005 (2 to 3), 61008 (5 to 4), 61006 (3 to 5), 61010 (7 to 6). Eligible items now: 10. After approval: 6.
+
+The applied feed is unchanged until you approve. The item cards below still show the applied feed.
+
+Only the items in the scope were assessed. A quotation does not prove that an item fits.
+
+Data of this review: invented items of a bundled scenario. Scores: deterministic diagnostic scorer (a fixed formula, not the trained recommender).

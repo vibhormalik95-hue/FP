@@ -1,0 +1,1468 @@
+{
+  "kind": "browser run of the served application",
+  "started_utc": "2026-11-14T19:00:36.397Z",
+  "base": "http://127.0.0.1:8872",
+  "scenario": "category",
+  "flows": [
+    "manual",
+    "category",
+    "reject",
+    "history",
+    "failure",
+    "expired",
+    "original"
+  ],
+  "review_mode": "auto",
+  "reviewer": "none: review boxes ticked by the script",
+  "source_fingerprint": "24d0a8246edc2f0bc261e163795da55ee24ce2b364a566b8fa2edc603c146cd3",
+  "status": {
+    "data_mode": "fixture",
+    "source": "synthetic://friday-new-category-proposal-20261110",
+    "model_mode": "deterministic diagnostic scorer",
+    "users": 1,
+    "items": 8,
+    "categories": 4,
+    "default_parser": "rule",
+    "ollama_model": "llama3.1:8b",
+    "local_models_allowed": false,
+    "provider": {
+      "backend": "scripted-authored-replies",
+      "model": "none (replies written by hand)",
+      "live_model": false
+    },
+    "scenario_requests": {
+      "staged": "Propose one useful new category from these eight descriptions. Decide the shared concept yourself from the stated facts, rather than taking an existing category code as its meaning. Give a precise definition supported by the descriptions; do not merely rename an existing category or invent missing facts."
+    },
+    "scenario": "category",
+    "source_fingerprint": "24d0a8246edc2f0bc261e163795da55ee24ce2b364a566b8fa2edc603c146cd3",
+    "ollama_status": "Disabled by hosted-only application policy.",
+    "research_note": "Synthetic category controls measure offline behavior; this demo does not establish human agency or satisfaction.",
+    "category_note": "Opaque dataset category IDs; no invented topic names.",
+    "semantic_topic": "Caption sidecar loaded; origin not verified; exploratory preview only",
+    "semantic_topic_available": true,
+    "caption_data": "invented scenario file",
+    "asset_note": "Metadata cards only; no original video assets are distributed."
+  },
+  "checks": [
+    {
+      "name": "session established",
+      "passed": true,
+      "detail": null,
+      "utc": "2026-11-14T19:00:37.338Z"
+    },
+    {
+      "name": "automatic review is used only when no model is connected",
+      "passed": true,
+      "detail": {
+        "review_mode": "auto",
+        "provider": "scripted-authored-replies"
+      },
+      "utc": "2026-11-14T19:00:37.338Z"
+    },
+    {
+      "name": "the language view names what it is and makes no accuracy claim",
+      "passed": true,
+      "detail": null,
+      "utc": "2026-11-14T19:00:37.373Z"
+    },
+    {
+      "name": "manual: starts with no applied control",
+      "passed": true,
+      "detail": {
+        "eligible": 8
+      },
+      "utc": "2026-11-14T19:00:37.535Z"
+    },
+    {
+      "name": "manual: the stage line marks the interpretation stage as not used",
+      "passed": true,
+      "detail": null,
+      "utc": "2026-11-14T19:00:37.575Z"
+    },
+    {
+      "name": "manual: review appears",
+      "passed": true,
+      "detail": {
+        "http": 200
+      },
+      "utc": "2026-11-14T19:00:37.732Z"
+    },
+    {
+      "name": "manual: the server reported no model call for this review",
+      "passed": true,
+      "detail": {
+        "model_calls": 0
+      },
+      "utc": "2026-11-14T19:00:37.732Z"
+    },
+    {
+      "name": "manual: the first block is \"Your selection\", says that no model is used, and no model block exists",
+      "passed": true,
+      "detail": null,
+      "utc": "2026-11-14T19:00:37.738Z"
+    },
+    {
+      "name": "manual: the page moves the focus to the heading of the review and shows it in the window",
+      "passed": true,
+      "detail": {
+        "heading": true,
+        "text": "Proposed change: Manual: K1",
+        "in_view": true
+      },
+      "utc": "2026-11-14T19:00:37.935Z"
+    },
+    {
+      "name": "manual: the preview left the applied groups, the revision and the applied feed unchanged",
+      "passed": true,
+      "detail": {
+        "applied_groups": 0,
+        "revision": 0,
+        "eligible": 8
+      },
+      "utc": "2026-11-14T19:00:37.945Z"
+    },
+    {
+      "name": "manual: the preview left the conditions A to E, the topic tool and the fictional items unchanged",
+      "passed": true,
+      "detail": null,
+      "utc": "2026-11-14T19:00:37.958Z"
+    },
+    {
+      "name": "manual: page still shows the starting items during preview",
+      "passed": true,
+      "detail": {
+        "shown": [
+          41006,
+          41007,
+          41008,
+          41001,
+          41002,
+          41003,
+          41004,
+          41005
+        ]
+      },
+      "utc": "2026-11-14T19:00:37.968Z"
+    },
+    {
+      "name": "manual: the review names at least one item that would change",
+      "passed": true,
+      "detail": {
+        "controls": [
+          {
+            "label": "Manual: K1",
+            "operation": "exclude",
+            "strength": "none",
+            "intent_span": "K1",
+            "item_ids": [
+              41001,
+              41004
+            ]
+          }
+        ]
+      },
+      "utc": "2026-11-14T19:00:37.969Z"
+    },
+    {
+      "name": "manual: the review has three separate blocks (Your selection, application checks, decision) and says that nothing is applied",
+      "passed": true,
+      "detail": {
+        "Your selection": 1,
+        "Application checks": 1,
+        "Your decision": 1
+      },
+      "utc": "2026-11-14T19:00:37.977Z"
+    },
+    {
+      "name": "manual: no check line of the review is shown as failed",
+      "passed": true,
+      "detail": {
+        "failed": []
+      },
+      "utc": "2026-11-14T19:00:37.982Z"
+    },
+    {
+      "name": "manual: the decision block names the control \"Manual: K1\" and each of its items",
+      "passed": true,
+      "detail": {
+        "items": [
+          41001,
+          41004
+        ]
+      },
+      "utc": "2026-11-14T19:00:37.988Z"
+    },
+    {
+      "name": "manual: the evidence table lists every supplied item once for \"Manual: K1\", with its own description, and marks exactly the approved ones",
+      "passed": true,
+      "detail": {
+        "rows": 8,
+        "marked": [
+          41001,
+          41004
+        ]
+      },
+      "utc": "2026-11-14T19:00:37.997Z"
+    },
+    {
+      "name": "manual: preview order and eligible count match independently calculated effects",
+      "passed": true,
+      "detail": null,
+      "utc": "2026-11-14T19:00:37.997Z"
+    },
+    {
+      "name": "manual: the table states the result for each item that the approved controls remove",
+      "passed": true,
+      "detail": {
+        "removed": [
+          41001,
+          41004
+        ]
+      },
+      "utc": "2026-11-14T19:00:37.998Z"
+    },
+    {
+      "name": "manual: the table says \"ranked higher\" or \"ranked lower\" only for an item that moves in the preview feed",
+      "passed": true,
+      "detail": {
+        "moved": []
+      },
+      "utc": "2026-11-14T19:00:37.999Z"
+    },
+    {
+      "name": "manual: the preview feed of the server has the order that the approved controls give",
+      "passed": true,
+      "detail": {
+        "preview": [
+          41006,
+          41007,
+          41008,
+          41002,
+          41003,
+          41005
+        ],
+        "expected": [
+          41006,
+          41007,
+          41008,
+          41002,
+          41003,
+          41005
+        ]
+      },
+      "utc": "2026-11-14T19:00:38.001Z"
+    },
+    {
+      "name": "manual: the preview lists the feed now and after approval, as the server computed them, and says that the applied feed is unchanged",
+      "passed": true,
+      "detail": {
+        "after": [
+          41006,
+          41007,
+          41008,
+          41002,
+          41003,
+          41005
+        ]
+      },
+      "utc": "2026-11-14T19:00:38.009Z"
+    },
+    {
+      "name": "manual: after Apply the focus is on the heading \"What changed\", in the window",
+      "passed": true,
+      "detail": null,
+      "utc": "2026-11-14T19:00:38.286Z"
+    },
+    {
+      "name": "manual: Apply removed exactly the items of the approved removal controls",
+      "passed": true,
+      "detail": {
+        "eligible_before": 8,
+        "eligible_after": 6,
+        "removed": [
+          41001,
+          41004
+        ]
+      },
+      "utc": "2026-11-14T19:00:38.287Z"
+    },
+    {
+      "name": "manual: Apply changed the score of exactly the items of the approved rank controls, by the stated amount",
+      "passed": true,
+      "detail": {
+        "changed": []
+      },
+      "utc": "2026-11-14T19:00:38.288Z"
+    },
+    {
+      "name": "manual: the applied feed has the order that the approved controls give, and it is the preview feed",
+      "passed": true,
+      "detail": {
+        "applied": [
+          41006,
+          41007,
+          41008,
+          41002,
+          41003,
+          41005
+        ]
+      },
+      "utc": "2026-11-14T19:00:38.292Z"
+    },
+    {
+      "name": "manual: exactly the approved controls are applied, with exactly their items",
+      "passed": true,
+      "detail": {
+        "applied": [
+          "Manual: K1"
+        ],
+        "revision": 1
+      },
+      "utc": "2026-11-14T19:00:38.292Z"
+    },
+    {
+      "name": "manual: Apply left the conditions A to E, the topic tool and the fictional items unchanged",
+      "passed": true,
+      "detail": null,
+      "utc": "2026-11-14T19:00:38.304Z"
+    },
+    {
+      "name": "manual: page shows the feed that the server holds",
+      "passed": true,
+      "detail": {
+        "shown": [
+          41006,
+          41007,
+          41008,
+          41002,
+          41003,
+          41005
+        ]
+      },
+      "utc": "2026-11-14T19:00:38.311Z"
+    },
+    {
+      "name": "manual: the page records what changed and how to undo it",
+      "passed": true,
+      "detail": null,
+      "utc": "2026-11-14T19:00:38.314Z"
+    },
+    {
+      "name": "manual: the list of applied controls in the panel is the list of the server",
+      "passed": true,
+      "detail": {
+        "listed": [
+          "Manual: K1: Remove from the feed; items 41001, 41004"
+        ]
+      },
+      "utc": "2026-11-14T19:00:38.317Z"
+    },
+    {
+      "name": "manual: undo review alone changed nothing",
+      "passed": true,
+      "detail": {
+        "eligible": 6
+      },
+      "utc": "2026-11-14T19:00:38.540Z"
+    },
+    {
+      "name": "manual: Undo restored the exact earlier feed and the exact earlier controls",
+      "passed": true,
+      "detail": {
+        "eligible": 8,
+        "identical_to_start": true,
+        "revision": 2
+      },
+      "utc": "2026-11-14T19:00:38.753Z"
+    },
+    {
+      "name": "manual: Undo left the conditions A to E, the topic tool and the fictional items unchanged",
+      "passed": true,
+      "detail": null,
+      "utc": "2026-11-14T19:00:38.759Z"
+    },
+    {
+      "name": "manual: page shows the starting items again and says that the earlier feed is restored",
+      "passed": true,
+      "detail": {
+        "shown": [
+          41006,
+          41007,
+          41008,
+          41001,
+          41002,
+          41003,
+          41004,
+          41005
+        ]
+      },
+      "utc": "2026-11-14T19:00:38.765Z"
+    },
+    {
+      "name": "category: starts with no applied control",
+      "passed": true,
+      "detail": {
+        "eligible": 8
+      },
+      "utc": "2026-11-14T19:00:38.928Z"
+    },
+    {
+      "name": "the server supplies the bundled request \"staged\"",
+      "passed": true,
+      "detail": null,
+      "utc": "2026-11-14T19:00:38.975Z"
+    },
+    {
+      "name": "the request text is the exact bundled request \"staged\"",
+      "passed": true,
+      "detail": null,
+      "utc": "2026-11-14T19:00:39.036Z"
+    },
+    {
+      "name": "category: definition proposal changed nothing",
+      "passed": true,
+      "detail": {
+        "label": "Repaired existing object that is kept (authored rehearsal)"
+      },
+      "utc": "2026-11-14T19:00:39.290Z"
+    },
+    {
+      "name": "category: every supplied item has one membership decision on screen",
+      "passed": true,
+      "detail": {
+        "shown": 8,
+        "supplied": 8
+      },
+      "utc": "2026-11-14T19:00:39.651Z"
+    },
+    {
+      "name": "category: every supplied item has one evidence assessment on screen",
+      "passed": true,
+      "detail": {
+        "shown": 8
+      },
+      "utc": "2026-11-14T19:00:39.652Z"
+    },
+    {
+      "name": "category: the page moves the focus to the heading of the review and shows it in the window",
+      "passed": true,
+      "detail": {
+        "heading": true,
+        "text": "Proposed change: Repaired existing object that is kept (authored rehearsal)",
+        "in_view": true
+      },
+      "utc": "2026-11-14T19:00:39.875Z"
+    },
+    {
+      "name": "category: the preview left the applied groups, the revision and the applied feed unchanged",
+      "passed": true,
+      "detail": {
+        "applied_groups": 0,
+        "revision": 2,
+        "eligible": 8
+      },
+      "utc": "2026-11-14T19:00:39.879Z"
+    },
+    {
+      "name": "category: the preview left the conditions A to E, the topic tool and the fictional items unchanged",
+      "passed": true,
+      "detail": null,
+      "utc": "2026-11-14T19:00:39.892Z"
+    },
+    {
+      "name": "category: page still shows the starting items during preview",
+      "passed": true,
+      "detail": {
+        "shown": [
+          41006,
+          41007,
+          41008,
+          41001,
+          41002,
+          41003,
+          41004,
+          41005
+        ]
+      },
+      "utc": "2026-11-14T19:00:39.900Z"
+    },
+    {
+      "name": "category: the review names at least one item that would change",
+      "passed": true,
+      "detail": {
+        "controls": [
+          {
+            "label": "Repaired existing object that is kept (authored rehearsal)",
+            "operation": "exclude",
+            "strength": "none",
+            "intent_span": "Propose one useful new category from these eight descriptions. Decide the shared concept yourself from the stated facts, rather than taking an existing category code as its meaning. Give a precise definition supported by the descriptions; do not merely rename an existing category or invent missing facts.",
+            "item_ids": [
+              41001,
+              41002,
+              41003
+            ]
+          }
+        ]
+      },
+      "utc": "2026-11-14T19:00:39.900Z"
+    },
+    {
+      "name": "category: the review has three separate blocks (Authored reply (written by hand, not a model), application checks, decision) and says that nothing is applied",
+      "passed": true,
+      "detail": {
+        "Authored reply (written by hand, not a model)": 1,
+        "Application checks": 1,
+        "Your decision": 1
+      },
+      "utc": "2026-11-14T19:00:39.907Z"
+    },
+    {
+      "name": "category: no check line of the review is shown as failed",
+      "passed": true,
+      "detail": {
+        "failed": []
+      },
+      "utc": "2026-11-14T19:00:39.911Z"
+    },
+    {
+      "name": "category: the decision block names the control \"Repaired existing object that is kept (authored rehearsal)\" and each of its items",
+      "passed": true,
+      "detail": {
+        "items": [
+          41001,
+          41002,
+          41003
+        ]
+      },
+      "utc": "2026-11-14T19:00:39.913Z"
+    },
+    {
+      "name": "category: the evidence table lists every supplied item once for \"Repaired existing object that is kept (authored rehearsal)\", with its own description, and marks exactly the approved ones",
+      "passed": true,
+      "detail": {
+        "rows": 8,
+        "marked": [
+          41001,
+          41002,
+          41003
+        ]
+      },
+      "utc": "2026-11-14T19:00:39.917Z"
+    },
+    {
+      "name": "category: preview order and eligible count match independently calculated effects",
+      "passed": true,
+      "detail": null,
+      "utc": "2026-11-14T19:00:39.918Z"
+    },
+    {
+      "name": "category: the table states the result for each item that the approved controls remove",
+      "passed": true,
+      "detail": {
+        "removed": [
+          41001,
+          41002,
+          41003
+        ]
+      },
+      "utc": "2026-11-14T19:00:39.919Z"
+    },
+    {
+      "name": "category: the table says \"ranked higher\" or \"ranked lower\" only for an item that moves in the preview feed",
+      "passed": true,
+      "detail": {
+        "moved": []
+      },
+      "utc": "2026-11-14T19:00:39.919Z"
+    },
+    {
+      "name": "category: the preview feed of the server has the order that the approved controls give",
+      "passed": true,
+      "detail": {
+        "preview": [
+          41006,
+          41007,
+          41008,
+          41004,
+          41005
+        ],
+        "expected": [
+          41006,
+          41007,
+          41008,
+          41004,
+          41005
+        ]
+      },
+      "utc": "2026-11-14T19:00:39.921Z"
+    },
+    {
+      "name": "category: the preview lists the feed now and after approval, as the server computed them, and says that the applied feed is unchanged",
+      "passed": true,
+      "detail": {
+        "after": [
+          41006,
+          41007,
+          41008,
+          41004,
+          41005
+        ]
+      },
+      "utc": "2026-11-14T19:00:39.936Z"
+    },
+    {
+      "name": "category: after Apply the focus is on the heading \"What changed\", in the window",
+      "passed": true,
+      "detail": null,
+      "utc": "2026-11-14T19:00:40.310Z"
+    },
+    {
+      "name": "category: Apply removed exactly the items of the approved removal controls",
+      "passed": true,
+      "detail": {
+        "eligible_before": 8,
+        "eligible_after": 5,
+        "removed": [
+          41001,
+          41002,
+          41003
+        ]
+      },
+      "utc": "2026-11-14T19:00:40.310Z"
+    },
+    {
+      "name": "category: Apply changed the score of exactly the items of the approved rank controls, by the stated amount",
+      "passed": true,
+      "detail": {
+        "changed": []
+      },
+      "utc": "2026-11-14T19:00:40.311Z"
+    },
+    {
+      "name": "category: the applied feed has the order that the approved controls give, and it is the preview feed",
+      "passed": true,
+      "detail": {
+        "applied": [
+          41006,
+          41007,
+          41008,
+          41004,
+          41005
+        ]
+      },
+      "utc": "2026-11-14T19:00:40.311Z"
+    },
+    {
+      "name": "category: exactly the approved controls are applied, with exactly their items",
+      "passed": true,
+      "detail": {
+        "applied": [
+          "Repaired existing object that is kept (authored rehearsal)"
+        ],
+        "revision": 3
+      },
+      "utc": "2026-11-14T19:00:40.311Z"
+    },
+    {
+      "name": "category: Apply left the conditions A to E, the topic tool and the fictional items unchanged",
+      "passed": true,
+      "detail": null,
+      "utc": "2026-11-14T19:00:40.321Z"
+    },
+    {
+      "name": "category: page shows the feed that the server holds",
+      "passed": true,
+      "detail": {
+        "shown": [
+          41006,
+          41007,
+          41008,
+          41004,
+          41005
+        ]
+      },
+      "utc": "2026-11-14T19:00:40.329Z"
+    },
+    {
+      "name": "category: the page records what changed and how to undo it",
+      "passed": true,
+      "detail": null,
+      "utc": "2026-11-14T19:00:40.332Z"
+    },
+    {
+      "name": "category: the list of applied controls in the panel is the list of the server",
+      "passed": true,
+      "detail": {
+        "listed": [
+          "Repaired existing object that is kept (authored rehearsal): Remove from the feed; items 41001, 41002, 41003"
+        ]
+      },
+      "utc": "2026-11-14T19:00:40.336Z"
+    },
+    {
+      "name": "category: undo review alone changed nothing",
+      "passed": true,
+      "detail": {
+        "eligible": 5
+      },
+      "utc": "2026-11-14T19:00:40.553Z"
+    },
+    {
+      "name": "category: Undo restored the exact earlier feed and the exact earlier controls",
+      "passed": true,
+      "detail": {
+        "eligible": 8,
+        "identical_to_start": true,
+        "revision": 4
+      },
+      "utc": "2026-11-14T19:00:40.825Z"
+    },
+    {
+      "name": "category: Undo left the conditions A to E, the topic tool and the fictional items unchanged",
+      "passed": true,
+      "detail": null,
+      "utc": "2026-11-14T19:00:40.833Z"
+    },
+    {
+      "name": "category: page shows the starting items again and says that the earlier feed is restored",
+      "passed": true,
+      "detail": {
+        "shown": [
+          41006,
+          41007,
+          41008,
+          41001,
+          41002,
+          41003,
+          41004,
+          41005
+        ]
+      },
+      "utc": "2026-11-14T19:00:40.842Z"
+    },
+    {
+      "name": "reject: starts with no applied control",
+      "passed": true,
+      "detail": {
+        "eligible": 8
+      },
+      "utc": "2026-11-14T19:00:41.008Z"
+    },
+    {
+      "name": "the server supplies the bundled request \"staged\"",
+      "passed": true,
+      "detail": null,
+      "utc": "2026-11-14T19:00:41.015Z"
+    },
+    {
+      "name": "the request text is the exact bundled request \"staged\"",
+      "passed": true,
+      "detail": null,
+      "utc": "2026-11-14T19:00:41.040Z"
+    },
+    {
+      "name": "reject: the server accepts the rejection",
+      "passed": true,
+      "detail": {
+        "http": 200,
+        "body": {
+          "definition_ready": false,
+          "resolution_ready": false,
+          "applied": false,
+          "status": "discarded",
+          "reason": "The definition was rejected. Nothing was classified and nothing was applied."
+        }
+      },
+      "utc": "2026-11-14T19:00:44.183Z"
+    },
+    {
+      "name": "reject: the definition review is gone and the page says that nothing was classified or applied",
+      "passed": true,
+      "detail": null,
+      "utc": "2026-11-14T19:00:44.193Z"
+    },
+    {
+      "name": "reject: the server no longer classifies with the rejected definition",
+      "passed": true,
+      "detail": {
+        "http": 409
+      },
+      "utc": "2026-11-14T19:00:44.198Z"
+    },
+    {
+      "name": "reject: nothing changed on the server",
+      "passed": true,
+      "detail": null,
+      "utc": "2026-11-14T19:00:44.213Z"
+    },
+    {
+      "name": "history: starts with no applied control",
+      "passed": true,
+      "detail": {
+        "eligible": 8
+      },
+      "utc": "2026-11-14T19:00:44.400Z"
+    },
+    {
+      "name": "history: the scenario has two existing categories",
+      "passed": true,
+      "detail": {
+        "names": [
+          "",
+          "K1",
+          "K2",
+          "K3",
+          "K4"
+        ]
+      },
+      "utc": "2026-11-14T19:00:44.430Z"
+    },
+    {
+      "name": "history: the review of \"Manual: K1\" is ready and changed nothing",
+      "passed": true,
+      "detail": null,
+      "utc": "2026-11-14T19:00:44.555Z"
+    },
+    {
+      "name": "history: the review of \"Manual: K4\" is ready and changed nothing",
+      "passed": true,
+      "detail": null,
+      "utc": "2026-11-14T19:00:44.745Z"
+    },
+    {
+      "name": "history: with two controls the applied feed has the order that both controls give",
+      "passed": true,
+      "detail": {
+        "applied": [
+          41008,
+          41006,
+          41007,
+          41002,
+          41005,
+          41003
+        ],
+        "expected": [
+          41008,
+          41006,
+          41007,
+          41002,
+          41005,
+          41003
+        ]
+      },
+      "utc": "2026-11-14T19:00:44.847Z"
+    },
+    {
+      "name": "history: two controls are applied",
+      "passed": true,
+      "detail": {
+        "applied": [
+          "Manual: K1",
+          "Manual: K4"
+        ]
+      },
+      "utc": "2026-11-14T19:00:44.848Z"
+    },
+    {
+      "name": "history: the undo review changed nothing",
+      "passed": true,
+      "detail": null,
+      "utc": "2026-11-14T19:00:44.936Z"
+    },
+    {
+      "name": "history: Undo returns to the exact state with the first control",
+      "passed": true,
+      "detail": {
+        "applied": [
+          "Manual: K1"
+        ]
+      },
+      "utc": "2026-11-14T19:00:44.999Z"
+    },
+    {
+      "name": "history: the page lists the controls of the server after the undo",
+      "passed": true,
+      "detail": null,
+      "utc": "2026-11-14T19:00:45.002Z"
+    },
+    {
+      "name": "history: the removal review has its own title and changed nothing",
+      "passed": true,
+      "detail": {
+        "title": [
+          "PREVIEW · NOTHING IS APPLIED YET",
+          "",
+          "Remove every applied control"
+        ]
+      },
+      "utc": "2026-11-14T19:00:45.073Z"
+    },
+    {
+      "name": "history: the stage line names the review of the removal, not an undo",
+      "passed": true,
+      "detail": null,
+      "utc": "2026-11-14T19:00:45.075Z"
+    },
+    {
+      "name": "history: the removal leaves no control and the starting feed",
+      "passed": true,
+      "detail": {
+        "applied": []
+      },
+      "utc": "2026-11-14T19:00:45.144Z"
+    },
+    {
+      "name": "history: the page says that every control is removed",
+      "passed": true,
+      "detail": null,
+      "utc": "2026-11-14T19:00:45.148Z"
+    },
+    {
+      "name": "history: the undo of the removal restores the exact state before it",
+      "passed": true,
+      "detail": {
+        "applied": [
+          "Manual: K1"
+        ]
+      },
+      "utc": "2026-11-14T19:00:45.304Z"
+    },
+    {
+      "name": "history: the conditions A to E, the topic tool and the fictional items are unchanged",
+      "passed": true,
+      "detail": null,
+      "utc": "2026-11-14T19:00:45.311Z"
+    },
+    {
+      "name": "history: the flow ends with no control and the starting feed",
+      "passed": true,
+      "detail": null,
+      "utc": "2026-11-14T19:00:45.476Z"
+    },
+    {
+      "name": "failure: starts with no applied control",
+      "passed": true,
+      "detail": {
+        "eligible": 8
+      },
+      "utc": "2026-11-14T19:00:45.713Z"
+    },
+    {
+      "name": "failure: the server reports a begun call that gave no usable reply",
+      "passed": true,
+      "detail": {
+        "http": 502,
+        "status": "error",
+        "outcome_source": "provider_failure",
+        "calls_attempted": 1
+      },
+      "utc": "2026-11-14T19:00:45.859Z"
+    },
+    {
+      "name": "failure: the page names the failed call and never says that no call was made",
+      "passed": true,
+      "detail": null,
+      "utc": "2026-11-14T19:00:45.860Z"
+    },
+    {
+      "name": "failure: the page offers no Apply and no button that sends the same refusal again",
+      "passed": true,
+      "detail": null,
+      "utc": "2026-11-14T19:00:45.864Z"
+    },
+    {
+      "name": "failure: the stage line shows the stop in the stage of the call",
+      "passed": true,
+      "detail": null,
+      "utc": "2026-11-14T19:00:45.867Z"
+    },
+    {
+      "name": "failure: nothing changed on the server",
+      "passed": true,
+      "detail": null,
+      "utc": "2026-11-14T19:00:45.880Z"
+    },
+    {
+      "name": "expired: starts with no applied control",
+      "passed": true,
+      "detail": {
+        "eligible": 8
+      },
+      "utc": "2026-11-14T19:00:46.040Z"
+    },
+    {
+      "name": "expired: the decision block states the time limit",
+      "passed": true,
+      "detail": null,
+      "utc": "2026-11-14T19:00:46.169Z"
+    },
+    {
+      "name": "expired: after five minutes the review is marked as expired and cannot be approved",
+      "passed": true,
+      "detail": null,
+      "utc": "2026-11-14T19:00:46.188Z"
+    },
+    {
+      "name": "expired: closing the expired review changes nothing",
+      "passed": true,
+      "detail": null,
+      "utc": "2026-11-14T19:00:46.421Z"
+    },
+    {
+      "name": "expired: a newer review was made in the same session",
+      "passed": true,
+      "detail": null,
+      "utc": "2026-11-14T19:00:46.493Z"
+    },
+    {
+      "name": "expired: the server refuses the replaced review, and the page says that it has expired and that nothing was applied",
+      "passed": true,
+      "detail": {
+        "http": 409
+      },
+      "utc": "2026-11-14T19:00:46.568Z"
+    },
+    {
+      "name": "expired: nothing changed on the server",
+      "passed": true,
+      "detail": null,
+      "utc": "2026-11-14T19:00:46.585Z"
+    },
+    {
+      "name": "original: on named categories the instruction and the profile are disabled, with the reason and the command for the fixture",
+      "passed": true,
+      "detail": {
+        "categories": [
+          "K1",
+          "K2",
+          "K3",
+          "K4"
+        ]
+      },
+      "utc": "2026-11-14T19:00:46.770Z"
+    },
+    {
+      "name": "no script error was raised by the page",
+      "passed": true,
+      "detail": [],
+      "utc": "2026-11-14T19:00:46.932Z"
+    }
+  ],
+  "review_decisions": [],
+  "flows_result": {
+    "manual": {
+      "started_utc": "2026-11-14T19:00:37.530Z",
+      "eligible_before": 8,
+      "shown_before": [
+        41006,
+        41007,
+        41008,
+        41001,
+        41002,
+        41003,
+        41004,
+        41005
+      ],
+      "outcome": "completed: preview unchanged, apply exact, undo restored",
+      "controls": [
+        {
+          "label": "Manual: K1",
+          "operation": "exclude",
+          "strength": "none",
+          "intent_span": "K1",
+          "item_ids": [
+            41001,
+            41004
+          ]
+        }
+      ],
+      "selected_ids": [
+        41001,
+        41004
+      ],
+      "review_text_sha256": "2be58edc692c7cff41a405cf1ff6f9b12bda3ee5a9b64409866cfd5c8c241f22",
+      "eligible_after_apply": 6,
+      "shown_after_apply": [
+        41006,
+        41007,
+        41008,
+        41002,
+        41003,
+        41005
+      ],
+      "eligible_after_undo": 8,
+      "provider_calls": 0,
+      "finished_utc": "2026-11-14T19:00:38.888Z"
+    },
+    "category": {
+      "started_utc": "2026-11-14T19:00:38.925Z",
+      "eligible_before": 8,
+      "shown_before": [
+        41006,
+        41007,
+        41008,
+        41001,
+        41002,
+        41003,
+        41004,
+        41005
+      ],
+      "outcome": "completed: preview unchanged, apply exact, undo restored",
+      "provider_calls": 3,
+      "definition_label": "Repaired existing object that is kept (authored rehearsal)",
+      "dispositions": [
+        {
+          "item_id": 41001,
+          "verdict": "match"
+        },
+        {
+          "item_id": 41002,
+          "verdict": "match"
+        },
+        {
+          "item_id": 41003,
+          "verdict": "match"
+        },
+        {
+          "item_id": 41004,
+          "verdict": "not_match"
+        },
+        {
+          "item_id": 41005,
+          "verdict": "unknown"
+        },
+        {
+          "item_id": 41006,
+          "verdict": "unknown"
+        },
+        {
+          "item_id": 41007,
+          "verdict": "unknown"
+        },
+        {
+          "item_id": 41008,
+          "verdict": "unknown"
+        }
+      ],
+      "evidence_assessments": [
+        {
+          "item_id": 41001,
+          "assessment": "supported"
+        },
+        {
+          "item_id": 41002,
+          "assessment": "supported"
+        },
+        {
+          "item_id": 41003,
+          "assessment": "supported"
+        },
+        {
+          "item_id": 41004,
+          "assessment": "contradicted"
+        },
+        {
+          "item_id": 41005,
+          "assessment": "not_stated"
+        },
+        {
+          "item_id": 41006,
+          "assessment": "not_stated"
+        },
+        {
+          "item_id": 41007,
+          "assessment": "not_stated"
+        },
+        {
+          "item_id": 41008,
+          "assessment": "not_stated"
+        }
+      ],
+      "controls": [
+        {
+          "label": "Repaired existing object that is kept (authored rehearsal)",
+          "operation": "exclude",
+          "strength": "none",
+          "intent_span": "Propose one useful new category from these eight descriptions. Decide the shared concept yourself from the stated facts, rather than taking an existing category code as its meaning. Give a precise definition supported by the descriptions; do not merely rename an existing category or invent missing facts.",
+          "item_ids": [
+            41001,
+            41002,
+            41003
+          ]
+        }
+      ],
+      "selected_ids": [
+        41001,
+        41002,
+        41003
+      ],
+      "review_text_sha256": "2742b55d3c28909cca7dabf4b5d287425de129504b7fa483ca3a8b59606d78b6",
+      "eligible_after_apply": 5,
+      "shown_after_apply": [
+        41006,
+        41007,
+        41008,
+        41004,
+        41005
+      ],
+      "eligible_after_undo": 8,
+      "finished_utc": "2026-11-14T19:00:40.966Z"
+    },
+    "reject": {
+      "started_utc": "2026-11-14T19:00:41.002Z",
+      "eligible_before": 8,
+      "shown_before": [
+        41006,
+        41007,
+        41008,
+        41001,
+        41002,
+        41003,
+        41004,
+        41005
+      ],
+      "outcome": "completed: definition rejected; nothing classified or applied",
+      "finished_utc": "2026-11-14T19:00:44.362Z"
+    },
+    "history": {
+      "started_utc": "2026-11-14T19:00:44.397Z",
+      "eligible_before": 8,
+      "shown_before": [
+        41006,
+        41007,
+        41008,
+        41001,
+        41002,
+        41003,
+        41004,
+        41005
+      ],
+      "outcome": "completed: undo to a state with a control, removal of every control, undo of the removal",
+      "finished_utc": "2026-11-14T19:00:45.670Z"
+    },
+    "failure": {
+      "started_utc": "2026-11-14T19:00:45.705Z",
+      "eligible_before": 8,
+      "shown_before": [
+        41006,
+        41007,
+        41008,
+        41001,
+        41002,
+        41003,
+        41004,
+        41005
+      ],
+      "outcome": "completed: the failed call is named, nothing applied",
+      "observed": {
+        "http": 502,
+        "status": "error",
+        "outcome_source": "provider_failure",
+        "calls_attempted": 1
+      },
+      "finished_utc": "2026-11-14T19:00:46.016Z"
+    },
+    "expired": {
+      "started_utc": "2026-11-14T19:00:46.038Z",
+      "eligible_before": 8,
+      "shown_before": [
+        41006,
+        41007,
+        41008,
+        41001,
+        41002,
+        41003,
+        41004,
+        41005
+      ],
+      "outcome": "completed: page expiry and server refusal; nothing applied",
+      "finished_utc": "2026-11-14T19:00:46.702Z"
+    },
+    "original": {
+      "started_utc": "2026-11-14T19:00:46.703Z",
+      "outcome": "completed: instruction and profile disabled on named categories",
+      "finished_utc": "2026-11-14T19:00:46.932Z"
+    }
+  },
+  "provider_calls": [
+    {
+      "route": "/api/semantic/definition/preview",
+      "list": "model_calls",
+      "stage": "definition",
+      "status": "returned_json",
+      "elapsed_seconds": 0,
+      "request_sha256": "0b9ffa067547f5a1a132e78df28a2e6de4873f6267841838e50d3cfcee40a3c9",
+      "response_sha256": "f7f8c01bf6e33129aea88ee01a3e4d2c2b48d1fa874eae26dfebf401be76ad6c",
+      "declared_provider": {
+        "backend": "scripted-authored-replies",
+        "model_id": "none (replies written by hand)",
+        "model_revision": "0d746e68d25ba67d501d549ebd4985b8806fb1f29902345616371098af5ff577"
+      },
+      "observed_utc": "2026-11-14T19:00:39.247Z"
+    },
+    {
+      "route": "/api/semantic/definition/classify",
+      "list": "model_calls",
+      "stage": "membership",
+      "status": "returned_json",
+      "elapsed_seconds": 0,
+      "request_sha256": "798958c90a8cefa39da74cec9ffce02f82a67e379458210cc0bbdda2d1a53943",
+      "response_sha256": "8786b131d43110001770cb22fed1b3ecfd75ecbbec9528fa16e47d9a566a35af",
+      "declared_provider": {
+        "backend": "scripted-authored-replies",
+        "model_id": "none (replies written by hand)",
+        "model_revision": "0d746e68d25ba67d501d549ebd4985b8806fb1f29902345616371098af5ff577"
+      },
+      "observed_utc": "2026-11-14T19:00:39.619Z"
+    },
+    {
+      "route": "/api/semantic/definition/classify",
+      "list": "evidence_audit_model_calls",
+      "stage": "evidence_audit",
+      "status": "returned_json",
+      "elapsed_seconds": 0,
+      "request_sha256": "502f8b1fd379feec11f60cdba0728f82687eb17ef363515cf514bb75e6c5829e",
+      "response_sha256": "eedd100a5c867e72db8d60b3567e72212563ed3a45a7d1f7606489b02c9b3e0f",
+      "declared_provider": {
+        "backend": "scripted-authored-replies",
+        "model_id": "none (replies written by hand)",
+        "model_revision": "0d746e68d25ba67d501d549ebd4985b8806fb1f29902345616371098af5ff577"
+      },
+      "observed_utc": "2026-11-14T19:00:39.619Z"
+    }
+  ],
+  "calls_attempted": [
+    {
+      "route": "/api/semantic/preview",
+      "calls_attempted": 0,
+      "outcome_source": null,
+      "ready": true,
+      "observed_utc": "2026-11-14T19:00:37.701Z"
+    },
+    {
+      "route": "/api/semantic/definition/preview",
+      "calls_attempted": 1,
+      "outcome_source": null,
+      "ready": true,
+      "observed_utc": "2026-11-14T19:00:39.247Z"
+    },
+    {
+      "route": "/api/semantic/definition/classify",
+      "calls_attempted": 2,
+      "outcome_source": null,
+      "ready": true,
+      "observed_utc": "2026-11-14T19:00:39.619Z"
+    },
+    {
+      "route": "/api/semantic/definition/preview",
+      "calls_attempted": 1,
+      "outcome_source": null,
+      "ready": true,
+      "observed_utc": "2026-11-14T19:00:41.099Z"
+    },
+    {
+      "route": "/api/semantic/preview",
+      "calls_attempted": 0,
+      "outcome_source": null,
+      "ready": true,
+      "observed_utc": "2026-11-14T19:00:44.546Z"
+    },
+    {
+      "route": "/api/semantic/preview",
+      "calls_attempted": 0,
+      "outcome_source": null,
+      "ready": true,
+      "observed_utc": "2026-11-14T19:00:44.734Z"
+    },
+    {
+      "route": "/api/semantic/preview",
+      "calls_attempted": 1,
+      "outcome_source": "provider_failure",
+      "ready": false,
+      "observed_utc": "2026-11-14T19:00:45.841Z"
+    },
+    {
+      "route": "/api/semantic/preview",
+      "calls_attempted": 0,
+      "outcome_source": null,
+      "ready": true,
+      "observed_utc": "2026-11-14T19:00:46.144Z"
+    },
+    {
+      "route": "/api/semantic/preview",
+      "calls_attempted": 0,
+      "outcome_source": null,
+      "ready": true,
+      "observed_utc": "2026-11-14T19:00:46.474Z"
+    }
+  ],
+  "provider_attempts": [
+    {
+      "route": "/api/semantic/preview",
+      "attempts": [],
+      "outcome_source": null,
+      "observed_utc": "2026-11-14T19:00:37.701Z"
+    },
+    {
+      "route": "/api/semantic/preview",
+      "attempts": [],
+      "outcome_source": null,
+      "observed_utc": "2026-11-14T19:00:44.546Z"
+    },
+    {
+      "route": "/api/semantic/preview",
+      "attempts": [],
+      "outcome_source": null,
+      "observed_utc": "2026-11-14T19:00:44.734Z"
+    },
+    {
+      "route": "/api/semantic/preview",
+      "attempts": [
+        {
+          "stage": "interpretation",
+          "status": "failed",
+          "error_type": "ProviderMessage"
+        }
+      ],
+      "outcome_source": "provider_failure",
+      "observed_utc": "2026-11-14T19:00:45.841Z"
+    },
+    {
+      "route": "/api/semantic/preview",
+      "attempts": [],
+      "outcome_source": null,
+      "observed_utc": "2026-11-14T19:00:46.144Z"
+    },
+    {
+      "route": "/api/semantic/preview",
+      "attempts": [],
+      "outcome_source": null,
+      "observed_utc": "2026-11-14T19:00:46.474Z"
+    }
+  ],
+  "screenshots": [
+    "01-start.png",
+    "02-manual-review.png",
+    "03-gate-manual-apply.png",
+    "04-manual-applied.png",
+    "05-gate-manual-undo.png",
+    "06-manual-restored.png",
+    "07-category-objective.png",
+    "08-gate-category-definition.png",
+    "09-category-membership-review.png",
+    "10-gate-category-apply.png",
+    "11-category-applied.png",
+    "12-gate-category-undo.png",
+    "13-category-restored.png",
+    "14-reject-done.png",
+    "15-history-end.png",
+    "16-failure-result.png",
+    "17-expired-page-clock.png",
+    "18-expired-server.png",
+    "19-original-disabled.png"
+  ],
+  "finished_utc": "2026-11-14T19:00:46.933Z",
+  "outcome": "all flows completed",
+  "status_strip_text": "FIXTURE DATA · INVENTED ITEMS deterministic diagnostic scorer (a fixed formula, not the trained recommender) Language controls · authored replies, no model 8 items · 1 user AUTHORED REPLIES · NO MODEL",
+  "language_view": "available"
+}

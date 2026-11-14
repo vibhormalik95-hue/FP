@@ -1,0 +1,45 @@
+Evidence for every item in the scope
+
+Each row is one item of the evidence scope. A marked row is selected. An unmarked row is not selected, and the row says why.
+
+Item	Description in the item data	Its categories and tags	Classification under the definition (call 2)	Separate evidence assessment (call 3)	Decision of the application	Result if approved
+41001
+SELECTED
+	A bent metal bookmark is straightened with pliers and used again. The existing piece is kept.	
+K1
+tags: K1
+	matches the definition · "A bent metal bookmark is straightened with pliers and used again. The existing piece is kept." The caption states that an existing bent object is repaired by straightening and that the same object is used again and kept, so both conditions have affirmative evidence.	supported · "A bent metal bookmark is straightened with pliers and used again. The existing piece is kept." The caption states an existing bent object is repaired by straightening and that the same existing piece is kept and used again, which affirms both required conditions of the definition.	Selected: the classification matches and the separate assessment supports it	Removed from the feed
+41002
+SELECTED
+	A torn canvas satchel is mended with a needle and spare thread so it can carry books again. The same bag is kept.	
+K2
+tags: K2
+	matches the definition · "A torn canvas satchel is mended with a needle and spare thread so it can carry books again. The same bag is kept." The caption states that an existing torn object is repaired by mending and that the same bag is kept for use again, so both conditions have affirmative evidence.	supported · "A torn canvas satchel is mended with a needle and spare thread so it can carry books again. The same bag is kept." The caption states a torn existing object is repaired by mending and that the same bag is kept, which affirms both the repair condition and the retention condition.	Selected: the classification matches and the separate assessment supports it	Removed from the feed
+41003
+SELECTED
+	A leaking clay jug is sealed and returned to watering plants. The same jug remains in use.	
+K3
+tags: K3
+	matches the definition · "A leaking clay jug is sealed and returned to watering plants. The same jug remains in use." The caption states that an existing leaking object is repaired by sealing and that the same jug remains in use, so both conditions have affirmative evidence.	supported · "A leaking clay jug is sealed and returned to watering plants. The same jug remains in use." The caption states a leaking existing object is repaired by sealing and that the same jug remains in use, which affirms both required conditions.	Selected: the classification matches and the separate assessment supports it	Removed from the feed
+41004	A broken desk organizer is put in recycling and a newly purchased organizer is unpacked in its place.	
+K1
+tags: K1
+	does not match · "A broken desk organizer is put in recycling and a newly purchased organizer is unpacked in its place." The caption affirmatively states that the broken object is discarded into recycling and replaced by a different, newly purchased object, which contradicts the retention condition.	contradicted · "A broken desk organizer is put in recycling and a newly purchased organizer is unpacked in its place." The caption explicitly states the broken object is discarded to recycling and replaced by a different, newly purchased object, which contradicts the condition that the same object is kept or used again; the definition names this as an exclusion.	Not selected: it does not match the definition	Unchanged
+41005	Paper offcuts are folded into a new tray. No glue or powered equipment is used.	
+K4
+tags: K4
+	does not match · "Paper offcuts are folded into a new tray." The caption affirmatively states that the described object is newly made from offcuts, which the definition names as a not-match case instead of repair of an existing object.	contradicted · "Paper offcuts are folded into a new tray." The caption explicitly states the tray is newly made from offcuts, which contradicts the condition that an existing damaged object is repaired; the definition names this as an exclusion.	Not selected: it does not match the definition	Unchanged
+41006	A raw wooden blank is shaped with an electric lathe into a new knob.	
+K2
+tags: K2
+	does not match · "A raw wooden blank is shaped with an electric lathe into a new knob." The caption affirmatively states that the described object is newly made from raw material, which the definition names as a not-match case instead of repair of an existing object.	contradicted · "A raw wooden blank is shaped with an electric lathe into a new knob." The caption explicitly states the knob is newly made from raw material, which contradicts the condition that an existing damaged object is repaired; the definition names this as an exclusion.	Not selected: it does not match the definition	Unchanged
+41007	A page of knot diagrams is shown. No completed activity or finished object is described.	
+K3
+tags: K3
+	no decision The caption describes only a page of diagrams and states that no completed activity or finished object is described, so it does not state whether a repair happened or whether an object is retained.	not stated · "No completed activity or finished object is described." The caption shows only knot diagrams and states no repair of an existing damaged object and no retention of an object, so membership remains unknown.	Not selected: no decision	Unchanged
+41008	The only notes are a blue background and a 20-second duration. The subject is not described.	
+K4
+tags: K4
+	no decision The caption gives only a background color and duration and states that the subject is not described, so repair and retention are not stated.	not stated · "The subject is not described." The caption gives only background colour and duration and does not state any repair or retention, so membership remains unknown.	Not selected: no decision	Unchanged
+
+A quotation or a category name shows that the words exist in the item data. It does not show that the decision is right. Read each row before you approve.

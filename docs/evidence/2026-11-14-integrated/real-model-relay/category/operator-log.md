@@ -1,0 +1,4 @@
+- 2026-11-14T19:06:33Z request 1: check said 'OK: the app would accept this answer file as a transport reply'; delivered unchanged with relay_tools deliver (no --force). Request created 19:06:04Z, answer file 19:06:25Z (about 21 s).
+- 2026-11-14T19:07:36Z request 2: check said 'OK: the app would accept this answer file as a transport reply'; deliver exit 0, delivered unchanged (no --force). Request created 19:07:15Z, answer file 19:07:28Z (about 13 s).
+- 2026-11-14T19:08:02Z request 3: check said 'OK: the app would accept this answer file as a transport reply'; deliver exit 0, delivered unchanged (no --force). Request created 19:07:37Z, answer file 19:07:54Z (about 16 s).
+- 2026-11-14T19:09:17Z finish: browser check (PID 32725) ended; it was not a child of my shell, so 'wait' could not give its exit code; browser.log ends with 'OUTCOME all flows completed', 69 PASS, 0 FAIL. Stopped server PID 32698 with kill. Created DONE-category.

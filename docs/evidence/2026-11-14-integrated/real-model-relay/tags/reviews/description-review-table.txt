@@ -1,0 +1,46 @@
+Evidence for every item in the scope
+
+Each row is one item of the evidence scope. A marked row is selected. An unmarked row is not selected, and the row says why.
+
+Item	Description in the item data	Its categories and tags	Selected or not, and through what	Result if approved
+61001	Episode 12 of a weeknight series. Running time 58 seconds.	
+Cooking > Home recipes
+tags: dinner, recipe
+	not selected: no quotation was cited for this item	Unchanged
+61002	Part 3 of a weekend series. Running time 45 seconds.	
+Cooking > Baking
+tags: baking, bread
+	not selected: no quotation was cited for this item	Unchanged
+61003	An evening walk between stalls. Running time 62 seconds.	
+Travel > City walks
+tags: night market, street food
+	not selected: no quotation was cited for this item	Unchanged
+61004
+SELECTED
+	A mechanic cleans a bicycle chain between bites of a sandwich.	
+Repair > Bicycle repair
+tags: bicycle, tools
+	selected · "between bites of a sandwich" (description)	Removed from the feed
+61005	An electrician replaces a desk lamp switch.	
+Repair > Home repair
+tags: lamp, tools
+	not selected: no quotation was cited for this item	Unchanged
+61006	The camera follows a train crossing a bridge.	
+Travel > Rail journeys
+tags: bridge, train
+	not selected: no quotation was cited for this item	Unchanged
+61007	A player repeats a short guitar exercise.	
+Music > Guitar
+tags: guitar, practice
+	not selected: no quotation was cited for this item	Unchanged
+61008	A pianist plays one piece in a small room.	
+Music > Live sessions
+tags: live, piano
+	not selected: no quotation was cited for this item	Unchanged
+61009	Episode 13 of a weeknight series. Running time 51 seconds.	
+Cooking > Home recipes
+tags: recipe, salad
+	not selected: no quotation was cited for this item	Unchanged
+61010	Untitled clip: no category or tag is supplied.	no category and no tag	not selected: no quotation was cited for this item	Unchanged
+
+A quotation or a category name shows that the words exist in the item data. It does not show that the decision is right. Read each row before you approve.

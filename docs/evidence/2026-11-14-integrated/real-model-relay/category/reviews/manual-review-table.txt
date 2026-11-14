@@ -1,0 +1,43 @@
+Evidence for every item in the scope
+
+Each row is one item of the evidence scope. A marked row is selected. An unmarked row is not selected, and the row says why.
+
+Item	Description in the item data	Its categories and tags	Selected or not, and through what	Result if approved
+41001
+SELECTED
+	A bent metal bookmark is straightened with pliers and used again. The existing piece is kept.	
+K1
+tags: K1
+	selected: its category is K1	Removed from the feed
+41002	A torn canvas satchel is mended with a needle and spare thread so it can carry books again. The same bag is kept.	
+K2
+tags: K2
+	not selected: its category is not K1	Unchanged
+41003	A leaking clay jug is sealed and returned to watering plants. The same jug remains in use.	
+K3
+tags: K3
+	not selected: its category is not K1	Unchanged
+41004
+SELECTED
+	A broken desk organizer is put in recycling and a newly purchased organizer is unpacked in its place.	
+K1
+tags: K1
+	selected: its category is K1	Removed from the feed
+41005	Paper offcuts are folded into a new tray. No glue or powered equipment is used.	
+K4
+tags: K4
+	not selected: its category is not K1	Unchanged
+41006	A raw wooden blank is shaped with an electric lathe into a new knob.	
+K2
+tags: K2
+	not selected: its category is not K1	Unchanged
+41007	A page of knot diagrams is shown. No completed activity or finished object is described.	
+K3
+tags: K3
+	not selected: its category is not K1	Unchanged
+41008	The only notes are a blue background and a 20-second duration. The subject is not described.	
+K4
+tags: K4
+	not selected: its category is not K1	Unchanged
+
+A quotation or a category name shows that the words exist in the item data. It does not show that the decision is right. Read each row before you approve.

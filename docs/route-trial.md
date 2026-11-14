@@ -100,7 +100,7 @@ configured_model        item descriptions     2      review       same outcome, 
 synthetic               fictional item draft  1      draft ready  same outcome                      0.0
 ```
 
-**Calls.** The number of model calls that the case made. The case `vocabulary:negated` makes no call: the request matches the negated-command pattern (a negated hide, exclude, remove, reduce or boost), and the application stops it with its own check before any call.
+**Calls.** The number of model calls that the case made. The case `vocabulary:negated` makes no call: the request matches the negated-command pattern (a negated hide, exclude, remove, reduce or boost, or a negated "show ... more" or "show ... less"), and the application stops it with its own check before any call.
 
 **Outcome.** The class that the application gave to the reply.
 

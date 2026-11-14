@@ -35,12 +35,12 @@ For every method:
 
 ![The evidence table of a review: each item of the scope, its categories and tags, why it is selected or not, and the result](docs/images/review-evidence-table.png)
 
-*The evidence table of one review on the final build (14 November 2026). The request was "I'm not hungry, remove all the stuff that makes me hungry." The model chose existing category and tag names, and the application selected the items that carry them. The items are invented. The model output came through the file relay, and an AI operator reviewed it; no person reviewed this run. The complete review with its three blocks is in [docs/images/review-three-blocks.png](docs/images/review-three-blocks.png).*
+*The evidence table of one review of 14 November 2026 (revision `b7c5a91`, before the merge with the published work branch). The request was "I'm not hungry, remove all the stuff that makes me hungry." The model chose existing category and tag names, and the application selected the items that carry them. The items are invented. The model output came through the file relay, and an AI operator reviewed it; no person reviewed this run. The complete review with its three blocks is in [docs/images/review-three-blocks.png](docs/images/review-three-blocks.png).*
 
 The application also shows these things:
 
 - **Mixed requests.** One request can hold several preferences, for example more of one subject and none of another. The review shows each control, and one approval applies them together.
-- **Requests that change nothing.** An ambiguous request, a negated command, a request that the controls cannot express, and a request with no match each give a plain result. Nothing is applied. A negated hide, exclude, remove, reduce or boost (for example "Do not hide ...") matches the negated-command pattern. The application stops it before any model call.
+- **Requests that change nothing.** An ambiguous request, a negated command, a request that the controls cannot express, and a request with no match each give a plain result. Nothing is applied. A negated hide, exclude, remove, reduce or boost (for example "Do not hide ..."), or a negated "show ... more" or "show ... less", matches the negated-command pattern. The application stops it before any model call.
 - **A fictional item.** A model writes a title and a description for an item that does not exist. The item goes to a separate feed. It never enters the dataset.
 - **Model routes.** The application can reach a model through a command-line program, a hosted API with your own key, a model server on your computer, or by hand. See [model routes](docs/model-routes.md).
 - **The original study.** The views "Original study (A to E)" and "Compare A to E" hold the five conditions of the original proposal. They are item feedback, explanations, a free-text category instruction, an editable profile, and all channels. The rule parser of C, D and E reads category IDs of the form `category_N` only. On the bundled scenarios, which have named categories, the instruction and the profile are disabled, and the page says why. The scenario `conditions` serves the built-in fixture, where they work.
@@ -94,7 +94,7 @@ Every number below is copied from the document that is named after it.
 
 The complete cases, model responses, ranking outputs and recommender checkpoints are in a separate research archive. They are not in this repository.
 
-The paper is in [`paper/`](paper/README.md). The current draft is `paper/research-paper-2026-11-14.pdf`; its final-run values are still unfilled and it is not submission-ready. The paper of 19 October is a dated record in `deliverables/2026-10-19/`.
+The paper is in [`paper/`](paper/README.md). The current draft is `paper/research-paper-2026-11-14.pdf`. It reports the runs of 14 November on the integrated revision `e797ce1`, and it is not ready for submission. The paper of 19 October is a dated record in `deliverables/2026-10-19/`.
 
 ## Experiment evidence and demonstration evidence
 
@@ -105,7 +105,8 @@ Keep three kinds of evidence apart.
 **Demonstration evidence** is a recorded run of the application on a small invented scenario. It shows that a control ran from request to Undo. It is not an accuracy result.
 
 - *13 November 2026, earlier revision `b9220b4`.* The manual control, a new category and an indirect request matched to descriptions each completed in a real browser. The model replies came through a file relay. An AI agent made the review decisions. No person reviewed those runs. Records: [docs/evidence/2026-11-13](docs/evidence/2026-11-13/README.md).
-- *Final build.* On 14 November 2026 (UTC), on revision `b7c5a91` (source fingerprint `ab1a9d846b33...`), every method completed in a real browser with real model output through the file relay: the request matched to existing categories and tags, a mixed request, the request matched to item descriptions, the new category in stages and the fictional item, with the manual control as reference (13 model calls, 308 script checks passed). Four requests that must change nothing changed nothing. An AI operator made all 19 review decisions; no person has reviewed a run. The model name is declared, not attested. Records: [docs/evidence/2026-11-14/](docs/evidence/2026-11-14/README.md).
+- *14 November 2026, the package line before the merge.* On revision `b7c5a91` (source fingerprint `ab1a9d846b33...`), every method completed in a real browser with real model output through the file relay: the request matched to existing categories and tags, a mixed request, the request matched to item descriptions, the new category in stages and the fictional item, with the manual control as reference (13 model calls, 308 script checks passed). Four requests that must change nothing changed nothing. An AI operator made all 19 review decisions; no person has reviewed a run. The model name is declared, not attested. Records: [docs/evidence/2026-11-14/](docs/evidence/2026-11-14/README.md).
+- *14 November 2026, the integrated revision.* The published work branch and the package line were merged into one revision (`e797ce1`, source fingerprint `24d0a8246edc...`). It has the prompts of the published branch for the new category and the page and routes of the package line. Between 19:04 and 19:12 UTC every method completed again on it in a real browser with real model output through the file relay (13 model calls, 321 script checks passed), and the four requests that must change nothing changed nothing. An AI operator made all 19 review decisions; no person has reviewed a run. The model name is declared, not attested. Records: [docs/evidence/2026-11-14-integrated/](docs/evidence/2026-11-14-integrated/README.md).
 
 **Software tests** use hand-written replies, stand-in servers and stand-in programs. They check program behaviour. They are not model evidence.
 
@@ -130,10 +131,11 @@ Keep three kinds of evidence apart.
 | --- | --- |
 | `feedctrl/` | The application and the experiment code (Python). |
 | `web/` | The interface source and the built interface (`web/dist`). |
-| `scripts/` | The quick start, the launcher, the route tool, the relay tools and the experiment scripts. |
+| `scripts/` | The quick start, the launcher, the route tool, the relay tools, the checks of the source list and of the built interface, and the experiment scripts. |
 | `scenarios/`, `tools/hosted_validation_current/inputs/` | The three bundled scenarios with invented items. |
 | `tests/` | Python tests, the browser check and the stand-ins. |
 | `docs/` | Guides, protocols, results and run records. Start with the [index](docs/README.md). |
 | `deliverables/` | Dated records of earlier work. |
 | `paper/`, `presentation-bcit/` | Paper and presentation sources. |
-| `tools/` | The validation driver for the reviewed Claude Code CLI connection. |
+| `tools/` | The validation driver for the reviewed Claude Code CLI connection. Its inputs and templates are the frozen profile of 11 November 2026. |
+| `CURRENT-SOURCE-SHA256.txt` | The SHA-256 of every tracked file of this revision. `python scripts/refresh_source_manifest.py --check` compares it. |

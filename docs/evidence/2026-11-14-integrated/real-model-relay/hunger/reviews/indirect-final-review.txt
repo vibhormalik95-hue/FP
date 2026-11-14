@@ -1,0 +1,148 @@
+PREVIEW · NOTHING IS APPLIED YET
+
+Proposed change: Reviewed indirect request
+
+Go to your decision
+
+Your request: “I'm not hungry, remove all the stuff that makes me hungry.”
+
+Model output (not verified)
+
+Reason that the model gave: The request negates a personal state ("I'm not hungry"), not the command; the command "remove all the stuff that makes me hungry" is affirmative, so the caller's exclude operation with strength none (hard exclusion) applies. Content that makes a viewer hungry is content showing appetizing food being prepared or served. Items 81001 (tomato-and-pasta dinner with finished plate), 81003 (bread baked and sliced for eating) and 81006 (salad intended to be eaten) each show edible food in their own caption, so they are selected. Items 81002, 81004 and 81007 explicitly state no food is shown. Items 81005 and 81008 have no subject description, so there is no evidence they show food and they are not selected. Category names (Evening, Afternoon, Repair) are time or topic labels and are not used as evidence.
+
+Reviewed indirect request
+
+Direction and strength: Remove from the feed, read from your request by the model.
+
+Part of your request that names the subject: “stuff that makes me hungry”.
+
+Reason that the model gave for this control: The request negates a personal state ("I'm not hungry"), not the command; the command "remove all the stuff that makes me hungry" is affirmative, so the caller's exclude operation with strength none (hard exclusion) applies. Content that makes a viewer hungry is content showing appetizing food being prepared or served. Items 81001 (tomato-and-pasta dinner with finished plate), 81003 (bread baked and sliced for eating) and 81006 (salad intended to be eaten) each show edible food in their own caption, so they are selected. Items 81002, 81004 and 81007 explicitly state no food is shown. Items 81005 and 81008 have no subject description, so there is no evidence they show food and they are not selected. Category names (Evening, Afternoon, Repair) are time or topic labels and are not used as evidence.
+
+Quotations that the model cited: item 81001, description: “A cook prepares an edible tomato-and-pasta dinner, showing the ingredients and finished plate.”; item 81003, description: “A baker shapes edible bread dough, bakes the loaf, and slices it for eating.”; item 81006, description: “A cook chops edible vegetables and mixes a salad intended to be eaten.”.
+
+Raw model replies (2)
+
+The model can be wrong. This block repeats what it returned. Nothing here is approved.
+
+Application checks
+
+Checks of the reply
+
+Passed: The request text does not match the negated-command pattern (do not, don't, never or not to, followed by hide, exclude, remove, reduce, boost or show ... more/less; one English pattern, checked before any model call; other wordings are not detected)
+Passed: The supplied items fit the evidence budget (8 items of at most 100; 3537 bytes of at most 10000)
+Passed: The action reply has the declared fields, a declared control and a span that is a verbatim part of the request
+Passed: The reply has exactly the declared fields
+Passed: The reply values have the declared types and a bounded printable reason
+Passed: The alternatives are at most 6 printable texts of at most 300 characters
+Passed: A proposal cites at least one item
+Passed: Every citation names one supplied item once, and its quotation is present in the named field of that item
+Passed: The selection covers at most half of the supplied items (3 of 8 items)
+
+Reviewed indirect request
+
+Passed: Every selected item is in the evidence scope (3 selected of 8 in the scope)
+Passed: No item is selected twice
+Passed: Every selected item has its own quotation (3 quotations for 3 items)
+Passed: Every quotation is present in the text of its own item (3 of 3)
+Passed: The quoted part of your request is copied exactly from your request ("stuff that makes me hungry")
+Passed: The selection covers at most half of the evidence scope (3 of 8)
+Passed: The record is bound to the source data, the request and the action by their hashes (source ee116b420187 · request 487fd263f865 · action aebc6afa6c11)
+
+Selected items: 81001, 81003, 81006. Evidence scope: 81001, 81002, 81003, 81004, 81005, 81006, 81007, 81008.
+
+Provider and model, as the server settings name them: operator-relay-file-queue / claude-opus (sub-agent alias opus of the Cowork session; version not attested). Settings hash b803451fda28 (it identifies the settings, not the model). The application did not verify which model answered.
+
+The complete text that holds each quotation. The application checked the words, not the meaning. Look for a negation or a contrary sentence before you approve:
+
+Item 81001, description: “Skillet lesson: A cook prepares an edible tomato-and-pasta dinner, showing the ingredients and finished plate.”
+
+Item 81003, description: “Oven lesson: A baker shapes edible bread dough, bakes the loaf, and slices it for eating.”
+
+Item 81006, description: “Bowl lesson: A cook chops edible vegetables and mixes a salad intended to be eaten.”
+
+These checks are mechanical. A passed check shows that names, IDs and quotations exist in the item data. It does not show that the meaning is right.
+
+Your decision
+
+If you approve:
+
+Reviewed indirect request: Remove from the feed for items 81001, 81003, 81006.
+
+Only items in the evidence scope change. Other items with the same category, tag or subject stay as they are.
+
+Nothing has changed yet. The feed below stays as it is until you approve.
+
+Approve before 12:12:00 PM. After that time the server no longer accepts this review.
+
+Approve this exact item set and apply
+Discard this review and apply nothing
+Evidence for every item in the scope
+
+Each row is one item of the evidence scope. A marked row is selected. An unmarked row is not selected, and the row says why.
+
+Item	Description in the item data	Its categories and tags	Selected or not, and through what	Result if approved
+81001
+SELECTED
+	Skillet lesson: A cook prepares an edible tomato-and-pasta dinner, showing the ingredients and finished plate.	
+Evening
+tags: Evening
+	selected · "A cook prepares an edible tomato-and-pasta dinner, showing the ingredients and finished plate." (description)	Removed from the feed
+81002	Chain lesson: A mechanic cleans and lubricates a bicycle chain. No food or meal is shown.	
+Repair
+tags: Repair
+	not selected: no quotation was cited for this item	Unchanged
+81003
+SELECTED
+	Oven lesson: A baker shapes edible bread dough, bakes the loaf, and slices it for eating.	
+Afternoon
+tags: Afternoon
+	selected · "A baker shapes edible bread dough, bakes the loaf, and slices it for eating." (description)	Removed from the feed
+81004	Lamp lesson: An electrician replaces a desk lamp switch. No food or cooking is shown.	
+Repair
+tags: Repair
+	not selected: no quotation was cited for this item	Unchanged
+81005	Mystery clip: Duration and colour palette are listed, but the clip's subject is not described.	
+Evening
+tags: Evening
+	not selected: no quotation was cited for this item	Unchanged
+81006
+SELECTED
+	Bowl lesson: A cook chops edible vegetables and mixes a salad intended to be eaten.	
+Afternoon
+tags: Afternoon
+	selected · "A cook chops edible vegetables and mixes a salad intended to be eaten." (description)	Removed from the feed
+81007	Travel clip: The camera follows a train crossing a bridge. No food or cooking is shown.	
+Evening
+tags: Evening
+	not selected: no quotation was cited for this item	Unchanged
+81008	Untitled clip: The title and thumbnail are unavailable; no content description is supplied.	
+Afternoon
+tags: Afternoon
+	not selected: no quotation was cited for this item	Unchanged
+
+A quotation or a category name shows that the words exist in the item data. It does not show that the decision is right. Read each row before you approve.
+
+Preview: the first ten items now and after approval
+Now (applied feed)
+Item 81001 (leaves)
+Item 81002
+Item 81003 (leaves)
+Item 81004
+Item 81005
+Item 81006 (leaves)
+Item 81007
+Item 81008
+After approval
+Item 81002 (up 1)
+Item 81004 (up 2)
+Item 81005 (up 2)
+Item 81007 (up 3)
+Item 81008 (up 3)
+
+Leaves the list: 81001, 81003, 81006. Changes position: 81002 (2 to 1), 81004 (4 to 2), 81005 (5 to 3), 81007 (7 to 4), 81008 (8 to 5). Eligible items now: 8. After approval: 5.
+
+The applied feed is unchanged until you approve. The item cards below still show the applied feed.
+
+Only the items in the scope were assessed. A quotation does not prove that an item fits.
+
+Data of this review: invented items of a bundled scenario. Scores: deterministic diagnostic scorer (a fixed formula, not the trained recommender).

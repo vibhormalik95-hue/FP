@@ -1,0 +1,641 @@
+{
+  "kind": "run records of the integrated revision, 14 November 2026 (UTC)",
+  "revision": "e797ce1eb04be5abec5cd2446de9ae6f542bdb37",
+  "runs": [
+    {
+      "kind": "real model output through the file relay; AI operator as reviewer",
+      "scenario": "tags",
+      "source_fingerprint": "24d0a8246edc2f0bc261e163795da55ee24ce2b364a566b8fa2edc603c146cd3",
+      "provider": {
+        "backend": "operator-relay-file-queue",
+        "model": "claude-opus (sub-agent alias opus of the Cowork session; version not attested)",
+        "live_model": "operator_declared"
+      },
+      "reviewer": "AI operator: a Claude Opus sub-agent of the Cowork lead session; not a person",
+      "started_utc": "2026-11-14T19:04:58.398Z",
+      "finished_utc": "2026-11-14T19:12:43.032Z",
+      "outcome": "all flows completed",
+      "checks_passed": 184,
+      "checks": 184,
+      "review_decisions": [
+        {
+          "gate": "manual-apply",
+          "decision": "APPROVE",
+          "seconds_to_decide": 7.8,
+          "utc": "2026-11-14T19:05:40.413Z"
+        },
+        {
+          "gate": "manual-undo",
+          "decision": "APPROVE",
+          "seconds_to_decide": 8.3,
+          "utc": "2026-11-14T19:06:00.377Z"
+        },
+        {
+          "gate": "vocabulary-apply",
+          "decision": "APPROVE",
+          "seconds_to_decide": 14.3,
+          "utc": "2026-11-14T19:07:13.218Z"
+        },
+        {
+          "gate": "vocabulary-undo",
+          "decision": "APPROVE",
+          "seconds_to_decide": 7.8,
+          "utc": "2026-11-14T19:07:33.266Z"
+        },
+        {
+          "gate": "mixed-apply",
+          "decision": "APPROVE",
+          "seconds_to_decide": 9.3,
+          "utc": "2026-11-14T19:08:42.297Z"
+        },
+        {
+          "gate": "mixed-undo",
+          "decision": "APPROVE",
+          "seconds_to_decide": 8.3,
+          "utc": "2026-11-14T19:09:02.542Z"
+        },
+        {
+          "gate": "description-apply",
+          "decision": "APPROVE",
+          "seconds_to_decide": 11.8,
+          "utc": "2026-11-14T19:11:36.603Z"
+        },
+        {
+          "gate": "description-undo",
+          "decision": "APPROVE",
+          "seconds_to_decide": 7.8,
+          "utc": "2026-11-14T19:11:56.302Z"
+        },
+        {
+          "gate": "fictional-admit",
+          "decision": "APPROVE",
+          "seconds_to_decide": 7.3,
+          "utc": "2026-11-14T19:12:37.275Z"
+        }
+      ],
+      "model_calls": 8,
+      "flows": {
+        "manual": {
+          "outcome": "completed: preview unchanged, apply exact, undo restored",
+          "provider_calls": 0,
+          "eligible_before": 10,
+          "eligible_after_apply": 7,
+          "eligible_after_undo": 10,
+          "selected_ids": [
+            61001,
+            61002,
+            61009
+          ],
+          "controls": [
+            {
+              "label": "Manual: Cooking",
+              "operation": "exclude",
+              "strength": "none",
+              "intent_span": "Cooking",
+              "item_ids": [
+                61001,
+                61002,
+                61009
+              ]
+            }
+          ]
+        },
+        "vocabulary": {
+          "outcome": "completed: preview unchanged, apply exact, undo restored",
+          "provider_calls": 1,
+          "eligible_before": 10,
+          "eligible_after_apply": 6,
+          "eligible_after_undo": 10,
+          "selected_ids": [
+            61001,
+            61002,
+            61003,
+            61009
+          ],
+          "controls": [
+            {
+              "label": "Remove: category \"Cooking\", category \"Baking\", category \"Home recipe... [25c4f8]",
+              "operation": "exclude",
+              "strength": "none",
+              "intent_span": "remove all the stuff that makes me hungry",
+              "item_ids": [
+                61001,
+                61002,
+                61003,
+                61009
+              ]
+            }
+          ],
+          "chosen_terms": [
+            {
+              "control": "Remove: category \"Cooking\", category \"Baking\", category \"Home recipe... [25c4f8]",
+              "terms": [
+                "category:Cooking",
+                "category:Baking",
+                "category:Home recipes",
+                "tag:baking",
+                "tag:bread",
+                "tag:dinner",
+                "tag:recipe",
+                "tag:salad",
+                "tag:street food"
+              ]
+            }
+          ]
+        },
+        "mixed": {
+          "outcome": "completed: preview unchanged, apply exact, undo restored",
+          "provider_calls": 1,
+          "eligible_before": 10,
+          "eligible_after_apply": 6,
+          "eligible_after_undo": 10,
+          "selected_ids": [
+            61001,
+            61002,
+            61003,
+            61007,
+            61008,
+            61009
+          ],
+          "controls": [
+            {
+              "label": "Show more: category \"Music\", category \"Guitar\", category \"Live sessi... [5705b2]",
+              "operation": "boost",
+              "strength": "standard",
+              "intent_span": "Show me more music videos",
+              "item_ids": [
+                61007,
+                61008
+              ]
+            },
+            {
+              "label": "Remove: category \"Cooking\", category \"Baking\", category \"Home recipe... [25c4f8]",
+              "operation": "exclude",
+              "strength": "none",
+              "intent_span": "remove anything about food",
+              "item_ids": [
+                61001,
+                61002,
+                61003,
+                61009
+              ]
+            }
+          ]
+        },
+        "outcomes": {
+          "outcome": "completed: 4 cases, nothing applied in any of them",
+          "provider_calls": 3,
+          "eligible_before": 10,
+          "cases": [
+            {
+              "case": "ambiguous",
+              "request": "I have had enough of the heavy stuff.",
+              "authored_expectation": "clarify",
+              "observed": "clarify",
+              "matches_authored_expectation": true,
+              "model_calls_reported": 1,
+              "reason": "Semantic scope or negation has competing interpretations",
+              "calls_attempted": 1,
+              "outcome_source": "model_report",
+              "alternatives_shown": 4
+            },
+            {
+              "case": "unsupported",
+              "request": "Show me at most two cooking videos per day.",
+              "authored_expectation": "unsupported",
+              "observed": "unsupported",
+              "matches_authored_expectation": true,
+              "model_calls_reported": 1,
+              "reason": "The request asks for at most two cooking videos per day. This is a quota (a count limit) with a time condition (per day). Boost, reduce and exclude over whole terms cannot express a count cap or a daily window, so no control is proposed. The Cooking term exists, but excluding or reducing it would no",
+              "calls_attempted": 1,
+              "outcome_source": "model_report",
+              "alternatives_shown": 0
+            },
+            {
+              "case": "negated",
+              "request": "Do not hide the cooking videos.",
+              "authored_expectation": "clarify",
+              "observed": "clarify",
+              "matches_authored_expectation": true,
+              "model_calls_reported": 0,
+              "reason": "The request matches the negated-command pattern (for example \"do not hide ...\"). The application does not guess what a negated control means. Write a positive instruction, for example \"show more ...\", \"show less ...\" or \"remove ...\", and send it again.",
+              "calls_attempted": 0,
+              "outcome_source": "application_check",
+              "alternatives_shown": 0
+            },
+            {
+              "case": "no_match",
+              "request": "Show me fewer videos about astronomy.",
+              "authored_expectation": "no_match",
+              "observed": "no_match",
+              "matches_authored_expectation": true,
+              "model_calls_reported": 1,
+              "reason": "The request asks for fewer videos about astronomy. No supplied category or tag term relates to astronomy, space, stars or the night sky. The terms cover cooking, music, repair and travel topics. The tag night market is about street food and travel, not astronomy, so it is not a match. No control is ",
+              "calls_attempted": 1,
+              "outcome_source": "model_report",
+              "alternatives_shown": 0
+            }
+          ]
+        },
+        "description": {
+          "outcome": "completed: preview unchanged, apply exact, undo restored",
+          "provider_calls": 2,
+          "eligible_before": 10,
+          "eligible_after_apply": 9,
+          "eligible_after_undo": 10,
+          "selected_ids": [
+            61004
+          ],
+          "controls": [
+            {
+              "label": "Reviewed description request",
+              "operation": "exclude",
+              "strength": "none",
+              "intent_span": "videos where someone is eating",
+              "item_ids": [
+                61004
+              ]
+            }
+          ]
+        },
+        "fictional": {
+          "outcome": "completed: draft reviewed, admitted to the separate feed, removed; observed feed unchanged",
+          "provider_calls": 1,
+          "eligible_before": 10
+        }
+      }
+    },
+    {
+      "kind": "real model output through the file relay; AI operator as reviewer",
+      "scenario": "category",
+      "source_fingerprint": "24d0a8246edc2f0bc261e163795da55ee24ce2b364a566b8fa2edc603c146cd3",
+      "provider": {
+        "backend": "operator-relay-file-queue",
+        "model": "claude-opus (sub-agent alias opus of the Cowork session; version not attested)",
+        "live_model": "operator_declared"
+      },
+      "reviewer": "AI operator: a Claude Opus sub-agent of the Cowork lead session; not a person",
+      "started_utc": "2026-11-14T19:04:55.358Z",
+      "finished_utc": "2026-11-14T19:08:59.993Z",
+      "outcome": "all flows completed",
+      "checks_passed": 69,
+      "checks": 69,
+      "review_decisions": [
+        {
+          "gate": "manual-apply",
+          "decision": "APPROVE",
+          "seconds_to_decide": 7.3,
+          "utc": "2026-11-14T19:05:36.703Z"
+        },
+        {
+          "gate": "manual-undo",
+          "decision": "APPROVE",
+          "seconds_to_decide": 6.3,
+          "utc": "2026-11-14T19:05:54.672Z"
+        },
+        {
+          "gate": "category-resolution",
+          "decision": "APPROVE",
+          "seconds_to_decide": 10.8,
+          "utc": "2026-11-14T19:06:51.728Z"
+        },
+        {
+          "gate": "category-definition",
+          "decision": "APPROVE",
+          "seconds_to_decide": 10.8,
+          "utc": "2026-11-14T19:07:14.191Z"
+        },
+        {
+          "gate": "category-apply",
+          "decision": "APPROVE",
+          "seconds_to_decide": 9.3,
+          "utc": "2026-11-14T19:08:34.972Z"
+        },
+        {
+          "gate": "category-undo",
+          "decision": "APPROVE",
+          "seconds_to_decide": 8.8,
+          "utc": "2026-11-14T19:08:55.645Z"
+        }
+      ],
+      "model_calls": 3,
+      "flows": {
+        "manual": {
+          "outcome": "completed: preview unchanged, apply exact, undo restored",
+          "provider_calls": 0,
+          "eligible_before": 8,
+          "eligible_after_apply": 6,
+          "eligible_after_undo": 8,
+          "selected_ids": [
+            41001,
+            41004
+          ],
+          "controls": [
+            {
+              "label": "Manual: K1",
+              "operation": "exclude",
+              "strength": "none",
+              "intent_span": "K1",
+              "item_ids": [
+                41001,
+                41004
+              ]
+            }
+          ]
+        },
+        "category": {
+          "outcome": "completed: preview unchanged, apply exact, undo restored",
+          "provider_calls": 3,
+          "eligible_before": 8,
+          "eligible_after_apply": 5,
+          "eligible_after_undo": 8,
+          "selected_ids": [
+            41001,
+            41002,
+            41003
+          ],
+          "controls": [
+            {
+              "label": "Damaged object repaired and kept in use",
+              "operation": "exclude",
+              "strength": "none",
+              "intent_span": "Propose one useful new category from these eight descriptions. Decide the shared concept yourself from the stated facts, rather than taking an existing category code as its meaning. Give a precise definition supported by the descriptions; do not merely rename an existing category or invent missing facts.",
+              "item_ids": [
+                41001,
+                41002,
+                41003
+              ]
+            }
+          ],
+          "definition_label": "Damaged object repaired and kept in use",
+          "competing_meanings_shown": true,
+          "dispositions": [
+            {
+              "item_id": 41001,
+              "verdict": "match"
+            },
+            {
+              "item_id": 41002,
+              "verdict": "match"
+            },
+            {
+              "item_id": 41003,
+              "verdict": "match"
+            },
+            {
+              "item_id": 41004,
+              "verdict": "not_match"
+            },
+            {
+              "item_id": 41005,
+              "verdict": "not_match"
+            },
+            {
+              "item_id": 41006,
+              "verdict": "not_match"
+            },
+            {
+              "item_id": 41007,
+              "verdict": "unknown"
+            },
+            {
+              "item_id": 41008,
+              "verdict": "unknown"
+            }
+          ],
+          "evidence_assessments": [
+            {
+              "item_id": 41001,
+              "assessment": "supported"
+            },
+            {
+              "item_id": 41002,
+              "assessment": "supported"
+            },
+            {
+              "item_id": 41003,
+              "assessment": "supported"
+            },
+            {
+              "item_id": 41004,
+              "assessment": "contradicted"
+            },
+            {
+              "item_id": 41005,
+              "assessment": "contradicted"
+            },
+            {
+              "item_id": 41006,
+              "assessment": "contradicted"
+            },
+            {
+              "item_id": 41007,
+              "assessment": "not_stated"
+            },
+            {
+              "item_id": 41008,
+              "assessment": "not_stated"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "kind": "real model output through the file relay; AI operator as reviewer",
+      "scenario": "hunger",
+      "source_fingerprint": "24d0a8246edc2f0bc261e163795da55ee24ce2b364a566b8fa2edc603c146cd3",
+      "provider": {
+        "backend": "operator-relay-file-queue",
+        "model": "claude-opus (sub-agent alias opus of the Cowork session; version not attested)",
+        "live_model": "operator_declared"
+      },
+      "reviewer": "AI operator: a Claude Opus sub-agent of the Cowork lead session; not a person",
+      "started_utc": "2026-11-14T19:05:03.825Z",
+      "finished_utc": "2026-11-14T19:08:02.449Z",
+      "outcome": "all flows completed",
+      "checks_passed": 68,
+      "checks": 68,
+      "review_decisions": [
+        {
+          "gate": "manual-apply",
+          "decision": "APPROVE",
+          "seconds_to_decide": 7.3,
+          "utc": "2026-11-14T19:05:45.408Z"
+        },
+        {
+          "gate": "manual-undo",
+          "decision": "APPROVE",
+          "seconds_to_decide": 7.3,
+          "utc": "2026-11-14T19:06:04.409Z"
+        },
+        {
+          "gate": "indirect-apply",
+          "decision": "APPROVE",
+          "seconds_to_decide": 11.3,
+          "utc": "2026-11-14T19:07:38.413Z"
+        },
+        {
+          "gate": "indirect-undo",
+          "decision": "APPROVE",
+          "seconds_to_decide": 7.3,
+          "utc": "2026-11-14T19:07:57.874Z"
+        }
+      ],
+      "model_calls": 2,
+      "flows": {
+        "manual": {
+          "outcome": "completed: preview unchanged, apply exact, undo restored",
+          "provider_calls": 0,
+          "eligible_before": 8,
+          "eligible_after_apply": 6,
+          "eligible_after_undo": 8,
+          "selected_ids": [
+            81002,
+            81004
+          ],
+          "controls": [
+            {
+              "label": "Manual: Repair",
+              "operation": "exclude",
+              "strength": "none",
+              "intent_span": "Repair",
+              "item_ids": [
+                81002,
+                81004
+              ]
+            }
+          ]
+        },
+        "indirect": {
+          "outcome": "completed: preview unchanged, apply exact, undo restored",
+          "provider_calls": 2,
+          "eligible_before": 8,
+          "eligible_after_apply": 5,
+          "eligible_after_undo": 8,
+          "selected_ids": [
+            81001,
+            81003,
+            81006
+          ],
+          "controls": [
+            {
+              "label": "Reviewed indirect request",
+              "operation": "exclude",
+              "strength": "none",
+              "intent_span": "stuff that makes me hungry",
+              "item_ids": [
+                81001,
+                81003,
+                81006
+              ]
+            }
+          ]
+        }
+      }
+    },
+    {
+      "kind": "authored replies (no model), or no provider for the scenario conditions",
+      "scenario": "tags",
+      "source_fingerprint": "24d0a8246edc2f0bc261e163795da55ee24ce2b364a566b8fa2edc603c146cd3",
+      "provider": {
+        "backend": "scripted-authored-replies",
+        "model": "none (replies written by hand)",
+        "live_model": false
+      },
+      "outcome": "all flows completed",
+      "checks_passed": 222,
+      "checks": 222,
+      "flows": [
+        "manual",
+        "vocabulary",
+        "mixed",
+        "outcomes",
+        "description",
+        "fictional",
+        "history",
+        "failure",
+        "expired",
+        "original"
+      ]
+    },
+    {
+      "kind": "authored replies (no model), or no provider for the scenario conditions",
+      "scenario": "category",
+      "source_fingerprint": "24d0a8246edc2f0bc261e163795da55ee24ce2b364a566b8fa2edc603c146cd3",
+      "provider": {
+        "backend": "scripted-authored-replies",
+        "model": "none (replies written by hand)",
+        "live_model": false
+      },
+      "outcome": "all flows completed",
+      "checks_passed": 106,
+      "checks": 106,
+      "flows": [
+        "manual",
+        "category",
+        "reject",
+        "history",
+        "failure",
+        "expired",
+        "original"
+      ]
+    },
+    {
+      "kind": "authored replies (no model), or no provider for the scenario conditions",
+      "scenario": "hunger",
+      "source_fingerprint": "24d0a8246edc2f0bc261e163795da55ee24ce2b364a566b8fa2edc603c146cd3",
+      "provider": {
+        "backend": "scripted-authored-replies",
+        "model": "none (replies written by hand)",
+        "live_model": false
+      },
+      "outcome": "all flows completed",
+      "checks_passed": 98,
+      "checks": 98,
+      "flows": [
+        "manual",
+        "indirect",
+        "history",
+        "failure",
+        "expired",
+        "original"
+      ]
+    },
+    {
+      "kind": "authored replies (no model), or no provider for the scenario conditions",
+      "scenario": "conditions",
+      "source_fingerprint": "24d0a8246edc2f0bc261e163795da55ee24ce2b364a566b8fa2edc603c146cd3",
+      "provider": null,
+      "outcome": "all flows completed",
+      "checks_passed": 12,
+      "checks": 12,
+      "flows": [
+        "original"
+      ]
+    },
+    {
+      "kind": "route trial without a browser",
+      "folder": "route-checks/trial-anthropic-standin",
+      "cases": 9,
+      "errors": 0
+    },
+    {
+      "kind": "route trial without a browser",
+      "folder": "route-checks/trial-authored",
+      "cases": 9,
+      "errors": 0
+    },
+    {
+      "kind": "route trial without a browser",
+      "folder": "route-checks/trial-cli-standin",
+      "cases": 9,
+      "errors": 0
+    },
+    {
+      "kind": "route trial without a browser",
+      "folder": "route-checks/trial-openai-compatible-standin",
+      "cases": 9,
+      "errors": 0
+    }
+  ]
+}

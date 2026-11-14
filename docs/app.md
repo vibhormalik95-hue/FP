@@ -72,7 +72,7 @@ The method with categories and tags names each control from its action and its n
 | `no_match` | The reply reports that no existing name, or no description, supports the request. A scope without a category or a tag gives `no_match` with no call. | the reply, or an application check |
 | `unsupported` | The reply reports that the request needs an operation that these controls do not have: a quota, a time, a condition, an order or an exception. The method with categories and tags has this result. | the reply |
 | `error` | A call failed, or the application rejected the reply. | the provider, or the application |
-| `limit` | The request would make more than eight applied controls. It stops before any call. | an application check |
+| `limit` | The request would make more than eight applied controls. The manual method and the method with item descriptions stop before any call. The method with categories and tags decides after the interpretation. | an application check |
 | `label_collision` | An applied control has the same name (manual and description methods). Only the same manual control (same category and action) is replaced by its new version. It stops before any call. | an application check |
 | `duplicate` | A proposed definition name already exists. | the reply |
 | `discarded` | The person rejected a definition under review (`POST semantic/definition/discard`). | the person |

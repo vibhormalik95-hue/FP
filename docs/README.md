@@ -32,7 +32,8 @@ These documents are fixed. They are not edited after the study that they belong 
 | `evidence/2026-10-14/` | Records of the practice run. |
 | `evidence/2026-11-11/` | Summaries of the runs through the Claude Code CLI of 10 and 11 November. |
 | [evidence/2026-11-13/](evidence/2026-11-13/README.md) | Browser runs of three controls on the earlier revision `b9220b4`, with real model output through the file relay. |
-| [evidence/2026-11-14/](evidence/2026-11-14/README.md) | Run records of the final build: real model output through the file relay, authored replies, route checks with stand-ins | |
+| [evidence/2026-11-14/](evidence/2026-11-14/README.md) | Run records of 14 November for revision `b7c5a91` (the package line before the merge): real model output through the file relay, authored replies, route checks with stand-ins. The folder also holds `OPERA-MANUAL-CONTROLS.md`, a record of the published work branch; the checksum list of the folder does not cover that file. | |
+| [evidence/2026-11-14-integrated/](evidence/2026-11-14-integrated/README.md) | Run records of 14 November for the integrated revision `e797ce1`: the same three kinds of run, made again on the merged source | |
 
 The study of 4 November and the dated records of October and November are in [`deliverables/`](../deliverables/). The paper is in [`paper/`](../paper/README.md).
 

@@ -37,11 +37,11 @@
 \newcommand{\PaperDate}{14 November 2026}
 \newcommand{\FinalRunDate}{14 November 2026 (UTC)}
 %   form: 14 November 2026 (UTC)
-\newcommand{\FinalRevision}{\texttt{b7c5a91}}
+\newcommand{\FinalRevision}{\texttt{e797ce1}}
 %   form: \texttt{0a1b2c3}  (first seven characters of the revision)
-\newcommand{\FinalFingerprint}{\texttt{ab1a9d846b33}}
+\newcommand{\FinalFingerprint}{\texttt{24d0a8246edc}}
 %   form: \texttt{0123456789ab}
-\newcommand{\FinalEvidencePath}{\texttt{docs/evidence/2026-11-14/}}
+\newcommand{\FinalEvidencePath}{\texttt{docs/evidence/2026-11-14-integrated/}}
 %   form: \url{docs/evidence/2026-11-14/}
 \newcommand{\FinalModel}{Claude Opus (sub-agent alias of the session)}
 %   form: claude-fable-5-2  (the name that the route declares; no other word)
@@ -58,11 +58,11 @@
 %         Unsupported and no match: reported by the model. Nothing applied in the four cases
 \newcommand{\FinalDescriptions}{Second scenario: three items selected, each with a checked quotation; 8; 5; 8. Category-and-tag scenario: one item; 10; 9; 10}
 %   form: Three items selected, each with a checked quotation; 8; 5; 8
-\newcommand{\FinalNewCategory}{Label \emph{Damaged object repaired and kept in use}; 3 members; one disagreement withheld as unknown; 8; 5; 8}
+\newcommand{\FinalNewCategory}{Label \emph{Damaged object repaired and kept in use}; 3 members; the two calls agreed on every item, so nothing was withheld for a disagreement; 8; 5; 8}
 %   form: Label \emph{Edible food}; 3 members; 1 unknown; 8; 5; 8
 \newcommand{\FinalFictional}{One draft approved and added to the separate list (1 item); removed (0 items); the feed stayed at 10}
 %   form: One draft accepted and admitted to the separate feed (1 item); removed (0 items)
-\newcommand{\FinalAssertions}{the three runs made 13 model calls, 308 of 308 scripted checks passed, and the AI operator made 19 review decisions, all approvals}
+\newcommand{\FinalAssertions}{the three runs made 13 model calls, 321 of 321 scripted checks passed, and the AI operator made 19 review decisions, all approvals}
 %   form: 212 of 212 scripted assertions passed, and the AI operator made 19 review decisions
 %   (a clause without a final period; it completes the sentence "In total, ...")
 \newcommand{\FinalRouteChecks}{the connection check and the route trial (nine bundled requests) ran through one stand-in program for the command-line route and one stand-in server for each of the two HTTP routes, with authored replies and no error}
@@ -236,7 +236,7 @@ The workflow has four entry points: a manual category control (no model call), a
 The application also keeps an earlier one-call induction, a user-confirmed target and the topic-profile path of 4 November.
 
 \subsection{Clarification and abstention}
-The workflow prefers no change to a wrong change. It abstains in two ways. First, the model can report a problem: competing interpretations, no match, or an operation that the controls cannot express, such as a quota or a time condition. The application then stops and shows the report with its alternatives. This abstention depends on the model: the application has no check that detects a quota or a condition. Second, a few fixed rules stop a request. One English pattern stops a negated control verb (``do not'', ``don't'', ``never'' or ``not to'', followed by hide, exclude, remove, reduce or boost) before any model call in the two entry points that match a request (categories and tags; item descriptions). ``Do not show'' is not stopped: it goes to the model as an exclusion request. Other wordings of a negation are not detected and reach the reviewer. A selection of more than half of the supplied items also stops a request in these two entry points. For categories and tags the limit holds for each control and for the exclusions of one request together; for item descriptions it holds for the selection. The staged entry point and the manual control have no such limit. Effects that add up across requests are shown to the reviewer as notes and do not stop a request. An oversized evidence set is refused; nothing is truncated silently. When the workflow abstains, nothing is applied. A quotation shows that words are present, not that a membership decision is right.
+The workflow prefers no change to a wrong change. It abstains in two ways. First, the model can report a problem: competing interpretations, no match, or an operation that the controls cannot express, such as a quota or a time condition. The application then stops and shows the report with its alternatives. This abstention depends on the model: the application has no check that detects a quota or a condition. Second, a few fixed rules stop a request. One English pattern stops a negated control verb (``do not'', ``don't'', ``never'' or ``not to'', followed by hide, exclude, remove, reduce or boost, or by ``show'' with ``more'' or ``less'') before any model call in the two entry points that match a request (categories and tags; item descriptions). ``Do not show'' is not stopped: it goes to the model as an exclusion request. Other wordings of a negation are not detected and reach the reviewer. A selection of more than half of the supplied items also stops a request in these two entry points. For categories and tags the limit holds for each control and for the exclusions of one request together; for item descriptions it holds for the selection. The staged entry point and the manual control have no such limit. Effects that add up across requests are shown to the reviewer as notes and do not stop a request. An oversized evidence set is refused; nothing is truncated silently. When the workflow abstains, nothing is applied. A quotation shows that words are present, not that a membership decision is right.
 
 \subsection{Model routes}
 The workflow depends on one function that takes a request and a JSON schema and returns JSON. A route supplies that function. There are four: a file relay that an operator carries, a local command-line program (two profiles), an OpenAI-compatible endpoint (hosted, or a local model server) and the Anthropic Messages API. Every route follows one reply rule: exactly one JSON object, decoded strictly and validated against the schema. A route does not repair a reply and does not retry. The identity of the route and the declared model are stored with every review. A change of route changes neither the policy nor a frozen experiment: Experiments 1 and 2 stay bound to their recorded local model, and a comparison of models is a new experiment with its own protocol. A route trial tool runs the bundled requests through a route without a browser, up to the first review step. Of the four routes, only the relay has carried real model output; the other three were tested with stand-in programs and servers. Earlier direct connections remain in the code; one of them, to a command-line program, carried the runs of 10 and 11 November.

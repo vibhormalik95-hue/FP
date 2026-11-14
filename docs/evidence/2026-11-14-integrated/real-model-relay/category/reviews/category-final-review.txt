@@ -1,0 +1,144 @@
+PREVIEW · NOTHING IS APPLIED YET
+
+Proposed change: Damaged object repaired and kept in use
+
+Go to your decision
+
+Your description: “Propose one useful new category from these eight descriptions. Decide the shared concept yourself from the stated facts, rather than taking an existing category code as its meaning. Give a precise definition supported by the descriptions; do not merely rename an existing category or invent missing facts.”
+
+Model output (not verified)
+
+Name proposed by the model: Damaged object repaired and kept in use
+
+The name becomes the name of the control. It cannot be changed on this page.
+
+Definition that you reviewed: An item matches when its description states both that an existing damaged, broken, bent, torn or leaking object is repaired by an action such as straightening, mending or sealing, and that the same object is kept, used again or remains in use after that repair. An item does not match when its description affirmatively states that the damaged object is discarded or replaced by a different object, or that the described object is newly made from raw material or offcuts rather than an existing object being repaired. When a description does not state whether a repair happened or whether the same object is retained, membership remains unknown; the absence of such a statement is not by itself a reason to exclude the item.
+
+Reason that the model gave: Three captions state the same two facts: an existing damaged object is repaired, and the same object is kept or remains in use. Item 41001 states that a bent bookmark is straightened and used again and that the existing piece is kept. Item 41002 states that a torn satchel is mended and that the same bag is kept; its phrase about carrying books again is a stated purpose, so the definition does not depend on books actually being carried. Item 41003 states that a leaking jug is sealed and returned to watering plants and that the same jug remains in use. These items sit in three different existing categories (K1, K2 and K3), so this is a new derived group and not a renamed old category. Other captions describe replacement with a newly purchased object, making new objects from offcuts or a raw blank, or give no activity, so they do not supply support for this definition. This is a proposal only; a user must review it before any classification.
+
+Separate evidence assessment: claude-opus (sub-agent alias opus of the Cowork session; version not attested), settings hash 62e14e282ea9. It did not see the classifications. It can be the same model. Agreement of the two calls is not independent proof.
+
+Direction and strength: Remove from the feed, chosen by you.
+
+Raw model replies (3)
+
+The model can be wrong. This block repeats what it returned. Nothing here is approved.
+
+Application checks
+
+Damaged object repaired and kept in use
+
+This page repeated these checks from the reviewed record:
+
+Passed: Every selected item is in the evidence scope (3 selected of 8 in the scope)
+Passed: No item is selected twice
+Passed: Every item in the scope has one classification (8 of 8)
+Passed: Every item in the scope has one separate evidence assessment (8 of 8)
+Passed: An item on which the two calls disagree gets no decision and is not selected (no disagreement)
+Passed: An item whose text lacks a number of the definition gets no decision and is not selected (none)
+Passed: The record is bound to the source data, the request and the action by their hashes (source 4d51951dbedc · request cdbf5c0d7b38 · action 885ac99f78ab)
+
+Numbers that an item must contain: none. The second call can only remove an item from the selection. It never adds one.
+
+Selected items that have an existing category: 41001 (K1); 41002 (K2); 41003 (K3).
+
+Items without a decision (not selected): 41007, 41008. The name was compared only with the categories in the scope.
+
+Selected items: 41001, 41002, 41003. Evidence scope: 41001, 41002, 41003, 41004, 41005, 41006, 41007, 41008.
+
+Provider and model, as the server settings name them: operator-relay-file-queue / claude-opus (sub-agent alias opus of the Cowork session; version not attested). Settings hash 62e14e282ea9 (it identifies the settings, not the model). The application did not verify which model answered.
+
+The complete text that holds each quotation. The application checked the words, not the meaning. Look for a negation or a contrary sentence before you approve:
+
+Item 41001, description: “A bent metal bookmark is straightened with pliers and used again. The existing piece is kept.”
+
+Item 41002, description: “A torn canvas satchel is mended with a needle and spare thread so it can carry books again. The same bag is kept.”
+
+Item 41003, description: “A leaking clay jug is sealed and returned to watering plants. The same jug remains in use.”
+
+These checks are mechanical. A passed check shows that names, IDs and quotations exist in the item data. It does not show that the meaning is right.
+
+Your decision
+
+If you approve:
+
+Damaged object repaired and kept in use: Remove from the feed for items 41001, 41002, 41003.
+
+Only items in the evidence scope change. Other items with the same category, tag or subject stay as they are.
+
+Nothing has changed yet. The feed below stays as it is until you approve.
+
+Approve before 12:12:58 PM. After that time the server no longer accepts this review.
+
+Approve this exact item set and apply
+Discard this review and apply nothing
+Evidence for every item in the scope
+
+Each row is one item of the evidence scope. A marked row is selected. An unmarked row is not selected, and the row says why.
+
+Item	Description in the item data	Its categories and tags	Classification under the definition (call 2)	Separate evidence assessment (call 3)	Decision of the application	Result if approved
+41001
+SELECTED
+	A bent metal bookmark is straightened with pliers and used again. The existing piece is kept.	
+K1
+tags: K1
+	matches the definition · "A bent metal bookmark is straightened with pliers and used again. The existing piece is kept." The caption states that an existing bent object is repaired by straightening and that the same object is used again and kept, so both conditions have affirmative evidence.	supported · "A bent metal bookmark is straightened with pliers and used again. The existing piece is kept." The caption states an existing bent object is repaired by straightening and that the same existing piece is kept and used again, which affirms both required conditions of the definition.	Selected: the classification matches and the separate assessment supports it	Removed from the feed
+41002
+SELECTED
+	A torn canvas satchel is mended with a needle and spare thread so it can carry books again. The same bag is kept.	
+K2
+tags: K2
+	matches the definition · "A torn canvas satchel is mended with a needle and spare thread so it can carry books again. The same bag is kept." The caption states that an existing torn object is repaired by mending and that the same bag is kept for use again, so both conditions have affirmative evidence.	supported · "A torn canvas satchel is mended with a needle and spare thread so it can carry books again. The same bag is kept." The caption states a torn existing object is repaired by mending and that the same bag is kept, which affirms both the repair condition and the retention condition.	Selected: the classification matches and the separate assessment supports it	Removed from the feed
+41003
+SELECTED
+	A leaking clay jug is sealed and returned to watering plants. The same jug remains in use.	
+K3
+tags: K3
+	matches the definition · "A leaking clay jug is sealed and returned to watering plants. The same jug remains in use." The caption states that an existing leaking object is repaired by sealing and that the same jug remains in use, so both conditions have affirmative evidence.	supported · "A leaking clay jug is sealed and returned to watering plants. The same jug remains in use." The caption states a leaking existing object is repaired by sealing and that the same jug remains in use, which affirms both required conditions.	Selected: the classification matches and the separate assessment supports it	Removed from the feed
+41004	A broken desk organizer is put in recycling and a newly purchased organizer is unpacked in its place.	
+K1
+tags: K1
+	does not match · "A broken desk organizer is put in recycling and a newly purchased organizer is unpacked in its place." The caption affirmatively states that the broken object is discarded into recycling and replaced by a different, newly purchased object, which contradicts the retention condition.	contradicted · "A broken desk organizer is put in recycling and a newly purchased organizer is unpacked in its place." The caption explicitly states the broken object is discarded to recycling and replaced by a different, newly purchased object, which contradicts the condition that the same object is kept or used again; the definition names this as an exclusion.	Not selected: it does not match the definition	Unchanged
+41005	Paper offcuts are folded into a new tray. No glue or powered equipment is used.	
+K4
+tags: K4
+	does not match · "Paper offcuts are folded into a new tray." The caption affirmatively states that the described object is newly made from offcuts, which the definition names as a not-match case instead of repair of an existing object.	contradicted · "Paper offcuts are folded into a new tray." The caption explicitly states the tray is newly made from offcuts, which contradicts the condition that an existing damaged object is repaired; the definition names this as an exclusion.	Not selected: it does not match the definition	Unchanged
+41006	A raw wooden blank is shaped with an electric lathe into a new knob.	
+K2
+tags: K2
+	does not match · "A raw wooden blank is shaped with an electric lathe into a new knob." The caption affirmatively states that the described object is newly made from raw material, which the definition names as a not-match case instead of repair of an existing object.	contradicted · "A raw wooden blank is shaped with an electric lathe into a new knob." The caption explicitly states the knob is newly made from raw material, which contradicts the condition that an existing damaged object is repaired; the definition names this as an exclusion.	Not selected: it does not match the definition	Unchanged
+41007	A page of knot diagrams is shown. No completed activity or finished object is described.	
+K3
+tags: K3
+	no decision The caption describes only a page of diagrams and states that no completed activity or finished object is described, so it does not state whether a repair happened or whether an object is retained.	not stated · "No completed activity or finished object is described." The caption shows only knot diagrams and states no repair of an existing damaged object and no retention of an object, so membership remains unknown.	Not selected: no decision	Unchanged
+41008	The only notes are a blue background and a 20-second duration. The subject is not described.	
+K4
+tags: K4
+	no decision The caption gives only a background color and duration and states that the subject is not described, so repair and retention are not stated.	not stated · "The subject is not described." The caption gives only background colour and duration and does not state any repair or retention, so membership remains unknown.	Not selected: no decision	Unchanged
+
+A quotation or a category name shows that the words exist in the item data. It does not show that the decision is right. Read each row before you approve.
+
+Preview: the first ten items now and after approval
+Now (applied feed)
+Item 41006
+Item 41007
+Item 41008
+Item 41001 (leaves)
+Item 41002 (leaves)
+Item 41003 (leaves)
+Item 41004
+Item 41005
+After approval
+Item 41006
+Item 41007
+Item 41008
+Item 41004 (up 3)
+Item 41005 (up 3)
+
+Leaves the list: 41001, 41002, 41003. Changes position: 41004 (7 to 4), 41005 (8 to 5). Eligible items now: 8. After approval: 5.
+
+The applied feed is unchanged until you approve. The item cards below still show the applied feed.
+
+Only the items in the scope were assessed. A quotation does not prove that an item fits.
+
+Data of this review: invented items of a bundled scenario. Scores: deterministic diagnostic scorer (a fixed formula, not the trained recommender).

@@ -1,0 +1,3 @@
+- 2026-11-14T19:06:37Z request 1: check said 'OK: the app would accept this answer file as a transport reply'; delivered unchanged with deliver (no --force). Request file 19:06:14Z, answer file 19:06:27Z (about 13 s).
+- 2026-11-14T19:07:04Z request 2: check said 'OK: the app would accept this answer file as a transport reply'; delivered unchanged with deliver (no --force). Request file 19:06:38Z, answer file 19:06:54Z (about 16 s).
+- 2026-11-14T19:08:24Z finish: browser check ended (OUTCOME all flows completed). Exit code not captured: the browser process was not a child of the operator shell, so wait was not possible. Server stopped: wrapper PID 371, server PID 374 (kill). Created DONE-hunger.

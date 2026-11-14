@@ -15,7 +15,7 @@ The page has three views.
 In **Language controls** a model can propose a change. The application checks the proposal. You review it. Nothing changes until you approve, and you can undo each change.
 A control is a named set of existing items with one action. It is not a new video and not a new category in the dataset.
 
-The bundled scenarios use invented items and a labelled diagnostic scorer. The status line says "Diagnostic scorer: a fixed formula, not the trained recommender". A run on these scenarios shows that a control works as described. It does not measure accuracy, recommendation quality or satisfaction.
+The bundled scenarios use invented items and a labelled diagnostic scorer. The status line says "deterministic diagnostic scorer (a fixed formula, not the trained recommender)". A run on these scenarios shows that a control works as described. It does not measure accuracy, recommendation quality or satisfaction.
 
 ## Start a scenario
 
@@ -80,14 +80,14 @@ Two settings apply to every method.
 - **Evidence scope.** "First 6 items of the starting list" or "First 10 items of the starting list". The application uses no other item. With the hand-written replies, the model methods use the complete scope of ten items, because the replies exist for that scope only.
 - **How to combine with the applied controls.** "Add to the applied controls" or "Replace every applied control". "Add" keeps the applied controls. A new manual control replaces an applied control of the same name only when both have the same category and the same action. Another control with the same name stops the request with "An applied control has the same name". The method with categories and tags gives a generated name a number when the name is in use, for example ` (2)`.
 
-Limits that the page states: at most 8 applied controls; at most 4 controls in one request; a review is valid for five minutes; Undo goes back at most 10 changes. A ninth control stops the request before any model call, with the heading "At most eight controls can be applied".
+Limits that the page states: at most 8 applied controls; at most 4 controls in one request; a review is valid for five minutes; Undo goes back at most 10 changes. A ninth control stops the request with the heading "At most eight controls can be applied". The manual method and the method with item descriptions stop before any model call. The method with categories and tags decides after the interpretation, because a reply can replace an applied control and then fits; the page then says that a model call was made.
 
 ## Existing category (manual, no model)
 
 This method is the reference for the language controls. No model is called.
 
 1. Method: **Existing category (manual, no model)**.
-2. Existing category: choose one from the list, for example `Cooking` in the scenario `tags`.
+2. Existing category: choose one from the list, for example `Cooking` in the scenario `tags`. At the start no category is selected, and the button of step 5 stays disabled until you choose one.
 3. Action: **Show more (raise the score)**, **Show less (lower the score, still in the feed)** or **Remove from the feed**. For more or less, choose the strength: Light 0.10, Standard 0.25 or Strong 0.40.
 4. Name of this control: keep the name `Manual: Cooking` or write your own.
 5. Press **Show the proposed change**.
@@ -124,7 +124,7 @@ Limits that the application enforces:
 
 - One control cannot select more than half of the items in the scope. The removals of one request together cannot remove more than half.
 - The list of names that goes to the model has at most 120 names and 12,000 bytes. A larger list asks you for a smaller scope.
-- A request that matches the negated-command pattern stops before any model call. The pattern is a negated hide, exclude, remove, reduce or boost, for example "Do not hide ...". It is one English pattern: another wording of a negated command goes to the model and then to you. "Do not show ..." does not match the pattern. It goes to the model as a request to remove.
+- A request that matches the negated-command pattern stops before any model call. The pattern is a negated hide, exclude, remove, reduce or boost, for example "Do not hide ...", or a negated "show ... more" or "show ... less". It is one English pattern: another wording of a negated command goes to the model and then to you. "Do not show ..." does not match the pattern. It goes to the model as a request to remove.
 - A request with a control character or a format character is refused (HTTP 422).
 
 ## My request, matched to item descriptions (model)
@@ -167,7 +167,7 @@ An approved definition is used once. If the classification stops, press **Propos
 
 The two calls can use the same model, and both can be wrong. A quotation that exists is not proof that the definition is right. Reject a definition that states a property that the descriptions do not state.
 
-Example in the scenario `category`, with the hand-written replies of `rehearse`: the items 41001, 41002 and 41003 become members of a category about a repaired object that is kept. Item 41005 gets no decision, because the two replies disagree ("Not selected: the two calls do not agree"). The feed goes from 8 eligible items to 5. Undo restores 8.
+Example in the scenario `category`, with the hand-written replies of `rehearse`: the items 41001, 41002 and 41003 become members of a category about a repaired object that is kept. Item 41004 is not a member in both replies. The items 41005 to 41008 are unknown in both replies, because their descriptions state no repair of an object that is kept. No item has a disagreement in this rehearsal; when the two calls of a real model disagree on an item, its row reads "Not selected: the two calls do not agree". The feed goes from 8 eligible items to 5. Undo restores 8.
 
 The page also offers two earlier methods where the server allows them: **A new category in one call (earlier method)**, and **My request, matched to item descriptions (local model NAME)** through a local Ollama model.
 
@@ -349,10 +349,13 @@ With `--video` the script records the page to `video/SCENARIO.webm` in the `--ou
 
 ```
 python -m pytest -q -p no:cacheprovider
-python tools/hosted_validation_current/run_guarded.py .
+python scripts/run_guarded_current_contract.py
 node --test "web/tests/*.mjs"
 python scripts/check_personal_ui_index.py
+python scripts/refresh_source_manifest.py --check
 ```
+
+The second command runs the guarded driver checks on the frozen profile of 11 November and on a temporary copy with the current-contract test inputs. On the frozen profile some checks do not pass, because the prompts changed after that date; the command says which result is expected.
 
 The Node tests need `npm ci` in `web/` first. These are checks of the program with hand-written replies and stand-ins. They are not model evidence.
 `npm run build` in `web/` reproduces the built interface in `web/dist` byte for byte. See [the built interface](source-verification.md).

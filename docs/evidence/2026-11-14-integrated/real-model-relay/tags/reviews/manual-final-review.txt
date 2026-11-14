@@ -1,0 +1,127 @@
+PREVIEW · NOTHING IS APPLIED YET
+
+Proposed change: Manual: Cooking
+
+Go to your decision
+
+Your selection
+
+Manual: Cooking
+
+You chose the existing category Cooking and the action Remove from the feed. No model is used.
+
+Application checks
+
+Checks of the request
+
+Passed: The chosen category exists in the catalogue
+Passed: The selected items are exactly the scope items that carry the category (3 of 10 scope items)
+
+Manual: Cooking
+
+Passed: Every selected item is in the evidence scope (3 selected of 10 in the scope)
+Passed: No item is selected twice
+Passed: The selected items are exactly the items of the category Cooking in the scope (3 of 10)
+Passed: The record is bound to the source data, the request and the action by their hashes (source c01dc4e8fadf · request 05ac9218ff6b · action 44e8aaf579cc)
+
+This control selects 3 of the 10 items in the scope.
+
+Selected items: 61001, 61002, 61009. Evidence scope: 61001, 61002, 61003, 61004, 61005, 61006, 61007, 61008, 61009, 61010.
+
+Provider: none. This control uses no model.
+
+These checks are mechanical. A passed check shows that names, IDs and quotations exist in the item data. It does not show that the meaning is right.
+
+Your decision
+
+If you approve:
+
+Manual: Cooking: Remove from the feed for items 61001, 61002, 61009.
+
+Only items in the evidence scope change. Other items with the same category, tag or subject stay as they are.
+
+Nothing has changed yet. The feed below stays as it is until you approve.
+
+Approve before 12:10:05 PM. After that time the server no longer accepts this review.
+
+Approve this exact item set and apply
+Discard this review and apply nothing
+Evidence for every item in the scope
+
+Each row is one item of the evidence scope. A marked row is selected. An unmarked row is not selected, and the row says why.
+
+Item	Description in the item data	Its categories and tags	Selected or not, and through what	Result if approved
+61001
+SELECTED
+	Episode 12 of a weeknight series. Running time 58 seconds.	
+Cooking > Home recipes
+tags: dinner, recipe
+	selected: its category is Cooking	Removed from the feed
+61002
+SELECTED
+	Part 3 of a weekend series. Running time 45 seconds.	
+Cooking > Baking
+tags: baking, bread
+	selected: its category is Cooking	Removed from the feed
+61003	An evening walk between stalls. Running time 62 seconds.	
+Travel > City walks
+tags: night market, street food
+	not selected: its category is not Cooking	Unchanged
+61004	A mechanic cleans a bicycle chain between bites of a sandwich.	
+Repair > Bicycle repair
+tags: bicycle, tools
+	not selected: its category is not Cooking	Unchanged
+61005	An electrician replaces a desk lamp switch.	
+Repair > Home repair
+tags: lamp, tools
+	not selected: its category is not Cooking	Unchanged
+61006	The camera follows a train crossing a bridge.	
+Travel > Rail journeys
+tags: bridge, train
+	not selected: its category is not Cooking	Unchanged
+61007	A player repeats a short guitar exercise.	
+Music > Guitar
+tags: guitar, practice
+	not selected: its category is not Cooking	Unchanged
+61008	A pianist plays one piece in a small room.	
+Music > Live sessions
+tags: live, piano
+	not selected: its category is not Cooking	Unchanged
+61009
+SELECTED
+	Episode 13 of a weeknight series. Running time 51 seconds.	
+Cooking > Home recipes
+tags: recipe, salad
+	selected: its category is Cooking	Removed from the feed
+61010	Untitled clip: no category or tag is supplied.	no category and no tag	not selected: this item has no category	Unchanged
+
+A quotation or a category name shows that the words exist in the item data. It does not show that the decision is right. Read each row before you approve.
+
+Preview: the first ten items now and after approval
+Now (applied feed)
+Item 61004
+Item 61005
+Item 61006
+Item 61007
+Item 61008
+Item 61009 (leaves)
+Item 61010
+Item 61001 (leaves)
+Item 61002 (leaves)
+Item 61003
+After approval
+Item 61004
+Item 61005
+Item 61006
+Item 61007
+Item 61008
+Item 61010 (up 1)
+Item 61003 (up 3)
+
+Leaves the list: 61009, 61001, 61002. Changes position: 61010 (7 to 6), 61003 (10 to 7). Eligible items now: 10. After approval: 7.
+
+The applied feed is unchanged until you approve. The item cards below still show the applied feed.
+
+Only the items in the scope were assessed. A quotation does not prove that an item fits.
+
+Data of this review: invented items of a bundled scenario. Scores: deterministic diagnostic scorer (a fixed formula, not the trained recommender).

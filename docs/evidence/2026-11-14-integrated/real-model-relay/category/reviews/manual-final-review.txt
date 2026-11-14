@@ -1,0 +1,117 @@
+PREVIEW · NOTHING IS APPLIED YET
+
+Proposed change: Manual: K1
+
+Go to your decision
+
+Your selection
+
+Manual: K1
+
+You chose the existing category K1 and the action Remove from the feed. No model is used.
+
+Application checks
+
+Checks of the request
+
+Passed: The chosen category exists in the catalogue
+Passed: The selected items are exactly the scope items that carry the category (2 of 8 scope items)
+
+Manual: K1
+
+Passed: Every selected item is in the evidence scope (2 selected of 8 in the scope)
+Passed: No item is selected twice
+Passed: The selected items are exactly the items of the category K1 in the scope (2 of 8)
+Passed: The record is bound to the source data, the request and the action by their hashes (source 4d51951dbedc · request de7a4f8d2e76 · action 6bc019945fc1)
+
+This control selects 2 of the 8 items in the scope.
+
+Selected items: 41001, 41004. Evidence scope: 41001, 41002, 41003, 41004, 41005, 41006, 41007, 41008.
+
+Provider: none. This control uses no model.
+
+These checks are mechanical. A passed check shows that names, IDs and quotations exist in the item data. It does not show that the meaning is right.
+
+Your decision
+
+If you approve:
+
+Manual: K1: Remove from the feed for items 41001, 41004.
+
+Only items in the evidence scope change. Other items with the same category, tag or subject stay as they are.
+
+Nothing has changed yet. The feed below stays as it is until you approve.
+
+Approve before 12:10:02 PM. After that time the server no longer accepts this review.
+
+Approve this exact item set and apply
+Discard this review and apply nothing
+Evidence for every item in the scope
+
+Each row is one item of the evidence scope. A marked row is selected. An unmarked row is not selected, and the row says why.
+
+Item	Description in the item data	Its categories and tags	Selected or not, and through what	Result if approved
+41001
+SELECTED
+	A bent metal bookmark is straightened with pliers and used again. The existing piece is kept.	
+K1
+tags: K1
+	selected: its category is K1	Removed from the feed
+41002	A torn canvas satchel is mended with a needle and spare thread so it can carry books again. The same bag is kept.	
+K2
+tags: K2
+	not selected: its category is not K1	Unchanged
+41003	A leaking clay jug is sealed and returned to watering plants. The same jug remains in use.	
+K3
+tags: K3
+	not selected: its category is not K1	Unchanged
+41004
+SELECTED
+	A broken desk organizer is put in recycling and a newly purchased organizer is unpacked in its place.	
+K1
+tags: K1
+	selected: its category is K1	Removed from the feed
+41005	Paper offcuts are folded into a new tray. No glue or powered equipment is used.	
+K4
+tags: K4
+	not selected: its category is not K1	Unchanged
+41006	A raw wooden blank is shaped with an electric lathe into a new knob.	
+K2
+tags: K2
+	not selected: its category is not K1	Unchanged
+41007	A page of knot diagrams is shown. No completed activity or finished object is described.	
+K3
+tags: K3
+	not selected: its category is not K1	Unchanged
+41008	The only notes are a blue background and a 20-second duration. The subject is not described.	
+K4
+tags: K4
+	not selected: its category is not K1	Unchanged
+
+A quotation or a category name shows that the words exist in the item data. It does not show that the decision is right. Read each row before you approve.
+
+Preview: the first ten items now and after approval
+Now (applied feed)
+Item 41006
+Item 41007
+Item 41008
+Item 41001 (leaves)
+Item 41002
+Item 41003
+Item 41004 (leaves)
+Item 41005
+After approval
+Item 41006
+Item 41007
+Item 41008
+Item 41002 (up 1)
+Item 41003 (up 1)
+Item 41005 (up 2)
+
+Leaves the list: 41001, 41004. Changes position: 41002 (5 to 4), 41003 (6 to 5), 41005 (8 to 6). Eligible items now: 8. After approval: 6.
+
+The applied feed is unchanged until you approve. The item cards below still show the applied feed.
+
+Only the items in the scope were assessed. A quotation does not prove that an item fits.
+
+Data of this review: invented items of a bundled scenario. Scores: deterministic diagnostic scorer (a fixed formula, not the trained recommender).
