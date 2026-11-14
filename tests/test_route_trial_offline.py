@@ -38,7 +38,7 @@ FOOD = [61001, 61002, 61003, 61009]
 TAGS = {
     'vocabulary': ('review', 1, [['exclude', 'none', FOOD]]),
     'vocabulary:literal': ('review', 1, [['exclude', 'none', [61004, 61005]]]),
-    'vocabulary:mixed': ('review', 1, [['boost', 'standard', [61004, 61005]], ['exclude', 'none', FOOD]]),
+    'vocabulary:mixed': ('review', 1, [['boost', 'standard', [61007, 61008]], ['exclude', 'none', FOOD]]),
     'vocabulary:ambiguous': ('clarify', 1, None),
     'vocabulary:unsupported': ('unsupported', 1, None),
     'vocabulary:negated': ('clarify', 0, None),
@@ -98,7 +98,7 @@ def test_the_rehearsal_replies_give_every_request_of_the_tags_scenario_its_class
     assert cases['configured_model']['controls'][0]['quotations'] == [
         {'item_id': 61004, 'field': 'caption', 'quote': 'between bites of a sandwich'}]
     # The application's own checks travel with the record, also for a request that it answers itself.
-    assert len(cases['vocabulary']['checks']) == 13 and all(check['passed'] for check in cases['vocabulary']['checks'])
+    assert len(cases['vocabulary']['checks']) == 16 and all(check['passed'] for check in cases['vocabulary']['checks'])
     assert [check['passed'] for check in cases['vocabulary:negated']['checks']] == [True, False]
     assert cases['vocabulary:negated']['raw_model_replies'] == [] and cases['configured_model']['checks'] is None
     assert len(cases['vocabulary:ambiguous']['clarification']['alternatives']) == 3

@@ -6,6 +6,7 @@ about any model.
 """
 from copy import deepcopy
 import csv
+import json
 
 import pytest
 from fastapi.testclient import TestClient
@@ -136,7 +137,7 @@ def test_a_proposal_is_reviewed_applied_and_undone_without_touching_the_other_co
     assert plan['model_provenance'] == IDENTITY and len(plan['model_calls']) == 1
     assert set(plan['model_calls'][0]) == {'request_sha256', 'schema_sha256', 'response_sha256', 'raw_response'}
     (group,) = plan['groups']
-    assert group['label'] == 'Exclude: Alpha' and group['request'] == TEXT and group['scope_ids'] == SCOPE
+    assert group['label'] == 'Remove: category "Alpha"' and group['request'] == TEXT and group['scope_ids'] == SCOPE
     sealed = group['proposal']
     assert sealed['status'] == 'review' and sealed['requires_review'] and sealed['action_source'] == 'model'
     assert sealed['grounding'] == 'vocabulary' and sealed['item_ids'] == [1, 2]
@@ -151,8 +152,8 @@ def test_a_proposal_is_reviewed_applied_and_undone_without_touching_the_other_co
     vocabulary = plan['vocabulary']
     assert set(vocabulary) == {'terms', 'controls', 'not_selected', 'checks'}
     assert vocabulary['controls'] == [{
-        'label': 'Exclude: Alpha', 'operation': 'exclude', 'strength': 'none', 'intent_span': 'alpha things',
-        'relation': 'authored relation for alpha things', 'item_ids': [1, 2],
+        'label': 'Remove: category "Alpha"', 'operation': 'exclude', 'strength': 'none', 'intent_span': 'alpha things',
+        'relation': 'authored relation for alpha things', 'item_ids': [1, 2], 'outside_scope_item_ids': [],
         'terms': [{'term_id': 'T01', 'kind': 'category', 'level': 1, 'field': 'first_level_category_name',
                    'value': 'Alpha', 'item_ids': [1, 2]}]}]
     assert [row['item_id'] for row in vocabulary['not_selected']] == [3, 4, 5, 6, 7, 8]
@@ -160,19 +161,25 @@ def test_a_proposal_is_reviewed_applied_and_undone_without_touching_the_other_co
         {'kind': 'category', 'level': 1, 'value': 'Beta'}, {'kind': 'tag', 'level': None, 'value': 'blue'},
         {'kind': 'tag', 'level': None, 'value': 'round'}]
     assert vocabulary['not_selected'][-1] == {'item_id': 8, 'terms': []}  # no label: nothing can select it
-    assert all(c['passed'] for c in vocabulary['checks']) and len(vocabulary['checks']) == 13
+    assert all(c['passed'] for c in vocabulary['checks']) and len(vocabulary['checks']) == 16
+    # The response contract of the page: one call begun, the reply's own reason, no notes for one control.
+    assert plan['calls_attempted'] == 1 and plan['call_attempts'] == [{'stage': 'interpretation', 'status': 'returned'}]
+    assert 'outcome_source' not in plan and plan['reply_reason'] == 'authored reason' and plan['plan_notes'] == []
+    assert plan['scope_effects'] == [{'label': 'Remove: category "Alpha"', 'in_scope_item_ids': [1, 2],
+                                      'outside_scope_item_ids': [],
+                                      'message': 'This control selects 2 of the 8 items in the scope.'}]
     assert [row['item_id'] for row in plan['scope_items']] == SCOPE
     assert [(row['item_id'], row['field'], row['quote'], row['supplied_field_text'], row['quote_present'])
             for row in plan['evidence_context']] == [
         (1, 'first_level_category_name', 'Alpha', 'Alpha', True),
         (2, 'first_level_category_name', 'Alpha', 'Alpha', True)]
     # The model saw terms only.
-    assert set(provider.payloads[0]) == {'system', 'request', 'vocabulary'}
+    assert set(provider.payloads[0]) == {'system', 'request', 'scope_item_count', 'vocabulary'}
     assert 'Description' not in str(provider.payloads[0])
     # A preview changes nothing.
     assert saved(client, h) == before
     applied = apply(client, h, plan).json()
-    assert applied['applied'] and [g['label'] for g in applied['groups']] == ['Exclude: Alpha']
+    assert applied['applied'] and [g['label'] for g in applied['groups']] == ['Remove: category "Alpha"']
     assert applied['feed']['available_items'] == before['feed']['available_items'] - 2
     assert not {1, 2} & {item['item_id'] for item in applied['feed']['items']}
     assert client.get('/api/compare?user_id=1', headers=h).json() == compare
@@ -189,7 +196,8 @@ def test_two_preferences_become_two_groups_with_both_effects(served):
     before = saved(client, h)
     provider.answer = proposal(ALPHA, GAMMA)
     plan = preview(client, h).json()
-    assert plan['ready'] and [g['label'] for g in plan['groups']] == ['Exclude: Alpha', 'Increase: Gamma']
+    assert plan['ready'] and [g['label'] for g in plan['groups']] == ['Remove: category "Alpha"',
+                                                                      'Show more: category "Gamma"']
     assert [c['item_ids'] for c in plan['vocabulary']['controls']] == [[1, 2], [5, 6]]
     assert [row['item_id'] for row in plan['vocabulary']['not_selected']] == [3, 4, 7, 8]
     assert sorted(row['item_id'] for row in plan['evidence_context']) == [1, 2, 5, 6]
@@ -211,18 +219,18 @@ def test_merge_replaces_the_same_name_and_keeps_others_and_replace_starts_again(
     apply(client, h, preview(client, h).json())
     provider.answer = proposal(GAMMA)
     plan = preview(client, h).json()
-    assert [g['label'] for g in plan['groups']] == ['Exclude: Alpha', 'Increase: Gamma']
+    assert [g['label'] for g in plan['groups']] == ['Remove: category "Alpha"', 'Show more: category "Gamma"']
     apply(client, h, plan)
-    # The same operation and terms again: the earlier group of that name is replaced, not doubled.
+    # The same operation and terms again: the earlier control is replaced, not doubled. The latest strength wins.
     provider.answer = proposal(('boost/light', 'more gamma', [('category', 'Gamma')]))
     plan = preview(client, h).json()
-    assert [g['label'] for g in plan['groups']] == ['Exclude: Alpha', 'Increase: Gamma']
+    assert [g['label'] for g in plan['groups']] == ['Remove: category "Alpha"', 'Show more: category "Gamma"']
     assert plan['groups'][1]['proposal']['action']['strength'] == 'light'
     apply(client, h, plan)
     provider.answer = proposal(('reduce/standard', 'Fewer alpha things', [('tag', 'round')]))
     plan = preview(client, h, mode='replace').json()
-    assert [g['label'] for g in plan['groups']] == ['Decrease: round']
-    assert [g['label'] for g in apply(client, h, plan).json()['groups']] == ['Decrease: round']
+    assert [g['label'] for g in plan['groups']] == ['Show less: tag "round"']
+    assert [g['label'] for g in apply(client, h, plan).json()['groups']] == ['Show less: tag "round"']
 
 
 def test_a_newer_review_or_a_changed_profile_withholds_an_older_result(served):
@@ -239,17 +247,17 @@ def test_a_newer_review_or_a_changed_profile_withholds_an_older_result(served):
     assert late.status_code == 409 and saved(client, h)['groups'] == []
 
 
-@pytest.mark.parametrize('answer,status,calls', [
+@pytest.mark.parametrize('answer,status,calls,source', [
     ({'status': 'ambiguous', 'reason': 'two readings', 'negation_resolved': True,
-      'alternatives': ['reading one', 'reading two'], 'controls': []}, 'clarify', 1),
+      'alternatives': ['reading one', 'reading two'], 'controls': []}, 'clarify', 1, 'model_report'),
     ({'status': 'unsupported', 'reason': 'a quota', 'negation_resolved': True, 'alternatives': [], 'controls': []},
-     'unsupported', 1),
+     'unsupported', 1, 'model_report'),
     ({'status': 'no_match', 'reason': 'nothing relates', 'negation_resolved': True, 'alternatives': [],
-      'controls': []}, 'no_match', 1),
-    ({'status': 'propose'}, 'error', 1),
-    (ParserOperationalError('The provider is not reachable. Start it and try again.'), 'error', 0),
+      'controls': []}, 'no_match', 1, 'model_report'),
+    ({'status': 'propose'}, 'error', 1, 'reply_rejected'),
+    (ParserOperationalError('The provider is not reachable. Start it and try again.'), 'error', 0, 'provider_failure'),
 ])
-def test_a_result_that_is_not_ready_installs_no_plan_and_shows_the_checks(served, answer, status, calls):
+def test_a_result_that_is_not_ready_installs_no_plan_and_shows_the_checks(served, answer, status, calls, source):
     client, provider = served
     h = headers(client)
     before = saved(client, h)
@@ -262,8 +270,14 @@ def test_a_result_that_is_not_ready_installs_no_plan_and_shows_the_checks(served
     assert ('clarification' in body) == (status == 'clarify')
     if status == 'clarify':
         assert body['clarification']['alternatives'] == ['reading one', 'reading two']
+    # One call was begun in every case, also the one that raised and left no reply (vocab F1).
+    assert body['calls_attempted'] == 1 and body['outcome_source'] == source
     if isinstance(answer, Exception):
-        assert body['reason'] == 'The model call failed: The provider is not reachable. Start it and try again.'
+        # An ordinary operational error can hold provider text: the page gets type names only (vocab F2).
+        assert body['reason'] == ('The call to the provider failed (ParserOperationalError). No usable reply '
+                                  'came back. The terminal of the server has the details.')
+        assert body['call_attempts'] == [{'stage': 'interpretation', 'status': 'failed',
+                                          'error_type': 'ParserOperationalError'}]
     assert saved(client, h) == before
     assert client.post('/api/semantic/apply', headers=h, json={'user_id': 1, 'plan_id': 'none'}).status_code == 409
 
@@ -273,9 +287,12 @@ def test_a_negated_command_is_clarified_without_a_call(served):
     h = headers(client)
     body = preview(client, h, text='Do not hide the alpha things.').json()
     assert body['status'] == 'clarify' and body['model_calls'] == [] and provider.payloads == []
+    assert body['calls_attempted'] == 0 and body['outcome_source'] == 'application_check'
+    # The check line states only what a pattern can show (vocab F5).
     assert body['vocabulary']['checks'][-1] == {
-        'check': 'The request does not negate a command', 'passed': False,
-        'detail': 'Conservative English wording guard; it runs before any model call'}
+        'check': 'The request text does not match the negated-command pattern', 'passed': False,
+        'detail': "do not, don't, never or not to, followed by hide, exclude, remove, reduce or boost; "
+                  'one English pattern, checked before any model call; other wordings are not detected'}
 
 
 def test_a_changed_term_value_is_refused_and_named_in_the_checks(served):
@@ -302,9 +319,23 @@ def test_at_most_eight_groups_stay_active(served):
         provider.answer = proposal(('reduce/light', 'alpha things', [(kind, value)]))
         assert apply(client, h, preview(client, h).json()).status_code == 200, number
     provider.answer = proposal(('boost/light', 'more gamma', [('category', 'Gamma')]))
+    calls = len(provider.payloads)
     body = preview(client, h).json()
-    assert body['ready'] is False and body['status'] == 'error' and 'eight' in body['reason']
+    # Its own outcome with a plain sentence, before any call, and no control list (vocab F14, ui m21).
+    assert body['ready'] is False and body['status'] == 'limit' and body['outcome_source'] == 'application_check'
+    assert body['reason'] == ('At most 8 controls can be applied at one time. 8 stay applied and this request '
+                              'adds 1. Remove a control first, or choose to replace the applied controls.')
+    assert body['calls_attempted'] == 0 and len(provider.payloads) == calls and 'controls' not in body['vocabulary']
+    assert body['vocabulary']['checks'][-1] == {'check': 'At most eight controls stay applied', 'passed': False,
+                                                'detail': '8 stay applied; this request adds 1'}
     assert len(saved(client, h)['groups']) == 8
+    # The same operation over the same terms replaces a control, so it fits; the limit counts after replacement.
+    provider.answer = proposal(('boost/strong', 'more gamma', [('category', 'Gamma')]))
+    body = preview(client, h).json()
+    assert body['status'] == 'limit' and body['calls_attempted'] == 0  # eight applied: no call is spent
+    # Replace mode starts again, so the same reply fits.
+    body = preview(client, h, mode='replace').json()
+    assert body['ready'] and len(body['groups']) == 1
 
 
 def test_requests_are_validated_and_need_a_session(served):
@@ -341,7 +372,13 @@ def test_a_provider_that_cannot_start_is_an_operational_failure(tmp_path):
     with TestClient(app) as client:
         h = headers(client)
         reply = preview(client, h)
-        assert reply.status_code == 502 and 'not installed' in reply.json()['detail']
+        body = reply.json()
+        # HTTP 502 as before. The text of an ordinary operational error stays off the page (vocab F2);
+        # the body carries the fields of every other answer that is not ready.
+        assert reply.status_code == 502 and 'not installed' not in json.dumps(body)
+        assert body['detail'].startswith('Category and tag match failed (ParserOperationalError); no preferences changed:')
+        assert body['outcome_source'] == 'provider_failure' and body['calls_attempted'] == 0
+        assert body['status'] == 'error' and body['ready'] is False and len(body['vocabulary']['terms']) == 8
         assert saved(client, h)['groups'] == []
 
 
@@ -361,26 +398,37 @@ def test_a_provider_without_an_identity_is_refused_and_the_terms_are_still_shown
         assert body['model_calls'] == [] and body['model_provenance'] is None and called == []
 
 
-def control_of(operation, *terms):
-    return {'action': {'operation': operation}, 'terms': [{'term_id': identifier, 'value': value}
-                                                          for identifier, value in terms]}
+def control_of(operation, *terms, strength='none'):
+    return {'action': {'operation': operation, 'strength': strength},
+            'terms': [{'term_id': identifier, 'kind': kind, 'field': 'topic_tag' if kind == 'tag' else
+                       'first_level_category_name', 'value': value} for identifier, kind, value in terms]}
 
 
 def test_group_names_are_printable_bounded_and_distinct():
     taken = set()
-    assert vocabulary_routes.control_label(control_of('exclude', ('T01', 'Alpha'), ('T09', 'red')), taken) \
-        == 'Exclude: Alpha + red'
-    assert vocabulary_routes.control_label(control_of('boost', ('T01', 'Alpha')), taken) == 'Increase: Alpha'
-    assert vocabulary_routes.control_label(control_of('reduce', ('T01', 'Alpha')), taken) == 'Decrease: Alpha'
-    # A second control that would get the same name in one proposal gets a number.
-    assert vocabulary_routes.control_label(control_of('boost', ('T01', 'Alpha')), taken) == 'Increase: Alpha (2)'
-    long = vocabulary_routes.control_label(control_of('exclude', ('T02', 'w' * 200)), taken)
-    assert len(long) == 80 and long.endswith('…')
-    again = vocabulary_routes.control_label(control_of('exclude', ('T02', 'w' * 200)), taken)
+    assert vocabulary_routes.control_label(control_of('exclude', ('T01', 'category', 'Alpha'),
+                                                      ('T09', 'tag', 'red')), taken) \
+        == 'Remove: category "Alpha", tag "red"'
+    assert vocabulary_routes.control_label(control_of('boost', ('T01', 'category', 'Alpha')), taken) \
+        == 'Show more: category "Alpha"'
+    assert vocabulary_routes.control_label(control_of('reduce', ('T01', 'category', 'Alpha')), taken) \
+        == 'Show less: category "Alpha"'
+    # A second control that would get the same name gets a number.
+    assert vocabulary_routes.control_label(control_of('boost', ('T01', 'category', 'Alpha')), taken) \
+        == 'Show more: category "Alpha" (2)'
+    # The kind and the case are part of the name: a tag and a category with one value differ.
+    assert vocabulary_routes.control_label(control_of('boost', ('T05', 'tag', 'Alpha')), taken) \
+        == 'Show more: tag "Alpha"'
+    # A long name is cut and marked with a short hash of its terms, so two long names differ.
+    long = vocabulary_routes.control_label(control_of('exclude', ('T02', 'tag', 'w' * 200 + 'a')), taken)
+    other = vocabulary_routes.control_label(control_of('exclude', ('T02', 'tag', 'w' * 200 + 'b')), taken)
+    assert len(long) <= 80 and len(other) <= 80 and long != other and long[:60] == other[:60]
+    assert long.endswith(']') and '... [' in long
+    again = vocabulary_routes.control_label(control_of('exclude', ('T02', 'tag', 'w' * 200 + 'a')), taken)
     assert len(again) <= 80 and again.endswith(' (2)') and again != long
     # A catalogue value with a format character is not put into a name.
-    hidden = vocabulary_routes.control_label(control_of('exclude', ('T03', 'zero​width')), taken)
-    assert hidden == 'Exclude: terms T03'
+    hidden = vocabulary_routes.control_label(control_of('exclude', ('T03', 'tag', 'zero\u200bwidth')), taken)
+    assert hidden == 'Remove: terms T03'
 
 
 def test_a_catalogue_value_with_a_format_character_still_gives_a_usable_group(tmp_path):
@@ -392,6 +440,129 @@ def test_a_catalogue_value_with_a_format_character_still_gives_a_usable_group(tm
         h = headers(client)
         provider.answer = proposal(('exclude/none', 'alpha things', [('category', 'Del​ta')]))
         plan = preview(client, h).json()
-        assert plan['ready'] and plan['groups'][0]['label'] == 'Exclude: terms T03'
+        assert plan['ready'] and plan['groups'][0]['label'] == 'Remove: terms T03'
         assert plan['groups'][0]['proposal']['item_ids'] == [7]
         assert apply(client, h, plan).status_code == 200
+
+
+# ----------------------------------------------------------------- checks that no test noticed (vocab F15)
+
+def test_a_later_preview_withholds_the_result_of_an_earlier_one_that_still_waits(served):
+    client, provider = served
+    h = headers(client)
+    provider.answer = proposal(ALPHA)
+    inner = {}
+
+    def second_preview():
+        provider.hook = None  # the later preview answers at once
+        inner['body'] = preview(client, h).json()
+    provider.hook = second_preview
+    late = preview(client, h)
+    # The revision did not change; only the preview nonce tells that a newer review exists.
+    assert late.status_code == 409 and 'review again' in late.json()['detail']
+    assert inner['body']['ready'] and apply(client, h, inner['body']).status_code == 200
+
+
+def test_a_later_preview_that_is_not_ready_withdraws_the_earlier_review(served):
+    client, provider = served
+    h = headers(client)
+    provider.answer = proposal(ALPHA)
+    first = preview(client, h).json()
+    assert first['ready']
+    provider.answer = {'status': 'no_match', 'reason': 'r', 'negation_resolved': True, 'alternatives': [], 'controls': []}
+    assert preview(client, h).json()['status'] == 'no_match'
+    assert apply(client, h, first).status_code == 409 and saved(client, h)['groups'] == []
+
+
+def test_the_scope_holds_at_most_twenty_items(served):
+    client, provider = served
+    h = headers(client)
+    provider.answer = proposal(ALPHA)
+    assert preview(client, h, candidate_ids=list(range(1, 22))).status_code == 422
+    assert client.post('/api/semantic/vocabulary/terms', headers=h,
+                       json={'user_id': 1, 'candidate_ids': list(range(1, 22))}).status_code == 422
+    assert preview(client, h, candidate_ids=list(range(1, 21))).status_code == 200
+    assert len(provider.payloads) == 1
+
+
+@pytest.mark.parametrize('text', ['Fewer alpha\x00 things', 'Fewer ‮alpha things', 'Fewer alpha​ things'])
+def test_a_request_with_a_control_or_format_character_is_refused_before_any_call(served, text):
+    client, provider = served
+    h = headers(client)
+    provider.answer = proposal(ALPHA)
+    assert preview(client, h, text=text).status_code == 422
+    assert client.post('/api/semantic/preview', headers=h, json={
+        'user_id': 1, 'text': text, 'label': 'L', 'candidate_ids': SCOPE, 'backend': 'configured_model',
+        'action_source': 'model'}).status_code == 422
+    assert provider.payloads == []
+
+
+def test_names_that_differ_only_in_case_get_a_number():
+    taken = set()
+    assert vocabulary_routes.control_label(control_of('exclude', ('T01', 'tag', 'Red')), taken) == 'Remove: tag "Red"'
+    assert vocabulary_routes.control_label(control_of('exclude', ('T02', 'tag', 'red')), taken) \
+        == 'Remove: tag "red" (2)'
+    # A value that holds the separator of a name is still one term of one kind.
+    assert vocabulary_routes.control_label(control_of('exclude', ('T03', 'tag', 'Alpha, tag "red"')), taken) \
+        == 'Remove: tag "Alpha, tag "red""'
+
+
+def test_a_control_over_other_terms_never_replaces_an_applied_control(tmp_path):
+    """The reproduction of vocab F7: a tag and a category with the same value."""
+    provider = Provider()
+    app = create_app(fixture=True, semantic_path=source(tmp_path, {5: {'topic_tag': 'Gamma'}}),
+                     semantic_infer_factory=provider.factory, allow_local_models=False)
+    with TestClient(app) as client:
+        h = headers(client)
+        provider.answer = proposal(('exclude/none', 'more gamma', [('category', 'Gamma')]))
+        applied = apply(client, h, preview(client, h).json()).json()
+        assert [(g['label'], g['proposal']['item_ids']) for g in applied['groups']] == [
+            ('Remove: category "Gamma"', [5, 6])]
+        provider.answer = proposal(('exclude/none', 'gamma', [('tag', 'Gamma')]))
+        plan = preview(client, h).json()
+        # Both stay: item 6 does not come back, and the overlap is a note for the reviewer.
+        assert [(g['label'], g['proposal']['item_ids']) for g in plan['groups']] == [
+            ('Remove: category "Gamma"', [5, 6]), ('Remove: tag "Gamma"', [5])]
+        assert [(note['kind'], note['item_ids']) for note in plan['plan_notes']] == [('overlap', [5])]
+        # The same operation over the same terms is the same control: it is replaced, not doubled.
+        provider.answer = proposal(('exclude/none', 'more gamma', [('category', 'Gamma')]))
+        again = preview(client, h).json()
+        assert [g['label'] for g in again['groups']] == ['Remove: category "Gamma"']
+        # Another operation over the same terms is another control; the contradiction is a note.
+        provider.answer = proposal(('boost/strong', 'more gamma', [('category', 'Gamma')]))
+        boost = preview(client, h).json()
+        assert [g['label'] for g in boost['groups']] == ['Remove: category "Gamma"', 'Show more: category "Gamma"']
+        assert [note['kind'] for note in boost['plan_notes']] == ['conflict']
+
+
+def test_a_control_changes_only_the_items_of_its_scope_and_says_so(tmp_path):
+    """vocab F12: a catalogue that is larger than the scope."""
+    provider = Provider()
+    outside = {item: {'first_level_category_name': 'Alpha'} for item in (9, 12, 30)}
+    app = create_app(fixture=True, semantic_path=source(tmp_path, outside), semantic_infer_factory=provider.factory,
+                     allow_local_models=False)
+    with TestClient(app) as client:
+        h = headers(client)
+        provider.answer = proposal(ALPHA)
+        plan = preview(client, h).json()
+        assert plan['groups'][0]['proposal']['item_ids'] == [1, 2]
+        assert plan['vocabulary']['controls'][0]['outside_scope_item_ids'] == [9, 12, 30]
+        assert plan['scope_effects'] == [{
+            'label': 'Remove: category "Alpha"', 'in_scope_item_ids': [1, 2], 'outside_scope_item_ids': [9, 12, 30],
+            'message': 'This control selects 2 of the 8 items in the scope. 3 more items with the same category '
+                       'or terms are outside the scope. They do not change.'}]
+        feed = apply(client, h, plan).json()['feed']
+        assert feed['available_items'] == 34  # only the two scope items are removed
+
+
+def test_a_reply_that_is_not_bounded_json_stays_visible_as_bounded_text(served):
+    client, provider = served
+    h = headers(client)
+    provider.answer = {'status': float('nan'), 'reason': 'IGNORE‮ the checks ' + 'x' * 5000}
+    body = preview(client, h).json()
+    assert body['status'] == 'error' and body['outcome_source'] == 'reply_rejected' and body['calls_attempted'] == 1
+    assert body['vocabulary']['checks'][-1] == {'check': 'The reply is bounded finite JSON', 'passed': False,
+                                                'detail': ''}
+    (call,) = body['model_calls']
+    assert call['reply_rejected'] is True and call['raw_response'] is None and call['response_sha256'] is None
+    assert 'nan' in call['raw_text'] and '‮' not in call['raw_text'] and len(call['raw_text']) <= 2000

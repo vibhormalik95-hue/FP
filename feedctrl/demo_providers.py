@@ -39,6 +39,34 @@ RELAY_BACKEND = 'operator-relay-file-queue'
 NOT_A_MODEL = 'none (replies written by hand)'
 
 
+class ProviderMessage(ParserOperationalError):
+    """A failure of one of these two stand-ins, written for the person at the page.
+
+    ``page_safe`` tells the review routes that the sentence holds no provider,
+    program or model text and no credential, and that it says what to do. Only
+    such a sentence is shown on the page; every other failure shows type names.
+    """
+    page_safe = True
+
+
+SCRIPTED_REFUSAL = ('This server has no model. It holds hand-written replies for the bundled requests with the '
+                    'complete bundled scope. It has no reply for this request. Nothing was interpreted and '
+                    'nothing was applied. Use "Insert the bundled scenario request" and keep the complete scope, '
+                    'or start the server with a model route (docs/model-routes.md).')
+RELAY_FAILURES = {
+    'TimeoutError': ('No reply file arrived in the relay folder in time. Nothing was applied. Send the request '
+                     'again. Give the new request to the model with "scripts/relay_tools.py show", then deliver '
+                     'the reply with "scripts/relay_tools.py deliver".'),
+    'FileExistsError': ('The relay folder already holds a file for this request. Nothing was applied. Start the '
+                        'server again with a new, empty relay folder.'),
+}
+RELAY_REPLY_REJECTED = ('The reply file in the relay folder is not one acceptable JSON answer for this request. '
+                        'Nothing was applied. Send the request again. Check the new reply with '
+                        '"scripts/relay_tools.py check" before you deliver it.')
+RELAY_ALLOWANCE = ('This relay run used all its calls. Nothing was applied. Start the server again to begin a '
+                   'new run.')
+
+
 def bind_factories(infer, identity):
     """Share one callable between the indirect-intent and category workflows.
 
@@ -95,9 +123,7 @@ def scripted_provider(lookup, table):
                              'schema_sha256': _hash(schema), 'answered': reply is not None,
                              'utc': _utc()})
         if reply is None:
-            raise ParserOperationalError(
-                'The scripted provider has authored replies only for the bundled '
-                'scenario requests; it cannot interpret other text')
+            raise ProviderMessage(SCRIPTED_REFUSAL)
         return deepcopy(reply)
 
     return infer, identity, receipts
@@ -200,7 +226,7 @@ def relay_provider(spool, *, declared_model, transport_note, max_calls, timeout=
         Draft202012Validator.check_schema(schema)
         with lock:
             if state['calls'] >= max_calls:
-                raise ParserOperationalError('Relay call allowance exhausted')
+                raise ProviderMessage(RELAY_ALLOWANCE)
             state['calls'] += 1
             ordinal = state['calls']
         body = {key: value for key, value in payload.items() if key != 'system'}
@@ -229,7 +255,9 @@ def relay_provider(spool, *, declared_model, transport_note, max_calls, timeout=
             return result
         except Exception as exc:
             receipt.update(outcome='error', error_type=type(exc).__name__)
-            raise ParserOperationalError('Relayed call failed: ' + type(exc).__name__) from exc
+            # The sentence names the cause by its type only; the reply bytes stay in the relay folder.
+            raise ProviderMessage(RELAY_FAILURES.get(type(exc).__name__, RELAY_REPLY_REJECTED)
+                                  + f' (relay error: {type(exc).__name__})') from exc
         finally:
             receipt['elapsed_seconds'] = round(time.monotonic() - started, 3)
             receipt['finished_utc'] = _utc()

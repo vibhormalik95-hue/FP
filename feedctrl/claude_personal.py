@@ -97,13 +97,22 @@ def _schema_check(schema, depth=0):
     Draft202012Validator.check_schema(schema)
 
 
+class PersonalCliMessage(ParserOperationalError):
+    """A fixed sentence of this adapter. It holds no process, program or model text.
+
+    ``page_safe`` lets the review routes show the sentence on the page; every
+    other operational error is shown there only by its type names.
+    """
+    page_safe = True
+
+
 def _run_process(argv, input_bytes, env, cwd, timeout, max_response_bytes):
     """Intentionally unavailable pending reviewed Windows process-tree containment.
 
     Offline tests may mock this seam. Production activation needs a separately
     reviewed implementation; no Boolean authorization can enable this stub.
     """
-    raise ParserOperationalError('CLI launch disabled pending reviewed process containment')
+    raise PersonalCliMessage('CLI launch disabled pending reviewed process containment')
 
 
 def make_claude_personal_infer(*, executable, workdir, model, effort, run_budget,
@@ -272,7 +281,7 @@ def make_claude_personal_infer(*, executable, workdir, model, effort, run_budget
             return deepcopy(result)
         except Exception as exc:
             receipt.update(outcome='error', error_type=type(exc).__name__)
-            raise ParserOperationalError('Personal CLI invocation failed: '+type(exc).__name__) from exc
+            raise PersonalCliMessage('Personal CLI invocation failed: '+type(exc).__name__) from exc
         finally:
             receipt['elapsed_seconds']=time.monotonic()-started
     def infer(payload, schema):
@@ -281,7 +290,7 @@ def make_claude_personal_infer(*, executable, workdir, model, effort, run_budget
         # Serialize to ensure no later logical call starts after uncertain cleanup.
         with run_lock:
             if cleanup_blocked:
-                raise ParserOperationalError('Run stopped after uncertain process cleanup')
+                raise PersonalCliMessage('Run stopped after uncertain process cleanup')
             try:
                 return _infer(payload, schema)
             except ParserOperationalError as exc:

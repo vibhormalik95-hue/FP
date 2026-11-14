@@ -32,6 +32,9 @@ Scenarios
     category  Eight invented items: the manual control and a new category.
     hunger    Eight invented items: the manual control and an indirect request
               matched to item descriptions.
+    conditions  The five original conditions A to E on the built-in fixture (36
+              items with the categories category_0 to category_5, three users)
+              and the rule parser. No language controls. Use --provider manual.
 
 The server binds to 127.0.0.1 only. Local models and the trained recommender stay
 disabled; the bundled scenarios use invented item descriptions and a labelled
@@ -55,6 +58,14 @@ SCENARIOS = {
     'hunger': INPUTS / '02-hunger-continuation',
     # Existing categories and tags; not bound to the reviewed driver's input pins.
     'tags': ROOT / 'scenarios' / 'categories-and-tags',
+}
+# A scenario without a folder: the built-in fixture of the application. Its
+# categories have the form category_N, which the rule parser of the original
+# conditions A to E reads. The bundled scenarios above have named categories,
+# so the instruction and the profile of C, D and E cannot be tried on them.
+FIXTURE_SCENARIOS = {
+    'conditions': 'The five original conditions A to E on the built-in fixture: 36 items, category_0 to '
+                  'category_5, three users, the rule parser. No caption data, so no language controls.',
 }
 # The reviewed driver names the indirect-request scenario "indirect".
 DRIVER_SCENARIO = {'category': 'category', 'indirect': 'hunger'}
@@ -171,9 +182,34 @@ def build_route_provider(args, scenario, summary):
     return provider
 
 
+def build_fixture_app(args, scenario):
+    """Serve the built-in fixture for the original conditions A to E. No model provider."""
+    if args.provider != 'manual':
+        raise SystemExit(f'The scenario "{scenario}" has no language controls and no model provider: '
+                         f'{FIXTURE_SCENARIOS[scenario]} Start it with --provider manual.')
+    import os
+    from feedctrl.api import create_app
+    # The fixture has no caption data. A sidecar path in the environment belongs
+    # to another data set, so it is ignored while the application is built.
+    saved = os.environ.pop('FEEDCTRL_CAPTION_SIDECAR', None)
+    try:
+        app = create_app(fixture=True, allow_local_models=False, allow_local_recommender=False)
+    finally:
+        if saved is not None:
+            os.environ['FEEDCTRL_CAPTION_SIDECAR'] = saved
+    app.state.provider_receipts = None
+    app.state.scenario_requests = {}
+    app.state.scenario_name = scenario
+    summary = {'scenario': scenario, 'provider': 'manual', 'note': FIXTURE_SCENARIOS[scenario]}
+    return app, args.port or PERSONAL_PORT, summary, lambda: None
+
+
 def build_app(args):
     """Return ``(app, port, summary, finish)`` for the selected provider."""
     sys.path.insert(0, str(ROOT))
+    # First: the fixture scenario refuses every provider but manual, also personal-cli.
+    if args.scenario in FIXTURE_SCENARIOS:
+        return build_fixture_app(args, args.scenario)
     if args.provider == 'personal-cli':
         return build_personal_cli_app(args)
 
@@ -213,6 +249,7 @@ def build_app(args):
                      allow_local_models=False, allow_local_recommender=False, **factories)
     app.state.provider_receipts = receipts
     app.state.scenario_requests = scenario_requests(scenario)
+    app.state.scenario_name = scenario
     return app, port, summary, lambda: None
 
 
@@ -298,7 +335,7 @@ def build_personal_cli_app(args):
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__.split('\n\n')[0])
-    parser.add_argument('--scenario', choices=sorted(SCENARIOS))
+    parser.add_argument('--scenario', choices=sorted([*SCENARIOS, *FIXTURE_SCENARIOS]))
     parser.add_argument('--provider', choices=('manual', 'scripted', 'relay', 'personal-cli', 'route'),
                         default='manual')
     parser.add_argument('--route-file', help='with --provider route; default: model-route.json')

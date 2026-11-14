@@ -11,7 +11,8 @@ import unicodedata
 from fastapi import Header, HTTPException, Query
 from pydantic import BaseModel, ConfigDict, Field, StrictBool, field_validator
 from feedctrl.controls import _request, ollama_provenance, ParserOperationalError
-from feedctrl.indirect_grounding import _digest
+from feedctrl.indirect_grounding import (APPLICATION_CHECK, PROVIDER_FAILURE, REPLY_REJECTED, _digest,
+                                         clean_page_text, failure_sentence)
 
 ORIGIN = 'model_generated_synthetic'
 POLICY = 'Isolated diagnostic cold start: score 0 for every synthetic item; admission order breaks ties. No trained relevance.'
@@ -59,7 +60,9 @@ def _declared_backend(value):
     an attestation. Any transport may be configured by the operator at startup.
     """
     return (isinstance(value, str) and bool(value.strip()) and len(value) <= 120
-            and not any(unicodedata.category(c) in {'Cc', 'Cf', 'Cs', 'Zl', 'Zp'} for c in value))
+            and not any(unicodedata.category(c) in {'Cc', 'Cf', 'Cs', 'Zl', 'Zp'} for c in value)
+            # Names that the application itself uses for "no model". An adapter must not carry one.
+            and value.strip().casefold() not in {'manual_category', 'none', 'not_applicable'})
 
 
 def validate_output(raw):
@@ -245,7 +248,7 @@ def install_synthetic_routes(app, demo, *, allow_local_models=True, synthetic_in
             nonce = secrets.token_hex(12)
             state.update(synthetic_pending=None, synthetic_nonce=nonce)
             revision, source = state['synthetic_revision'], source_version(demo)
-        calls = []
+        calls, raised = [], []
         try:
             if synthetic_infer_factory is not None:
                 hosted_infer, model = synthetic_infer_factory()
@@ -261,7 +264,10 @@ def install_synthetic_routes(app, demo, *, allow_local_models=True, synthetic_in
                         call.update(status='returned_json', raw_output=deepcopy(result))
                         return result
                     except Exception as exc:
-                        call.update(status='error', error_type=type(exc).__name__, error=str(exc))
+                        # The text of a provider failure can hold provider or program text:
+                        # only a page-safe sentence or the type names reach the page.
+                        raised.append(exc)
+                        call.update(status='error', error_type=type(exc).__name__, error=failure_sentence(exc))
                         raise
             else:
                 infer, model, calls = make_draft_infer(os.getenv('FEEDCTRL_STEERING_MODEL', 'qwen2.5-coder:7b-instruct'))
@@ -295,7 +301,13 @@ def install_synthetic_routes(app, demo, *, allow_local_models=True, synthetic_in
                         'replayed_removed_record': False,
                         'cold_start_policy': POLICY, 'model_calls': deepcopy(calls)}
         except (ValueError, ParserOperationalError) as exc:
-            return {'ready': False, 'admitted': False, 'status': 'error', 'reason': str(exc), 'model_calls': deepcopy(calls)}
+            provider = bool(raised) and raised[-1] is exc
+            # An operational error can hold provider text; a ValueError of this module is its own sentence.
+            operational = provider or isinstance(exc, ParserOperationalError)
+            reason = failure_sentence(exc) if operational else clean_page_text(exc)
+            source = (PROVIDER_FAILURE if operational else REPLY_REJECTED if calls else APPLICATION_CHECK)
+            return {'ready': False, 'admitted': False, 'status': 'error', 'reason': reason,
+                    'model_calls': deepcopy(calls), 'calls_attempted': len(calls), 'outcome_source': source}
 
     @app.post('/api/synthetic/admit')
     def admit(body: Admission, x_session_id: str | None = Header(default=None)):
