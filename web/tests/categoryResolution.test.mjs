@@ -2,11 +2,8 @@
 // authored API promises; no DOM/browser or live-model validation is claimed.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {readFileSync} from 'node:fs';
-import {transformSync} from 'esbuild';
+import {harness,load} from './support/panelHarness.mjs';
 
-const source=readFileSync(new URL('../src/SemanticPanel.jsx',import.meta.url),'utf8');
-const compiled=transformSync(source.replace(/^import React[^\n]+\n/,''),{loader:'jsx',format:'cjs'}).code;
 const proposal={label:'Authored preparation candidate',definition:'Explicit bread preparation. Missing facts stay unknown.',rationale:'Authored rationale.',
   evidence:[{item_id:1,field:'caption',quote:'Bread preparation',reason:'Authored evidence.'}]};
 const clar={definition_ready:false,resolution_ready:true,resolution_plan_id:'clarify-token',status:'clarify',reason:'Choose a meaning.',objective:'Original objective',
@@ -14,32 +11,11 @@ const clar={definition_ready:false,resolution_ready:true,resolution_plan_id:'cla
   provenance:{model_id:'authored',model_revision:'not-model-evidence'},scope_ids:[1,2]};
 const review={definition_ready:true,definition_plan_id:'review-token',scope_ids:[1,2],definition:{proposal,objective:'Original objective',
   provenance:clar.provenance,operator_resolution:{choice:'review_primary'},original_clarification:clar}};
-const saved={groups:[],feed:{baseline_items:[1,2]},local_models_allowed:false,external_adapter_available:false,category_adapter_available:true,can_undo:false};
+const saved={groups:[],feed:{baseline_items:[1,2],items:[],available_items:2},local_models_allowed:false,external_adapter_available:false,category_adapter_available:true,can_undo:false};
 
-function harness(api){
-  const slots=[],effects=[];let cursor=0,dirty=false,tree,props={api,user:1,resetKey:0,onFeed:()=>{}};
-  function useState(initial){const i=cursor++;if(!(i in slots))slots[i]=initial;
-    return [slots[i],value=>{const next=typeof value==='function'?value(slots[i]):value;if(!Object.is(next,slots[i])){slots[i]=next;dirty=true;}}];}
-  function useRef(initial){const i=cursor++;if(!(i in slots))slots[i]={current:initial};return slots[i];}
-  function useEffect(fn,deps){const i=cursor++;if(!(i in slots)||deps.some((x,n)=>!Object.is(x,slots[i][n]))){slots[i]=deps;effects.push(fn);}}
-  const React={createElement:(type,props,...children)=>({type,props:props||{},children}),Fragment:'fragment'};
-  const module={exports:{}};
-  new Function('React','useState','useRef','useEffect','module','exports',compiled)(React,useState,useRef,useEffect,module,module.exports);
-  const Component=module.exports.default;
-  function render(){let n=0;do{dirty=false;cursor=0;tree=Component(props);for(const fn of effects.splice(0))fn();if(++n>30)throw Error('Render loop');}while(dirty);return tree;}
-  function nodes(node){if(arguments.length===0)node=tree;if(!node||typeof node!=='object')return [];if(Array.isArray(node))return node.flatMap(nodes);return [node,...node.children.flatMap(nodes)];}
-  function text(node){if(arguments.length===0)node=tree;if(node==null||typeof node==='boolean')return '';if(typeof node!=='object')return String(node);if(Array.isArray(node))return node.map(text).join(' ');return node.children.map(text).join(' ');}
-  function find(fn){const node=nodes().find(fn);assert.ok(node,'Missing node');return node;}
-  function button(label){return find(n=>n.type==='button'&&text(n)===label);}
-  async function settle(){for(let n=0;n<5;n++){await new Promise(r=>setImmediate(r));render();}}
-  async function start(){render();find(n=>n.type==='details').props.onToggle({currentTarget:{open:true}});render();await settle();
-    find(n=>n.props.id==='semantic-backend').props.onChange({target:{value:'staged'}});render();
-    find(n=>n.props.id==='semantic-text').props.onChange({target:{value:'Original objective'}});render();}
-  function changeProps(next){props={...props,...next};render();}
-  return {render,find,button,text,nodes,settle,start,changeProps};
-}
 function fixture(override=()=>undefined){const calls=[];const api=async(path,body)=>{calls.push({path,body});const supplied=override(path,body);if(supplied!==undefined)return supplied;
   if(path.startsWith('semantic/groups'))return structuredClone(saved);
+  if(path==='semantic/vocabulary/terms')return {terms:[],source_sha256:'0'.repeat(64),note:'Authored note.'};
   if(path==='semantic/definition/preview')return structuredClone(clar);
   if(path==='semantic/definition/resolve')return body.choice==='cancel'?{status:'cancelled',definition_ready:false}:structuredClone(review);
   if(path==='semantic/definition/classify')return {ready:false,status:'clarify',reason:'Authored final stop'};
@@ -158,8 +134,7 @@ test('same field on multiple items is displayed under its matching citation',asy
 test('React static serialization escapes full source text instead of creating markup',async()=>{
   const React=await import('react');
   const {renderToStaticMarkup}=await import('react-dom/server');
-  const module={exports:{}};
-  const renderEvidence=new Function('React','useState','useRef','useEffect','module','exports',compiled+'; return definitionEvidence;')(React,()=>{},()=>{},()=>{},module,module.exports);
+  const renderEvidence=load(React.default??React).definitionEvidence;
   const markup=renderToStaticMarkup(React.createElement('div',null,renderEvidence(proposal.evidence,[contextRow])));
   assert.ok(markup.includes('&lt;img src=x onerror=&quot;alert(1)&quot;&gt;'));
   assert.ok(markup.includes('No glue or powered equipment is used.'));
