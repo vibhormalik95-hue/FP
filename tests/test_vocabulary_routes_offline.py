@@ -307,6 +307,21 @@ def test_at_most_eight_groups_stay_active(served):
     body = preview(client, h).json()
     assert body['ready'] is False and body['status'] == 'limit' and '8' in body['reason']
     assert len(saved(client, h)['groups']) == 8
+    before = saved(client, h)
+    provider.answer = proposal(('reduce/strong', 'alpha things', [('category', 'Gamma')]))
+    calls_before = len(provider.payloads)
+    plan = preview(client, h).json()
+    assert plan['ready'] and len(plan['groups']) == 8
+    assert len(provider.payloads) == calls_before + 1
+    assert saved(client, h) == before  # Preview never mutates.
+    result = apply(client, h, plan)
+    assert result.status_code == 200
+    groups = result.json()['groups']
+    assert len(groups) == 8
+    updated = next(g for g in groups if g['label'] == 'Show less: category "Gamma"')
+    assert updated['proposal']['action']['strength'] == 'strong'
+    assert [g for g in groups if g['label'] != updated['label']] == [
+        g for g in before['groups'] if g['label'] != updated['label']]
 
 
 def test_requests_are_validated_and_need_a_session(served):

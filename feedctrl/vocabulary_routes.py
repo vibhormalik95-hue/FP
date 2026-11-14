@@ -147,9 +147,8 @@ def install_vocabulary_routes(app, demo, state_for, review, *, configured_infer,
         try:
             # The existing terms are part of every answer, also when the provider cannot start.
             vocabulary['terms'] = grounding.build_vocabulary(index)
-            if body.mode != 'replace' and len(existing) >= MAX_GROUPS:
-                # Every reply adds at least one control, so no call is spent on a plan that cannot fit.
-                return limit(len(existing), 1)
+            # Decide capacity after interpretation: an existing control's strength
+            # may be replaced without increasing the number of applied controls.
             # Operator-selected transport, never request-supplied URLs or keys.
             infer, provenance = configured_infer()
 

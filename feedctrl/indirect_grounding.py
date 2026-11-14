@@ -52,17 +52,18 @@ A longer value is rejected.'''
 # a negator (do not, don't, never, not to), at most a few adverbs, and then one
 # of five control verbs whose negation has no clear effect: hide, exclude,
 # remove, reduce, boost. "Do not show X" is a plain request to remove X, so
-# "show" is not guarded and the model receives that request. Limit: every other
+# a plain "show" is not guarded. Negated show-more/show-less is guarded.
+# Limit: every other
 # wording of a negated command ("dont hide", "stop hiding", "keep", another
 # language) is not found; it reaches the model and then the reviewer. A match
 # also does not prove a negated command: the words can be a quotation.
 # One shared pattern, so that every language route stops the same wording, and
 # each route applies it before its first model call.
 COMMAND_NEGATION = re.compile(
-    r"\b(?:do\s+not|don['’]t|never|not\s+to)\s+(?:(?:ever|really|actually|just|simply)\s+)*(?:hide|exclude|remove|boost|reduce)\b",
+    r"\b(?:do\s+not|don['’]t|never|not\s+to)\s+(?:(?:ever|really|actually|just|simply)\s+)*(?:hide|exclude|remove|boost|reduce|show\b[^.!?;\n]*?\b(?:more|less))\b",
     re.I)
 GUARD_CHECK = 'The request text does not match the negated-command pattern'
-GUARD_PATTERN_WORDS = ('do not, don\'t, never or not to, followed by hide, exclude, remove, reduce or boost; '
+GUARD_PATTERN_WORDS = ('do not, don\'t, never or not to, followed by hide, exclude, remove, reduce, boost or show ... more/less; '
                        'one English pattern, checked before any model call; other wordings are not detected')
 GUARD_REASON = ('The request matches the negated-command pattern (for example "do not hide ..."). The application '
                 'does not guess what a negated control means. Write a positive instruction, for example '

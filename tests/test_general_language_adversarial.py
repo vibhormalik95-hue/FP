@@ -236,6 +236,8 @@ def test_contradictory_quote_review_payload_exposes_cited_source_context(make_cl
     ('never exclude choir warm-ups', 'choir warm-ups'),
     ('Please do NOT really boost drum circles', 'drum circles'),
     ('don’t   show piano drills less', 'piano drills'),
+    ('Do not show more piano drills', 'piano drills'),
+    ('never show piano drills more', 'piano drills'),
 ])
 def test_command_negation_guard_clarifies_before_grounding(make_client, text, span):
     """Authored mock; proves mechanics/guards only, not model semantic accuracy.
@@ -248,8 +250,9 @@ def test_command_negation_guard_clarifies_before_grounding(make_client, text, sp
     h = session(c)
     before = snapshot(c, h)
     body = assert_not_ready_and_unchanged(c, h, preview(c, h, text), before)
-    assert body['status'] == 'clarify' and 'negation' in body['reason'].lower()
-    assert body['item_ids'] == [] and mock.stages() == ['action']
+    assert body['status'] == 'clarify' and body['reason'] == ig.GUARD_REASON
+    assert body['outcome_source'] == ig.APPLICATION_CHECK and body['calls_attempted'] == 0
+    assert body['item_ids'] == [] and mock.stages() == []
 
 
 @pytest.mark.parametrize('text,span', [
@@ -583,15 +586,16 @@ def test_staged_classification_with_invented_member_fails_closed(music_client, m
 def test_no_hunger_specific_routing_in_package_source():
     """Static check; proves absence of hunger-keyed code paths, not model behaviour.
 
-    The only occurrence of 'hungr' is an illustrative example inside the
-    grounding PROMPT string (negated personal state). No regex, branch or
-    keyword table in feedctrl routes on it.
+    No prompt example, regex, branch or keyword table in feedctrl contains
+    the demonstration's hunger-specific wording.
     """
     root = Path(feedctrl.__file__).parent
     hits = [(p.name, n, line) for p in sorted(root.glob('*.py'))
             for n, line in enumerate(p.read_text(encoding='utf8').splitlines(), 1)
             if re.search(r'hungr|appetit', line, re.I)]
-    assert [(name, '(not hungry)' in line) for name, _, line in hits] == [('indirect_grounding.py', True)]
-    assert 'not hungry' in ig.PROMPT
-    code_without_prompt = (root / 'indirect_grounding.py').read_text(encoding='utf8').replace(ig.PROMPT, '')
-    assert not re.search(r'hungr', code_without_prompt, re.I)
+    assert hits == []
+
+
+@pytest.mark.parametrize('text', ['Do not show piano drills', "Don't show violin lessons", 'never show cello practice'])
+def test_plain_negated_show_remains_eligible_for_model_interpretation(text):
+    assert ig.COMMAND_NEGATION.search(text) is None

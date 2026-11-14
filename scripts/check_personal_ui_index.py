@@ -4,7 +4,7 @@ import hashlib
 import subprocess
 import sys
 
-EXPECTED = {'web/dist/assets/index-23oCxvLA.css': '3d6ca80fdc22ec0bb21c0505f7321de442beac212b69cf25412287154b1f7a15', 'web/dist/assets/index-BJxAhwLo.js': '5ed5fee3ed5f73c3ed41a911ba5cecbb8073e2b425b55851d39b9eb7b388037a', 'web/dist/index.html': '7cb80c817a556529abdb1b485cc05c3868c790090f3914ac407042f98cfd9b6b'}
+EXPECTED = {'web/dist/assets/index-23oCxvLA.css': '3d6ca80fdc22ec0bb21c0505f7321de442beac212b69cf25412287154b1f7a15', 'web/dist/assets/index-CuPjXpo3.js': '08757e834d69883f1406535d55321d459b2334133a0dc7caf299be9725b36352', 'web/dist/index.html': '8b2884673af7ba0e7479b80dfe4ae479d82909a9cecc00fc33dc01bd73d42457'}
 
 
 def git(*args):

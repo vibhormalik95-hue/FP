@@ -99,8 +99,9 @@ def test_relay_times_out_and_never_exceeds_its_allowance(tmp_path):
     with pytest.raises(ParserOperationalError):
         infer(PAYLOAD, SCHEMA)
     assert receipts[0]['error_type'] == 'TimeoutError'
-    with pytest.raises(ParserOperationalError, match='allowance exhausted'):
+    with pytest.raises(ParserOperationalError) as error:
         infer(PAYLOAD, SCHEMA)
+    assert str(error.value) == dp.RELAY_ALLOWANCE
     assert len(receipts) == 1 and not (spool / 'request-0002.json').exists()
 
 
@@ -124,8 +125,9 @@ def test_scripted_provider_answers_only_known_requests_and_declares_no_model():
     infer, identity, receipts = dp.scripted_provider(
         lambda payload, schema: known if payload.get('question') == 'synthetic' else None, [known])
     assert infer(PAYLOAD, SCHEMA) == known
-    with pytest.raises(ParserOperationalError, match='cannot interpret other text'):
+    with pytest.raises(ParserOperationalError) as error:
         infer({'system': 's', 'question': 'anything else'}, SCHEMA)
+    assert str(error.value) == dp.SCRIPTED_REFUSAL
     assert identity['live_model'] is False and identity['backend'] == dp.SCRIPTED_BACKEND
     assert [r['answered'] for r in receipts] == [True, False]
 

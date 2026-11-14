@@ -6,6 +6,7 @@ import SteeringPanel from './SteeringPanel';
 import SemanticPanel from './SemanticPanel';
 import SyntheticDraftPanel from './SyntheticDraftPanel';
 import { createApiClient } from './personalApi';
+import {describeResearchMode} from './researchLabels.js';
 import { categoryIdsReadable, controlLines, plural } from './reviewModel.js';
 
 const conditions = {
@@ -109,19 +110,21 @@ function App({client, personal, onLock}) {
   const languageReady = Boolean(semanticFeed || steeringFeed);
   const shownFeed = view === 'steering' ? reviewedFeed : feed;
   // What the served data is, in plain words. A bundled scenario has invented items.
-  const dataKind = !status ? null : status.data_mode !== 'fixture' ? 'dataset' : status.source === 'deterministic fixture' ? 'fixture' : 'scenario';
-  const diagnostic = status ? status.model_mode !== 'trained model' : false;
+  const researchMode = describeResearchMode(status);
+  const dataKind = researchMode.data === 'Dataset mode' ? 'dataset' : researchMode.data === 'Authored fixture' ? (status.source === 'deterministic fixture' ? 'fixture' : 'scenario') : 'unknown';
+  const diagnostic = researchMode.scorer === 'Diagnostic scorer';
   const authored = status?.provider?.live_model === false, noProvider = Boolean(status) && !status.provider && status.local_models_allowed === false;
   // The original conditions C, D and E read category IDs of the form category_<number> only.
   const idsReadable = categoryIdsReadable(cats);
-  const scorerWords = !status ? '' : diagnostic ? 'deterministic diagnostic scorer (a fixed formula, not the trained recommender)' : 'trained recommender';
+  const scorerWords = diagnostic ? 'deterministic diagnostic scorer (a fixed formula, not the trained recommender)' : researchMode.scorer === 'Trained scorer' ? 'trained recommender' : 'Scorer not verified';
   const disclosure = dataKind === 'scenario'
     ? 'The items of this scenario are invented for the demonstration. Each card shows an item ID and an invented description, not a playable video. The category and tag names are part of the invented data. The scores come from the scorer that the line above names. This demonstrator makes no claim about human agency or satisfaction.'
     : dataKind === 'fixture'
     ? 'The items are a built-in fixture, not the research dataset. Each card shows an item ID, not a playable video. The category names are placeholders. This demonstrator makes no claim about human agency or satisfaction.'
+    : dataKind === 'unknown' ? 'The data source is not verified. Each card shows metadata, not a playable video. This demonstrator makes no claim about human agency or satisfaction.'
     : 'Each card shows an item ID of the processed dataset, not a playable video. Categories keep their original opaque IDs. This demonstrator makes no claim about human agency or satisfaction.';
-  const dataNote = dataKind === 'scenario' ? `Data of this review: invented items of a bundled scenario. Scores: ${diagnostic ? 'the diagnostic scorer, a fixed formula' : 'the trained recommender'}.`
-    : dataKind === 'fixture' ? 'Data of this review: the built-in fixture, not the research dataset.' : '';
+  const dataNote = dataKind === 'scenario' ? `Data of this review: invented items of a bundled scenario. Scores: ${scorerWords}.`
+    : dataKind === 'fixture' ? 'Data of this review: the built-in fixture, not the research dataset.' : dataKind === 'unknown' ? 'Data of this review: source not verified.' : '';
   const viewIntro = view === 'steering'
     ? (noProvider ? 'Language controls. This server has no model provider, so only the manual category control works here. You choose an existing category, review the change and approve it. A deterministic filter applies exactly the set that you approved, and you can undo each change.'
       : `Language controls. ${authored ? 'A hand-written reply stands in for a model here.' : 'A model proposes a change from your words.'} The application checks the proposal, and you review it. A deterministic filter then applies exactly the set that you approved, in the same way as for a category that you choose by hand. A proposal does not change the feed, and you can undo each change.`)
@@ -148,7 +151,7 @@ function App({client, personal, onLock}) {
       {language
         ? <section className="intro compact"><div><p className="eyebrow">LANGUAGE CONTROLS</p><h1>Say what you want. Review it. Apply it. Undo it.</h1></div></section>
         : <section className="intro"><div><p className="eyebrow">YOUR PREFERENCES, MADE VISIBLE</p><h1>A feed you can <br/><em>steer.</em></h1><p className="lede">Explore how explanations, natural-language instructions and an editable profile change a recommendation list.</p></div><div className="intro-note"><span className="big-number">05</span><span>conditions.<br/>One scorer.<br/>Every control visible.</span></div></section>}
-      {status && <section className="status-strip" aria-label="Research environment"><span className={`status-chip ${status.data_mode === 'fixture' ? 'fixture' : ''}`}><i/>{status.data_mode === 'fixture' ? 'FIXTURE DATA' : 'PROCESSED DATASET'}{dataKind === 'scenario' ? ' · INVENTED ITEMS' : ''}</span>
+      {status && <section className="status-strip" aria-label="Research environment"><span className={`status-chip ${status.data_mode === 'fixture' ? 'fixture' : ''}`}><i/>{researchMode.data === 'Authored fixture' ? 'FIXTURE DATA' : researchMode.data === 'Dataset mode' ? 'PROCESSED DATASET' : 'DATA NOT VERIFIED'}{dataKind === 'scenario' ? ' · INVENTED ITEMS' : ''}</span>
         <span>{scorerWords}</span><span>{language ? 'Language controls · each review names the provider and the model' : backend === 'rule' ? 'Rule parser · diagnostic only' : 'Ollama parser · actual request on submit'}</span><span>{plural(status.items, 'item')} · {plural(status.users, 'user')}</span>
         {status.provider ? <span className={`status-chip ${authored ? 'fixture' : ''}`} data-role="provider"><i/>{authored ? 'AUTHORED REPLIES · NO MODEL' : `PROVIDER · ${status.provider.backend} · ${status.provider.model}`}</span> : status.local_models_allowed === false && <span data-role="provider">No model provider · manual controls only</span>}</section>}
       <p className="disclosure">{disclosure}</p>

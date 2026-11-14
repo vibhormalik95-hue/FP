@@ -27,12 +27,31 @@ test('fixture data alone does not establish scorer identity', () => {
   assert.deepEqual(describeResearchMode({data_mode:'fixture'}),
     {data:'Authored fixture',scorer:'Scorer not verified'});
 });
-test('main view uses the mode labels in the prominent heading and condition explanation', () => {
+test('main view shows current scorer and data disclosures and passes provider identity to review', () => {
   const source=readFileSync(new URL('../src/main.jsx',import.meta.url),'utf8');
-  assert.match(source,/const researchMode = describeResearchMode\(status\)/);
-  assert.match(source,/interface conditions\.<br\/>\{researchMode\.scorer\}\.<br\/>\{researchMode\.data\}\./);
-  assert.match(source,/replace\(\/\^Baseline scorer\/, researchMode\.scorer\)/);
-  assert.match(source,/\{conditionDescription\}/);
+  assert.match(source,/aria-label="Research environment"/);
+  assert.match(source,/\{scorerWords\}/);
+  assert.ok(source.includes('deterministic diagnostic scorer (a fixed formula, not the trained recommender)'));
+  assert.ok(source.includes('The items of this scenario are invented for the demonstration.'));
+  assert.ok(source.includes('The items are a built-in fixture, not the research dataset.'));
+  assert.match(source,/provider=\{status\?\.provider\}/);
+  assert.match(source,/dataNote=\{dataNote\}/);
   assert.ok(!source.includes('One frozen scorer'));
   assert.ok(!source.includes('Frozen scorer +'));
+});
+
+test('main view never infers dataset or scorer identity from an unknown mode', () => {
+  const source=readFileSync(new URL('../src/main.jsx',import.meta.url),'utf8');
+  const statements=['researchMode','dataKind','diagnostic','scorerWords'].map(name => {
+    const line=source.split('\n').find(line=>line.trim().startsWith(`const ${name} =`));
+    assert.ok(line,`missing ${name}`);return line;
+  }).join('\n');
+  const labels=new Function('status','describeResearchMode', statements+'\nreturn {dataKind,diagnostic,scorerWords};');
+  for (const status of [null,{}, {data_mode:'unknown',model_mode:'unknown'}]) {
+    assert.deepEqual(labels(status,describeResearchMode),{dataKind:'unknown',diagnostic:false,scorerWords:'Scorer not verified'});
+  }
+  assert.equal(labels({data_mode:'fixture',source:'deterministic fixture',model_mode:'trained model'},describeResearchMode).dataKind,'fixture');
+  assert.equal(labels({data_mode:'processed dataset',model_mode:'trained model'},describeResearchMode).scorerWords,'trained recommender');
+  assert.match(source,/dataKind === 'unknown' \? 'The data source is not verified/);
+  assert.ok(source.includes('DATA NOT VERIFIED'));
 });

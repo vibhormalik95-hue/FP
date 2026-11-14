@@ -91,7 +91,10 @@ class EvidenceContextTests(unittest.TestCase):
         self.assertIn("e.supplied_field_text??", ui)
         self.assertIn("e.truncated?", ui)
         self.assertIn("e.quote_present?", ui)
-        self.assertIn("not semantic relevance", ui)
+        self.assertIn("The application checked the words, not the meaning", ui)
+        self.assertIn("[truncated]", ui)
+        self.assertIn("[quote not found in current text]", ui)
+        self.assertIn("Full source field unavailable", ui)
 
 
 if __name__ == "__main__":
