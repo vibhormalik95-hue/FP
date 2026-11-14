@@ -160,14 +160,16 @@ export function exampleOptions(requests, method) {
 }
 
 // Plain words for a result that proposes no change.
-export function outcomeCopy(status, method) {
+// options.alternatives: the reply named alternatives. options.guard: the application stopped the request before any model call.
+export function outcomeCopy(status, method, options = {}) {
   const other = method === 'vocabulary' ? 'Try the method that matches your request to item descriptions.'
     : method === 'configured_model' || method === 'ollama' ? 'Try the method that matches your request to existing categories and tags.'
     : method === 'manual_category' ? 'Choose another category, or use a method with a model.'
     : 'Use another method, for example an existing category.';
   if (status === 'clarify') return {heading: 'The request needs clarification',
-    next: ['Write the request again and name one clear subject and one direction (more, less or none).',
-      'If the reply lists alternatives, use one of them as your new request.', other]};
+    next: [options.guard ? 'Write the request as a positive instruction, for example "show more ..." or "remove ...". The application does not guess the meaning of a negated command.'
+        : 'Write the request again and name one clear subject and one direction (more, less or none).',
+      ...(options.alternatives ? ['Use one of the alternatives that the model named as your new request.'] : []), other]};
   if (status === 'no_match') return {heading: method === 'vocabulary' ? 'No existing category or tag matches the request' : 'Nothing in the evidence matches the request',
     next: ['Check the evidence scope: only the listed items and their data were used.', 'Write the request with other words.', other]};
   if (status === 'unsupported') return {heading: 'The controls cannot express this request',
@@ -190,6 +192,8 @@ export function stageStates({method = 'manual_category', phase = 'idle', busySta
   else if (phase === 'interpretation') { now = index('Interpretation'); note.Interpretation = stopped ? 'needs your input' : 'review it'; }
   else if (phase === 'preview') now = historyAction === 'none' ? index('Preview') : index('Undo');
   else if (phase === 'applied') now = index('Undo');
+  // The manual method has no interpretation by a model: a stop there belongs to the evidence stage.
+  if (manual && now === index('Interpretation')) { now = index('Evidence'); if (stopped) note.Evidence = 'needs your input'; }
   if (phase === 'applied') note.Undo = 'available';
   if (phase === 'preview' && historyAction !== 'none') note.Undo = 'review it';
   if (phase === 'preview' && historyAction === 'none') note.Preview = 'your decision';

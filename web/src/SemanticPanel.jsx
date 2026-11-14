@@ -122,8 +122,10 @@ export default function SemanticPanel({api,user,resetKey,onFeed,scenarioRequests
   const examples=exampleOptions(scenarioRequests,backend);
   const external=backend==='vocabulary'||backend==='configured_model'||(category_method&&saved?.category_adapter_available);
   const variant=resolution?'resolution':definition?'definition':pending?'review':outcome?'outcome':failure?null:record?'changed':null;
-  const phase=working?'working':(resolution||definition||outcome||(failure&&!pending))?'interpretation':pending?'preview':record&&recordFresh?(record.kind==='apply'?'applied':'undone'):'idle';
-  const stages=stageStates({method:backend,phase,busyStage,historyAction:pending?.history_action||'none',stopped:Boolean(resolution||outcome||failure)});
+  // A result without a change stays on the board while the person rewrites the request; the stage line then shows the first stage again.
+  const outcomeNow=outcome&&(!modelMethod||outcome.request_text===text);
+  const phase=working?'working':(resolution||definition||outcomeNow||(failure&&!pending))?'interpretation':pending?'preview':record&&recordFresh?(record.kind==='apply'?'applied':'undone'):'idle';
+  const stages=stageStates({method:backend,phase,busyStage,historyAction:pending?.history_action||'none',stopped:Boolean(resolution||outcomeNow||failure)});
   const blocked=pending?.proposal?.target_confirmation&&(!explicitTarget||!confirmedNow)?'This review used a target that you stated. Keep the stated target and its confirmation unchanged to approve.':'';
   const context={terms:terms?.terms||pending?.vocabulary?.terms||null,
     categories:Object.fromEntries([...(saved?.feed.items||[]),...(pending?.feed.items||[])].map(item=>[item.item_id,item.categories])),
@@ -143,7 +145,7 @@ export default function SemanticPanel({api,user,resetKey,onFeed,scenarioRequests
       <p className="help">A model can propose a change. The application checks the proposal. You review it. Nothing changes until you approve, and you can undo each change. A control is a named set of existing items with one action. It is not a new video and not a new dataset category.</p>
       <h3>Request</h3>
       <label className="field-label" htmlFor="semantic-backend">Method</label>
-      <select id="semantic-backend" disabled={disabled} value={backend} onChange={e=>{setBackend(e.target.value);setExplicitTarget(false);setPending(null);}}>
+      <select id="semantic-backend" disabled={disabled} value={backend} onChange={e=>{setBackend(e.target.value);setExplicitTarget(false);setTypedLabel(null);setPending(null);}}>
         <option value="manual_category">Existing category (manual, no model)</option>
         {saved?.external_adapter_available&&<option value="vocabulary">My request, matched to existing categories and tags (model)</option>}
         {saved?.external_adapter_available&&<option value="configured_model">My request, matched to item descriptions (model)</option>}
@@ -151,7 +153,8 @@ export default function SemanticPanel({api,user,resetKey,onFeed,scenarioRequests
         {local&&<option value="ollama">My request, matched to item descriptions (local model {saved?.configured_model||'not loaded yet'})</option>}
         {(saved?.category_adapter_available||local)&&<option value="induction">A new category in one model call (earlier method)</option>}</select>
       <p className="help">{METHOD_HELP[backend]}</p>
-      {external&&<p className="help">The model provider receives your request and the item data of the evidence scope. With some providers this data leaves this computer, and a call can cost money. Each review names the provider and the model.</p>}
+      {external&&<p className="help">{backend==='vocabulary'?'The model provider receives your request and the category and tag names of the scope, with the number of items for each name. It does not receive the item descriptions.'
+        :'The model provider receives your request and the item data of the evidence scope: descriptions, categories and tags.'} With some providers this data leaves this computer, and a call can cost money. Each review names the provider and the model.</p>}
       <label className="field-label" htmlFor="semantic-count">Evidence scope</label>
       <select id="semantic-count" disabled={disabled} value={count} onChange={e=>{setCount(Number(e.target.value));setPending(null);}}>
         <option value={6}>First 6 items of the starting list</option><option value={10}>First 10 items of the starting list</option></select>

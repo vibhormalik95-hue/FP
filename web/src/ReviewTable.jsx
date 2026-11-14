@@ -34,7 +34,7 @@ export default function ReviewTable({pending, current, context}) {
           <th scope="row">{row.id}{row.member && <span className="review-mark"> selected</span>}</th>
           <td>{row.description ?? 'No description supplied'}</td>
           <td>{labelsCell(row.labels)}</td>
-          <td>{row.evidence}{staged && row.reason ? <span className="review-reason"> {row.reason}</span> : null}</td>
+          <td>{row.evidence}{row.reason ? <span className="review-reason"> {row.reason}</span> : null}</td>
           {staged && <td>{row.second}</td>}
           <td><b>{row.result}</b></td></tr>)}
       </tbody>)}

@@ -56,11 +56,14 @@ function providerLine(model) {
   return <p className="help">Provider and model, as the route declares them: {model.backend} / {name}; digest {digest}. The application records this declaration. It cannot attest it.</p>;
 }
 
-function contextRows(rows) {
+function contextRows(rows, names) {
   if (!rows?.length) return null;
+  const lines = rows.map(e=><p className="help" key={`${e.item_id}-${e.field}-${e.quote}`}>Item {e.item_id}, {e.field}: “{e.supplied_field_text??'unavailable'}”{e.truncated?' [truncated]':''}{e.quote_present?'':' [quote not found in current text]'}</p>);
+  // A chosen category or tag name is the whole evidence, and the table shows it for every item: keep this list folded.
+  if (names) return <details className="raw" aria-label="Full cited source context"><summary>The complete field of each selected item that carries a chosen name ({rows.length})</summary>{lines}</details>;
   return <div aria-label="Full cited source context">
     <p className="help">Full supplied text around each cited quotation (display only; check for negation or contrary meaning before you approve):</p>
-    {rows.map(e=><p className="help" key={`${e.item_id}-${e.field}-${e.quote}`}>Item {e.item_id}, {e.field}: “{e.supplied_field_text??'unavailable'}”{e.truncated?' [truncated]':''}{e.quote_present?'':' [quote not found in current text]'}</p>)}
+    {lines}
   </div>;
 }
 
@@ -104,20 +107,20 @@ function modelOutput(group, pending) {
   </div>;
 }
 
-function applicationChecks(group, pending, context) {
+// The checks of one control. `shared` is true when the checks of the whole reply and the provider line are shown once above.
+function applicationChecks(group, pending, context, shared) {
   const route = routeOf(group), proposal = group.proposal;
-  const fromServer = route === 'vocabulary' ? pending.vocabulary?.checks : null;
   const control = route === 'vocabulary' ? (pending.vocabulary?.controls || []).find(candidate => candidate.label === group.label) : null;
   const envelope = proposal.induction?.envelope, audit = envelope?.evidence_audit;
   return <div key={group.revision} className="control-checks" data-route={route}>
     <p><b>{group.label}</b></p>
-    {fromServer?.length ? checkList(fromServer) : checkList(localChecks(group, pending, context))}
+    {!(shared.checks && route === 'vocabulary') && checkList(localChecks(group, pending, context))}
     {control&&<p className="help">Items that each chosen name selects: {control.terms.map(term=>`${termWords(term)}: ${(term.item_ids||[]).join(', ')||'none'}`).join('; ')}.</p>}
     {audit&&<p className="help">Required literal terms: {audit.literal_constraints.terms.join(', ')||'none'}. A term that is present can still be negated, quoted or unrelated.</p>}
     {envelope&&<p className="help">Overlap with existing categories: {envelope.overlaps.map(o=>`${o.category_id}: ${o.member_ids.join(',')}`).join('; ')||'none in the supplied inventory'}.</p>}
     {envelope?.normalizations?.map(e=><p className="help" key={e.item_id}>Item {e.item_id}: an uncited field "{e.original_field}" of an unknown verdict was left out of the canonical evidence. The verdict stays unknown. The raw model output is retained.</p>)}
     <p className="help">Selected items: {proposal.item_ids.join(', ')||'none'}. Assessed scope: {group.scope_ids.join(', ')}.</p>
-    {providerLine(proposal.provenance?.model)}
+    {!shared.provider && providerLine(proposal.provenance?.model)}
   </div>;
 }
 
@@ -140,6 +143,10 @@ function reviewVariant({pending, current, context, controls}) {
     : action === 'clear' ? 'Remove every applied control'
     : `Proposed change: ${(added.length ? added : pending.groups).map(g => `${g.label}: ${actionWords(g.proposal.action)}`).join(' + ')}`;
   const calls = added.some(group => ['staged', 'induction'].includes(routeOf(group))) ? [] : pending.model_calls || [];
+  // One reply of the category and tag route can hold several controls: its checks and its provider are shown once.
+  const replyChecks = added.some(group => routeOf(group) === 'vocabulary') ? pending.vocabulary?.checks || [] : [];
+  const models = added.map(group => JSON.stringify(group.proposal.provenance?.model ?? null));
+  const shared = {checks: replyChecks.length > 0, provider: added.length > 1 && models.every(value => value === models[0])};
   return <>
     <p className="eyebrow review-flag">PREVIEW · NOTHING IS APPLIED YET</p>
     <h3>{title}</h3>
@@ -150,8 +157,10 @@ function reviewVariant({pending, current, context, controls}) {
         {rawReplies(calls)}
         <p className="help">The model can be wrong. This block repeats what it returned. Nothing here is approved.</p></>)}
       {block('Application checks', action !== 'none' ? <p className="help">The application checks that the earlier controls still match the current source data before it restores them.</p> : <>
-        {added.map(group => applicationChecks(group, pending, context))}
-        {contextRows(pending.evidence_context)}
+        {shared.checks && <div className="control-checks"><p><b>Checks of the model reply</b></p>{checkList(replyChecks)}</div>}
+        {added.map(group => applicationChecks(group, pending, context, shared))}
+        {shared.provider && providerLine(added[0].proposal.provenance?.model)}
+        {contextRows(pending.evidence_context, added.length > 0 && added.every(group => routeOf(group) === 'vocabulary'))}
         <p className="help">These checks are mechanical. A passed check shows that names, IDs and quotations exist in the supplied data. It does not show that the meaning is right.</p></>)}
       {block('Your decision', <>
         {decisionSummary(pending, current)}
@@ -237,10 +246,11 @@ function definitionVariant({definition, controls}) {
 }
 
 function outcomeVariant({outcome, controls}) {
-  const copy = outcomeCopy(outcome.status, outcome.method), clarification = outcome.clarification;
+  const clarification = outcome.clarification;
   const calls = [...(outcome.model_calls || []), ...(outcome.evidence_audit_model_calls || [])];
   const checks = outcome.vocabulary?.checks || outcome.checks || [];
   const noCall = outcome.method !== 'manual_category' && !outcome.thrown && Array.isArray(outcome.model_calls) && calls.length === 0;
+  const copy = outcomeCopy(outcome.status, outcome.method, {alternatives: Boolean(clarification?.alternatives?.length), guard: noCall});
   return <div aria-label="Result without a proposed change" data-status={outcome.status}>
     <p className="eyebrow review-flag">NO CHANGE PROPOSED · NOTHING WAS APPLIED</p>
     <h3>{copy.heading}</h3>
@@ -257,6 +267,7 @@ function outcomeVariant({outcome, controls}) {
         {rawReplies(calls)}
         <p className="help">The model can be wrong. Nothing here is approved.</p></>)}
       {block('Application checks', <>
+        {outcome.request_text ? <p className="help">Request that gave this result: “{outcome.request_text}”</p> : null}
         <p role="status"><b>{outcome.status}:</b> {outcome.reason || 'No reason was given.'}</p>
         {checks.length > 0 && checkList(checks)}
         {clarification?.notice && <p className="help">{clarification.notice}</p>}

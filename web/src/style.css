@@ -69,3 +69,6 @@
 .block strong{display:block;margin-bottom:4px}.block b{font-weight:700}
 .controls .panel>.primary{margin-top:16px}
 .controls .panel>.alert{background:#eef1e6;border:1px solid #dbe2ce;color:#3d4d34;margin:12px 0 0;padding:10px 12px;font-size:11px}
+.controls .panel p,.controls .panel strong,.controls .panel li{font-size:12px;line-height:1.6}
+.controls .panel .help{font-size:11px;line-height:1.7}
+.controls .panel article{margin-top:12px}

@@ -86,7 +86,8 @@ class EvidenceContextTests(unittest.TestCase):
                          "not performed: quote custody only; a human must judge meaning")
 
     def test_existing_frontend_renders_field_and_warnings(self):
-        ui = (SOURCE.parents[1] / "web/src/SemanticPanel.jsx").read_text()
+        # The review board renders the cited source context since the page was restructured.
+        ui = (SOURCE.parents[1] / "web/src/ReviewBoard.jsx").read_text()
         self.assertIn("e.supplied_field_text??", ui)
         self.assertIn("e.truncated?", ui)
         self.assertIn("e.quote_present?", ui)
