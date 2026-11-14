@@ -1,0 +1,151 @@
+PREVIEW · NOTHING IS APPLIED YET
+
+Proposed change: Reviewed description request
+
+Go to your decision
+
+Your request: “Remove the videos where someone is eating.”
+
+Model output (not verified)
+
+Reason that the model gave: The intent asks to hard-exclude videos where someone is eating. Only item 61004 has direct evidence of a person eating: its caption says a mechanic cleans a bicycle chain between bites of a sandwich. Taking bites of a sandwich is eating, even though the item is a repair video and has no food category. The cooking items (61001, 61002, 61009) show recipes, dinner, salad and bread, but preparing food does not establish that anyone eats on screen, so that relationship is too weak. Item 61003 is tagged street food and night market, but its caption only describes a walk between stalls, with no evidence that someone eats. Items 61005 to 61008 have no relation to eating, and 61010 has no usable evidence. The request contains no negation to resolve. Operation exclude and strength none are kept unchanged; strength none means hard exclusion of the selected item. This is a review proposal and does not execute the control.
+
+Reviewed description request
+
+Direction and strength: Remove from the feed, read from your request by the model.
+
+Part of your request that names the subject: “videos where someone is eating”.
+
+Reason that the model gave for this control: The intent asks to hard-exclude videos where someone is eating. Only item 61004 has direct evidence of a person eating: its caption says a mechanic cleans a bicycle chain between bites of a sandwich. Taking bites of a sandwich is eating, even though the item is a repair video and has no food category. The cooking items (61001, 61002, 61009) show recipes, dinner, salad and bread, but preparing food does not establish that anyone eats on screen, so that relationship is too weak. Item 61003 is tagged street food and night market, but its caption only describes a walk between stalls, with no evidence that someone eats. Items 61005 to 61008 have no relation to eating, and 61010 has no usable evidence. The request contains no negation to resolve. Operation exclude and strength none are kept unchanged; strength none means hard exclusion of the selected item. This is a review proposal and does not execute the control.
+
+Quotations that the model cited: item 61004, description: “between bites of a sandwich”.
+
+Raw model replies (2)
+
+The model can be wrong. This block repeats what it returned. Nothing here is approved.
+
+Application checks
+
+Checks of the reply
+
+Passed: The request text does not match the negated-command pattern (do not, don't, never or not to, followed by hide, exclude, remove, reduce or boost; one English pattern, checked before any model call; other wordings are not detected)
+Passed: The supplied items fit the evidence budget (10 items of at most 100; 3892 bytes of at most 10000)
+Passed: The action reply has the declared fields, a declared control and a span that is a verbatim part of the request
+Passed: The reply has exactly the declared fields
+Passed: The reply values have the declared types and a bounded printable reason
+Passed: The alternatives are at most 6 printable texts of at most 300 characters
+Passed: A proposal cites at least one item
+Passed: Every citation names one supplied item once, and its quotation is present in the named field of that item
+Passed: The selection covers at most half of the supplied items (1 of 10 items)
+
+Reviewed description request
+
+Passed: Every selected item is in the evidence scope (1 selected of 10 in the scope)
+Passed: No item is selected twice
+Passed: Every selected item has its own quotation (1 quotation for 1 item)
+Passed: Every quotation is present in the text of its own item (1 of 1)
+Passed: The quoted part of your request is copied exactly from your request ("videos where someone is eating")
+Passed: The selection covers at most half of the evidence scope (1 of 10)
+Passed: The record is bound to the source data, the request and the action by their hashes (source c01dc4e8fadf · request 9da8c5c3409c · action f18db612e965)
+
+Selected items: 61004. Evidence scope: 61001, 61002, 61003, 61004, 61005, 61006, 61007, 61008, 61009, 61010.
+
+Provider and model, as the server settings name them: operator-relay-file-queue / claude-opus (sub-agent alias opus of the Cowork session; version not attested). Settings hash 626908420210 (it identifies the settings, not the model). The application did not verify which model answered.
+
+The complete text that holds each quotation. The application checked the words, not the meaning. Look for a negation or a contrary sentence before you approve:
+
+Item 61004, description: “A mechanic cleans a bicycle chain between bites of a sandwich.”
+
+These checks are mechanical. A passed check shows that names, IDs and quotations exist in the item data. It does not show that the meaning is right.
+
+Your decision
+
+If you approve:
+
+Reviewed description request: Remove from the feed for item 61004.
+
+Only items in the evidence scope change. Other items with the same category, tag or subject stay as they are.
+
+Nothing has changed yet. The feed below stays as it is until you approve.
+
+Approve before 10:09:57 AM. After that time the server no longer accepts this review.
+
+Approve this exact item set and apply
+Discard this review and apply nothing
+Evidence for every item in the scope
+
+Each row is one item of the evidence scope. A marked row is selected. An unmarked row is not selected, and the row says why.
+
+Item	Description in the item data	Its categories and tags	Selected or not, and through what	Result if approved
+61001	Episode 12 of a weeknight series. Running time 58 seconds.	
+Cooking > Home recipes
+tags: dinner, recipe
+	not selected: no quotation was cited for this item	Unchanged
+61002	Part 3 of a weekend series. Running time 45 seconds.	
+Cooking > Baking
+tags: baking, bread
+	not selected: no quotation was cited for this item	Unchanged
+61003	An evening walk between stalls. Running time 62 seconds.	
+Travel > City walks
+tags: night market, street food
+	not selected: no quotation was cited for this item	Unchanged
+61004
+SELECTED
+	A mechanic cleans a bicycle chain between bites of a sandwich.	
+Repair > Bicycle repair
+tags: bicycle, tools
+	selected · "between bites of a sandwich" (description)	Removed from the feed
+61005	An electrician replaces a desk lamp switch.	
+Repair > Home repair
+tags: lamp, tools
+	not selected: no quotation was cited for this item	Unchanged
+61006	The camera follows a train crossing a bridge.	
+Travel > Rail journeys
+tags: bridge, train
+	not selected: no quotation was cited for this item	Unchanged
+61007	A player repeats a short guitar exercise.	
+Music > Guitar
+tags: guitar, practice
+	not selected: no quotation was cited for this item	Unchanged
+61008	A pianist plays one piece in a small room.	
+Music > Live sessions
+tags: live, piano
+	not selected: no quotation was cited for this item	Unchanged
+61009	Episode 13 of a weeknight series. Running time 51 seconds.	
+Cooking > Home recipes
+tags: recipe, salad
+	not selected: no quotation was cited for this item	Unchanged
+61010	Untitled clip: no category or tag is supplied.	no category and no tag	not selected: no quotation was cited for this item	Unchanged
+
+A quotation or a category name shows that the words exist in the item data. It does not show that the decision is right. Read each row before you approve.
+
+Preview: the first ten items now and after approval
+Now (applied feed)
+Item 61004 (leaves)
+Item 61005
+Item 61006
+Item 61007
+Item 61008
+Item 61009
+Item 61010
+Item 61001
+Item 61002
+Item 61003
+After approval
+Item 61005 (up 1)
+Item 61006 (up 1)
+Item 61007 (up 1)
+Item 61008 (up 1)
+Item 61009 (up 1)
+Item 61010 (up 1)
+Item 61001 (up 1)
+Item 61002 (up 1)
+Item 61003 (up 1)
+
+Leaves the list: 61004. Changes position: 61005 (2 to 1), 61006 (3 to 2), 61007 (4 to 3), 61008 (5 to 4), 61009 (6 to 5), 61010 (7 to 6), 61001 (8 to 7), 61002 (9 to 8), 61003 (10 to 9). Eligible items now: 10. After approval: 9.
+
+The applied feed is unchanged until you approve. The item cards below still show the applied feed.
+
+Only the items in the scope were assessed. A quotation does not prove that an item fits.
+
+Data of this review: invented items of a bundled scenario. Scores: the diagnostic scorer, a fixed formula.

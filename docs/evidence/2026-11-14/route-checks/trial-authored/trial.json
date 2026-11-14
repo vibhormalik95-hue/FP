@@ -1,0 +1,1350 @@
+{
+  "kind": "route trial of the Feed Control Lab",
+  "format": 1,
+  "statements": [
+    "The requests are exposed development requests of a bundled scenario with invented items.",
+    "This is a check of a model route. It is not an accuracy study.",
+    "An outcome that equals the authored rehearsal reply is not proof of a correct interpretation.",
+    "Each case ran one time. Nothing was approved and nothing was applied."
+  ],
+  "scenario": "tags",
+  "started_utc": "2026-11-14T17:11:28+00:00",
+  "finished_utc": "2026-11-14T17:11:28+00:00",
+  "source_fingerprint": "ab1a9d846b33bf0e7e3840b91b69f65747386daec2cf5d38fc621d455c8fcefd",
+  "provider": {
+    "kind": "scripted",
+    "identity": {
+      "backend": "scripted-authored-replies",
+      "model": "none (replies written by hand)",
+      "digest": "f44e7ff87a9383d78fe688fe1381396af8b86212a5fc42b5e042774868ad341f",
+      "digest_kind": "sha256 of the authored reply table",
+      "live_model": false
+    },
+    "route_description": []
+  },
+  "environment": {
+    "python": "3.13.18",
+    "system": "Linux 6.18.44-fc-v470"
+  },
+  "cases_chosen": [
+    "vocabulary",
+    "vocabulary:literal",
+    "vocabulary:mixed",
+    "vocabulary:ambiguous",
+    "vocabulary:unsupported",
+    "vocabulary:negated",
+    "vocabulary:no_match",
+    "configured_model",
+    "synthetic"
+  ],
+  "interrupted": false,
+  "cases": [
+    {
+      "case": "vocabulary",
+      "method": "vocabulary",
+      "method_title": "categories and tags",
+      "endpoint": "/api/semantic/vocabulary/preview",
+      "calls_at_most": 1,
+      "request_text": "I'm not hungry, remove all the stuff that makes me hungry.",
+      "request_sha256": "560646ea7903e334070fa29db53b75f9d58b110f5a8a1952d0f1c81fd659e3c3",
+      "candidate_ids": [
+        61001,
+        61002,
+        61003,
+        61004,
+        61005,
+        61006,
+        61007,
+        61008,
+        61009,
+        61010
+      ],
+      "http_status": 200,
+      "model_calls": 1,
+      "seconds": 0.018,
+      "outcome": "review",
+      "reason": null,
+      "controls": [
+        {
+          "label": "Remove: category \"Cooking\", tag \"street food\"",
+          "operation": "exclude",
+          "strength": "none",
+          "intent_span": "all the stuff that makes me hungry",
+          "relation": "Authored rehearsal reply, not model output. The category Cooking and the tag street food name food.",
+          "terms": [
+            {
+              "kind": "category",
+              "level": 1,
+              "value": "Cooking",
+              "item_ids": [
+                61001,
+                61002,
+                61009
+              ]
+            },
+            {
+              "kind": "tag",
+              "level": null,
+              "value": "street food",
+              "item_ids": [
+                61003
+              ]
+            }
+          ],
+          "quotations": [],
+          "item_ids": [
+            61001,
+            61002,
+            61003,
+            61009
+          ]
+        }
+      ],
+      "selected_item_ids": [
+        61001,
+        61002,
+        61003,
+        61009
+      ],
+      "checks": [
+        {
+          "check": "The vocabulary fits the stated budget",
+          "passed": true,
+          "detail": "28 terms of at most 120; 2474 bytes of at most 12000"
+        },
+        {
+          "check": "The request text does not match the negated-command pattern",
+          "passed": true,
+          "detail": "do not, don't, never or not to, followed by hide, exclude, remove, reduce or boost; one English pattern, checked before any model call; other wordings are not detected"
+        },
+        {
+          "check": "The scope has at least one category or tag",
+          "passed": true,
+          "detail": "28 terms in 10 items"
+        },
+        {
+          "check": "The reply has the declared fields and bounded values",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "check": "A proposal has no open negation and no competing interpretation",
+          "passed": true,
+          "detail": "negation_resolved True; 0 alternatives"
+        },
+        {
+          "check": "A proposal selects at least one control",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "check": "Each control value is one of the declared choices",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "check": "Each intent span is a verbatim part of the request with at least one word",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "check": "The intent spans of different controls do not overlap",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "check": "Each selected term exists with exactly the supplied value",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "check": "No term is repeated in a control",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "check": "Each control selects at least one item",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "check": "No term is used by more than one control",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "check": "No two controls give different instructions to the same items",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "check": "No control selects more than half of the supplied items",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "check": "The removals of this request together remove at most half of the supplied items",
+          "passed": true,
+          "detail": "4 of 10 items"
+        }
+      ],
+      "clarification": null,
+      "definition": null,
+      "draft": null,
+      "raw_model_replies": [
+        {
+          "alternatives": [],
+          "controls": [
+            {
+              "control": "exclude/none",
+              "intent_span": "all the stuff that makes me hungry",
+              "relation": "Authored rehearsal reply, not model output. The category Cooking and the tag street food name food.",
+              "terms": [
+                {
+                  "term_id": "T01",
+                  "value": "Cooking"
+                },
+                {
+                  "term_id": "T26",
+                  "value": "street food"
+                }
+              ]
+            }
+          ],
+          "negation_resolved": true,
+          "reason": "Authored rehearsal reply, not model output. Not being hungry is a personal state; the command is to remove what causes hunger.",
+          "status": "propose"
+        }
+      ],
+      "selection": [
+        [
+          "exclude",
+          "none",
+          [
+            61001,
+            61002,
+            61003,
+            61009
+          ]
+        ]
+      ],
+      "state_after": {
+        "read": true,
+        "applied_groups": 0,
+        "can_undo": false,
+        "feed_unchanged": true,
+        "revision_unchanged": true,
+        "fictional_items": 0,
+        "nothing_applied": true
+      },
+      "provider_receipts": [
+        {
+          "ordinal": 1,
+          "request_sha256": "aa9425615212ddb92a86a4d7a51ef54fd5b33a193ad53af9a0bea0fe8cf7dbbb",
+          "schema_sha256": "c17ffdc323270f920ba024c26cc4976e9218fd921434497083e53296935ccf3e",
+          "answered": true,
+          "utc": "2026-11-14T17:11:28+00:00"
+        }
+      ],
+      "authored": {
+        "available": true,
+        "outcome": "review",
+        "model_calls": 1,
+        "selection": [
+          [
+            "exclude",
+            "none",
+            [
+              61001,
+              61002,
+              61003,
+              61009
+            ]
+          ]
+        ],
+        "selected_item_ids": [
+          61001,
+          61002,
+          61003,
+          61009
+        ],
+        "same_outcome": true,
+        "same_selection": true
+      }
+    },
+    {
+      "case": "vocabulary:literal",
+      "method": "vocabulary",
+      "method_title": "categories and tags",
+      "endpoint": "/api/semantic/vocabulary/preview",
+      "calls_at_most": 1,
+      "request_text": "Hide the Repair category.",
+      "request_sha256": "227a9b680eda0b7a5de22d16301de5173bb8f1cf51bc72fad31d0f0b89604ea7",
+      "candidate_ids": [
+        61001,
+        61002,
+        61003,
+        61004,
+        61005,
+        61006,
+        61007,
+        61008,
+        61009,
+        61010
+      ],
+      "http_status": 200,
+      "model_calls": 1,
+      "seconds": 0.017,
+      "outcome": "review",
+      "reason": null,
+      "controls": [
+        {
+          "label": "Remove: category \"Repair\"",
+          "operation": "exclude",
+          "strength": "none",
+          "intent_span": "the Repair category",
+          "relation": "Authored rehearsal reply, not model output. The category Repair has the same name.",
+          "terms": [
+            {
+              "kind": "category",
+              "level": 1,
+              "value": "Repair",
+              "item_ids": [
+                61004,
+                61005
+              ]
+            }
+          ],
+          "quotations": [],
+          "item_ids": [
+            61004,
+            61005
+          ]
+        }
+      ],
+      "selected_item_ids": [
+        61004,
+        61005
+      ],
+      "checks": [
+        {
+          "check": "The vocabulary fits the stated budget",
+          "passed": true,
+          "detail": "28 terms of at most 120; 2474 bytes of at most 12000"
+        },
+        {
+          "check": "The request text does not match the negated-command pattern",
+          "passed": true,
+          "detail": "do not, don't, never or not to, followed by hide, exclude, remove, reduce or boost; one English pattern, checked before any model call; other wordings are not detected"
+        },
+        {
+          "check": "The scope has at least one category or tag",
+          "passed": true,
+          "detail": "28 terms in 10 items"
+        },
+        {
+          "check": "The reply has the declared fields and bounded values",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "check": "A proposal has no open negation and no competing interpretation",
+          "passed": true,
+          "detail": "negation_resolved True; 0 alternatives"
+        },
+        {
+          "check": "A proposal selects at least one control",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "check": "Each control value is one of the declared choices",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "check": "Each intent span is a verbatim part of the request with at least one word",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "check": "The intent spans of different controls do not overlap",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "check": "Each selected term exists with exactly the supplied value",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "check": "No term is repeated in a control",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "check": "Each control selects at least one item",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "check": "No term is used by more than one control",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "check": "No two controls give different instructions to the same items",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "check": "No control selects more than half of the supplied items",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "check": "The removals of this request together remove at most half of the supplied items",
+          "passed": true,
+          "detail": "2 of 10 items"
+        }
+      ],
+      "clarification": null,
+      "definition": null,
+      "draft": null,
+      "raw_model_replies": [
+        {
+          "alternatives": [],
+          "controls": [
+            {
+              "control": "exclude/none",
+              "intent_span": "the Repair category",
+              "relation": "Authored rehearsal reply, not model output. The category Repair has the same name.",
+              "terms": [
+                {
+                  "term_id": "T03",
+                  "value": "Repair"
+                }
+              ]
+            }
+          ],
+          "negation_resolved": true,
+          "reason": "Authored rehearsal reply, not model output. The request names one existing category.",
+          "status": "propose"
+        }
+      ],
+      "selection": [
+        [
+          "exclude",
+          "none",
+          [
+            61004,
+            61005
+          ]
+        ]
+      ],
+      "state_after": {
+        "read": true,
+        "applied_groups": 0,
+        "can_undo": false,
+        "feed_unchanged": true,
+        "revision_unchanged": true,
+        "fictional_items": 0,
+        "nothing_applied": true
+      },
+      "provider_receipts": [
+        {
+          "ordinal": 2,
+          "request_sha256": "ed0511c27efa0c4f88024f64115d9c55af08759739467424d2d973e55ca21ef8",
+          "schema_sha256": "c17ffdc323270f920ba024c26cc4976e9218fd921434497083e53296935ccf3e",
+          "answered": true,
+          "utc": "2026-11-14T17:11:28+00:00"
+        }
+      ],
+      "authored": {
+        "available": true,
+        "outcome": "review",
+        "model_calls": 1,
+        "selection": [
+          [
+            "exclude",
+            "none",
+            [
+              61004,
+              61005
+            ]
+          ]
+        ],
+        "selected_item_ids": [
+          61004,
+          61005
+        ],
+        "same_outcome": true,
+        "same_selection": true
+      }
+    },
+    {
+      "case": "vocabulary:mixed",
+      "method": "vocabulary",
+      "method_title": "categories and tags",
+      "endpoint": "/api/semantic/vocabulary/preview",
+      "calls_at_most": 1,
+      "request_text": "Show me more music videos, and remove anything about food.",
+      "request_sha256": "6bbd4ace1f8fe1f85c931ed64f4bf0ce314652dd2db260e997b2f6a2348dfa6a",
+      "candidate_ids": [
+        61001,
+        61002,
+        61003,
+        61004,
+        61005,
+        61006,
+        61007,
+        61008,
+        61009,
+        61010
+      ],
+      "http_status": 200,
+      "model_calls": 1,
+      "seconds": 0.017,
+      "outcome": "review",
+      "reason": null,
+      "controls": [
+        {
+          "label": "Show more: category \"Music\"",
+          "operation": "boost",
+          "strength": "standard",
+          "intent_span": "more music videos",
+          "relation": "Authored rehearsal reply, not model output. The category Music covers music videos.",
+          "terms": [
+            {
+              "kind": "category",
+              "level": 1,
+              "value": "Music",
+              "item_ids": [
+                61007,
+                61008
+              ]
+            }
+          ],
+          "quotations": [],
+          "item_ids": [
+            61007,
+            61008
+          ]
+        },
+        {
+          "label": "Remove: category \"Cooking\", tag \"street food\"",
+          "operation": "exclude",
+          "strength": "none",
+          "intent_span": "anything about food",
+          "relation": "Authored rehearsal reply, not model output. The category Cooking and the tag street food name food.",
+          "terms": [
+            {
+              "kind": "category",
+              "level": 1,
+              "value": "Cooking",
+              "item_ids": [
+                61001,
+                61002,
+                61009
+              ]
+            },
+            {
+              "kind": "tag",
+              "level": null,
+              "value": "street food",
+              "item_ids": [
+                61003
+              ]
+            }
+          ],
+          "quotations": [],
+          "item_ids": [
+            61001,
+            61002,
+            61003,
+            61009
+          ]
+        }
+      ],
+      "selected_item_ids": [
+        61001,
+        61002,
+        61003,
+        61007,
+        61008,
+        61009
+      ],
+      "checks": [
+        {
+          "check": "The vocabulary fits the stated budget",
+          "passed": true,
+          "detail": "28 terms of at most 120; 2474 bytes of at most 12000"
+        },
+        {
+          "check": "The request text does not match the negated-command pattern",
+          "passed": true,
+          "detail": "do not, don't, never or not to, followed by hide, exclude, remove, reduce or boost; one English pattern, checked before any model call; other wordings are not detected"
+        },
+        {
+          "check": "The scope has at least one category or tag",
+          "passed": true,
+          "detail": "28 terms in 10 items"
+        },
+        {
+          "check": "The reply has the declared fields and bounded values",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "check": "A proposal has no open negation and no competing interpretation",
+          "passed": true,
+          "detail": "negation_resolved True; 0 alternatives"
+        },
+        {
+          "check": "A proposal selects at least one control",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "check": "Each control value is one of the declared choices",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "check": "Each intent span is a verbatim part of the request with at least one word",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "check": "The intent spans of different controls do not overlap",
+          "passed": true,
+          "detail": "'more music videos'; 'anything about food'"
+        },
+        {
+          "check": "Each selected term exists with exactly the supplied value",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "check": "No term is repeated in a control",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "check": "Each control selects at least one item",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "check": "No term is used by more than one control",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "check": "No two controls give different instructions to the same items",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "check": "No control selects more than half of the supplied items",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "check": "The removals of this request together remove at most half of the supplied items",
+          "passed": true,
+          "detail": "4 of 10 items"
+        }
+      ],
+      "clarification": null,
+      "definition": null,
+      "draft": null,
+      "raw_model_replies": [
+        {
+          "alternatives": [],
+          "controls": [
+            {
+              "control": "boost/standard",
+              "intent_span": "more music videos",
+              "relation": "Authored rehearsal reply, not model output. The category Music covers music videos.",
+              "terms": [
+                {
+                  "term_id": "T02",
+                  "value": "Music"
+                }
+              ]
+            },
+            {
+              "control": "exclude/none",
+              "intent_span": "anything about food",
+              "relation": "Authored rehearsal reply, not model output. The category Cooking and the tag street food name food.",
+              "terms": [
+                {
+                  "term_id": "T01",
+                  "value": "Cooking"
+                },
+                {
+                  "term_id": "T26",
+                  "value": "street food"
+                }
+              ]
+            }
+          ],
+          "negation_resolved": true,
+          "reason": "Authored rehearsal reply, not model output. The request holds two separate preferences.",
+          "status": "propose"
+        }
+      ],
+      "selection": [
+        [
+          "boost",
+          "standard",
+          [
+            61007,
+            61008
+          ]
+        ],
+        [
+          "exclude",
+          "none",
+          [
+            61001,
+            61002,
+            61003,
+            61009
+          ]
+        ]
+      ],
+      "state_after": {
+        "read": true,
+        "applied_groups": 0,
+        "can_undo": false,
+        "feed_unchanged": true,
+        "revision_unchanged": true,
+        "fictional_items": 0,
+        "nothing_applied": true
+      },
+      "provider_receipts": [
+        {
+          "ordinal": 3,
+          "request_sha256": "0b0c222e31f5fae0c3ed4fd3293c28de7342c16b6dba7cdaf1e56b57182df08c",
+          "schema_sha256": "c17ffdc323270f920ba024c26cc4976e9218fd921434497083e53296935ccf3e",
+          "answered": true,
+          "utc": "2026-11-14T17:11:28+00:00"
+        }
+      ],
+      "authored": {
+        "available": true,
+        "outcome": "review",
+        "model_calls": 1,
+        "selection": [
+          [
+            "boost",
+            "standard",
+            [
+              61007,
+              61008
+            ]
+          ],
+          [
+            "exclude",
+            "none",
+            [
+              61001,
+              61002,
+              61003,
+              61009
+            ]
+          ]
+        ],
+        "selected_item_ids": [
+          61001,
+          61002,
+          61003,
+          61007,
+          61008,
+          61009
+        ],
+        "same_outcome": true,
+        "same_selection": true
+      }
+    },
+    {
+      "case": "vocabulary:ambiguous",
+      "method": "vocabulary",
+      "method_title": "categories and tags",
+      "endpoint": "/api/semantic/vocabulary/preview",
+      "calls_at_most": 1,
+      "request_text": "I have had enough of the heavy stuff.",
+      "request_sha256": "de4dc7969b680354bc227836557d409cead2fdbdf285204b36e344421569d8e5",
+      "candidate_ids": [
+        61001,
+        61002,
+        61003,
+        61004,
+        61005,
+        61006,
+        61007,
+        61008,
+        61009,
+        61010
+      ],
+      "http_status": 200,
+      "model_calls": 1,
+      "seconds": 0.015,
+      "outcome": "clarify",
+      "reason": "Semantic scope or negation has competing interpretations",
+      "controls": [],
+      "selected_item_ids": [],
+      "checks": [
+        {
+          "check": "The vocabulary fits the stated budget",
+          "passed": true,
+          "detail": "28 terms of at most 120; 2474 bytes of at most 12000"
+        },
+        {
+          "check": "The request text does not match the negated-command pattern",
+          "passed": true,
+          "detail": "do not, don't, never or not to, followed by hide, exclude, remove, reduce or boost; one English pattern, checked before any model call; other wordings are not detected"
+        },
+        {
+          "check": "The scope has at least one category or tag",
+          "passed": true,
+          "detail": "28 terms in 10 items"
+        },
+        {
+          "check": "The reply has the declared fields and bounded values",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "check": "An abstention selects nothing",
+          "passed": true,
+          "detail": "status ambiguous with 0 controls"
+        }
+      ],
+      "clarification": {
+        "model_reason": "Authored rehearsal reply, not model output. The word heavy can point to several existing terms.",
+        "alternatives": [
+          "Heavy as in rich food: the category Cooking.",
+          "Heavy as in tools and manual work: the category Repair.",
+          "Heavy as in loud music: the category Music."
+        ],
+        "question": "Please state the intended target explicitly in your instruction.",
+        "negation_resolved": true
+      },
+      "definition": null,
+      "draft": null,
+      "raw_model_replies": [
+        {
+          "alternatives": [
+            "Heavy as in rich food: the category Cooking.",
+            "Heavy as in tools and manual work: the category Repair.",
+            "Heavy as in loud music: the category Music."
+          ],
+          "controls": [],
+          "negation_resolved": true,
+          "reason": "Authored rehearsal reply, not model output. The word heavy can point to several existing terms.",
+          "status": "ambiguous"
+        }
+      ],
+      "selection": null,
+      "state_after": {
+        "read": true,
+        "applied_groups": 0,
+        "can_undo": false,
+        "feed_unchanged": true,
+        "revision_unchanged": true,
+        "fictional_items": 0,
+        "nothing_applied": true
+      },
+      "provider_receipts": [
+        {
+          "ordinal": 4,
+          "request_sha256": "4fb72daadd19b9efbab8bcb346e1d85a613d29473eba72cdf1c0438aedeff8e0",
+          "schema_sha256": "c17ffdc323270f920ba024c26cc4976e9218fd921434497083e53296935ccf3e",
+          "answered": true,
+          "utc": "2026-11-14T17:11:28+00:00"
+        }
+      ],
+      "authored": {
+        "available": true,
+        "outcome": "clarify",
+        "model_calls": 1,
+        "selection": null,
+        "selected_item_ids": [],
+        "same_outcome": true,
+        "same_selection": null
+      }
+    },
+    {
+      "case": "vocabulary:unsupported",
+      "method": "vocabulary",
+      "method_title": "categories and tags",
+      "endpoint": "/api/semantic/vocabulary/preview",
+      "calls_at_most": 1,
+      "request_text": "Show me at most two cooking videos per day.",
+      "request_sha256": "98ff2e1e2aa5fb6b84d465beace0c3d5d171b1acc8e8d4da15d176a64c66f216",
+      "candidate_ids": [
+        61001,
+        61002,
+        61003,
+        61004,
+        61005,
+        61006,
+        61007,
+        61008,
+        61009,
+        61010
+      ],
+      "http_status": 200,
+      "model_calls": 1,
+      "seconds": 0.014,
+      "outcome": "unsupported",
+      "reason": "Authored rehearsal reply, not model output. A limit for each day is a quota. The controls can increase, decrease or exclude whole terms. They cannot count items or use the date.",
+      "controls": [],
+      "selected_item_ids": [],
+      "checks": [
+        {
+          "check": "The vocabulary fits the stated budget",
+          "passed": true,
+          "detail": "28 terms of at most 120; 2474 bytes of at most 12000"
+        },
+        {
+          "check": "The request text does not match the negated-command pattern",
+          "passed": true,
+          "detail": "do not, don't, never or not to, followed by hide, exclude, remove, reduce or boost; one English pattern, checked before any model call; other wordings are not detected"
+        },
+        {
+          "check": "The scope has at least one category or tag",
+          "passed": true,
+          "detail": "28 terms in 10 items"
+        },
+        {
+          "check": "The reply has the declared fields and bounded values",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "check": "An abstention selects nothing",
+          "passed": true,
+          "detail": "status unsupported with 0 controls"
+        }
+      ],
+      "clarification": null,
+      "definition": null,
+      "draft": null,
+      "raw_model_replies": [
+        {
+          "alternatives": [],
+          "controls": [],
+          "negation_resolved": true,
+          "reason": "Authored rehearsal reply, not model output. A limit for each day is a quota. The controls can increase, decrease or exclude whole terms. They cannot count items or use the date.",
+          "status": "unsupported"
+        }
+      ],
+      "selection": null,
+      "state_after": {
+        "read": true,
+        "applied_groups": 0,
+        "can_undo": false,
+        "feed_unchanged": true,
+        "revision_unchanged": true,
+        "fictional_items": 0,
+        "nothing_applied": true
+      },
+      "provider_receipts": [
+        {
+          "ordinal": 5,
+          "request_sha256": "78d59e9a6be8c7c9eac101383fe155165f0ec52db0903976b66110b8086de8d8",
+          "schema_sha256": "c17ffdc323270f920ba024c26cc4976e9218fd921434497083e53296935ccf3e",
+          "answered": true,
+          "utc": "2026-11-14T17:11:28+00:00"
+        }
+      ],
+      "authored": {
+        "available": true,
+        "outcome": "unsupported",
+        "model_calls": 1,
+        "selection": null,
+        "selected_item_ids": [],
+        "same_outcome": true,
+        "same_selection": null
+      }
+    },
+    {
+      "case": "vocabulary:negated",
+      "method": "vocabulary",
+      "method_title": "categories and tags",
+      "endpoint": "/api/semantic/vocabulary/preview",
+      "calls_at_most": 1,
+      "request_text": "Do not hide the cooking videos.",
+      "request_sha256": "8b28e5b6f728d85dd81cb0000831b89e59ba1087ff60349dda5494678b0593e4",
+      "candidate_ids": [
+        61001,
+        61002,
+        61003,
+        61004,
+        61005,
+        61006,
+        61007,
+        61008,
+        61009,
+        61010
+      ],
+      "http_status": 200,
+      "model_calls": 0,
+      "seconds": 0.014,
+      "outcome": "clarify",
+      "reason": "The request matches the negated-command pattern (for example \"do not hide ...\"). The application does not guess what a negated control means. Write a positive instruction, for example \"show more ...\", \"show less ...\" or \"remove ...\", and send it again.",
+      "controls": [],
+      "selected_item_ids": [],
+      "checks": [
+        {
+          "check": "The vocabulary fits the stated budget",
+          "passed": true,
+          "detail": "28 terms of at most 120; 2474 bytes of at most 12000"
+        },
+        {
+          "check": "The request text does not match the negated-command pattern",
+          "passed": false,
+          "detail": "do not, don't, never or not to, followed by hide, exclude, remove, reduce or boost; one English pattern, checked before any model call; other wordings are not detected"
+        }
+      ],
+      "clarification": null,
+      "definition": null,
+      "draft": null,
+      "raw_model_replies": [],
+      "selection": null,
+      "state_after": {
+        "read": true,
+        "applied_groups": 0,
+        "can_undo": false,
+        "feed_unchanged": true,
+        "revision_unchanged": true,
+        "fictional_items": 0,
+        "nothing_applied": true
+      },
+      "provider_receipts": [],
+      "authored": {
+        "available": true,
+        "outcome": "clarify",
+        "model_calls": 0,
+        "selection": null,
+        "selected_item_ids": [],
+        "same_outcome": true,
+        "same_selection": null
+      }
+    },
+    {
+      "case": "vocabulary:no_match",
+      "method": "vocabulary",
+      "method_title": "categories and tags",
+      "endpoint": "/api/semantic/vocabulary/preview",
+      "calls_at_most": 1,
+      "request_text": "Show me fewer videos about astronomy.",
+      "request_sha256": "aa9551b3402cac7d1aa53f36b1769f65cf6875c6bd78e2c699d80e1b940e0bae",
+      "candidate_ids": [
+        61001,
+        61002,
+        61003,
+        61004,
+        61005,
+        61006,
+        61007,
+        61008,
+        61009,
+        61010
+      ],
+      "http_status": 200,
+      "model_calls": 1,
+      "seconds": 0.016,
+      "outcome": "no_match",
+      "reason": "Authored rehearsal reply, not model output. No existing category or tag is about astronomy.",
+      "controls": [],
+      "selected_item_ids": [],
+      "checks": [
+        {
+          "check": "The vocabulary fits the stated budget",
+          "passed": true,
+          "detail": "28 terms of at most 120; 2474 bytes of at most 12000"
+        },
+        {
+          "check": "The request text does not match the negated-command pattern",
+          "passed": true,
+          "detail": "do not, don't, never or not to, followed by hide, exclude, remove, reduce or boost; one English pattern, checked before any model call; other wordings are not detected"
+        },
+        {
+          "check": "The scope has at least one category or tag",
+          "passed": true,
+          "detail": "28 terms in 10 items"
+        },
+        {
+          "check": "The reply has the declared fields and bounded values",
+          "passed": true,
+          "detail": ""
+        },
+        {
+          "check": "An abstention selects nothing",
+          "passed": true,
+          "detail": "status no_match with 0 controls"
+        }
+      ],
+      "clarification": null,
+      "definition": null,
+      "draft": null,
+      "raw_model_replies": [
+        {
+          "alternatives": [],
+          "controls": [],
+          "negation_resolved": true,
+          "reason": "Authored rehearsal reply, not model output. No existing category or tag is about astronomy.",
+          "status": "no_match"
+        }
+      ],
+      "selection": null,
+      "state_after": {
+        "read": true,
+        "applied_groups": 0,
+        "can_undo": false,
+        "feed_unchanged": true,
+        "revision_unchanged": true,
+        "fictional_items": 0,
+        "nothing_applied": true
+      },
+      "provider_receipts": [
+        {
+          "ordinal": 6,
+          "request_sha256": "84c371751d1579f645813660fd7a7d8d896c7b37e8838b64a9c000d512ea0bfd",
+          "schema_sha256": "c17ffdc323270f920ba024c26cc4976e9218fd921434497083e53296935ccf3e",
+          "answered": true,
+          "utc": "2026-11-14T17:11:28+00:00"
+        }
+      ],
+      "authored": {
+        "available": true,
+        "outcome": "no_match",
+        "model_calls": 1,
+        "selection": null,
+        "selected_item_ids": [],
+        "same_outcome": true,
+        "same_selection": null
+      }
+    },
+    {
+      "case": "configured_model",
+      "method": "configured_model",
+      "method_title": "item descriptions",
+      "endpoint": "/api/semantic/preview",
+      "calls_at_most": 2,
+      "request_text": "Remove the videos where someone is eating.",
+      "request_sha256": "90a4314efc47cbd361bb6e93af4bb1e327273d53c6ff79353e4cadc4aada0c7e",
+      "candidate_ids": [
+        61001,
+        61002,
+        61003,
+        61004,
+        61005,
+        61006,
+        61007,
+        61008,
+        61009,
+        61010
+      ],
+      "http_status": 200,
+      "model_calls": 2,
+      "seconds": 0.016,
+      "outcome": "review",
+      "reason": null,
+      "controls": [
+        {
+          "label": "Reviewed description request",
+          "operation": "exclude",
+          "strength": "none",
+          "intent_span": "the videos where someone is eating",
+          "relation": "Authored rehearsal reply, not model output. One description states that a person eats.",
+          "terms": [],
+          "quotations": [
+            {
+              "item_id": 61004,
+              "field": "caption",
+              "quote": "between bites of a sandwich"
+            }
+          ],
+          "item_ids": [
+            61004
+          ]
+        }
+      ],
+      "selected_item_ids": [
+        61004
+      ],
+      "checks": null,
+      "clarification": null,
+      "definition": null,
+      "draft": null,
+      "raw_model_replies": [
+        {
+          "control": "exclude/none",
+          "intent_span": "the videos where someone is eating",
+          "needs_clarification": false,
+          "question": ""
+        },
+        {
+          "alternatives": [],
+          "evidence": [
+            {
+              "field": "caption",
+              "item_id": 61004,
+              "quote": "between bites of a sandwich"
+            }
+          ],
+          "negation_resolved": true,
+          "reason": "Authored rehearsal reply, not model output. One description states that a person eats.",
+          "status": "propose"
+        }
+      ],
+      "selection": [
+        [
+          "exclude",
+          "none",
+          [
+            61004
+          ]
+        ]
+      ],
+      "state_after": {
+        "read": true,
+        "applied_groups": 0,
+        "can_undo": false,
+        "feed_unchanged": true,
+        "revision_unchanged": true,
+        "fictional_items": 0,
+        "nothing_applied": true
+      },
+      "provider_receipts": [
+        {
+          "ordinal": 7,
+          "request_sha256": "5baa3e88ac12d241b79587a715037757bfa73e3f47dd9634381e1c99ad49aeb4",
+          "schema_sha256": "507fd5c22672c98068a7b4dd36ae2dc2ba1c667ad8ca4dba2aa958bcd1b4f8cf",
+          "answered": true,
+          "utc": "2026-11-14T17:11:28+00:00"
+        },
+        {
+          "ordinal": 8,
+          "request_sha256": "eca96702a9e3fefbb7f719cfac7502358bc635d87c796d387eefd14ee3ee5d30",
+          "schema_sha256": "83b0904d7080ec852d2c6177c3671e69f2263c8939df770c2d2cbe50ae9388a9",
+          "answered": true,
+          "utc": "2026-11-14T17:11:28+00:00"
+        }
+      ],
+      "authored": {
+        "available": true,
+        "outcome": "review",
+        "model_calls": 2,
+        "selection": [
+          [
+            "exclude",
+            "none",
+            [
+              61004
+            ]
+          ]
+        ],
+        "selected_item_ids": [
+          61004
+        ],
+        "same_outcome": true,
+        "same_selection": true
+      }
+    },
+    {
+      "case": "synthetic",
+      "method": "synthetic",
+      "method_title": "fictional item draft",
+      "endpoint": "/api/synthetic/preview",
+      "calls_at_most": 1,
+      "request_text": "A fictional 40-second clip about repairing a kite, for a test feed.",
+      "request_sha256": "54afd81698011e011a2972a1c753f293e3193c0c8cbb5176dc19a903de8af494",
+      "candidate_ids": [
+        61001,
+        61002,
+        61003,
+        61004,
+        61005,
+        61006,
+        61007,
+        61008,
+        61009,
+        61010
+      ],
+      "http_status": 200,
+      "model_calls": 1,
+      "seconds": 0.013,
+      "outcome": "draft_ready",
+      "reason": null,
+      "controls": [],
+      "selected_item_ids": [],
+      "checks": null,
+      "clarification": null,
+      "definition": null,
+      "draft": {
+        "title": "Kite repair clip (authored rehearsal)",
+        "description": "Authored rehearsal reply, not model output. A fictional 40-second clip. A torn kite is patched with tape and flies again. No real video exists.",
+        "category_label": "Repair (authored rehearsal)",
+        "origin": "model_generated_synthetic",
+        "is_synthetic": true
+      },
+      "raw_model_replies": [
+        {
+          "title": "Kite repair clip (authored rehearsal)",
+          "description": "Authored rehearsal reply, not model output. A fictional 40-second clip. A torn kite is patched with tape and flies again. No real video exists.",
+          "category_label": "Repair (authored rehearsal)"
+        }
+      ],
+      "selection": null,
+      "state_after": {
+        "read": true,
+        "applied_groups": 0,
+        "can_undo": false,
+        "feed_unchanged": true,
+        "revision_unchanged": true,
+        "fictional_items": 0,
+        "nothing_applied": true
+      },
+      "provider_receipts": [
+        {
+          "ordinal": 9,
+          "request_sha256": "15e8afc0a636b4b644e7966b676fdcd9a6b3edc345cbc0018e8487aea63abdbc",
+          "schema_sha256": "f7ae795a25341b338d9ac52d9b879e410dd66e3e3535a2be1c69a194799b568e",
+          "answered": true,
+          "utc": "2026-11-14T17:11:28+00:00"
+        }
+      ],
+      "authored": {
+        "available": true,
+        "outcome": "draft_ready",
+        "model_calls": 1,
+        "selection": null,
+        "selected_item_ids": [],
+        "same_outcome": true,
+        "same_selection": null
+      }
+    }
+  ],
+  "totals": {
+    "cases": 9,
+    "model_calls": 9,
+    "errors": 0,
+    "outcomes": {
+      "review": 4,
+      "clarify": 2,
+      "unsupported": 1,
+      "no_match": 1,
+      "draft_ready": 1
+    },
+    "nothing_applied": true,
+    "state_changed": false
+  },
+  "exit_code": 0
+}

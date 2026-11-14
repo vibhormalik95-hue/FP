@@ -1,0 +1,1 @@
+{"status":"unsupported","reason":"The request asks for a quota (at most two items) per time period (per day) for cooking videos. Boost, reduce and exclude over whole terms cannot express a count limit or a daily time condition. The Cooking terms exist, but no supported control gives this result, so no control is proposed.","negation_resolved":true,"alternatives":[],"controls":[]}

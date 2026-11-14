@@ -1,0 +1,2 @@
+- 2026-11-14T17:00:32Z request 1: check said "OK: the app would accept this answer file as a transport reply" (rc 0); delivered unchanged with relay_tools.py deliver (rc 0; answer sha256 ff72cff67594...c9834, 111 bytes, delivered_utc 2026-11-14T17:00:32Z).
+- 2026-11-14T17:00:55Z request 2: check said "OK: the app would accept this answer file as a transport reply" (rc 0); delivered unchanged with relay_tools.py deliver (rc 0).

@@ -1,0 +1,43 @@
+Evidence for every item in the scope
+
+Each row is one item of the evidence scope. A marked row is selected. An unmarked row is not selected, and the row says why.
+
+Item	Description in the item data	Its categories and tags	Selected or not, and through what	Result if approved
+81001	Skillet lesson: A cook prepares an edible tomato-and-pasta dinner, showing the ingredients and finished plate.	
+Evening
+tags: Evening
+	not selected: its category is not Repair	Unchanged
+81002
+SELECTED
+	Chain lesson: A mechanic cleans and lubricates a bicycle chain. No food or meal is shown.	
+Repair
+tags: Repair
+	selected: its category is Repair	Removed from the feed
+81003	Oven lesson: A baker shapes edible bread dough, bakes the loaf, and slices it for eating.	
+Afternoon
+tags: Afternoon
+	not selected: its category is not Repair	Unchanged
+81004
+SELECTED
+	Lamp lesson: An electrician replaces a desk lamp switch. No food or cooking is shown.	
+Repair
+tags: Repair
+	selected: its category is Repair	Removed from the feed
+81005	Mystery clip: Duration and colour palette are listed, but the clip's subject is not described.	
+Evening
+tags: Evening
+	not selected: its category is not Repair	Unchanged
+81006	Bowl lesson: A cook chops edible vegetables and mixes a salad intended to be eaten.	
+Afternoon
+tags: Afternoon
+	not selected: its category is not Repair	Unchanged
+81007	Travel clip: The camera follows a train crossing a bridge. No food or cooking is shown.	
+Evening
+tags: Evening
+	not selected: its category is not Repair	Unchanged
+81008	Untitled clip: The title and thumbnail are unavailable; no content description is supplied.	
+Afternoon
+tags: Afternoon
+	not selected: its category is not Repair	Unchanged
+
+A quotation or a category name shows that the words exist in the item data. It does not show that the decision is right. Read each row before you approve.

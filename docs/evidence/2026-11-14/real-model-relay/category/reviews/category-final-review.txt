@@ -1,0 +1,144 @@
+PREVIEW · NOTHING IS APPLIED YET
+
+Proposed change: Damaged object repaired and kept in use
+
+Go to your decision
+
+Your description: “Propose one useful new category from these eight descriptions. Decide the shared concept yourself from the stated facts, rather than taking an existing category code as its meaning. Give a precise definition supported by the descriptions; do not merely rename an existing category or invent missing facts.”
+
+Model output (not verified)
+
+Name proposed by the model: Damaged object repaired and kept in use
+
+The name becomes the name of the control. It cannot be changed on this page.
+
+Definition that you reviewed: An item matches when its own description states that an existing object that is damaged, such as bent, torn, broken or leaking, is repaired, mended, straightened, sealed or otherwise fixed. The description must also state that the same object is kept, remains in use or is used again. Both conditions need affirmative text in the item's own description. Making a new object, even from leftover material, is not a repair of an existing object. A description that states the damaged object is discarded or replaced by a different object makes the keep condition false. When the description does not say whether either condition holds, membership is unknown.
+
+Reason that the model gave: Three captions describe the same pattern across different existing codes. Item 41001 states that a bent bookmark is straightened and that the existing piece is kept. Item 41002 states that a torn satchel is mended and that the same bag is kept. Item 41003 states that a leaking jug is sealed and that the same jug remains in use. This concept crosses codes K1, K2 and K3, so it is not a renamed existing category. Other captions do not show both conditions as stated. Item 41004 states the broken organizer is put in recycling and a new one is unpacked, so its text states the object is not kept. Items 41005 and 41006 describe making a new tray and a new knob, not repair of an existing damaged object. Item 41007 states that no completed activity is described, and item 41008 states the subject is not described. This proposal does not classify the pool; a reviewer must confirm membership.
+
+Separate evidence assessment: claude-opus (sub-agent alias opus of the Cowork session; version not attested), settings hash 21941feceada. It did not see the classifications. It can be the same model. Agreement of the two calls is not independent proof.
+
+Direction and strength: Remove from the feed, chosen by you.
+
+Raw model replies (3)
+
+The model can be wrong. This block repeats what it returned. Nothing here is approved.
+
+Application checks
+
+Damaged object repaired and kept in use
+
+This page repeated these checks from the reviewed record:
+
+Passed: Every selected item is in the evidence scope (3 selected of 8 in the scope)
+Passed: No item is selected twice
+Passed: Every item in the scope has one classification (8 of 8)
+Passed: Every item in the scope has one separate evidence assessment (8 of 8)
+Passed: An item on which the two calls disagree gets no decision and is not selected (item 41007)
+Passed: An item whose text lacks a number of the definition gets no decision and is not selected (none)
+Passed: The record is bound to the source data, the request and the action by their hashes (source 4d51951dbedc · request cdbf5c0d7b38 · action 885ac99f78ab)
+
+Numbers that an item must contain: none. The second call can only remove an item from the selection. It never adds one.
+
+Selected items that have an existing category: 41001 (K1); 41002 (K2); 41003 (K3).
+
+Items without a decision (not selected): 41007, 41008. The name was compared only with the categories in the scope.
+
+Selected items: 41001, 41002, 41003. Evidence scope: 41001, 41002, 41003, 41004, 41005, 41006, 41007, 41008.
+
+Provider and model, as the server settings name them: operator-relay-file-queue / claude-opus (sub-agent alias opus of the Cowork session; version not attested). Settings hash 21941feceada (it identifies the settings, not the model). The application did not verify which model answered.
+
+The complete text that holds each quotation. The application checked the words, not the meaning. Look for a negation or a contrary sentence before you approve:
+
+Item 41001, description: “A bent metal bookmark is straightened with pliers and used again. The existing piece is kept.”
+
+Item 41002, description: “A torn canvas satchel is mended with a needle and spare thread so it can carry books again. The same bag is kept.”
+
+Item 41003, description: “A leaking clay jug is sealed and returned to watering plants. The same jug remains in use.”
+
+These checks are mechanical. A passed check shows that names, IDs and quotations exist in the item data. It does not show that the meaning is right.
+
+Your decision
+
+If you approve:
+
+Damaged object repaired and kept in use: Remove from the feed for items 41001, 41002, 41003.
+
+Only items in the evidence scope change. Other items with the same category, tag or subject stay as they are.
+
+Nothing has changed yet. The feed below stays as it is until you approve.
+
+Approve before 10:07:31 AM. After that time the server no longer accepts this review.
+
+Approve this exact item set and apply
+Discard this review and apply nothing
+Evidence for every item in the scope
+
+Each row is one item of the evidence scope. A marked row is selected. An unmarked row is not selected, and the row says why.
+
+Item	Description in the item data	Its categories and tags	Classification under the definition (call 2)	Separate evidence assessment (call 3)	Decision of the application	Result if approved
+41001
+SELECTED
+	A bent metal bookmark is straightened with pliers and used again. The existing piece is kept.	
+K1
+tags: K1
+	matches the definition · "A bent metal bookmark is straightened with pliers and used again. The existing piece is kept." Damage condition: the existing bookmark is bent and is straightened, which the definition lists as a repair. Keep condition: the caption states it is used again and the existing piece is kept. Both conditions have affirmative text.	supported · "A bent metal bookmark is straightened with pliers and used again. The existing piece is kept." The caption states an existing damaged object (bent bookmark) is fixed (straightened) and that the same object is used again and kept. Both required conditions, repair of a damaged existing object and keeping it in use, are affirmatively stated.	Selected: the classification matches and the separate assessment supports it	Removed from the feed
+41002
+SELECTED
+	A torn canvas satchel is mended with a needle and spare thread so it can carry books again. The same bag is kept.	
+K2
+tags: K2
+	matches the definition · "A torn canvas satchel is mended with a needle and spare thread so it can carry books again. The same bag is kept." Damage condition: the existing satchel is torn and is mended. Keep condition: the caption states the same bag is kept. Spare thread is a repair material, not the making of a new object. Both conditions have affirmative text.	supported · "A torn canvas satchel is mended with a needle and spare thread so it can carry books again. The same bag is kept." The caption states a damaged existing object (torn satchel) is mended, and that the same bag is kept for carrying books again. Both the repair condition and the keep condition are affirmatively stated.	Selected: the classification matches and the separate assessment supports it	Removed from the feed
+41003
+SELECTED
+	A leaking clay jug is sealed and returned to watering plants. The same jug remains in use.	
+K3
+tags: K3
+	matches the definition · "A leaking clay jug is sealed and returned to watering plants. The same jug remains in use." Damage condition: the existing jug is leaking and is sealed. Keep condition: the caption states the same jug remains in use. Both conditions have affirmative text.	supported · "A leaking clay jug is sealed and returned to watering plants. The same jug remains in use." The caption states a damaged existing object (leaking jug) is sealed, and that the same jug remains in use. Both the repair condition and the keep condition are affirmatively stated.	Selected: the classification matches and the separate assessment supports it	Removed from the feed
+41004	A broken desk organizer is put in recycling and a newly purchased organizer is unpacked in its place.	
+K1
+tags: K1
+	does not match · "A broken desk organizer is put in recycling and a newly purchased organizer is unpacked in its place." The damaged organizer is discarded to recycling and replaced by a different, newly purchased organizer. The definition states that discard or replacement by a different object makes the keep condition false. No repair is stated.	contradicted · "A broken desk organizer is put in recycling and a newly purchased organizer is unpacked in its place." The caption states the broken organizer is discarded to recycling and replaced by a different, newly purchased object. The definition says discard or replacement by a different object makes the keep condition false. No repair is stated either.	Not selected: it does not match the definition	Unchanged
+41005	Paper offcuts are folded into a new tray. No glue or powered equipment is used.	
+K4
+tags: K4
+	does not match · "Paper offcuts are folded into a new tray." The caption states that a new object is made from leftover material. The definition states that making a new object, even from leftover material, is not a repair of an existing object. The repair condition is therefore false.	contradicted · "Paper offcuts are folded into a new tray." The caption states a new object is made from leftover material. The definition explicitly says making a new object, even from leftover material, is not a repair of an existing object. No damaged existing object is fixed or kept, so the repair condition is false.	Not selected: it does not match the definition	Unchanged
+41006	A raw wooden blank is shaped with an electric lathe into a new knob.	
+K2
+tags: K2
+	does not match · "A raw wooden blank is shaped with an electric lathe into a new knob." The caption states that a new knob is made from a raw blank. The blank is not described as damaged, and making a new object is not a repair of an existing object under the definition. The repair condition is therefore false.	contradicted · "A raw wooden blank is shaped with an electric lathe into a new knob." The caption states a new object (knob) is made from a raw blank. The definition says making a new object is not a repair of an existing object. No damaged existing object is repaired or kept, so the repair condition is false.	Not selected: it does not match the definition	Unchanged
+41007	A page of knot diagrams is shown. No completed activity or finished object is described.	
+K3
+tags: K3
+	does not match · "A page of knot diagrams is shown. No completed activity or finished object is described." The caption affirmatively states its subject (a page of knot diagrams) and states that no completed activity is described. The definition requires the item's own description to state a repair of a damaged object; this description explicitly states it describes no such activity, so the repair condition is false. This is an explicit negative statement, not missing information.	not stated · "No completed activity or finished object is described." The caption describes only a page of knot diagrams and states that no activity or object is described. It does not say whether any damaged object is repaired or kept, so membership is unknown.	Not selected: the two calls do not agree	Unchanged
+41008	The only notes are a blue background and a 20-second duration. The subject is not described.	
+K4
+tags: K4
+	no decision The caption only gives a background colour and a duration and states that the subject is not described. It does not say whether any damaged object is repaired or kept, so under the definition membership is unknown.	not stated · "The subject is not described." The caption gives only a background colour and duration and states the subject is not described. Neither the repair condition nor the keep condition is stated, so membership is unknown.	Not selected: no decision	Unchanged
+
+A quotation or a category name shows that the words exist in the item data. It does not show that the decision is right. Read each row before you approve.
+
+Preview: the first ten items now and after approval
+Now (applied feed)
+Item 41006
+Item 41007
+Item 41008
+Item 41001 (leaves)
+Item 41002 (leaves)
+Item 41003 (leaves)
+Item 41004
+Item 41005
+After approval
+Item 41006
+Item 41007
+Item 41008
+Item 41004 (up 3)
+Item 41005 (up 3)
+
+Leaves the list: 41001, 41002, 41003. Changes position: 41004 (7 to 4), 41005 (8 to 5). Eligible items now: 8. After approval: 5.
+
+The applied feed is unchanged until you approve. The item cards below still show the applied feed.
+
+Only the items in the scope were assessed. A quotation does not prove that an item fits.
+
+Data of this review: invented items of a bundled scenario. Scores: the diagnostic scorer, a fixed formula.

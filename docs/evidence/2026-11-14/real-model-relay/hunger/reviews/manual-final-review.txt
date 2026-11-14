@@ -1,0 +1,117 @@
+PREVIEW · NOTHING IS APPLIED YET
+
+Proposed change: Manual: Repair
+
+Go to your decision
+
+Your selection
+
+Manual: Repair
+
+You chose the existing category Repair and the action Remove from the feed. No model is used.
+
+Application checks
+
+Checks of the request
+
+Passed: The chosen category exists in the catalogue
+Passed: The selected items are exactly the scope items that carry the category (2 of 8 scope items)
+
+Manual: Repair
+
+Passed: Every selected item is in the evidence scope (2 selected of 8 in the scope)
+Passed: No item is selected twice
+Passed: The selected items are exactly the items of the category Repair in the scope (2 of 8)
+Passed: The record is bound to the source data, the request and the action by their hashes (source ee116b420187 · request b2d092f7055b · action 3396e21ab851)
+
+This control selects 2 of the 8 items in the scope.
+
+Selected items: 81002, 81004. Evidence scope: 81001, 81002, 81003, 81004, 81005, 81006, 81007, 81008.
+
+Provider: none. This control uses no model.
+
+These checks are mechanical. A passed check shows that names, IDs and quotations exist in the item data. It does not show that the meaning is right.
+
+Your decision
+
+If you approve:
+
+Manual: Repair: Remove from the feed for items 81002, 81004.
+
+Only items in the evidence scope change. Other items with the same category, tag or subject stay as they are.
+
+Nothing has changed yet. The feed below stays as it is until you approve.
+
+Approve before 10:04:08 AM. After that time the server no longer accepts this review.
+
+Approve this exact item set and apply
+Discard this review and apply nothing
+Evidence for every item in the scope
+
+Each row is one item of the evidence scope. A marked row is selected. An unmarked row is not selected, and the row says why.
+
+Item	Description in the item data	Its categories and tags	Selected or not, and through what	Result if approved
+81001	Skillet lesson: A cook prepares an edible tomato-and-pasta dinner, showing the ingredients and finished plate.	
+Evening
+tags: Evening
+	not selected: its category is not Repair	Unchanged
+81002
+SELECTED
+	Chain lesson: A mechanic cleans and lubricates a bicycle chain. No food or meal is shown.	
+Repair
+tags: Repair
+	selected: its category is Repair	Removed from the feed
+81003	Oven lesson: A baker shapes edible bread dough, bakes the loaf, and slices it for eating.	
+Afternoon
+tags: Afternoon
+	not selected: its category is not Repair	Unchanged
+81004
+SELECTED
+	Lamp lesson: An electrician replaces a desk lamp switch. No food or cooking is shown.	
+Repair
+tags: Repair
+	selected: its category is Repair	Removed from the feed
+81005	Mystery clip: Duration and colour palette are listed, but the clip's subject is not described.	
+Evening
+tags: Evening
+	not selected: its category is not Repair	Unchanged
+81006	Bowl lesson: A cook chops edible vegetables and mixes a salad intended to be eaten.	
+Afternoon
+tags: Afternoon
+	not selected: its category is not Repair	Unchanged
+81007	Travel clip: The camera follows a train crossing a bridge. No food or cooking is shown.	
+Evening
+tags: Evening
+	not selected: its category is not Repair	Unchanged
+81008	Untitled clip: The title and thumbnail are unavailable; no content description is supplied.	
+Afternoon
+tags: Afternoon
+	not selected: its category is not Repair	Unchanged
+
+A quotation or a category name shows that the words exist in the item data. It does not show that the decision is right. Read each row before you approve.
+
+Preview: the first ten items now and after approval
+Now (applied feed)
+Item 81001
+Item 81002 (leaves)
+Item 81003
+Item 81004 (leaves)
+Item 81005
+Item 81006
+Item 81007
+Item 81008
+After approval
+Item 81001
+Item 81003 (up 1)
+Item 81005 (up 2)
+Item 81006 (up 2)
+Item 81007 (up 2)
+Item 81008 (up 2)
+
+Leaves the list: 81002, 81004. Changes position: 81003 (3 to 2), 81005 (5 to 3), 81006 (6 to 4), 81007 (7 to 5), 81008 (8 to 6). Eligible items now: 8. After approval: 6.
+
+The applied feed is unchanged until you approve. The item cards below still show the applied feed.
+
+Only the items in the scope were assessed. A quotation does not prove that an item fits.
+
+Data of this review: invented items of a bundled scenario. Scores: the diagnostic scorer, a fixed formula.

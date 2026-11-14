@@ -1,0 +1,52 @@
+Evidence for every item in the scope
+
+Each row is one item of the evidence scope. A marked row is selected. An unmarked row is not selected, and the row says why.
+
+Item	Description in the item data	Its categories and tags	Selected or not, and through what	Result if approved
+61001
+SELECTED
+	Episode 12 of a weeknight series. Running time 58 seconds.	
+Cooking > Home recipes
+tags: dinner, recipe
+	selected through category "Cooking" and category (level 2) "Home recipes" and tag "dinner" and tag "recipe"	Removed from the feed
+61002
+SELECTED
+	Part 3 of a weekend series. Running time 45 seconds.	
+Cooking > Baking
+tags: baking, bread
+	selected through category "Cooking" and category (level 2) "Baking" and tag "baking" and tag "bread"	Removed from the feed
+61003
+SELECTED
+	An evening walk between stalls. Running time 62 seconds.	
+Travel > City walks
+tags: night market, street food
+	selected through tag "street food"	Removed from the feed
+61004	A mechanic cleans a bicycle chain between bites of a sandwich.	
+Repair > Bicycle repair
+tags: bicycle, tools
+	not selected: none of its categories or tags was chosen	Unchanged
+61005	An electrician replaces a desk lamp switch.	
+Repair > Home repair
+tags: lamp, tools
+	not selected: none of its categories or tags was chosen	Unchanged
+61006	The camera follows a train crossing a bridge.	
+Travel > Rail journeys
+tags: bridge, train
+	not selected: none of its categories or tags was chosen	Unchanged
+61007	A player repeats a short guitar exercise.	
+Music > Guitar
+tags: guitar, practice
+	not selected: none of its categories or tags was chosen	Unchanged
+61008	A pianist plays one piece in a small room.	
+Music > Live sessions
+tags: live, piano
+	not selected: none of its categories or tags was chosen	Unchanged
+61009
+SELECTED
+	Episode 13 of a weeknight series. Running time 51 seconds.	
+Cooking > Home recipes
+tags: recipe, salad
+	selected through category "Cooking" and category (level 2) "Home recipes" and tag "recipe" and tag "salad"	Removed from the feed
+61010	Untitled clip: no category or tag is supplied.	no category and no tag	not selected: this item has no category and no tag	Unchanged
+
+A quotation or a category name shows that the words exist in the item data. It does not show that the decision is right. Read each row before you approve.

@@ -1,0 +1,3 @@
+- 2026-11-14T17:00:49Z request 1: check said "OK: the app would accept this answer file as a transport reply"; delivered answer-1.json unchanged with deliver (no --force). Request file 17:00:12 UTC, answer file 17:00:40 UTC.
+- 2026-11-14T17:02:03Z request 2: check said "OK: the app would accept this answer file as a transport reply"; delivered answer-2.json unchanged with deliver (no --force). Request file 17:01:28 UTC, answer file 17:01:55 UTC.
+- 2026-11-14T17:02:35Z request 3: check said "OK: the app would accept this answer file as a transport reply"; delivered answer-3.json unchanged with deliver (no --force). Request file 17:02:04 UTC, answer file 17:02:27 UTC.
