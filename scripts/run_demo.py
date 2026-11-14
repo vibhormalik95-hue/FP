@@ -63,20 +63,30 @@ def scenario_requests(name):
     return {'configured_model': body['text'], 'label': body['label']}
 
 
-def source_fingerprint():
+def source_fingerprint(root=None):
     """One SHA-256 over the files that decide what the served app does.
 
     It covers the application package, the built interface, this launcher, the
-    authored rehearsal replies and the bundled scenario inputs, as bytes on
-    disk. A run receipt that records it can be matched to an exact source tree
-    without Git. Print it with ``python scripts/run_demo.py --fingerprint``.
+    authored rehearsal replies and the bundled scenario inputs. A run receipt
+    that records it can be matched to an exact source tree without Git. Print
+    it with ``python scripts/run_demo.py --fingerprint``.
+
+    The value is the same on Windows, Linux and macOS for the same tree. Files
+    are ordered by the parts of their relative path, compared as case-sensitive
+    text. CRLF line endings in Python files count as LF, because Git on Windows
+    can convert them on checkout. Every other file is hashed as bytes on disk.
     """
-    files = [*(ROOT / 'feedctrl').glob('*.py'), *(ROOT / 'web' / 'dist').rglob('*'), *INPUTS.rglob('*'),
-             ROOT / 'scripts' / 'run_demo.py', ROOT / 'scripts' / 'demo_scripted_replies.py']
+    root = ROOT if root is None else Path(root)
+    inputs = root / 'tools' / 'hosted_validation_current' / 'inputs'
+    files = [*(root / 'feedctrl').glob('*.py'), *(root / 'web' / 'dist').rglob('*'), *inputs.rglob('*'),
+             root / 'scripts' / 'run_demo.py', root / 'scripts' / 'demo_scripted_replies.py']
     digest = hashlib.sha256()
-    for path in sorted(path for path in files if path.is_file()):
-        digest.update(path.relative_to(ROOT).as_posix().encode('utf-8') + b'\0')
-        digest.update(hashlib.sha256(path.read_bytes()).digest())
+    for parts, path in sorted((path.relative_to(root).parts, path) for path in files if path.is_file()):
+        data = path.read_bytes()
+        if path.suffix == '.py':
+            data = data.replace(b'\r\n', b'\n')
+        digest.update('/'.join(parts).encode('utf-8') + b'\0')
+        digest.update(hashlib.sha256(data).digest())
     return digest.hexdigest()
 
 

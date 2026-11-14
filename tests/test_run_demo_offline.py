@@ -251,7 +251,7 @@ def test_personal_cli_indirect_scenario_serves_the_hunger_fixture(personal):
     assert json.loads((tmp / 'i.json').read_text())['attempted'] == 2
 
 
-def test_source_fingerprint_is_stable_and_changes_with_served_source(tmp_path, monkeypatch):
+def test_source_fingerprint_is_stable_and_changes_with_served_source(tmp_path):
     first = run_demo.source_fingerprint()
     assert len(first) == 64 and first == run_demo.source_fingerprint()
     copy = tmp_path / 'copy'
@@ -260,12 +260,43 @@ def test_source_fingerprint_is_stable_and_changes_with_served_source(tmp_path, m
     (copy / 'scripts').mkdir()
     for name in ('run_demo.py', 'demo_scripted_replies.py'):
         shutil.copy(ROOT / 'scripts' / name, copy / 'scripts' / name)
-    monkeypatch.setattr(run_demo, 'ROOT', copy)
-    monkeypatch.setattr(run_demo, 'INPUTS', copy / 'tools' / 'hosted_validation_current' / 'inputs')
-    assert run_demo.source_fingerprint() == first
+    assert run_demo.source_fingerprint(copy) == first
     with open(copy / 'feedctrl' / 'staged_routes.py', 'ab') as handle:
         handle.write(b'\n# changed\n')
-    assert run_demo.source_fingerprint() != first
+    assert run_demo.source_fingerprint(copy) != first
+
+
+def test_source_fingerprint_is_the_same_on_every_operating_system(tmp_path):
+    """The order and the line-ending rule are fixed here, not left to the platform.
+
+    Windows compares paths without case, so REVIEW-NOTES.md would sort after
+    app-data.json there if the order came from the paths themselves.
+    """
+    import hashlib
+    inputs = 'tools/hosted_validation_current/inputs'
+    content = {
+        'feedctrl/a.py': b'x = 1\ny = 2\n',
+        'scripts/demo_scripted_replies.py': b'TABLE = {}\n',
+        'scripts/run_demo.py': b'print(1)\n',
+        f'{inputs}/REVIEW-NOTES.md': b'notes\n',
+        f'{inputs}/app-data.json': b'{}\n',
+        'web/dist/index.html': b'<html>\n</html>\n',
+    }
+    for name, data in content.items():
+        (tmp_path / name).parent.mkdir(parents=True, exist_ok=True)
+        (tmp_path / name).write_bytes(data)
+    expected = hashlib.sha256()
+    for name in ('feedctrl/a.py', 'scripts/demo_scripted_replies.py', 'scripts/run_demo.py',
+                 f'{inputs}/REVIEW-NOTES.md', f'{inputs}/app-data.json', 'web/dist/index.html'):
+        expected.update(name.encode('utf-8') + b'\0')
+        expected.update(hashlib.sha256(content[name]).digest())
+    assert run_demo.source_fingerprint(tmp_path) == expected.hexdigest()
+    # A Windows checkout can give Python files CRLF line endings: the value stays the same.
+    (tmp_path / 'feedctrl/a.py').write_bytes(b'x = 1\r\ny = 2\r\n')
+    assert run_demo.source_fingerprint(tmp_path) == expected.hexdigest()
+    # Every other file counts as bytes on disk.
+    (tmp_path / 'web/dist/index.html').write_bytes(b'<html>\r\n</html>\r\n')
+    assert run_demo.source_fingerprint(tmp_path) != expected.hexdigest()
 
 
 def test_status_reports_the_fingerprint_only_when_the_launcher_sets_it():
