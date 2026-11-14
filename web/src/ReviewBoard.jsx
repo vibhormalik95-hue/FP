@@ -14,7 +14,7 @@ export function definitionEvidence(evidence, context) {
   return evidence.map((e,n)=>{
     const row=context?.find(r=>r.item_id===e.item_id&&r.field===e.field&&r.quote===e.quote);
     const available=typeof row?.supplied_field_text==='string';
-    return <div className="help" key={n} aria-label="Definition cited source context">
+    return <div className="help" key={n} role="group" aria-label="Definition cited source context">
       <p>Item {e.item_id}, {fieldWords(e.field)}: the complete text that holds the quotation "{e.quote}". The application checked the words, not the meaning.</p>
       {available?<p style={{whiteSpace:'pre-wrap',overflowWrap:'anywhere'}}>{row.supplied_field_text}</p>:
         <p>Full source field unavailable for this citation.</p>}
@@ -66,7 +66,7 @@ function contextRows(rows, names) {
   const lines = rows.map(e=><p className="help" key={`${e.item_id}-${e.field}-${e.quote}`}>Item {e.item_id}, {fieldWords(e.field)}: “{e.supplied_field_text??'unavailable'}”{e.truncated?' [truncated]':''}{e.quote_present?'':' [quote not found in current text]'}</p>);
   // A chosen category or tag name is the whole evidence, and the table shows it for every item: keep this list folded.
   if (names) return <details className="raw" aria-label="Full cited source context"><summary>The complete field of each selected item that carries a chosen name ({rows.length})</summary>{lines}</details>;
-  return <div aria-label="Full cited source context">
+  return <div role="group" aria-label="Full cited source context">
     <p className="help">The complete text that holds each quotation. The application checked the words, not the meaning. Look for a negation or a contrary sentence before you approve:</p>
     {lines}
   </div>;
@@ -155,7 +155,7 @@ function applicationChecks(group, pending, context, shared, words) {
 function planNotes(pending) {
   const notes = Array.isArray(pending.plan_notes) ? pending.plan_notes : planConflicts(pending.groups);
   if (!notes.length) return null;
-  return <div className="plan-notes" aria-label="Notes about the whole plan">
+  return <div className="plan-notes" role="group" aria-label="Notes about the whole plan">
     <p><b>Notes about the whole plan</b></p>
     <ul>{notes.map((note, n) => <li key={n} data-kind={note.kind || 'note'}><b>Note:</b> {note.message}{Array.isArray(note.item_ids) && note.item_ids.length > 0 && !String(note.message).includes(String(note.item_ids[0])) ? ` (${note.item_ids.length === 1 ? 'item' : 'items'} ${note.item_ids.join(', ')})` : ''}</li>)}</ul>
     <p className="help">A note is not a failed check. Read it before you approve.</p>
@@ -249,7 +249,7 @@ function resolutionVariant({resolution, clarification, controls, words, expired,
     <div className="blocks">
       {block('reply', words.block, <>
         <p className="help">{words.The} proposed this definition and named other possible meanings. Nothing is approved.</p>
-        <div aria-label="Unapproved primary category">
+        <div role="group" aria-label="Unapproved primary category">
           <p>{words.name} <strong>{candidate.label}</strong></p>
           <p>{candidate.definition}</p>
           <p className="help">{words.reason} {candidate.rationale}</p>
@@ -282,7 +282,7 @@ function resolutionVariant({resolution, clarification, controls, words, expired,
 
 function definitionVariant({definition, controls, words, expired, deadlineText}) {
   const d = definition.definition;
-  return <div aria-label="Category definition review">
+  return <div role="group" aria-label="Category definition review">
     <p className="eyebrow review-flag">{expired ? 'EXPIRED · NOTHING WAS CLASSIFIED OR APPLIED' : `INTERPRETATION · NOTHING IS CLASSIFIED OR APPLIED YET${words.flag}`}</p>
     {heading('Review the proposed definition')}
     <p className="your-request">Your description: “{d.objective}”</p>
@@ -298,7 +298,7 @@ function definitionVariant({definition, controls, words, expired, deadlineText})
       {block('checks', 'Application checks', <>
         {citationChecks(d.proposal.evidence, definition.evidence_context)}
         {definitionEvidence(d.proposal.evidence,definition.evidence_context)}
-        {d.operator_resolution&&<div aria-label="Explicit category resolution record">
+        {d.operator_resolution&&<div role="group" aria-label="Explicit category resolution record">
           <p className="help">You chose this unchanged definition yourself. The original model result remains clarification, not an approval. You must still review the evidence.</p>
           <p className="help">Other meanings in the first reply: {d.original_clarification.clarification.alternatives.join('; ')}</p>
         </div>}
@@ -327,7 +327,7 @@ function outcomeVariant({outcome, controls, words, request}) {
   // Text of a reply belongs to the first block. The application's own sentences belong to the second block.
   const replyText = view.kind === 'model_report';
   const attempted = typeof outcome.calls_attempted === 'number' ? outcome.calls_attempted : null;
-  return <div aria-label="Result without a proposed change" data-status={outcome.status} data-kind={view.kind}>
+  return <div role="group" aria-label="Result without a proposed change" data-status={outcome.status} data-kind={view.kind}>
     <p className="eyebrow review-flag">NO CHANGE PROPOSED · NOTHING WAS APPLIED{selection || !['model_report', 'reply_rejected', 'provider_failure'].includes(view.kind) ? '' : words.flag}</p>
     {heading(view.heading)}
     {outcome.request_text ? <p className="your-request">{selection ? `Your selection: ${outcome.request_text}` : `Your request: “${outcome.request_text}”`}</p> : null}
@@ -381,7 +381,7 @@ function changedVariant({record, recordFresh, controls}) {
   // After a new request starts, the record is an earlier change: keep it, folded, under a title that says so.
   if (!recordFresh) return <details className="earlier-record" aria-label="Last applied change" data-kind={record.kind}>
     <summary>Last applied change ({time}): {record.kind === 'apply' ? 'a change was applied' : record.kind === 'undo' ? 'a change was undone' : 'every control was removed'}</summary>{body}</details>;
-  return <div aria-label="What changed" data-kind={record.kind}>
+  return <div role="group" aria-label="What changed" data-kind={record.kind}>
     <p className="eyebrow">{flag}</p>
     {heading('What changed')}
     {body}

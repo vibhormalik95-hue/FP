@@ -251,7 +251,7 @@ export default function SemanticPanel({api,user,resetKey,onFeed,onActive,onUnava
       <select id="semantic-count" disabled={disabled||(authored&&modelMethod)} value={choices.some(choice=>choice.value===scope)?scope:10} onChange={e=>setCount(Number(e.target.value))}>
         {choices.map(choice=><option key={choice.value} value={choice.value}>{choice.name}</option>)}</select>
       <p className="help">Items in the scope: {saved?.feed.baseline_items.slice(0,scope).join(', ')||'Loading...'}. The application uses no other item, and it does not shorten the list silently. {authored&&modelMethod?'The hand-written replies exist for this complete scope only.':'A request that is too large asks you for a smaller scope.'}</p>
-      {backend==='vocabulary'&&<div aria-label="Existing categories and tags in the scope" className="vocabulary-terms">
+      {backend==='vocabulary'&&<div role="group" aria-label="Existing categories and tags in the scope" className="vocabulary-terms">
         <span className="field-label">Existing categories and tags in the scope</span>
         {terms?<><p className="help">Categories: {termLine(t=>t.kind!=='tag'&&(t.level||1)===1)}.</p>
           <p className="help">Subcategories: {termLine(t=>t.kind!=='tag'&&(t.level||1)>1)}.</p>

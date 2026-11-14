@@ -165,7 +165,7 @@ function App({client, personal, onLock}) {
         {confirmReset ? <span className="confirm-reset" role="group" aria-label="Confirm the reset"><span>Remove every control and all feedback of this user? You cannot undo this.</span> <button type="button" className="text-button" onClick={resetUser}>Yes, remove everything</button> <button type="button" className="text-button" onClick={() => setConfirmReset(false)}>Keep everything</button></span>
           : <button type="button" className="text-button" disabled={busy || user === null} onClick={() => setConfirmReset(true)}>Reset this user ↺</button>}</div>
       {languageMissing && <p className="help tab-note" data-role="language-unavailable">The view "Language controls" is not available here: no item descriptions are loaded, so there is nothing to match a request with. To use it, start a bundled scenario, for example <code>python scripts/quickstart.py rehearse --scenario tags</code>.</p>}
-      <p className="view-intro" aria-label="About this view">{viewIntro}</p>
+      <p className="view-intro" data-role="view-intro">{viewIntro}</p>
       <div className={`workspace ${language ? 'language' : ''}`}>
         <aside className="controls">
           {!language && <>

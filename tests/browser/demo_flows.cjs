@@ -870,7 +870,7 @@ function check(name, condition, detail) {
       const { baseline, record, others } = await startFlow('fictional');
       const brief = receipt.status.scenario_requests ? receipt.status.scenario_requests.synthetic : undefined;
       check('fictional: the server supplies an example brief', typeof brief === 'string' && brief.length > 0);
-      await page.locator('summary', { hasText: 'Fictional items: drafts in a separate list' }).click();
+      await page.locator('summary', { hasText: 'Open the fictional items' }).click();
       const drafts = page.locator('section[aria-label="Fictional items"]');
       await drafts.getByRole('button', { name: 'Write a fictional draft' }).waitFor({ state: 'visible', timeout: 30000 });
       const start = await fictionalState();
@@ -945,7 +945,7 @@ function check(name, condition, detail) {
     receipt.language_view = await page.getByRole('button', { name: 'Language controls', exact: true }).isDisabled() ? 'not available' : 'available';
     if (receipt.language_view === 'available') {
       await ensureLanguage();
-      check('the language view names what it is and makes no accuracy claim', /It does not measure accuracy or satisfaction\./.test(await page.locator('[aria-label="About this view"]').innerText()));
+      check('the language view names what it is and makes no accuracy claim', /It does not measure accuracy or satisfaction\./.test(await page.locator('[data-role="view-intro"]').innerText()));
     } else check('the page says why the language view is not available', /not available here/.test(await page.locator('[data-role="language-unavailable"]').innerText()));
     await shot('start');
     await show('start: the status strip names the data and the provider', page.locator('.status-strip'), 4000);

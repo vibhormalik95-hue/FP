@@ -29,7 +29,7 @@ export default function SyntheticDraftPanel({api,user,resetKey,scenarioRequests,
     :`Model, as the server settings name it: ${model?.model||'not named'}.${model?.digest?` Settings hash ${String(model.digest).slice(0,12)} (it identifies the settings, not the model).`:''}`;
   const origin=authored?'authored reply (fictional)':'written by the model (fictional)';
   return <details open={open} onToggle={e=>setOpen(e.currentTarget.open)}>
-    <summary>Fictional items: drafts in a separate list</summary>
+    <summary>Open the fictional items</summary>
     {open&&<section className="panel" aria-label="Fictional items">
       <h3>Draft a fictional item</h3>
       <p className="help">{authored?'A hand-written reply gives a title, a description and a category name for an item that does not exist. No model writes it.':saved?.generation_available===false?'With a model provider, a model writes a title, a description and a category name for an item that does not exist.':'A model writes a title, a description and a category name for an item that does not exist.'} Nothing real is created: no media, no item of the catalogue and no verified fact. A fictional item lasts for this session only. It never enters the conditions A to E, the catalogue, the evidence scope of a language control or the trained scorer.</p>
@@ -44,7 +44,7 @@ export default function SyntheticDraftPanel({api,user,resetKey,scenarioRequests,
           :`Configured provider: ${saved?.generation_provider||'Loading...'}; model, as the settings name it: ${saved?.configured_model||'not named'}. The provider receives your description and the drafting instruction. It does not receive the catalogue or the history.`} One attempt for each click. No automatic second attempt.{authored?'':' The words of a model can be wrong or not suitable. Review them before you add the item.'}</p>}
       <button className="primary" disabled={disabled||!saved||saved.generation_available===false||!ack||!brief.trim()} onClick={generate}>{working?'Working...':'Write a fictional draft'}</button>
       <p role="status" aria-live="polite" className={message?'alert':'status-empty'}>{message}</p>
-      {pending&&<div className="saved-profile" aria-label="Fictional draft review">
+      {pending&&<div className="saved-profile" role="group" aria-label="Fictional draft review">
         <h4>Review the fictional item before you add it</h4>
         {pending.replayed_removed_record&&<p className="help">This is the removed fictional item, unchanged. No new call was made. Its original record is kept.</p>}
         <strong>{pending.draft.title}</strong><p>{pending.draft.description}</p>

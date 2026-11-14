@@ -64,7 +64,7 @@ export default function ReviewTable({pending, current, context, words}) {
 // that the difference does not depend on colour.
 export function BeforeAfter({current, pending}) {
   const diff = feedDiff(current?.feed?.items, pending?.feed?.items);
-  const list = (title, entries, label) => <div className="feed-list" aria-label={label}>
+  const list = (title, entries, label) => <div className="feed-list" role="group" aria-label={label}>
     <h5>{title}</h5>
     <ol>{entries.map(entry => <li key={entry.id} data-item={entry.id} className={entry.note ? 'changed' : ''}>Item {entry.id}{entry.note && <span className="feed-note"> ({entry.note})</span>}</li>)}</ol>
     {entries.length === 0 && <p className="help">No eligible item.</p>}
