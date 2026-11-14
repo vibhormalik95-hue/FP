@@ -271,6 +271,18 @@ export function categoryIdsReadable(categories) {
 
 const SOURCES = ['application_check', 'provider_failure', 'reply_rejected', 'model_report'];
 
+// The stage of the six that a failed step of the server belongs to (`failed_stage`).
+export function stageOfFailure(failedStage, fallback = 'Interpretation') {
+  if (['interpretation', 'definition'].includes(failedStage)) return 'Interpretation';
+  if (['evidence', 'membership', 'evidence_assessment', 'combined'].includes(failedStage)) return 'Evidence';
+  return fallback;
+}
+
+// Every text in a result that came from a reply. A sentence of the server that equals one of them is reply text too.
+export function replyTexts(outcome) {
+  return [outcome?.clarification?.model_reason, outcome?.reply_reason].filter(text => typeof text === 'string' && text.trim());
+}
+
 // Why a request ended without a proposal. The server names the source in
 // `outcome_source`. The page never infers "no call was made" from an empty list.
 export function outcomeKind(outcome) {
@@ -282,7 +294,7 @@ export function outcomeKind(outcome) {
   // A server without `outcome_source`. Only positive evidence counts: competing meanings, or a raw reply in the
   // list of calls, can only come from a reply. An empty list proves nothing, so the result stays 'unknown'.
   if (outcome.clarification && (outcome.clarification.model_reason || outcome.clarification.alternatives?.length)) return 'model_report';
-  const replied = (outcome.model_calls || []).some(call => call && (call.raw_response !== undefined || call.raw_output !== undefined));
+  const replied = (outcome.model_calls || []).some(call => call && (call.raw_response !== undefined || call.raw_output !== undefined || typeof call.raw_text === 'string'));
   if (replied && ['no_match', 'unsupported', 'clarify'].includes(outcome.status)) return 'model_report';
   if (replied && ['error', 'duplicate'].includes(outcome.status)) return 'reply_rejected';
   return 'unknown';
@@ -320,7 +332,13 @@ export function outcomeView(outcome, words = sourceWords(false)) {
     view.heading = 'The application stopped the request';
     view.first = [`${words.authored ? 'The server did not look up an authored reply.' : 'No model call was made.'} The application stopped the request with its own check.`];
     view.next = ['Read the reason and the failed check under "Application checks".'];
-    if (/negat/i.test(failed + ' ' + (outcome.reason || ''))) view.next.push('The application does not interpret a negated command such as "do not hide ...". Write what you want as a positive instruction, for example "remove ..." or "show more ...".');
+    if (status === 'limit') {
+      view.heading = 'At most eight controls can be applied';
+      view.next = ['Remove an applied control first, or choose "Replace every applied control".'];
+    } else if (status === 'label_collision') {
+      view.heading = 'An applied control has the same name';
+      view.next = ['Change the name of this control, or remove the applied control first.'];
+    } else if (/negat/i.test(failed + ' ' + (outcome.reason || ''))) view.next.push('The application does not interpret a negated command such as "do not hide ...". Write what you want as a positive instruction, for example "remove ..." or "show more ...".');
     else if (/budget|too (long|large|many)/i.test(failed + ' ' + (outcome.reason || ''))) view.next.push('Choose a smaller evidence scope.');
     else view.next.push('Change the request or the applied controls so that the check passes.');
   } else if (kind === 'provider_failure') {
@@ -340,8 +358,10 @@ export function outcomeView(outcome, words = sourceWords(false)) {
       : status === 'clarify' ? ['The proposal was too broad or not consistent. Name a narrower subject, or split the request.', 'Or use another method.']
       : ['Send the request again, or write it with other words.', 'Or use another method.'];
   } else if (kind === 'model_report') {
-    view.replyReason = outcome.clarification?.model_reason || (status === 'clarify' ? null : outcome.reason) || null;
-    view.showReason = status === 'clarify';   // for no match and unsupported the reason is the reply's own text and stays in the first block
+    const own = replyTexts(outcome);
+    view.replyReason = own[0] || (status === 'clarify' ? null : outcome.reason) || null;
+    // The reason of the server stands under "Application checks" only when it is not the text of the reply.
+    view.showReason = typeof outcome.reason === 'string' && outcome.reason.trim() !== '' && outcome.reason !== view.replyReason && !own.includes(outcome.reason);
     view.second = ['The application accepted this result because the reply selects nothing. It did not check the reason.'];
     if (status === 'no_match') {
       view.heading = `${reply} reports no match`;

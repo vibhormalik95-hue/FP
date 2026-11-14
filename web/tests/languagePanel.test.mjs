@@ -454,3 +454,59 @@ test('the data notice of a new category names the applied controls (M14)', async
   await ui.open(); ui.choose('semantic-backend', 'staged'); await ui.settle();
   assert.ok(ui.text(ui.region('Language controls panel')).includes('the names and item IDs of the controls that are applied'));
 });
+
+test('the reason of a ready reply comes from reply_reason, and the deadline from review_window_seconds (F13, M7)', async () => {
+  const {ui, timers} = fixture({'semantic/vocabulary/preview': {...ready([hungry], [3, 4]), reason: undefined, reply_reason: 'Reason of the reply from the new field.', review_window_seconds: 60}});
+  await request(ui);
+  assert.ok(ui.text(ui.region('Model output (not verified)')).includes('Reason that the model gave: Reason of the reply from the new field.'));
+  timers.advance(56 * 1000); ui.render(); await ui.settle();
+  assert.equal(ui.region('Review board').props['data-expired'], 'true');
+});
+
+test('an error answer with a structured result is a result without a change, in the stage that the server names (M4)', async () => {
+  const payload = {ready: false, status: 'error', outcome_source: 'provider_failure', calls_attempted: 1, failed_stage: 'interpretation',
+    reason: 'This server has no model. It has no reply for this request.', model_calls: []};
+  const error = Object.assign(new Error('Semantic proposal failed (ProviderMessage); no preferences changed: ...'), {status: 502, payload});
+  const {ui} = fixture({'semantic/preview': error}, {provider: {backend: 'scripted-authored-replies', live_model: false}});
+  await request(ui, 'configured_model', 'Hide everything about trains.');
+  assert.equal(variant(ui), 'outcome');
+  const board = ui.text(ui.region('Review board'));
+  for (const value of ['No authored reply exists for this request', 'Message of the server: This server has no model.', 'Authored replies looked up for this request: 1.']) assert.ok(board.includes(value), value);
+  assert.equal(board.includes('Semantic proposal failed'), false);
+  assert.equal(stages(ui).split(' ')[1], 'now');
+  // A failure in the evidence stage of the staged method is shown there, with the lost definition.
+  const late = {...payload, failed_stage: 'evidence_assessment', definition_consumed: true, calls_attempted: 3};
+  const staged = fixture({'semantic/definition/preview': late});
+  await request(staged.ui, 'staged', 'A category.');
+  assert.equal(stages(staged.ui).split(' ')[2], 'now');
+  assert.ok(staged.ui.text(staged.ui.region('Your decision')).includes('The definition that you approved is used up.'));
+});
+
+for (const [status, heading, next] of [['limit', 'At most eight controls can be applied', 'Replace every applied control'],
+  ['label_collision', 'An applied control has the same name', 'Change the name of this control']]) {
+  test(`${status}: an application check before any call, with its own heading and next step (contract 4)`, async () => {
+    const stop = {ready: false, applied: false, status, outcome_source: 'application_check', calls_attempted: 0, failed_stage: 'interpretation', reason: 'Sentence of the server.',
+      checks: [{check: 'Check of the server', passed: false, detail: 'detail'}], model_calls: []};
+    const {ui} = fixture({'semantic/vocabulary/preview': stop});
+    await request(ui);
+    const board = ui.text(ui.region('Review board'));
+    for (const value of [heading, next, 'Stopped: Sentence of the server.', 'No model call was made.', 'No model call was started.']) assert.ok(board.includes(value), value);
+  });
+}
+
+test('a report of the model keeps its reason out of the application block also when the server repeats it as the reason (M3)', async () => {
+  const stop = {ready: false, applied: false, status: 'clarify', outcome_source: 'model_report', calls_attempted: 1, reason: 'Which of the two meanings?', reply_reason: 'Which of the two meanings?',
+    clarification: {alternatives: ['First meaning.', 'Second meaning.'], negation_resolved: true}, model_calls: [{raw_response: {status: 'ambiguous'}}]};
+  const {ui} = fixture({'semantic/preview': stop});
+  await request(ui, 'configured_model', 'Less heavy stuff.');
+  assert.ok(ui.text(ui.region('Model output (not verified)')).includes('Which of the two meanings?'));
+  assert.equal(ui.text(ui.region('Application checks')).includes('Which of the two meanings?'), false);
+});
+
+test('the server names the items of a control outside the scope (m1, scope_effects)', async () => {
+  const effect = [{label: 'Exclude: Cooking', in_scope_item_ids: [1, 2], outside_scope_item_ids: [7, 9], message: 'This control selects 2 of the 4 items in the scope.'}];
+  const {ui} = fixture({'semantic/vocabulary/preview': {...ready([hungry], [3, 4]), scope_effects: effect}});
+  await request(ui);
+  const checked = ui.text(ui.region('Application checks'));
+  for (const value of ['This control selects 2 of the 4 items in the scope.', '2 items with a chosen name are outside the evidence scope and do not change: 7, 9.']) assert.ok(checked.includes(value), value);
+});

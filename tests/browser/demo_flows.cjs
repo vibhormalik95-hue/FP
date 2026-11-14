@@ -585,9 +585,9 @@ function check(name, condition, detail) {
       const output = await board.locator(`section[aria-label="${replyBlock()}"]`).innerText();
       check('vocabulary: the reply block shows the span of the request and each chosen name',
         vocabulary.controls.every(control => output.includes(control.intent_span) && control.terms.every(term => output.includes(`"${term.value}"`))), record.chosen_terms);
-      record.reply_reason_sent = typeof answer.body.reason === 'string';
-      if (record.reply_reason_sent) check('vocabulary: the reason of the whole reply is in the reply block and not under the application checks',
-        output.includes(answer.body.reason.trim()) && !checksText.includes(answer.body.reason.trim()));
+      // The reason of the whole reply (vocab F13): the server sends it as reply_reason.
+      check('vocabulary: the server sends the reason of the whole reply, and the page shows it in the reply block and not under the application checks',
+        typeof answer.body.reply_reason === 'string' && output.includes(answer.body.reply_reason.trim()) && !checksText.includes(answer.body.reply_reason.trim()));
       check('vocabulary: the chosen names are categories or tags, and the request text is not changed',
         vocabulary.controls.every(control => control.terms.every(term => ['category', 'tag'].includes(term.kind) && terms.terms.some(known => known.term_id === term.term_id && known.value === term.value)))
           && answer.body.groups.every(group => group.request === request));
@@ -665,8 +665,9 @@ function check(name, condition, detail) {
           entry.alternatives_shown = await board.locator('[aria-label="Alternatives named in the reply"] li').count();
           const checksText = await board.locator('section[aria-label="Application checks"]').innerText();
           const replyText = (await board.locator(`section[aria-label="${replyBlock()}"]`).count()) ? await board.locator(`section[aria-label="${replyBlock()}"]`).innerText() : '';
+          const replyReason = [body.clarification && body.clarification.model_reason, body.reply_reason, body.status === 'clarify' ? null : body.reason].find(value => typeof value === 'string' && value.trim());
           if (body.outcome_source === 'model_report') check(`outcomes: ${name}: the reason of the reply stands in the reply block, not under the application checks`,
-            typeof body.reason === 'string' && replyText.includes(body.reason.trim()) && !checksText.includes(body.reason.trim()));
+            typeof replyReason === 'string' && replyText.includes(replyReason.trim()) && !checksText.includes(replyReason.trim()));
           if (body.outcome_source === 'application_check') check(`outcomes: ${name}: the page says that no call was made, and only for a stop before any call`,
             /The application stopped the request with its own check\./.test(replyText) && /(No model call was|did not look up an authored reply)/.test(replyText));
           else check(`outcomes: ${name}: the page does not say that no call was made`, !/(No model call was|did not look up an authored reply)/.test(text));
@@ -748,7 +749,8 @@ function check(name, condition, detail) {
       if (body.ready === true) { await board.getByRole('button', { name: 'Discard this review and apply nothing' }).click(); record.outcome = 'the provider answered; no failure to show'; return; }
       const text = (await board.count()) ? await board.innerText() : '';
       fs.writeFileSync(path.join(OUT, 'failure-board.txt'), text);
-      check('failure: the server reports a begun call that gave no usable reply', answer.http === 200 && body.outcome_source === 'provider_failure' && body.calls_attempted >= 1, record.observed);
+      // The description route answers a failed call with HTTP 502 and the same structured result; the other routes with HTTP 200.
+      check('failure: the server reports a begun call that gave no usable reply', [200, 502].includes(answer.http) && body.outcome_source === 'provider_failure' && body.calls_attempted >= 1, record.observed);
       check('failure: the page names the failed call and never says that no call was made',
         (authored() ? /No authored reply exists for this request/.test(text) : /The call to the provider failed/.test(text)) && !/(No model call was|did not look up an authored reply|No model was called)/.test(text));
       check('failure: the page offers no Apply and no button that sends the same refusal again',

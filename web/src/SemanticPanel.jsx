@@ -1,6 +1,6 @@
 import React, {useEffect, useRef, useState} from 'react';
 import ReviewBoard, {definitionEvidence} from './ReviewBoard.jsx';
-import {actionWords, adoptText, changeRecord, exampleOptions, outcomeView, plural, REVIEW_MARGIN_SECONDS, REVIEW_SECONDS, scopeChoices, sourceWords, stageStates} from './reviewModel.js';
+import {actionWords, adoptText, changeRecord, exampleOptions, outcomeView, plural, REVIEW_MARGIN_SECONDS, REVIEW_SECONDS, scopeChoices, sourceWords, stageOfFailure, stageStates} from './reviewModel.js';
 
 export {definitionEvidence};
 
@@ -114,7 +114,9 @@ export default function SemanticPanel({api,user,resetKey,onFeed,onActive,onUnava
     if(title&&title.focus)title.focus({preventScroll:true});},[focusKey]);
   useEffect(()=>{if(!fieldFocus||typeof document==='undefined')return;const field=document.getElementById(fieldFocus);
     if(field){if(field.scrollIntoView)field.scrollIntoView({block:'center'});if(field.focus)field.focus({preventScroll:true});}setFieldFocus(null);},[fieldFocus]);
-  const arm=()=>{setDeadline(timers.now()+(REVIEW_SECONDS-REVIEW_MARGIN_SECONDS)*1000);setExpired(false);};
+  // The server states how long it accepts a review (`review_window_seconds`); the page ends a little earlier.
+  const arm=answer=>{const seconds=Number.isFinite(answer?.review_window_seconds)&&answer.review_window_seconds>REVIEW_MARGIN_SECONDS?answer.review_window_seconds:REVIEW_SECONDS;
+    setDeadline(timers.now()+(seconds-REVIEW_MARGIN_SECONDS)*1000);setExpired(false);};
   const shown=()=>setFocusKey(n=>n+1);
   function fail(e,stage){
     const kind=e?.kind==='session'||e?.kind==='network'?e.kind:undefined;
@@ -126,7 +128,8 @@ export default function SemanticPanel({api,user,resetKey,onFeed,onActive,onUnava
     const request=Symbol(),id=generation.current;activeRequest.current=request;setWorking(true);setMessage('');setFailure(null);setBusyStage(stage);setBusyCall(call);setStoppedStage(null);
     if(onActive)onActive();
     if(!keepClarification){setClarification(null);setResolution(null);setResolutionChoice('');}
-    try{await work(id);}catch(e){if(id===generation.current)fail(e,stage);}
+    // An error answer that carries a structured result (outcome_source) is a result without a change, not a crash.
+    try{await work(id);}catch(e){if(id===generation.current){if(e?.payload?.outcome_source)stopped(e.payload,stage);else fail(e,stage);}}
     finally{if(activeRequest.current===request)activeRequest.current=null;if(id===generation.current)setWorking(false);}}
   // The person stops waiting. The call can still finish on the server; this page discards its result.
   function stopWaiting(){if(!activeRequest.current)return;++generation.current;activeRequest.current=null;setWorking(false);
@@ -134,8 +137,8 @@ export default function SemanticPanel({api,user,resetKey,onFeed,onActive,onUnava
   async function load(id){const r=await api(`semantic/groups?user_id=${user}`);
     if(id===generation.current){setSaved(r);return r;}}
   // A result without a proposal. `stage` is the stage in which the request ended.
-  function stopped(p,stage,lost){const result={...p,method:backend,status:p.status||'clarify',request_text:backend==='manual_category'?`category ${category}`:text,lost};
-    setOutcome(result);setStoppedStage(stage);setMessage(`${outcomeView(result,words).heading}. Nothing was applied. See the result.`);shown();}
+  function stopped(p,stage,lost){const result={...p,method:backend,status:p.status||'clarify',request_text:backend==='manual_category'?`category ${category}`:text,lost:lost||(p.definition_consumed?'The definition that you approved is used up. To try again, press "Propose a definition for review" again.':undefined)};
+    setOutcome(result);setStoppedStage(p.failed_stage?stageOfFailure(p.failed_stage,stage||'Interpretation'):stage);setMessage(`${outcomeView(result,words).heading}. Nothing was applied. See the result.`);shown();}
   // The server no longer accepts a review: it is older than five minutes, or a newer request replaced it.
   function expiredNow(stage,reason){clearReview();setOutcome({page:'expired',status:'expired',reason,method:backend,request_text:modelMethod?text:undefined});setStoppedStage(stage);
     setMessage('The review has expired. Nothing was applied.');shown();}
@@ -150,9 +153,9 @@ export default function SemanticPanel({api,user,resetKey,onFeed,onActive,onUnava
         action_source:explicitTarget?'confirmed':backend==='configured_model'?'model':actionSource,
         ...(explicitTarget?{confirmed_target:target,target_confirmed:confirmedNow}:{})});
     if(id!==generation.current)return;
-    if(p.definition_ready){setDefinition(p);arm();setMessage('The proposed definition is ready for your review. Nothing is classified or applied.');shown();}
-    else if(p.ready){setPending(p);arm();setMessage('The review is ready. Nothing is applied yet.');shown();}
-    else if(p.resolution_ready){setResolution(p);setResolutionChoice('');setClarification(p.clarification||null);arm();
+    if(p.definition_ready){setDefinition(p);arm(p);setMessage('The proposed definition is ready for your review. Nothing is classified or applied.');shown();}
+    else if(p.ready){setPending(p);arm(p);setMessage('The review is ready. Nothing is applied yet.');shown();}
+    else if(p.resolution_ready){setResolution(p);setResolutionChoice('');setClarification(p.clarification||null);arm(p);
       setMessage('The reply names more than one meaning. Choose in the result. Nothing is approved or applied.');shown();}
     // A second call of the description method belongs to the evidence stage.
     else stopped(p,backend==='manual_category'?'Evidence':(p.calls_attempted>=2||p.action)?'Evidence':'Interpretation');},false,backend==='manual_category'?'Evidence':'Interpretation',backend!=='manual_category');}
@@ -163,7 +166,7 @@ export default function SemanticPanel({api,user,resetKey,onFeed,onActive,onUnava
       catch(e){if(id===generation.current&&isExpiry(e)){expiredNow('Interpretation',e.message);return;}throw e;}
       if(id!==generation.current)return;
       clearReview();
-      if(p.definition_ready){setDefinition(p);arm();setMessage('The definition is ready for your review. Nothing is classified or applied.');shown();}
+      if(p.definition_ready){setDefinition(p);arm(p);setMessage('The definition is ready for your review. Nothing is classified or applied.');shown();}
       else if(p.status==='cancelled')setMessage('Category clarification cancelled. Nothing was approved or applied.');
       else stopped(p,'Interpretation');
     },true,'Interpretation');
@@ -172,7 +175,7 @@ export default function SemanticPanel({api,user,resetKey,onFeed,onActive,onUnava
     try{p=await api('semantic/definition/classify',{user_id:user,plan_id:definition.definition_plan_id,evidence_reviewed:evidenceReviewed});}
     catch(e){if(id===generation.current&&isExpiry(e)){expiredNow('Interpretation',e.message);return;}throw e;}
     if(id!==generation.current)return;clearReview();
-    if(p.ready){setPending(p);arm();setMessage('The review is ready. Nothing is applied yet.');shown();}
+    if(p.ready){setPending(p);arm(p);setMessage('The review is ready. Nothing is applied yet.');shown();}
     // The approved definition is single use: after a stop here it must be proposed again.
     else stopped(p,'Evidence','The definition that you approved is used up. To try again, press "Propose a definition for review" again.');},false,'Evidence',true);}
   // An explicit rejection of the definition under review. The server forgets the proposal.
@@ -181,7 +184,7 @@ export default function SemanticPanel({api,user,resetKey,onFeed,onActive,onUnava
     catch(e){if(e?.kind)throw e;/* a server without this route, or a review that has already ended: the page forgets the proposal in both cases */}
     if(id!==generation.current)return;clearReview();setMessage('You rejected the definition. Nothing was classified or applied. Change your description to get another definition.');},false,'Interpretation');}
   function history(action){run(async id=>{clearReview();setOutcome(null);const p=await api('semantic/history/preview',{user_id:user,action});
-    if(id!==generation.current)return;if(p.ready){setPending(p);arm();setMessage(action==='undo'?'The undo review is ready. Nothing is changed yet.':'The review of the removal is ready. Nothing is changed yet.');shown();}
+    if(id!==generation.current)return;if(p.ready){setPending(p);arm(p);setMessage(action==='undo'?'The undo review is ready. Nothing is changed yet.':'The review of the removal is ready. Nothing is changed yet.');shown();}
     else setMessage(p.reason||'No earlier state exists.');},false,action==='undo'?'Undo':'Preview');}
   function apply(){run(async id=>{const before=saved,plan=pending;let r;
     try{r=await api('semantic/apply',{user_id:user,plan_id:plan.plan_id});}

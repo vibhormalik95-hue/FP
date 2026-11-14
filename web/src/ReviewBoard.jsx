@@ -50,10 +50,11 @@ function citationChecks(evidence, context) {
 }
 
 function rawReplies(calls, words) {
-  const replies = (calls || []).filter(call => call && (call.raw_response !== undefined || call.raw_output !== undefined));
+  // A reply that is not JSON comes back as bounded text (`raw_text`); it is shown as text, never as markup.
+  const replies = (calls || []).filter(call => call && (call.raw_response !== undefined || call.raw_output !== undefined || typeof call.raw_text === 'string'));
   if (!replies.length) return null;
   return <details className="raw"><summary>{replies.length === 1 ? words.raw : `${words.rawMany} (${replies.length})`}</summary>
-    {replies.map((call, n) => <pre key={n}>{JSON.stringify(call.raw_response !== undefined ? call.raw_response : call.raw_output, null, 2)}</pre>)}</details>;
+    {replies.map((call, n) => <pre key={n}>{call.raw_response !== undefined || call.raw_output !== undefined ? JSON.stringify(call.raw_response !== undefined ? call.raw_response : call.raw_output, null, 2) : call.raw_text}</pre>)}</details>;
 }
 
 function providerLine(model, words) {
@@ -74,7 +75,7 @@ function contextRows(rows, names) {
 
 // The reason that the reply gives for the whole request, when the answer holds one.
 function replyReason(pending) {
-  if (typeof pending.reason === 'string' && pending.reason.trim()) return pending.reason;
+  for (const value of [pending.reply_reason, pending.reason]) if (typeof value === 'string' && value.trim()) return value;
   const raw = (pending.model_calls || []).map(call => call?.raw_response).find(value => value && typeof value.reason === 'string' && value.reason.trim());
   return raw ? raw.reason : null;
 }
@@ -134,7 +135,9 @@ function applicationChecks(group, pending, context, shared, words) {
   const route = routeOf(group), proposal = group.proposal;
   const control = route === 'vocabulary' ? (pending.vocabulary?.controls || []).find(candidate => candidate.label === group.label) : null;
   const envelope = proposal.induction?.envelope, audit = envelope?.evidence_audit;
-  const outside = outsideScope(group, context);
+  // The server states which items of the control are outside the scope; without that field the page computes it for a manual control.
+  const effect = (pending.scope_effects || []).find(entry => entry.label === group.label);
+  const outside = Array.isArray(effect?.outside_scope_item_ids) ? effect.outside_scope_item_ids : outsideScope(group, context);
   const noDecision = proposal.induction?.validated_category?.unknown_ids || [];
   return <div key={group.revision} className="control-checks" data-route={route}>
     <p><b>{group.label}</b></p>
@@ -142,7 +145,8 @@ function applicationChecks(group, pending, context, shared, words) {
       {!shared.server && <p className="help">This page repeated these checks from the reviewed record:</p>}
       {checkList(localChecks(group, pending, context))}</>}
     {control&&<p className="help">Items that each chosen name selects: {control.terms.map(term=>`${termWords(term)}: ${(term.item_ids||[]).join(', ')||'none'}`).join('; ')}.</p>}
-    {route==='manual'&&outside.length>0&&<p className="help" data-role="outside-scope">{plural(outside.length,'item')} of this category {outside.length===1?'is':'are'} outside the evidence scope and {outside.length===1?'does':'do'} not change: {outside.join(', ')}.</p>}
+    {effect?.message&&<p className="help" data-role="scope-effect">{effect.message}</p>}
+    {outside.length>0&&<p className="help" data-role="outside-scope">{plural(outside.length,'item')} with {route==='manual'?'this category':'a chosen name'} {outside.length===1?'is':'are'} outside the evidence scope and {outside.length===1?'does':'do'} not change: {outside.join(', ')}.</p>}
     {audit&&<p className="help">Numbers that an item must contain: {audit.literal_constraints.terms.join(', ')||'none'}. {words.authored?'The second reply':'The second call'} can only remove an item from the selection. It never adds one.</p>}
     {envelope&&<p className="help">Selected items that have an existing category: {envelope.overlaps.map(o=>`${o.member_ids.join(', ')} (${String(o.category_id).replace(/^original:/,'')})`).join('; ')||'none'}.</p>}
     {envelope&&<p className="help">Items without a decision (not selected): {noDecision.join(', ')||'none'}. The name was compared only with the categories in the scope.</p>}
