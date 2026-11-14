@@ -30,13 +30,18 @@ These were offered by the student in the same meeting. They are not among the su
 | A fictional item with a generated description | `feedctrl/synthetic_drafts.py`, `web/src/SyntheticDraftPanel.jsx` | One run through the Claude Code CLI on 10 November (22:46 UTC) created fictional metadata, admitted it to a separate feed, removed it and restored it, through direct Python calls ([summary](evidence/2026-11-11/FABLE-LUNARIA-PUBLIC-SAFE-SUMMARY.json)). | Not run in a browser. No real video. The separate feed gives every item a neutral score. Not repeated on 13 November. |
 | A comparison with a stronger model | Provider seam in `feedctrl/api.py` and the adapters | A six-case standalone comparison from 5 November: Claude matched 6 of 6 tasks and 36 of 36 item decisions; the local models failed strict JSON validation, which is not a measured accuracy of zero. | Different transports and settings. Six invented cases. Not a ranking of models. Not repeated on 13 November. |
 
-## Checks run on revision `8e628cf`
+## Checks run on revision `e4711a4`
 
-Revision `8e628cf` is the last code change of this work. Later revisions change documentation and run records only. The last runs with real model output were made one revision earlier, on `40315aa`; `8e628cf` changes only the function that computes the source fingerprint, and its test ([details](evidence/2026-11-13/README.md)).
+Revision `e4711a4` is the last code change of this work. Later revisions change documentation and run records only.
+
+The last runs with real model output were made on `40315aa`. Two code changes came after them, and the model runs were not repeated:
+
+- `8e628cf` changes only the function that computes the source fingerprint, and its test.
+- `e4711a4` merges the student's Windows runtime work: a higher output bound and timeout for the Claude Code CLI connection (16,384 tokens, 300 s), and a correction of the literal-term scanner ([details](numbered-source-constraints.md)). For the two model definitions that completed, the earlier scanner and the corrected scanner give the same result: no literal term.
 
 | Check | Command | Result |
 | --- | --- | --- |
-| Python tests | `python -m pytest -p no:cacheprovider -q` | 1080 passed, 1 skipped (the private parser bank is not in this repository) |
+| Python tests | `python -m pytest -p no:cacheprovider -q` | 1088 passed, 1 skipped (the private parser bank is not in this repository) |
 | Validation-profile checks with network and process access blocked | `python tools/hosted_validation_current/run_guarded.py .` | 176 passed; no intercepted event |
 | Interface logic | `node --test web/tests/*.mjs` (after `npm ci` in `web/`) | 59 passed |
 | Browser, scripted provider, category scenario | `node tests/browser/demo_flows.cjs --scenario category --flows manual,category` | 29 of 29 assertions |
@@ -50,7 +55,9 @@ Environment: Linux, Python 3.13.18 with PyTorch 2.5.1, Node 22, headless Chromiu
 2. **Length limits were enforced but not stated.** A real reply was rejected for a 1,062-character definition. The prompts now state the limits that the validators already enforce.
 3. **Numbered conditions were read as required facts.** A digit in a definition becomes a literal term that an item's text must contain. A definition with numbered conditions could therefore match nothing. The definition prompt now asks for unnumbered conditions and says how digits are treated.
 4. **The published branch did not serve a complete interface.** A stale built file was tracked and the build folder was ignored. The built interface is now tracked and pinned.
-5. **A run record did not name its source.** A browser receipt now records a source fingerprint and lists review decisions apart from assertions. The fingerprint is designed to give the same value on Windows, Linux and macOS for the same files. It was tested on Linux only.
+5. **Limits of the Claude Code CLI connection were too low for the model's replies.** A reply of about 11,000 output tokens exceeded the bound of 4,096. The bound is now 16,384 tokens and the timeout is 300 s (merged from the student's Windows work).
+6. **Quoted examples and label references were read as required facts.** See [literal source requirements](numbered-source-constraints.md) (merged from the student's Windows work; its review is recorded as pending there).
+7. **A run record did not name its source.** A browser receipt now records a source fingerprint and lists review decisions apart from assertions. The fingerprint is designed to give the same value on Windows, Linux and macOS for the same files. It was tested on Linux only.
 
 ## What remains
 

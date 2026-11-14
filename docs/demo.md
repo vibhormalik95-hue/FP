@@ -91,7 +91,7 @@ State the transport honestly when you show a relay run. The page shows the decla
 
 ## The signed-in Claude Code CLI
 
-`--provider personal-cli` serves the app that `tools/hosted_validation_current/driver.py` builds. The driver checks a reviewed configuration file before anything runs: six explicit assertions by the operator, the hash of every application source file, the pinned scenario inputs, the executable path and hash, and the call allowance (three for a new category, two for an indirect request).
+`--provider personal-cli` serves the app that `tools/hosted_validation_current/driver.py` builds. The driver checks a reviewed configuration file before anything runs: six explicit assertions by the operator, the hash of every application source file, the pinned scenario inputs, the executable path and hash, and the call allowance (three for a new category, two for an indirect request). Each call may return at most 16,384 output tokens and may take at most 300 s.
 
 ```
 python scripts/run_demo.py --provider personal-cli --reviewed-config my-config.json --report runs/category-report.json

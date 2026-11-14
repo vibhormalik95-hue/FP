@@ -22,7 +22,12 @@ All times are UTC on 14 November 2026. In Vancouver that is the afternoon and ev
 | `new-category/run-3` | `40315aa` | 3 | Completed (8 to 5 to 8), after the manual control in the same session (category `K1`, 8 to 6 to 8). |
 | `indirect-request/run-2` | `40315aa` | 2 | Completed (8 to 5 to 8), after the manual control in the same session (category `Repair`, 8 to 6 to 8). |
 
-**Which code served the last two runs.** Revision `40315aa`. Its receipts record a source fingerprint: `f5df9878da22bf5a8d1b3b7aaf6ab4bcbf1a53528d73333d71163f38f75b52a6`. After those runs, one more code change was made (revision `8e628cf`): the function that computes the fingerprint is now designed to give the same value on Windows, Linux and macOS (tested on Linux only). No other application file changed. For the tree of `40315aa` the new function prints the value above. For `8e628cf` and later it prints `7ca56c807e4fbf909490bb3fd4edafd57d85e82d2a9ca1cf77476ac20c7668da`, because the launcher file is itself part of the fingerprint. The model runs were not repeated after that change. Print the value of a checkout with `python scripts/run_demo.py --fingerprint`.
+**Which code served the last two runs.** Revision `40315aa`. Its receipts record a source fingerprint: `f5df9878da22bf5a8d1b3b7aaf6ab4bcbf1a53528d73333d71163f38f75b52a6`. Two code changes were made after those runs, and the model runs were not repeated after them:
+
+- `8e628cf`: the function that computes the fingerprint is now designed to give the same value on Windows, Linux and macOS (tested on Linux only). For the tree of `40315aa` the new function prints the value above. For `8e628cf` it prints `7ca56c807e4fbf909490bb3fd4edafd57d85e82d2a9ca1cf77476ac20c7668da`, because the launcher file is itself part of the fingerprint.
+- `e4711a4`: the student's Windows runtime work was merged: a higher output bound and timeout for the Claude Code CLI connection, and a correction of the literal-term scanner. From `e4711a4` the fingerprint is `63cf01537d86f2afc54178c419f971ab726714ce900b1e3e6a16b8c958db33ac`. For the two definitions that completed (attempt 2 and run 3), the earlier scanner and the corrected scanner give the same result: no literal term. For the rejected definition of attempt 1, both give the terms 1, 2 and 3.
+
+Print the value of a checkout with `python scripts/run_demo.py --fingerprint`.
 
 Receipts made before `40315aa` do not record the source. Their revisions are stated by the operator: each of those runs started after the commit of its revision and before the next change. For attempt 1 and attempt 2 the revision fixes the application code and the prompts, but not the built interface: those two commits did not yet include the built interface files, and the build that the browser loaded then is in no revision. The built interface is tracked from `010ae75`.
 
@@ -62,7 +67,7 @@ The link from "food being prepared" to "makes me hungry" is the model's reading 
 
 ## Runs with authored replies (no model)
 
-`scripted-regression/` holds two receipts from revision `8e628cf` with the scripted provider: 29 of 29 and 27 of 27 assertions passed. Their fingerprint is the `7ca56c80…` value above. The replies were written by hand and the review boxes were ticked by the script. These runs check the screens, Apply and Undo. They are not model evidence.
+`scripted-regression/` holds two receipts from revision `e4711a4` with the scripted provider: 29 of 29 and 27 of 27 assertions passed. Their fingerprint is the `63cf0153…` value above. The replies were written by hand and the review boxes were ticked by the script. These runs check the screens, Apply and Undo. They are not model evidence.
 
 ## The task text for a sub-agent
 

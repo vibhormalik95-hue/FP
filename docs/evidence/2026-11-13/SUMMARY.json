@@ -16,7 +16,8 @@
   "source_fingerprints": {
     "40315aa": "f5df9878da22bf5a8d1b3b7aaf6ab4bcbf1a53528d73333d71163f38f75b52a6",
     "8e628cf": "7ca56c807e4fbf909490bb3fd4edafd57d85e82d2a9ca1cf77476ac20c7668da",
-    "note": "Revision 8e628cf changes only the function that computes the fingerprint (and its test). That function prints the 40315aa value for the tree of 40315aa. The model runs were not repeated after 8e628cf."
+    "e4711a4": "63cf01537d86f2afc54178c419f971ab726714ce900b1e3e6a16b8c958db33ac",
+    "note": "Revision 8e628cf changes only the function that computes the fingerprint (and its test). That function prints the 40315aa value for the tree of 40315aa. Revision e4711a4 merges the higher limits of the Claude Code CLI connection and the correction of the literal-term scanner. The model runs were made on 40315aa and were not repeated after these changes."
   },
   "not_established": [
     "accuracy on unseen requests",
@@ -734,15 +735,15 @@
   "authored_reply_runs": [
     {
       "record": "scripted-regression/category-browser-receipt.json",
-      "source_revision": "8e628cf",
-      "source_fingerprint_in_receipt": "7ca56c807e4fbf909490bb3fd4edafd57d85e82d2a9ca1cf77476ac20c7668da",
+      "source_revision": "e4711a4",
+      "source_fingerprint_in_receipt": "63cf01537d86f2afc54178c419f971ab726714ce900b1e3e6a16b8c958db33ac",
       "scenario": "category",
       "flows_in_this_browser_session": [
         "manual",
         "category"
       ],
-      "started_utc": "2026-11-14T02:19:12.750Z",
-      "finished_utc": "2026-11-14T02:19:17.990Z",
+      "started_utc": "2026-11-14T03:04:15.170Z",
+      "finished_utc": "2026-11-14T03:04:19.807Z",
       "outcome": "all flows completed",
       "assertions_passed": 29,
       "assertions_total": 29,
@@ -759,15 +760,15 @@
     },
     {
       "record": "scripted-regression/hunger-browser-receipt.json",
-      "source_revision": "8e628cf",
-      "source_fingerprint_in_receipt": "7ca56c807e4fbf909490bb3fd4edafd57d85e82d2a9ca1cf77476ac20c7668da",
+      "source_revision": "e4711a4",
+      "source_fingerprint_in_receipt": "63cf01537d86f2afc54178c419f971ab726714ce900b1e3e6a16b8c958db33ac",
       "scenario": "hunger",
       "flows_in_this_browser_session": [
         "manual",
         "indirect"
       ],
-      "started_utc": "2026-11-14T02:19:18.263Z",
-      "finished_utc": "2026-11-14T02:19:22.174Z",
+      "started_utc": "2026-11-14T03:04:20.064Z",
+      "finished_utc": "2026-11-14T03:04:24.136Z",
       "outcome": "all flows completed",
       "assertions_passed": 27,
       "assertions_total": 27,

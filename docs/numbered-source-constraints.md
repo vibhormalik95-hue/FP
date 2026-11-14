@@ -97,3 +97,13 @@ definition, and exercises malformed syntax and factual-number preservation.
 ## Apostrophes and ambiguous single quotes
 
 In-word apostrophes are treated consistently inside and outside active quotes. A trailing apostrophe after a word may be a possessive or a single-quote delimiter. In that ambiguous context, structural-number masking is disabled for the input and all digit-bearing terms remain requirements. This deliberately can withhold a valid list containing a single-quoted body such as `'ready'`. Ordinary contractions in unquoted list bodies and unambiguous double-quoted bodies retain existing behavior. This conservative boundary does not infer semantic truth or discard factual digits.
+
+## Quoted examples and references to a list label
+
+Merged on 13 November 2026 from the student's Windows runtime work. The review of this correction is recorded as pending there.
+
+- A quoted example inside a list item that closes just before a comma or the closing bracket, for example `(examples 'bent', 'torn')`, no longer breaks the recognition of the numbered list.
+- After one complete numbered list, one narrow kind of sentence is read as a reference to a list label: "It must satisfy condition (2)." and "It satisfies condition (1)." The number must be a label of that list. A sentence with a word such as "mention", "quote", "text" or "literal" after the list is never read this way.
+- Every other digit-bearing term stays a literal requirement. Two lists, a reference inside quotes or brackets, and a reference in the objective all stay literal.
+
+`tests/test_literal_condition_references_offline.py` holds the authored cases. Four of them fail on the earlier scanner. The correction is a parsing rule. It does not decide whether an item belongs to a category.
