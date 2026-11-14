@@ -417,3 +417,32 @@ def test_f05_a_stop_request_ends_a_running_call_and_refuses_the_next(make, confi
         with pytest.raises(RouteError) as caught:
             infer(dict(PAYLOAD), dict(SCHEMA))
         assert caught.value.category == 'stopped' and len(server.requests) == 1 and len(receipts) == 1
+
+
+def test_n1_a_reply_with_several_choices_is_refused():
+    import json as json_module
+
+    class Handler(http.server.BaseHTTPRequestHandler):
+        def log_message(self, *args):
+            pass
+
+        def do_POST(self):
+            self.rfile.read(int(self.headers.get('Content-Length') or 0))
+            body = json_module.dumps({'id': 'x', 'object': 'chat.completion', 'model': MODEL, 'choices': [
+                {'index': 1, 'message': {'role': 'assistant', 'content': '{"ok": false}'}, 'finish_reason': 'stop'},
+                {'index': 0, 'message': {'role': 'assistant', 'content': '{"ok": true}'}, 'finish_reason': 'stop'}]}).encode()
+            self.send_response(200)
+            self.send_header('Content-Type', 'application/json')
+            self.send_header('Content-Length', str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+
+    server = http.server.ThreadingHTTPServer(('127.0.0.1', 0), Handler)
+    threading.Thread(target=server.serve_forever, daemon=True).start()
+    try:
+        _, _, _, error = call({'route': 'openai-compatible', 'base_url': f'http://127.0.0.1:{server.server_port}/v1',
+                               'model': MODEL})
+    finally:
+        server.shutdown()
+        server.server_close()
+    assert error.category == 'unexpected_reply' and '2 choices' in error.message

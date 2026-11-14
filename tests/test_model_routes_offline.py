@@ -551,3 +551,33 @@ def test_f03_the_identity_holds_a_hash_of_the_program_settings_and_the_terminal_
     body = {**OLLAMA, 'extra_body': {'top_k': 40}}
     identity = model_routes.identity_for(model_routes.validate_config(body), 'openai-compatible-chat', 'x')
     assert 'top_k' not in json.dumps(identity) and 'extra_body' in identity['route']['settings_shown_as_sha256']
+
+
+# ---------------------------------------------------------------- lead decisions 6 and 7 (page_safe, N1)
+
+def test_every_route_error_text_is_page_safe_at_construction():
+    model_routes.remember_secret(PLAIN_KEY)
+    assert RouteError.page_safe is True
+    for name in model_routes.CATEGORIES:
+        error = RouteError(name, f'Text with the key {PLAIN_KEY}, an escape \x1b[2K, a bell \x07, a line\nbreak and '
+                                 'sk-proj-ABCDEFGH12345678 ' + 'long ' * 400, f'Do this \x1b[8m{PLAIN_KEY}')
+        text = str(error)
+        assert error.page_safe is True and isinstance(error, ParserOperationalError)
+        assert PLAIN_KEY not in text and 'ABCDEFGH12345678' not in text
+        assert text.isascii() and not any(ord(char) < 32 or ord(char) == 127 for char in text)
+        assert len(error.message) <= 600 and len(error.action) <= 600
+        default = RouteError(name)
+        assert str(default) == f'{model_routes.CATEGORIES[name][0]} {model_routes.CATEGORIES[name][1]}'
+    with pytest.raises(ValueError):
+        RouteError('not_a_category')
+
+
+@pytest.mark.parametrize('text', [' ' + GOOD, '\x0c' + GOOD, ' ' + GOOD, GOOD + ' ', '\x0b' + GOOD])
+def test_n1_only_json_white_space_may_stand_around_the_reply(text):
+    with pytest.raises(RouteError) as caught:
+        model_routes.parse_reply(text, SCHEMA)
+    assert caught.value.category == 'reply_not_json'
+
+
+def test_n1_space_tab_cr_and_lf_around_the_reply_are_accepted():
+    assert model_routes.parse_reply(' \t\r\n' + GOOD + '\r\n \t', SCHEMA) == {'status': 'propose', 'label': 'Repair'}

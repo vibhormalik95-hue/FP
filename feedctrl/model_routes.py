@@ -251,6 +251,11 @@ def scrubber(*secrets):
     return scrub
 
 
+def page_text(value, limit=600):
+    """One line of printable ASCII, cleaned of keys, at most ``limit`` characters."""
+    return one_line(ascii_text(one_line(scrub(value), 20_000)), limit)
+
+
 class RouteError(ParserOperationalError):
     """A route failure that a person can act on.
 
@@ -266,8 +271,8 @@ class RouteError(ParserOperationalError):
             raise ValueError('Unknown route error category')
         sentence, default_action = CATEGORIES[category]
         self.category = category
-        self.message = ascii_text(one_line(scrub(message or sentence)))
-        self.action = ascii_text(one_line(scrub(action or default_action)))
+        self.message = page_text(message or sentence)
+        self.action = page_text(action or default_action)
         self.http_status = None
         super().__init__(f'{self.message} {self.action}')
 

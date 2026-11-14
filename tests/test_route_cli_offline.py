@@ -350,3 +350,27 @@ def test_f05_ctrl_c_in_the_waiting_thread_ends_the_program(claude, monkeypatch):
             break
         time.sleep(0.1)
     assert _gone(pid)
+
+
+# ---------------------------------------------------------------- lead decision 7 (N6)
+
+@pytest.mark.parametrize('extra', [['--dangerously-skip-permissions'], ['--tools', 'default'], ['--tools=default'],
+                                   ['--permission-mode', 'bypassPermissions'], ['--add-dir', '/'], ['--model', 'other-model'],
+                                   ['--output-format', 'text'], ['--allowedTools', 'Bash'], ['--mcp-config', 'x.json'],
+                                   ['--settings', '{}'], ['--append-system-prompt', 'x'], ['--fallback-model', 'm'],
+                                   ['--resume', 'id'], ['-c'], ['--agents', '{}'], ['--plugin-dir', '/tmp']])
+def test_n6_extra_args_cannot_give_back_a_tool_a_permission_another_model_or_format(extra):
+    with pytest.raises(RouteError) as caught:
+        model_routes.validate_config({'route': 'cli', 'profile': 'claude-code', 'model': 'm', 'extra_args': extra})
+    assert caught.value.category == 'configuration' and 'extra_args' in caught.value.message
+
+
+def test_n6_omit_flags_cannot_remove_the_rules_that_take_the_tools_away():
+    for omitted in (['--disallowedTools'], ['--output-format'], ['--model'], ['-p']):
+        with pytest.raises(RouteError):
+            model_routes.validate_config({'route': 'cli', 'profile': 'claude-code', 'model': 'm', 'omit_flags': omitted})
+    config = model_routes.validate_config({'route': 'cli', 'profile': 'claude-code', 'model': 'm', 'omit_flags': ['--tools']})
+    arguments = route_cli.claude_arguments(config, '/usr/bin/claude')
+    assert '--tools' not in arguments and arguments[arguments.index('--disallowedTools') + 1] == '*'
+    assert model_routes.validate_config({'route': 'cli', 'profile': 'claude-code', 'model': 'm',
+                                         'extra_args': ['--verbose', '--debug']})['extra_args'] == ['--verbose', '--debug']
