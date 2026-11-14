@@ -410,3 +410,144 @@ def test_the_check_and_show_commands_use_the_file_and_set_the_exit_code(tmp_path
     assert model_route.main(['check', '--file', str(tmp_path / 'none.json')]) == 1
     output = capsys.readouterr().out
     assert output.isascii() and 'the route works' in output and 'does not work yet' in output
+
+
+# ---------------------------------------------------------------- review findings F01 to F03
+# PLAIN_KEY has no known key shape (no "sk-" prefix, separators): only the
+# remembered value can find it, not the shape mask.
+PLAIN_KEY = 'plainkeytestvalue-0123'
+
+
+def test_f01_a_preset_key_variable_is_not_given_to_another_host():
+    for raw in ({'route': 'openai-compatible', 'preset': 'openai', 'base_url': 'https://other-host.example/v1', 'model': 'm'},
+                {'route': 'openai-compatible', 'preset': 'openai', 'base_url': 'http://127.0.0.1:8080/v1', 'model': 'm'},
+                {'route': 'anthropic', 'base_url': 'https://other-host.example', 'model': 'm'}):
+        with pytest.raises(RouteError) as caught:
+            model_routes.validate_config(raw)
+        assert caught.value.category == 'configuration' and 'api_key_env' in caught.value.action
+        # With the variable named in the file, the route is accepted and uses that variable.
+        named = model_routes.validate_config({**raw, 'api_key_env': 'OTHER_HOST_KEY'})
+        assert model_routes.needs_api_key(named) == 'OTHER_HOST_KEY'
+    assert model_routes.needs_api_key({'route': 'openai-compatible', 'preset': 'openai', 'model': 'm'}) == 'OPENAI_API_KEY'
+    assert model_routes.needs_api_key({'route': 'anthropic', 'model': 'm'}) == 'ANTHROPIC_API_KEY'
+
+
+def test_f01_the_wizard_sends_a_key_only_to_a_named_host_after_a_yes():
+    lines = []
+    with openai_compatible_server.make_server(model='other-provider-model', replies='echo-ok') as server:
+        address = server.url + '/v1'
+        environ = {'OPENAI_API_KEY': KEY}
+        # Enter at the variable question gives no default for another provider: the question comes again.
+        config = model_route.wizard(answers('2', '3', address, '', 'OPENAI_API_KEY', 'n', 'typed-model'), lines.append,
+                                    environ, model_route.listed_models)
+        assert server.requests == []                                     # "n": nothing was sent
+        assert config['api_key_env'] == 'OPENAI_API_KEY' and config['model'] == 'typed-model'
+        assert any('127.0.0.1' in line and 'OPENAI_API_KEY' in line for line in lines)
+        config = model_route.wizard(answers('2', '3', address, 'OPENAI_API_KEY', 'y', '1'), lines.append,
+                                    environ, model_route.listed_models)
+        assert [request['headers'].get('authorization') for request in server.requests] == ['Bearer ' + KEY]
+        assert config['model'] == 'other-provider-model'
+    assert all(KEY not in line for line in lines)
+
+
+@pytest.mark.parametrize('requested, reported, rule', [
+    ('claude-opus-5', 'claude-opus-5-5', None), ('claude-sonnet-5', 'claude-sonnet-5-5', None),
+    ('claude-opus-4', 'claude-opus-4-8', None), ('gpt-5', 'gpt-5-1-2025-11-13', None), ('gpt-4o', 'gpt-4o-mini', None),
+    ('gpt-4', 'gpt-4-0613', None), ('m', 'M', None), ('m', '', None), ('m', None, None),
+    ('m', 'm', 'equal'), ('llama3.1', 'llama3.1:latest', 'default_tag'),
+    ('claude-sonnet-4-5', 'claude-sonnet-4-5-20250929', 'dated_snapshot'),
+    ('gpt-4o', 'gpt-4o-2024-08-06', 'dated_snapshot'), ('gpt-4o', 'gpt-4o-2024-13-06', None)])
+def test_f02_the_model_identity_rule(requested, reported, rule):
+    assert model_routes.model_rule(requested, reported) == rule
+    assert model_routes.model_matches(requested, reported) is (rule is not None)
+
+
+def test_f02_another_model_needs_an_exact_name_in_the_route_file():
+    assert model_routes.model_rule('gpt-4', 'gpt-4-0613', ['gpt-4-0613']) == 'accepted_by_setting'
+    assert model_routes.model_rule('gpt-4', 'gpt-4-0613-x', ['gpt-4-0613']) is None
+    with pytest.raises(RouteError) as caught:
+        model_routes.require_model('claude-opus-5', 'claude-opus-5-5')
+    assert caught.value.category == 'model_mismatch' and 'accept_reported_models' in caught.value.action
+    assert model_routes.validate_config({**OLLAMA, 'accept_reported_models': ['b', 'a', 'a']})['accept_reported_models'] == ['a', 'b']
+    with pytest.raises(RouteError):
+        model_routes.validate_config({**OLLAMA, 'accept_reported_models': ['-starts-with-a-hyphen']})
+
+
+def test_f02_the_check_fails_when_the_endpoint_serves_another_model():
+    lines = []
+    with openai_compatible_server.make_server(model='claude-opus-5-5', replies='echo-ok') as server:
+        base = {'route': 'openai-compatible', 'base_url': server.url + '/v1', 'model': 'claude-opus-5'}
+        result = model_routes.check_route(base, out=lines.append)
+        assert not result['ok'] and result['steps'][-1]['name'] == 'endpoint' and 'claude-opus-5-5' in result['steps'][-1]['detail']
+        accepted = model_routes.check_route({**base, 'accept_reported_models': ['claude-opus-5-5']}, out=lines.append)
+        assert accepted['ok'], accepted
+        endpoint = [step for step in accepted['steps'] if step['name'] == 'endpoint'][0]
+        assert '"claude-opus-5-5"' in endpoint['detail'] and 'accepted_by_setting' in endpoint['detail']
+        assert 'accepted_by_setting' in accepted['steps'][-1]['detail']
+    with openai_compatible_server.make_server(model='claude-opus-5-5', replies='echo-ok', fail='no_models_endpoint') as server:
+        result = model_routes.check_route({'route': 'openai-compatible', 'base_url': server.url + '/v1',
+                                           'model': 'claude-opus-5'}, out=lines.append)
+        assert not result['ok'] and result['steps'][-1]['name'] == 'test call'
+        assert 'claude-opus-5-5' in result['steps'][-1]['detail']
+    with openai_compatible_server.make_server(model='llama3.1:latest', replies='echo-ok') as server:
+        result = model_routes.check_route({'route': 'openai-compatible', 'base_url': server.url + '/v1',
+                                           'model': 'llama3.1'}, out=lines.append)
+        endpoint = [step for step in result['steps'] if step['name'] == 'endpoint'][0]
+        assert result['ok'] and '"llama3.1:latest"' in endpoint['detail'] and 'default_tag' in endpoint['detail']
+
+
+def test_f02_the_receipt_names_the_rule_that_matched():
+    with openai_compatible_server.make_server(replies='echo-ok', fail='snapshot_model') as server:
+        infer, _, receipts = model_routes.build_route({'route': 'openai-compatible', 'base_url': server.url + '/v1',
+                                                       'model': common.DEFAULT_MODEL})
+        assert infer(dict(model_routes.TEST_PAYLOAD), dict(model_routes.TEST_SCHEMA)) == {'ok': True}
+    assert receipts[0]['model_match_rule'] == 'dated_snapshot'
+    assert receipts[0]['reported_model'] == common.DEFAULT_MODEL + '-2026-01-01'
+
+
+@pytest.mark.parametrize('raw', [
+    {'route': 'cli', 'profile': 'generic', 'model': 'm', 'argv': ['tool', '--api-key=' + PLAIN_KEY, '--json']},
+    {'route': 'cli', 'profile': 'generic', 'model': 'm', 'argv': ['tool', '--token', PLAIN_KEY]},
+    {'route': 'cli', 'profile': 'generic', 'model': 'm', 'argv': ['tool', '-H', 'Authorization: Bearer ' + PLAIN_KEY]},
+    {'route': 'cli', 'profile': 'generic', 'model': 'm', 'argv': ['tool', '--json', 'sk-proj-REALKEY0123456789abcdef']},
+    {'route': 'cli', 'profile': 'generic', 'model': 'm', 'argv': ['tool', '{"auth": {"api_key": "' + PLAIN_KEY + '"}}']},
+    {'route': 'cli', 'profile': 'claude-code', 'model': 'm', 'extra_args': ['--verbose', '--api-key', PLAIN_KEY]},
+    {'route': 'cli', 'profile': 'claude-code', 'model': 'm', 'extra_args': ['{"token": "' + PLAIN_KEY + '"}']},
+    {'route': 'openai-compatible', 'base_url': 'https://example.invalid/sk-proj-REALKEY0123456789abcdef/v1', 'model': 'm',
+     'api_key_env': 'K'},
+    {**OLLAMA, 'extra_body': {'user': 'gsk_0123456789abcdefghijKLMNOPQRSTUVWXYZabcdefghijklmnop'}},
+    {**OLLAMA, 'extra_body': {'metadata': {'note': 'x-api-key: ' + PLAIN_KEY}}},
+    {**OLLAMA, 'extra_body': {'metadata': '{"client_secret": "' + PLAIN_KEY + '"}'}},
+    {**OLLAMA, 'model': 'x' + 'Ab1' * 14},
+])
+def test_f03_a_credential_is_refused_anywhere_in_a_setting(raw):
+    with pytest.raises(RouteError) as caught:
+        model_routes.validate_config(raw)
+    assert caught.value.category == 'configuration' and PLAIN_KEY not in str(caught.value)
+
+
+def test_f03_ordinary_settings_are_not_taken_for_credentials():
+    model_routes.validate_config({**OLLAMA, 'extra_body': {'prompt_cache_key': 'study-1', 'top_k': 40}})
+    model_routes.validate_config({**OLLAMA, 'api_key_env': 'OPENAI_API_KEY_comp9500_professor'})
+    model_routes.validate_config({'route': 'cli', 'profile': 'generic', 'model': 'm',
+                                  'argv': ['ollama', 'run', 'llama3.1:8b', '--format', 'json', '--keepalive', '5m']})
+    with pytest.raises(RouteError) as caught:   # F19: a typing error gets the message of an unknown setting
+        model_routes.validate_config({**OLLAMA, 'max_output_token': 100})
+    assert 'does not know' in caught.value.message and 'max_output_tokens' in caught.value.action
+
+
+def test_f03_the_identity_holds_a_hash_of_the_program_settings_and_the_terminal_shows_them():
+    config = {'route': 'cli', 'profile': 'generic', 'model': 'declared-model',
+              'argv': [sys.executable, '-c', 'print(1)', '--private-path', '/home/someone/notes']}
+    infer, identity, _ = model_routes.build_route(config)
+    shown = json.dumps(identity)
+    assert '/home/someone/notes' not in shown and sys.executable not in shown
+    assert identity['route']['settings_shown_as_sha256']['argv'] == model_routes._hash(config['argv'])
+    assert any('/home/someone/notes' in line for line in model_routes.describe(config))
+    claude = {'route': 'cli', 'profile': 'claude-code', 'model': 'm', 'command': '/opt/private/claude', 'extra_args': ['--verbose']}
+    identity = model_routes.identity_for(model_routes.validate_config(claude), 'local-cli-claude-code', 'x')
+    assert '/opt/private' not in json.dumps(identity) and '--verbose' not in json.dumps(identity)
+    assert set(identity['route']['settings_shown_as_sha256']) == {'command', 'extra_args'}
+    body = {**OLLAMA, 'extra_body': {'top_k': 40}}
+    identity = model_routes.identity_for(model_routes.validate_config(body), 'openai-compatible-chat', 'x')
+    assert 'top_k' not in json.dumps(identity) and 'extra_body' in identity['route']['settings_shown_as_sha256']

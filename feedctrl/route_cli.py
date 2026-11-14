@@ -216,6 +216,11 @@ def run_program(argv, data, env, cwd, timeout, limit):
                     end('stop')
                 elif time.monotonic() >= deadline:
                     end('deadline')
+    except BaseException:
+        # Ctrl+C in the thread that waits (a program such as the route trial):
+        # the program runs in its own session, so no signal reached it.
+        end('stop')
+        raise
     finally:
         routes.unwatch(token)
     for worker in workers:

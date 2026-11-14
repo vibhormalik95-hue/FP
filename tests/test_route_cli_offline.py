@@ -24,7 +24,7 @@ from standins.route_state import fresh_route_state  # noqa: E402,F401  (autouse)
 MODEL = 'claude-standin-not-a-model'
 PAYLOAD = dict(model_routes.TEST_PAYLOAD)
 SCHEMA = dict(model_routes.TEST_SCHEMA)
-PASSED = ['STANDIN_REPLIES', 'STANDIN_FAIL', 'STANDIN_UNKNOWN', 'STANDIN_LOG', 'STANDIN_DELAY']
+PASSED = ['STANDIN_REPLIES', 'STANDIN_FAIL', 'STANDIN_UNKNOWN', 'STANDIN_LOG', 'STANDIN_DELAY', 'STANDIN_REPORT_MODEL']
 pytestmark = pytest.mark.skipif(os.name == 'nt', reason='the launcher of these tests is a POSIX shell file')
 
 
@@ -35,14 +35,15 @@ def claude(tmp_path, monkeypatch):
     log = tmp_path / 'cli-log.jsonl'
     monkeypatch.setenv('STANDIN_REPLIES', 'echo-ok')
     monkeypatch.setenv('STANDIN_LOG', str(log))
-    for name in ('STANDIN_FAIL', 'STANDIN_UNKNOWN'):
+    for name in ('STANDIN_FAIL', 'STANDIN_UNKNOWN', 'STANDIN_REPORT_MODEL'):
         monkeypatch.delenv(name, raising=False)
 
     def config(**settings):
         return {'route': 'cli', 'profile': 'claude-code', 'command': launcher, 'model': MODEL,
                 'pass_environment': PASSED, **settings}
 
-    config.calls = lambda: [json.loads(line) for line in log.read_text(encoding='utf-8').splitlines()]
+    config.calls = lambda: ([json.loads(line) for line in log.read_text(encoding='utf-8').splitlines()]
+                            if log.exists() else [])
     config.fail = lambda mode: monkeypatch.setenv('STANDIN_FAIL', mode)
     config.setenv = monkeypatch.setenv
     return config
@@ -263,3 +264,89 @@ def test_a_generic_program_without_a_reply_for_the_request_fails_and_says_it_is_
     error = call(config, payload={'system': 'Another request.', 'x': 1},
                  schema={'type': 'object', 'required': ['a'], 'properties': {'a': {'type': 'string'}}})[3]
     assert error.category == 'cli_failed' and 'STAND-IN, NOT A MODEL' in error.message
+
+
+# ---------------------------------------------------------------- review findings F02 and F05
+
+def test_f02_the_cli_must_report_the_requested_model_as_the_one_that_wrote_the_answer(claude):
+    claude.setenv('STANDIN_REPORT_MODEL', 'claude-opus-5-5')
+    _, _, receipts, error = call(claude(model='claude-opus-5'))
+    assert error.category == 'model_mismatch' and 'claude-opus-5-5' in error.message
+    result, _, receipts, error = call(claude(model='claude-opus-5', accept_reported_models=['claude-opus-5-5']))
+    assert error is None and result == {'ok': True} and receipt_model_rule(receipts) == 'accepted_by_setting'
+    claude.setenv('STANDIN_REPORT_MODEL', MODEL + '-20260101')
+    result, _, receipts, error = call(claude())
+    assert error is None and receipt_model_rule(receipts) == 'dated_snapshot'
+    claude.setenv('STANDIN_REPORT_MODEL', '')
+    claude.fail('fallback_model')     # the requested model wrote 3 tokens, another model 1300
+    _, _, receipts, error = call(claude())
+    assert error.category == 'model_mismatch' and 'claude-fallback-model' in error.message and '1300' in error.message
+    assert receipts[-1]['reported_model'] is None and 'claude-fallback-model' in receipts[-1]['reported_models']
+    claude.fail('extra_model')        # a helper model with no output tokens does not change the answer model
+    result, _, receipts, error = call(claude())
+    assert error is None and receipts[-1]['reported_model'] == MODEL and receipt_model_rule(receipts) == 'equal'
+
+
+def _gone(pid):
+    try:
+        os.kill(pid, 0)
+    except ProcessLookupError:
+        return True
+    return False
+
+
+def test_f05_a_stop_request_ends_the_program_and_refuses_the_next_call(claude):
+    import threading
+    claude.fail('slow')
+    claude.setenv('STANDIN_DELAY', '30')
+    infer, _, receipts = model_routes.build_route(claude())
+    box = {}
+
+    def run():
+        try:
+            box['result'] = infer(dict(PAYLOAD), dict(SCHEMA))
+        except RouteError as error:
+            box['error'] = error
+
+    worker = threading.Thread(target=run, daemon=True)
+    worker.start()
+    for _ in range(100):
+        if claude.calls():
+            break
+        time.sleep(0.05)
+    time.sleep(0.3)
+    started = time.monotonic()
+    model_routes.request_stop()
+    worker.join(10)
+    assert not worker.is_alive() and time.monotonic() - started < 5
+    assert box['error'].category == 'stopped' and receipts[0]['error_category'] == 'stopped'
+    seen = claude.calls()[-1]
+    assert _gone(seen['pid']) and not Path(seen['cwd']).exists()       # the program ended; its folder is removed
+    with pytest.raises(RouteError) as caught:
+        infer(dict(PAYLOAD), dict(SCHEMA))
+    assert caught.value.category == 'stopped' and len(claude.calls()) == 1 and len(receipts) == 1
+
+
+def test_f05_ctrl_c_in_the_waiting_thread_ends_the_program(claude, monkeypatch):
+    claude.fail('slow')
+    claude.setenv('STANDIN_DELAY', '30')
+    infer, _, _ = model_routes.build_route(claude())
+    waits = {'count': 0}
+    real_wait = route_cli.subprocess.Popen.wait
+
+    def interrupted(self, timeout=None):
+        waits['count'] += 1
+        if waits['count'] == 15:
+            raise KeyboardInterrupt
+        return real_wait(self, timeout=timeout)
+
+    monkeypatch.setattr(route_cli.subprocess.Popen, 'wait', interrupted)
+    with pytest.raises(KeyboardInterrupt):
+        infer(dict(PAYLOAD), dict(SCHEMA))
+    monkeypatch.setattr(route_cli.subprocess.Popen, 'wait', real_wait)
+    pid = claude.calls()[-1]['pid']
+    for _ in range(50):
+        if _gone(pid):
+            break
+        time.sleep(0.1)
+    assert _gone(pid)

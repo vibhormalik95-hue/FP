@@ -92,7 +92,8 @@ def test_an_anthropic_route_carries_the_new_category_flow_and_the_key_stays_out_
     monkeypatch.setenv('ANTHROPIC_API_KEY', KEY)
     record = tmp_path / 'record'
     with anthropic_server.make_server(replies='scripted') as server:
-        path = route_file(tmp_path, {'route': 'anthropic', 'base_url': server.url, 'model': MODEL})
+        path = route_file(tmp_path, {'route': 'anthropic', 'base_url': server.url, 'model': MODEL,
+                                     'api_key_env': 'ANTHROPIC_API_KEY'})
         app, _, summary, _ = run_demo.build_app(options(scenario='category', route_file=path, record_dir=str(record)))
         with TestClient(app) as client:
             status = client.get('/api/status').json()
@@ -241,3 +242,108 @@ def test_the_earlier_quick_start_steps_still_parse():
         parser_error = stopped.code
     assert parser_error == 2
     assert sorted(run_demo.SCENARIOS) == sorted(set(run_demo.SCENARIOS)) and 'category' in run_demo.SCENARIOS
+
+
+# ---------------------------------------------------------------- review findings F04 and F05
+
+def test_f04_quickstart_start_hands_absolute_paths_to_the_server(tmp_path, monkeypatch, capsys):
+    mine = tmp_path / 'my-folder'
+    mine.mkdir()
+    monkeypatch.chdir(mine)
+    model_routes.save_config(mine / 'model-route.json', {'route': 'openai-compatible', 'base_url': 'http://127.0.0.1:9/v1',
+                                                          'model': 'model-of-the-file-in-my-folder'})
+    started = {}
+
+    class Server:
+        def poll(self):
+            return 0
+
+    monkeypatch.setattr(quickstart, 'run_demo', lambda *arguments, env=None: started.update(arguments=arguments) or Server())
+    monkeypatch.setattr(quickstart, 'wait_until_served', lambda port, server: None)
+    monkeypatch.setattr(quickstart, 'keep_serving', lambda server: None)
+    monkeypatch.setattr(quickstart, 'require_free_port', lambda port: None)
+    quickstart.main(['start', '--scenario', 'hunger', '--route-file', 'model-route.json', '--record-dir', 'myrecords'])
+    arguments = started['arguments']
+    served = arguments[arguments.index('--route-file') + 1]
+    records = arguments[arguments.index('--record-dir') + 1]
+    assert served == str(mine / 'model-route.json') and Path(served).is_absolute()
+    assert records == str(mine / 'myrecords') and Path(records).is_absolute()
+    output = capsys.readouterr().out
+    assert 'model-of-the-file-in-my-folder' in output and str(mine / 'model-route.json') in output
+
+
+def _local_get(url, data=None, headers=None, timeout=5):
+    import urllib.request
+    opener = urllib.request.build_opener(urllib.request.ProxyHandler({}))
+    request = urllib.request.Request(url, data=data, headers=headers or {}, method='POST' if data is not None else 'GET')
+    with opener.open(request, timeout=timeout) as response:
+        return response.status, response.read()
+
+
+def _gone(pid):
+    try:
+        os.kill(pid, 0)
+    except ProcessLookupError:
+        return True
+    return False
+
+
+@pytest.mark.skipif(os.name == 'nt', reason='SIGINT to another process and the POSIX launcher file; not run on Windows')
+def test_f05_ctrl_c_stops_the_server_and_the_running_cli_program(tmp_path):
+    import signal
+    import socket
+    import subprocess
+    import threading
+    import time
+    launcher = common.write_launcher(tmp_path / 'bin', ROOT / 'tests' / 'standins' / 'cli_claude_code.py')
+    log = tmp_path / 'cli-log.jsonl'
+    path = route_file(tmp_path, {'route': 'cli', 'profile': 'claude-code', 'command': launcher, 'model': MODEL,
+                                 'pass_environment': ['STANDIN_REPLIES', 'STANDIN_FAIL', 'STANDIN_DELAY', 'STANDIN_LOG']})
+    with socket.socket() as probe:
+        probe.bind(('127.0.0.1', 0))
+        port = probe.getsockname()[1]
+    env = {**os.environ, 'STANDIN_REPLIES': 'scripted', 'STANDIN_FAIL': 'slow', 'STANDIN_DELAY': '60',
+           'STANDIN_LOG': str(log), 'PYTHONUNBUFFERED': '1'}
+    server = subprocess.Popen([sys.executable, str(ROOT / 'scripts' / 'run_demo.py'), '--scenario', 'hunger',
+                               '--provider', 'route', '--route-file', path, '--record-dir', 'none', '--port', str(port)],
+                              cwd=str(ROOT), env=env, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    try:
+        base = f'http://127.0.0.1:{port}'
+        for _ in range(80):
+            try:
+                if _local_get(base + '/')[0] == 200:
+                    break
+            except OSError:
+                time.sleep(0.25)
+        session = json.loads(_local_get(base + '/api/session', b'{}', {'Content-Type': 'application/json'})[1])['session_id']
+        body = (run_demo.SCENARIOS['hunger'] / 'app-preview.json').read_bytes()
+        answer = {}
+
+        def preview():
+            try:
+                answer['status'] = _local_get(base + '/api/semantic/preview', body,
+                                              {'Content-Type': 'application/json', 'X-Session-ID': session}, timeout=90)[0]
+            except Exception as error:   # noqa: BLE001  (an error answer or a closed connection are both acceptable)
+                answer['error'] = type(error).__name__
+
+        threading.Thread(target=preview, daemon=True).start()
+        for _ in range(80):
+            if log.exists() and log.read_text().strip():
+                break
+            time.sleep(0.25)
+        program = json.loads(log.read_text().splitlines()[-1])
+        assert not _gone(program['pid'])
+        started = time.monotonic()
+        server.send_signal(signal.SIGINT)
+        code = server.wait(timeout=30)
+        seconds = time.monotonic() - started
+        output = server.stdout.read().decode('utf-8', 'replace')
+        assert seconds < 15, output
+        assert _gone(program['pid']) and not Path(program['cwd']).exists(), output
+        assert code == 0 and 'Traceback' not in output, output
+        assert 'call 1 FAILED' in output and 'stopping' in output, output
+        assert len(log.read_text().splitlines()) == 1                    # no second call after the stop
+    finally:
+        if server.poll() is None:
+            server.kill()
+            server.wait()

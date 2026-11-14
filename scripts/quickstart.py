@@ -69,8 +69,16 @@ def require_free_port(port):
                              'or choose another port with --port.') from None
 
 
+WINDOWS = sys.platform == 'win32'
+
+
 def run_demo(*arguments, env=None):
-    return subprocess.Popen([sys.executable, str(ROOT / 'scripts' / 'run_demo.py'), *arguments], cwd=str(ROOT), env=env)
+    # On Windows the server gets a process group of its own, so that this
+    # launcher can send it Ctrl+Break, the gentle stop signal that Windows has
+    # for another process. Ctrl+C in the window then reaches this launcher only.
+    group = {'creationflags': subprocess.CREATE_NEW_PROCESS_GROUP} if WINDOWS else {}
+    return subprocess.Popen([sys.executable, str(ROOT / 'scripts' / 'run_demo.py'), *arguments], cwd=str(ROOT), env=env,
+                            **group)
 
 
 def wait_until_served(port, server, seconds=40):
@@ -90,16 +98,16 @@ def wait_until_served(port, server, seconds=40):
 def stop_server(server, patience=15):
     """End the server: first ask, then wait, then force.
 
-    The server ends its running model calls when it is asked to stop. A forced
-    end cannot do that, so it comes last. On Windows the first step is a forced
-    end already, because Python has no gentler signal for another process there;
-    Ctrl+C in the terminal reaches the server itself and stops it gently.
+    The server ends its running model calls when it is asked to stop (SIGINT,
+    or Ctrl+Break on Windows). A forced end cannot do that, so it comes last.
+    The Windows steps follow the Python documentation; they were not run on
+    Windows.
     """
     code = server.poll()
     if code is not None:
         return code
-    for ask, wait in ((lambda: server.send_signal(signal.SIGINT) if sys.platform != 'win32' else server.terminate(), patience),
-                      (server.terminate, 5), (server.kill, 5)):
+    gentle = signal.CTRL_BREAK_EVENT if WINDOWS else signal.SIGINT
+    for ask, wait in ((lambda: server.send_signal(gentle), patience), (server.terminate, 5), (server.kill, 5)):
         try:
             ask()
             return server.wait(timeout=wait)
@@ -116,9 +124,13 @@ def keep_serving(server, patience=15):
     try:
         return server.wait()
     except KeyboardInterrupt:
+        print('\nStopping the server ...', flush=True)
+        if WINDOWS:
+            # The server has its own process group, so Ctrl+C did not reach it.
+            stop_server(server, patience=patience)
+            return 0
         # Ctrl+C in a terminal goes to the server as well. It ends its model
         # calls and stops by itself; a forced end follows only when it does not.
-        print('\nStopping the server ...', flush=True)
         try:
             server.wait(timeout=patience)
         except (subprocess.TimeoutExpired, KeyboardInterrupt):

@@ -37,7 +37,7 @@ def openai_config(server, **settings):
 
 
 def anthropic_config(server, **settings):
-    return {'route': 'anthropic', 'base_url': server.url, 'model': MODEL, **settings}
+    return {'route': 'anthropic', 'base_url': server.url, 'model': MODEL, 'api_key_env': 'ANTHROPIC_API_KEY', **settings}
 
 
 def call(config, *, api_key=None, record_dir=None, payload=PAYLOAD, schema=SCHEMA):
@@ -380,3 +380,40 @@ def test_the_model_names_of_an_endpoint_can_be_listed_for_the_setup_questions():
     with anthropic_server.make_server() as server:
         config = model_routes.validate_config(anthropic_config(server))
         assert route_http.model_names(config, KEY) == [MODEL]
+
+
+# ---------------------------------------------------------------- review finding F05
+
+def run_in_thread(infer):
+    box = {}
+
+    def run():
+        try:
+            box['result'] = infer(dict(PAYLOAD), dict(SCHEMA))
+        except RouteError as error:
+            box['error'] = error
+
+    worker = threading.Thread(target=run, daemon=True)
+    worker.start()
+    return worker, box
+
+
+@pytest.mark.parametrize('make, config', [(openai_compatible_server.make_server, openai_config),
+                                          (anthropic_server.make_server, anthropic_config)])
+def test_f05_a_stop_request_ends_a_running_call_and_refuses_the_next(make, config):
+    import time
+    with make(replies='echo-ok', fail='slow', delay=30) as server:
+        infer, _, receipts = model_routes.build_route(config(server), api_key=KEY)
+        worker, box = run_in_thread(infer)
+        for _ in range(100):
+            if server.requests:
+                break
+            time.sleep(0.05)
+        started = time.monotonic()
+        model_routes.request_stop()
+        worker.join(10)
+        assert not worker.is_alive() and time.monotonic() - started < 3
+        assert box['error'].category == 'stopped' and receipts[0]['error_category'] == 'stopped'
+        with pytest.raises(RouteError) as caught:
+            infer(dict(PAYLOAD), dict(SCHEMA))
+        assert caught.value.category == 'stopped' and len(server.requests) == 1 and len(receipts) == 1

@@ -322,13 +322,62 @@ def main(argv=None):
 
     app, port, summary, finish = build_app(args)
     app.state.source_fingerprint = summary['source_fingerprint'] = source_fingerprint()
-    import uvicorn
     print(json.dumps({'serving': f'http://127.0.0.1:{port}', **summary}, indent=2, default=str), flush=True)
     try:
-        uvicorn.run(app, host='127.0.0.1', port=port, proxy_headers=False, server_header=False,
-                    log_level='warning')
+        serve(app, port)
     finally:
         finish()
+
+
+# Seconds that the server waits for open requests after a stop signal. A stop
+# ends every running model call first, so a request ends within about a second.
+GRACEFUL_SECONDS = 10
+
+
+def serve(app, port):
+    """Serve until Ctrl+C or a stop signal (SIGINT, SIGTERM; Ctrl+Break on Windows).
+
+    The signal sets the stop flag of the model routes. A route then refuses
+    every new call, and a watcher ends the running calls: it closes an HTTP
+    connection, and it ends a program with the programs that it started. Then
+    the server waits at most ``GRACEFUL_SECONDS`` for open requests. A second
+    Ctrl+C ends the wait at once.
+    """
+    import contextlib
+    import signal
+    import threading
+    import uvicorn
+    from feedctrl import model_routes
+
+    class StoppingServer(uvicorn.Server):
+        def handle_exit(self, sig, frame):
+            model_routes.request_stop()   # only a flag: safe in a signal handler
+            super().handle_exit(sig, frame)
+
+        @contextlib.contextmanager
+        def capture_signals(self):
+            # As uvicorn does, but the signal is not raised again after the
+            # stop, so that the report of a run is closed and the exit code is 0.
+            if threading.current_thread() is not threading.main_thread():
+                yield
+                return
+            names = [signal.SIGINT, signal.SIGTERM] + ([signal.SIGBREAK] if hasattr(signal, 'SIGBREAK') else [])
+            original = {name: signal.signal(name, self.handle_exit) for name in names}
+            try:
+                yield
+            finally:
+                for name, handler in original.items():
+                    signal.signal(name, handler)
+
+    config = uvicorn.Config(app, host='127.0.0.1', port=port, proxy_headers=False, server_header=False,
+                            log_level='warning', timeout_graceful_shutdown=GRACEFUL_SECONDS)
+    try:
+        StoppingServer(config).run()
+    except KeyboardInterrupt:
+        pass
+    finally:
+        model_routes.request_stop()
+        model_routes.cancel_running('stop')
 
 
 if __name__ == '__main__':
