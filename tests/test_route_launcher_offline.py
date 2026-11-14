@@ -185,9 +185,10 @@ def test_quickstart_start_hands_the_key_to_the_server_in_its_environment_only(tm
     monkeypatch.setattr(quickstart, 'run_demo', lambda *arguments, env=None: started.update(arguments=arguments, env=env) or Server())
     monkeypatch.setattr(quickstart, 'wait_until_served', lambda port, server: None)
     monkeypatch.setattr(quickstart, 'keep_serving', lambda server: None)
-    quickstart.main(['start', '--scenario', 'hunger', '--route-file', path, '--port', '8805'])
+    quickstart.main(['start', '--scenario', 'hunger', '--route-file', path, '--port', '8805', '--record-dir', 'none'])
     output = capsys.readouterr().out
-    assert started['arguments'] == ('--scenario', 'hunger', '--provider', 'route', '--route-file', path, '--port', '8805')
+    assert started['arguments'] == ('--scenario', 'hunger', '--provider', 'route', '--route-file', path, '--port', '8805',
+                                    '--record-dir', 'none')
     assert started['env']['MY_KEY'] == KEY and KEY not in ' '.join(started['arguments']) and KEY not in output
     assert 'Route: openai-compatible' in output and 'http://127.0.0.1:8805' in output and output.isascii()
     monkeypatch.delenv('MY_KEY')

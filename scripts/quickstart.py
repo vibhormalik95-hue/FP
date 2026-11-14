@@ -152,6 +152,8 @@ def start(args):
         print(line)
     arguments = ['--scenario', args.scenario, '--provider', 'route', '--route-file', str(args.route_file),
                  '--port', str(args.port)]
+    if args.record_dir:
+        arguments += ['--record-dir', args.record_dir]
     relay = None
     if config['route'] == 'relay':
         relay = ROOT / 'runs' / f'relay-{args.scenario}-{time.strftime("%Y%m%d-%H%M%S")}'
@@ -205,6 +207,7 @@ def main(argv=None):
                       default='tags' if 'tags' in launcher.SCENARIOS else 'category')
     step.add_argument('--port', type=int, default=8765)
     step.add_argument('--route-file', default=str(ROOT / 'model-route.json'))
+    step.add_argument('--record-dir', help='a new folder for the call records, or "none"; default: a new folder under runs/')
     step.set_defaults(run=start)
     args = parser.parse_args(argv)
     args.run(args)

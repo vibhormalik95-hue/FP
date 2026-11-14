@@ -194,6 +194,7 @@ def setup(args, ask=input, out=print):
         out('\nThe key is not in the file. Set it for this terminal before you start:')
         out(f'  Windows PowerShell:  $env:{name} = "paste-the-key-here"')
         out(f'  macOS or Linux:      export {name}="paste-the-key-here"')
+        out('Or leave it unset: the check and the start then ask for the key with a hidden prompt.')
     if args.no_check:
         return 0
     if not args.route and (ask('\nCheck the connection now? [Y/n]: ') or '').strip().lower() in ('n', 'no'):
