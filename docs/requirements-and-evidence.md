@@ -204,7 +204,7 @@ These are software checks. They are not model evidence.
 2. **Length limits were enforced but not stated.** A real reply was rejected for a definition of 1,062 characters. The prompts now state the limits that the checks enforce.
 3. **Numbered conditions were read as required facts.** A digit in a definition becomes a literal term that the text of an item must contain. The definition prompt now asks for unnumbered conditions. See [literal source requirements](numbered-source-constraints.md).
 4. **The published branch did not serve a complete interface.** The built interface is now part of the repository and is pinned.
-5. **The limits of the reviewed Claude Code CLI connection were too low for the replies.** The bound is now 16,384 output tokens and the time limit is 300 seconds.
+5. **The limits of the reviewed Claude Code CLI connection were too low for the replies.** The correction set the bound to 16,384 output tokens and the time limit to 300 seconds. A later revision of the published branch (`d0a7bf7`) accepts a time limit of up to 600 seconds.
 6. **A run record did not name its source.** A browser receipt now records a source fingerprint and lists review decisions apart from assertions.
 
 ## What remains

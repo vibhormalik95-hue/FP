@@ -286,6 +286,7 @@ python scripts/run_demo.py --provider personal-cli --reviewed-config my-config.j
 - A configuration file is marked as used and is refused a second time. The first request must equal the pinned scenario request exactly.
 - The report holds the facts of the provider: the exact inputs, the call receipts and the number of attempts.
 - The configuration templates in `tools/hosted_validation_current/` are incomplete on purpose, and every statement in them is false. These dated inputs and their driver are frozen evidence. A later prompt or source revision needs a separate reviewed successor profile; do not overwrite this directory.
+- With the source of this revision this provider does not start a scenario: the pinned first request and the source hashes of the frozen profile belong to the source of 11 November 2026, and this repository holds no successor profile. To use a command-line program now, use the model route `cli` of `python scripts/quickstart.py setup` ([guide](model-routes.md)).
 
 The operator must confirm four conditions that the code cannot confirm:
 

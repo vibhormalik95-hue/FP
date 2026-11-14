@@ -717,7 +717,8 @@ function check(name, condition, detail) {
     async history() {
       const { baseline, record, others } = await startFlow('history');
       await chooseMethod('manual_category');
-      const names = await panel.locator('#semantic-category option').evaluateAll(options => options.map(option => option.value));
+      // The chooser starts with an empty option ("Choose an existing category"); it is not a category.
+      const names = await panel.locator('#semantic-category option').evaluateAll(options => options.map(option => option.value).filter(Boolean));
       // The second control raises a category whose items stand low in the feed, so that its effect on the order is visible.
       const first = scenario.manualCategory;
       const low = [...baseline.feed.items].reverse().find(item => item.categories.some(name => name !== first && names.includes(name)));
