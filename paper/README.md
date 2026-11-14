@@ -1,5 +1,7 @@
 # Paper sources
 
+**Draft, not ready for submission.** Fifteen final-run macros remain unfilled. The earlier run records cannot supply results for the integrated final revision.
+
 | File | Content |
 | --- | --- |
 | `research-paper-2026-11-14.tex`, `research-paper-2026-11-14.pdf` | Current revision of the paper (8 pages with the references, IEEE conference format). |
