@@ -141,8 +141,8 @@ See [route trial](route-trial.md).
 
 Run these checks from the source folder. They use no model.
 
-1. **The files.** `python scripts/quickstart.py check` prints the source fingerprint. For the final revision the value is [[FINAL: source fingerprint of the final revision]].
-2. **The Python tests.** `python -m pytest -q -p no:cacheprovider`. Expected on the final revision: [[FINAL: number of passed and skipped Python tests, with and without PyTorch]].
+1. **The files.** `python scripts/quickstart.py check` prints the source fingerprint. For the final revision the value is `ab1a9d846b33bf0e7e3840b91b69f65747386daec2cf5d38fc621d455c8fcefd`.
+2. **The Python tests.** `python -m pytest -q -p no:cacheprovider`. Expected on the final revision: 1656 passed and 1 skipped with PyTorch; 1652 passed and 2 skipped in a fresh environment without PyTorch.
 3. **The guarded checks of the reviewed CLI profile.** `python tools/hosted_validation_current/run_guarded.py .` The output must end with `OK` and `GUARD intercepted events: []`.
 4. **The interface tests.** They need Node.js.
 
@@ -153,7 +153,7 @@ Run these checks from the source folder. They use no model.
    node --test "web/tests/*.mjs"
    ```
 
-   Expected on the final revision: [[FINAL: number of passed Node tests]].
+   Expected on the final revision: 114 passed.
 5. **The browser check.** It drives the page in a real browser and compares the page with the state of the server. Install the browser once:
 
    ```
@@ -168,7 +168,7 @@ Run these checks from the source folder. They use no model.
    ```
 
    The last lines must be `OUTCOME all flows completed` and the path of the receipt. `--out` must name a new or empty folder.
-   Do the same for the scenarios `category`, `hunger` and `conditions`, each with its own rehearsal server and its own `--out` folder. Expected on the final revision: [[FINAL: assertions and exit code of the browser check for tags, category, hunger and conditions]].
+   Do the same for the scenarios `category`, `hunger` and `conditions`, each with its own rehearsal server and its own `--out` folder. Expected on the final revision: with authored replies on Linux: `tags` 209 checks, `category` 104, `hunger` 96, `conditions` 12; all passed, exit code 0 each.
    With a model in place of the rehearsal, add `--review wait --reviewer "your name"`. The script then stops at each review and waits for your decision. See [check a run in a real browser](demo.md#check-a-run-in-a-real-browser).
 
 The two commands that install the browser were not run for this page: the workspace that produced it already had Playwright and Chromium.

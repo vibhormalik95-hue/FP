@@ -32,7 +32,7 @@ These documents are fixed. They are not edited after the study that they belong 
 | `evidence/2026-10-14/` | Records of the practice run. |
 | `evidence/2026-11-11/` | Summaries of the runs through the Claude Code CLI of 10 and 11 November. |
 | [evidence/2026-11-13/](evidence/2026-11-13/README.md) | Browser runs of three controls on the earlier revision `b9220b4`, with real model output through the file relay. |
-| [[FINAL: link and one line for docs/evidence/2026-11-14/, the run records of the final build]] | |
+| [evidence/2026-11-14/](evidence/2026-11-14/README.md) | Run records of the final build: real model output through the file relay, authored replies, route checks with stand-ins | |
 
 The study of 4 November and the dated records of October and November are in [`deliverables/`](../deliverables/). The paper is in [`paper/`](../paper/README.md).
 

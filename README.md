@@ -33,6 +33,10 @@ For every method:
 - a table shows each item in the scope and why it is selected or not selected;
 - Apply uses exactly the reviewed set, and a two-step Undo restores the earlier feed.
 
+![The evidence table of a review: each item of the scope, its categories and tags, why it is selected or not, and the result](docs/images/review-evidence-table.png)
+
+*The evidence table of one review on the final build (14 November 2026). The request was "I'm not hungry, remove all the stuff that makes me hungry." The model chose existing category and tag names, and the application selected the items that carry them. The items are invented. The model output came through the file relay, and an AI operator reviewed it; no person reviewed this run. The complete review with its three blocks is in [docs/images/review-three-blocks.png](docs/images/review-three-blocks.png).*
+
 The application also shows these things:
 
 - **Mixed requests.** One request can hold several preferences, for example more of one subject and none of another. The review shows each control, and one approval applies them together.
@@ -101,7 +105,7 @@ Keep three kinds of evidence apart.
 **Demonstration evidence** is a recorded run of the application on a small invented scenario. It shows that a control ran from request to Undo. It is not an accuracy result.
 
 - *13 November 2026, earlier revision `b9220b4`.* The manual control, a new category and an indirect request matched to descriptions each completed in a real browser. The model replies came through a file relay. An AI agent made the review decisions. No person reviewed those runs. Records: [docs/evidence/2026-11-13](docs/evidence/2026-11-13/README.md).
-- *Final build.* [[FINAL: date, revision and source fingerprint of the final-build runs; which methods completed with real model output through the file relay; who reviewed; link to docs/evidence/2026-11-14/README.md]]
+- *Final build.* On 14 November 2026 (UTC), on revision `b7c5a91` (source fingerprint `ab1a9d846b33...`), every method completed in a real browser with real model output through the file relay: the request matched to existing categories and tags, a mixed request, the request matched to item descriptions, the new category in stages and the fictional item, with the manual control as reference (13 model calls, 308 script checks passed). Four requests that must change nothing changed nothing. An AI operator made all 19 review decisions; no person has reviewed a run. The model name is declared, not attested. Records: [docs/evidence/2026-11-14/](docs/evidence/2026-11-14/README.md).
 
 **Software tests** use hand-written replies, stand-in servers and stand-in programs. They check program behaviour. They are not model evidence.
 
