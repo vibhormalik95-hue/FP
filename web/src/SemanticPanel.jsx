@@ -16,10 +16,10 @@ function definitionEvidence(evidence, context) {
   });
 }
 
-export default function SemanticPanel({api,user,resetKey,onFeed,scenarioRequests,onReview}) {
+export default function SemanticPanel({api,user,resetKey,onFeed,scenarioRequests,onReview,categories=[]}) {
   const [open,setOpen]=useState(false),[saved,setSaved]=useState(null),[pending,setPending]=useState(null);
   const [text,setText]=useState(''),[label,setLabel]=useState('My semantic group'),[count,setCount]=useState(10);
-  const [backend,setBackend]=useState('ollama'),[category,setCategory]=useState('category_1');
+  const [backend,setBackend]=useState('ollama'),[category,setCategory]=useState('');
   const [operation,setOperation]=useState('boost'),[strength,setStrength]=useState('standard'),[mode,setMode]=useState('merge');
   const [actionSource,setActionSource]=useState('ollama');
   const [definition,setDefinition]=useState(null),[evidenceReviewed,setEvidenceReviewed]=useState(false);
@@ -49,7 +49,7 @@ export default function SemanticPanel({api,user,resetKey,onFeed,scenarioRequests
     finally{if(activeRequest.current===request)activeRequest.current=null;if(id===generation.current)setWorking(false);}}
   async function load(id){const r=await api(`semantic/groups?user_id=${user}`);
     if(id===generation.current){setSaved(r);return r;}}
-  function review(){run(async id=>{setPending(null);setDefinition(null);setEvidenceReviewed(false);const r=saved||await load(id);if(!r)return;
+  function review(){if(backend==='manual_category'&&!categories.includes(category))return;run(async id=>{setPending(null);setDefinition(null);setEvidenceReviewed(false);const r=saved||await load(id);if(!r)return;
     const common={user_id:user,mode,operation,strength:operation==='exclude'?'none':strength,
       candidate_ids:r.feed.baseline_items.slice(0,count)};
     const p=backend==='staged'?await api('semantic/definition/preview',{...common,objective:text}):
@@ -117,7 +117,10 @@ export default function SemanticPanel({api,user,resetKey,onFeed,scenarioRequests
           <option value="ollama">The model interprets my instruction</option><option value="manual">I choose; the model only proposes related items</option></select></>}</>}
       </>:<>
         <label className="field-label" htmlFor="semantic-category">Existing category ID</label>
-        <input id="semantic-category" disabled={disabled} value={category} onChange={e=>{setCategory(e.target.value);setPending(null);}}/>
+        <select id="semantic-category" disabled={disabled||!categories.length} value={categories.includes(category)?category:''} onChange={e=>{setCategory(e.target.value);setPending(null);}}>
+          <option value="">Choose an existing category</option>
+          {categories.map(id=><option key={id} value={id}>{id}</option>)}
+        </select>
       </>}
       {(backend==='manual_category'||backend==='induction'||backend==='staged'||explicitTarget||(backend!=='configured_model'&&actionSource==='manual'))&&<>
         <label className="field-label" htmlFor="semantic-operation">Manual action</label>
@@ -128,7 +131,7 @@ export default function SemanticPanel({api,user,resetKey,onFeed,scenarioRequests
       <label className="field-label" htmlFor="semantic-mode">Semantic profile update</label>
       <select id="semantic-mode" disabled={disabled} value={mode} onChange={e=>{setMode(e.target.value);setPending(null);}}>
         <option value="merge">Add or replace this named group</option><option value="replace">Replace semantic group profile</option></select>
-      <button className="primary" disabled={disabled||!saved||(!['induction','staged'].includes(backend)&&!label.trim())||(backend!=='manual_category'&&!text.trim())||(explicitTarget&&(!target.trim()||!confirmedNow))} onClick={review}>
+      <button className="primary" disabled={disabled||!saved||(backend==='manual_category'&&!categories.includes(category))||(!['induction','staged'].includes(backend)&&!label.trim())||(backend!=='manual_category'&&!text.trim())||(explicitTarget&&(!target.trim()||!confirmedNow))} onClick={review}>
         {working?'Working with the selected model...':backend==='staged'?'Propose a definition for review':'Review semantic proposal'}</button>
       {message&&<p role="status" className="alert">{message}</p>}
       {clarification&&<section aria-label="Unresolved semantic interpretations" className="saved-profile">
