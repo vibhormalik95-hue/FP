@@ -458,11 +458,16 @@ def test_ctrl_c_during_a_waiting_model_call_records_the_finished_cases_and_stops
     waited = time.monotonic() - started
     output = capsys.readouterr().out
     record = json.loads((out / 'trial.json').read_text(encoding='utf-8'))
-    assert code == 1 and left == [1] and waited < 3.5            # well before the relay gives up at 4 s
+    assert code == 1 and waited < 3.5                             # well before the relay gives up at 4 s
+    assert model_routes.stop_requested()                          # the waiting model call was told to end
+    for thread in route_trial._IN_FLIGHT:
+        thread.join(2)
+    assert not any(thread.is_alive() for thread in route_trial._IN_FLIGHT)
     assert record['interrupted'] is True and record['cases_chosen'] == ['vocabulary:negated', 'vocabulary:no_match']
     assert [(result['case'], result['outcome']) for result in record['cases']] == [('vocabulary:negated', 'clarify')]
     assert 'Interrupted after 1 of 2 cases. The finished cases are recorded.' in output
-    assert 'A model call was still waiting when the trial was interrupted. The program stops now.' in output
+    # The stop usually ends the wait before the records are written; then no forced end is needed.
+    assert left == [] or (left == [1] and 'A model call was still waiting when the trial was interrupted.' in output)
     assert (out / 'relay' / 'request-0001.json').is_file()        # the open request stays on disk for the record
     for thread in route_trial._IN_FLIGHT:                         # let the abandoned call end before the next test
         thread.join(timeout=10)

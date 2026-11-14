@@ -78,7 +78,7 @@ Answer each request in a second window with `scripts/relay_tools.py`, as [the de
 
 ### If you stop the trial
 
-Press Ctrl+C. The trial records the cases that are finished and stops. A model call that is in progress is not recorded as a case.
+Press Ctrl+C. The trial records the cases that are finished and stops. A model call that is in progress is ended (its connection is closed, or its program is stopped) and is not recorded as a case.
 
 ## Read the table
 

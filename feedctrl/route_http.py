@@ -416,7 +416,7 @@ def _openai_failure(status, raw, config):
     if status == 402 or (status in (403, 429) and any(word in words for word in _BILLING_WORDS)):
         return RouteError('billing', f'The provider reports a billing, quota or usage-limit problem (HTTP {status}).' + said)
     if status == 403:
-        return RouteError('permission', 'The provider refused the request for this account or network (HTTP 403).' + said)
+        return RouteError('permission', 'The provider refused this request for this account or network (HTTP 403).' + said)
     if status == 404:
         action = 'Run the check to list the model names. Check that "base_url" ends with /v1.'
         if config['preset'] == 'ollama':
