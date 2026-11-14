@@ -136,8 +136,10 @@ def install_staged_routes(app,demo,state_for,review,*,evidence_context,category_
                     return {**{k:v for k,v in deepcopy(definition).items() if k not in ('status','reason')},
                             **not_ready('duplicate',reason,REPLY_REJECTED,checks=checks)}
                 # Every other status here is the reply's own report (no match, competing meanings).
+                # Its reason is the reply's rationale: model text, shown as such.
                 return {**{k:v for k,v in deepcopy(definition).items() if k not in ('status','reason')},
-                        **not_ready(definition['status'],definition.get('reason'),MODEL_REPORT)}
+                        **not_ready(definition['status'],definition.get('reason'),MODEL_REPORT,
+                                    reply_reason=definition.get('reason'))}
             with demo.lock:
                 state=state_for(x_session_id,body.user_id)
                 pending={'id':secrets.token_urlsafe(24),'created':time.monotonic(),'revision':revision,

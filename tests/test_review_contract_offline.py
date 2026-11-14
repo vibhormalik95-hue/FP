@@ -423,3 +423,31 @@ def test_a_draft_provider_cannot_carry_a_name_that_means_no_model(backend):
     from feedctrl import synthetic_drafts
     assert synthetic_drafts._declared_backend(backend) is False
     assert synthetic_drafts._declared_backend('openai-compatible') is True
+
+
+def test_the_description_route_checks_its_evidence_budget_before_the_first_call(tmp_path):
+    path = tmp_path / 'long.csv'
+    with path.open('w', encoding='utf-8', newline='') as handle:
+        writer = csv.DictWriter(handle, fieldnames=['video_id', *TEXT_FIELDS])
+        writer.writeheader()
+        for item in range(1, 37):
+            writer.writerow({'video_id': item, 'caption': f'Clip {item} ' + 'word ' * 120})
+    provider = Provider()
+    provider.action = action(span='clip one')
+    app = create_app(fixture=True, semantic_path=path, semantic_infer_factory=provider.factory,
+                     allow_local_models=False)
+    with TestClient(app) as client:
+        h = {'X-Session-ID': client.post('/api/session', json={}).json()['session_id']}
+        body = client.post('/api/semantic/preview', headers=h, json={
+            'user_id': 1, 'text': 'Remove clip one.', 'label': 'L', 'candidate_ids': list(range(1, 21)),
+            'backend': 'configured_model', 'action_source': 'model'}).json()
+        assert body['status'] == 'clarify' and body['outcome_source'] == 'application_check'
+        assert body['calls_attempted'] == 0 and provider.calls == []
+        assert body['checks'][-1]['check'] == ig.BUDGET_CHECK and body['checks'][-1]['passed'] is False
+        # A smaller scope fits: the same check passes and the calls are made.
+        provider.evidence = evidence((1, 'Clip 1 '))
+        body = client.post('/api/semantic/preview', headers=h, json={
+            'user_id': 1, 'text': 'Remove clip one.', 'label': 'L', 'candidate_ids': [1, 2, 3, 4],
+            'backend': 'configured_model', 'action_source': 'model'}).json()
+        assert body['ready'] and provider.calls == ['action', 'evidence']
+        assert [row['check'] for row in body['checks']][:2] == [ig.GUARD_CHECK, ig.BUDGET_CHECK]

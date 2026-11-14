@@ -257,6 +257,12 @@ def propose_vocabulary(request: str, index: dict, infer: Callable, *, model_prov
     from in ``outcome_source``: an application check before any call, a failed
     provider call, a reply that an application check rejected, or the model's
     own report. ``call_attempted`` says whether the provider was invoked.
+
+    Limit of the wording guard (``COMMAND_NEGATION``): it is one English
+    pattern, a negator (do not, don't, never, not to) followed by hide,
+    exclude, remove, reduce or boost. A match is stopped before the call. Every
+    other wording of a negated command is not detected and reaches the model
+    and the reviewer; a match does not prove a negated command either.
     """
     if not isinstance(request, str) or not 1 <= len(request.strip()) or len(request) > 2000:
         raise ValueError('Request must contain 1-2000 characters')

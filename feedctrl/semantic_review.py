@@ -19,7 +19,8 @@ from fastapi import Header, HTTPException, Query
 from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictInt, field_validator
 
 from feedctrl.controls import ParserOperationalError, normalize_scores
-from feedctrl.indirect_grounding import (APPLICATION_CHECK, COMMAND_NEGATION, GUARD_CHECK, GUARD_PATTERN_WORDS,
+from feedctrl.indirect_grounding import (APPLICATION_CHECK, BUDGET_CHECK, BUDGET_REASON, COMMAND_NEGATION,
+                                         GUARD_CHECK, GUARD_PATTERN_WORDS, evidence_budget,
                                          GUARD_REASON, MODEL_REPORT, PROVIDER_FAILURE, REPLY_REJECTED,
                                          _catalogue, _digest, _response_snapshot, clean_page_text,
                                          failure_sentence, make_local_ollama_infer, propose_indirect,
@@ -174,7 +175,8 @@ def stage_outcome(exc, calls, raised):
     if isinstance(exc, ParserOperationalError):
         # Written by the application or by the provider wrapper, never by a reply.
         return failure_sentence(exc), APPLICATION_CHECK if not calls else PROVIDER_FAILURE
-    return clean_page_text(exc), REPLY_REJECTED if returned else APPLICATION_CHECK
+    # ``application_check`` only when no call was begun: the page says then that no model was called.
+    return clean_page_text(exc), REPLY_REJECTED if returned else PROVIDER_FAILURE if calls else APPLICATION_CHECK
 
 
 def plan_notes(groups, catalogue_size):
@@ -595,6 +597,12 @@ def install_semantic_routes(app, demo, *, infer_factory=None, category_infer_fac
                                "detail": GUARD_PATTERN_WORDS})
                 if not checks[-1]["passed"]:
                     return not_ready("clarify", GUARD_REASON, APPLICATION_CHECK)
+                # The evidence budget is also known before the first call: no call
+                # is spent on a request whose items cannot be sent in the evidence call.
+                passed, detail = evidence_budget(grounding_request, index)
+                checks.append({"check": BUDGET_CHECK, "passed": passed, "detail": detail})
+                if not passed:
+                    return not_ready("clarify", BUDGET_REASON, APPLICATION_CHECK)
                 if body.backend == "configured_model":
                     # Operator-selected transport, never request-supplied URLs or keys.
                     infer, provenance = configured_infer()
@@ -659,7 +667,7 @@ def install_semantic_routes(app, demo, *, infer_factory=None, category_infer_fac
                 proposal = propose_indirect(grounding_request, action, index, tracked_infer, model_provenance=provenance)
                 # Checks of the action stage first, then every check of the evidence stage
                 # (the evidence stage repeats the wording guard for callers that use it alone).
-                checks.extend(row for row in proposal.pop("checks") if row["check"] != GUARD_CHECK)
+                checks.extend(row for row in proposal.pop("checks") if row["check"] not in (GUARD_CHECK, BUDGET_CHECK))
                 proposal.pop("call_attempted", None)
                 proposal["action_source"] = 'user_confirmed_target' if confirmation else body.action_source
                 if confirmation:

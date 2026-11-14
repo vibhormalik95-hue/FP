@@ -189,6 +189,32 @@ def _catalogue(index):
     return rows
 
 
+BUDGET_CHECK = 'The supplied items fit the evidence budget'
+BUDGET_REASON = 'Catalogue exceeds explicit evidence budget; narrow candidates without silent truncation'
+
+
+def _budget(payload, rows, max_items, max_chars):
+    """``(passed, detail)`` of the evidence budget of one evidence payload."""
+    size = len(json.dumps(payload, ensure_ascii=False))
+    encoded = len(json.dumps(payload, ensure_ascii=False).encode())
+    return (len(rows) <= max_items and size <= max_chars and encoded <= 10000,
+            f'{len(rows)} items of at most {max_items}; {encoded} bytes of at most {min(max_chars, 10000)}')
+
+
+def evidence_budget(request, index, max_items=100, max_chars=10000):
+    """``(passed, detail)`` before any call: the largest evidence payload that this request can give.
+
+    The action of the evidence call is not known before the action call, but its
+    span is a part of the request. The longest operation and strength words and
+    the whole request as the span give an upper bound, so a request that passes
+    here never fails the same budget after the action call.
+    """
+    rows = _catalogue(index)
+    payload = {'system': PROMPT, 'request': request, 'catalogue': rows,
+               'action': {'operation': 'exclude', 'strength': 'standard', 'intent_span': request}}
+    return _budget(payload, rows, max_items, max_chars)
+
+
 def propose_indirect(request: str, action: dict, index: dict, infer: Callable,
                      *, model_provenance: dict, max_items=100, max_chars=10000,
                      max_fraction=.5):
@@ -197,6 +223,9 @@ def propose_indirect(request: str, action: dict, index: dict, infer: Callable,
     Caller passes one already parsed action with an exact request subject span.
     No chunks/truncation: an oversized catalogue explicitly fails closed. Feed
     candidate selection must occur upstream and must be disclosed to the reviewer.
+    The wording guard is repeated here for callers that use this step alone; its
+    limit is stated at ``COMMAND_NEGATION``: one English pattern, other wordings
+    of a negated command are not detected.
     """
     if not isinstance(request, str) or not 1 <= len(request.strip()) <= 2000:
         raise ValueError('Request must contain 1-2000 characters')
@@ -237,13 +266,8 @@ def propose_indirect(request: str, action: dict, index: dict, infer: Callable,
         if status != 'review':
             value['outcome_source'] = source
         return value
-    size = len(json.dumps(payload, ensure_ascii=False))
-    encoded = len(json.dumps(payload, ensure_ascii=False).encode())
-    if not check('The supplied items fit the evidence budget',
-                 len(rows) <= max_items and size <= max_chars and encoded <= 10000,
-                 f'{len(rows)} items of at most {max_items}; {encoded} bytes of at most {min(max_chars, 10000)}'):
-        return result('clarify', 'Catalogue exceeds explicit evidence budget; narrow candidates without silent truncation',
-                      source=APPLICATION_CHECK)
+    if not check(BUDGET_CHECK, *_budget(payload, rows, max_items, max_chars)):
+        return result('clarify', BUDGET_REASON, source=APPLICATION_CHECK)
     if not check(GUARD_CHECK, not COMMAND_NEGATION.search(request), GUARD_PATTERN_WORDS):
         return result('clarify', GUARD_REASON, source=APPLICATION_CHECK)
     attempted[0] = True
