@@ -9,6 +9,7 @@ Examples (run from the repository root):
         --transport-note "replies pasted by hand from a Claude chat"
     python scripts/run_demo.py --provider personal-cli --reviewed-config my-config.json \
         --report runs/category-report.json
+    python scripts/run_demo.py --scenario hunger --provider route --route-file model-route.json
 
 Providers
     manual        No model. Only the manual category control is offered.
@@ -16,6 +17,10 @@ Providers
     relay         An operator carries each request to a model and saves the reply.
     personal-cli  The signed-in Claude Code CLI on Windows, through the reviewed
                   configuration that the validation driver already checks.
+    route         A model route from a route file: a program on this computer, a
+                  hosted API with your own key, a local model server, or the relay.
+                  Write the file with "python scripts/model_route.py setup".
+                  See docs/model-routes.md.
 
 The server binds to 127.0.0.1 only. Local models and the trained recommender stay
 disabled; the bundled scenarios use eight invented descriptions and a labelled
@@ -125,6 +130,36 @@ def require_free_port(port):
             raise SystemExit(f'Port {port} on 127.0.0.1 is in use; stop the other server first') from exc
 
 
+def build_route_provider(args, scenario, summary):
+    """Return ``(infer, identity, receipts)`` for the route that a route file selects.
+
+    The key of a hosted route comes from the environment variable that the file
+    names, or from a hidden prompt at a terminal. It is never printed or stored.
+    Each call is recorded in a new folder under runs/ (the exact request body
+    and the raw reply, no header), unless --record-dir none is given.
+    """
+    import getpass
+    import time
+    from feedctrl import model_routes
+    stamp = time.strftime('%Y%m%d-%H%M%S')
+    try:
+        config = model_routes.load_config(getattr(args, 'route_file', None) or ROOT / model_routes.DEFAULT_FILE)
+        key = model_routes.resolve_api_key(config, ask=getpass.getpass if sys.stdin.isatty() else None)
+        relay_dir = record_dir = None
+        if config['route'] == 'relay':
+            relay_dir = Path(args.relay_dir) if args.relay_dir else ROOT / 'runs' / f'relay-{scenario}-{stamp}'
+            summary['relay_dir'] = str(relay_dir.resolve())
+        elif getattr(args, 'record_dir', None) != 'none':
+            record_dir = Path(getattr(args, 'record_dir', None) or ROOT / 'runs' / f'route-{scenario}-{stamp}')
+            summary['record_dir'] = str(record_dir.resolve())
+        provider = model_routes.build_route(config, api_key=key, record_dir=record_dir, relay_dir=relay_dir,
+                                            log=lambda line: print(line, flush=True))
+    except model_routes.RouteError as error:
+        raise SystemExit(model_routes.ascii_text(error)) from None
+    summary['route'] = model_routes.describe(config)
+    return provider
+
+
 def build_app(args):
     """Return ``(app, port, summary, finish)`` for the selected provider."""
     sys.path.insert(0, str(ROOT))
@@ -153,6 +188,8 @@ def build_app(args):
             spool, declared_model=args.declared_model, transport_note=args.transport_note,
             max_calls=args.max_calls or CALLS[scenario], timeout=args.relay_timeout)
         summary['relay_dir'] = str(spool.resolve())
+    elif args.provider == 'route':
+        infer, identity, receipts = build_route_provider(args, scenario, summary)
     else:
         infer = identity = receipts = None
     if infer is not None:
@@ -251,8 +288,10 @@ def build_personal_cli_app(args):
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__.split('\n\n')[0])
     parser.add_argument('--scenario', choices=sorted(SCENARIOS))
-    parser.add_argument('--provider', choices=('manual', 'scripted', 'relay', 'personal-cli'),
+    parser.add_argument('--provider', choices=('manual', 'scripted', 'relay', 'personal-cli', 'route'),
                         default='manual')
+    parser.add_argument('--route-file', help='with --provider route; default: model-route.json')
+    parser.add_argument('--record-dir', help='with --provider route: a new folder for the call records, or "none"')
     parser.add_argument('--port', type=int)
     parser.add_argument('--relay-dir')
     parser.add_argument('--declared-model')
