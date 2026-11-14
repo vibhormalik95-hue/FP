@@ -281,11 +281,24 @@ def install_semantic_routes(app, demo, *, infer_factory=None, category_infer_fac
             "category_adapter_available": category_infer_factory is not None,
             "external_adapter_available": infer_factory is not None}
 
+    def review_source_binding():
+        # Bind even empty clear/undo plans to the source and original category
+        # content used to render the reviewed feed, not only to item IDs.
+        index = demo.topic_index
+        try:
+            catalogue = _catalogue(index)
+            return _digest({"source_sha256": index["sha256"], "catalogue": catalogue,
+                            "original_categories": [[i, demo.items[i]] for i in sorted(demo.items)]})
+        except (KeyError, TypeError, UnicodeError) as exc:
+            raise ValueError("Invalid current source or category inventory") from exc
+
     def review(state, user, groups, history_action="none", proposal=None):
         preview_feed = feed(user, groups)  # validate before installing a review token
+        source_binding = review_source_binding()
         plan_id = secrets.token_urlsafe(24)
         state["semantic_pending"] = {"id": plan_id, "created": time.monotonic(),
-            "revision": state["semantic_revision"], "groups": deepcopy(groups), "history_action": history_action}
+            "revision": state["semantic_revision"], "groups": deepcopy(groups), "history_action": history_action,
+            "preview_nonce": state.get("semantic_preview_nonce"), "source_binding": source_binding}
         return {"ready": True, "applied": False, "plan_id": plan_id,
             "groups": deepcopy(groups), "proposal": proposal, "feed": preview_feed,
             "evidence_context": evidence_context(proposal),
@@ -491,6 +504,7 @@ def install_semantic_routes(app, demo, *, infer_factory=None, category_infer_fac
             except ValueError as exc:
                 raise HTTPException(409, str(exc)) from exc
             state["semantic_preview_nonce"] = None
+            state["semantic_pending"]["preview_nonce"] = None
             return result
 
     @app.post("/api/semantic/apply")
@@ -499,9 +513,12 @@ def install_semantic_routes(app, demo, *, infer_factory=None, category_infer_fac
             state = state_for(x_session_id, body.user_id)
             pending = state["semantic_pending"]
             if (not pending or pending["id"] != body.plan_id or pending["revision"] != state["semantic_revision"]
+                    or "preview_nonce" not in pending or pending["preview_nonce"] != state.get("semantic_preview_nonce")
                     or time.monotonic() - pending["created"] > 300):
                 raise HTTPException(409, "Review expired or changed; review again")
             try:
+                if pending.get("source_binding") != review_source_binding():
+                    raise ValueError("Source or category inventory changed; review again")
                 context = pending.get("induction_context")
                 if context:
                     scope = scoped_index(demo.topic_index, context["candidate_ids"])
