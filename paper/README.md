@@ -40,8 +40,8 @@ Replace each `\TBF{...}` in that block by the recorded value and build again.
 | `\FinalAssertions` | Scripted assertions passed, and the number of review decisions. It completes the sentence "In total, ...". |
 | `\FinalRouteChecks` | What ran against each stand-in. It completes the sentence "Route checks: ...". |
 
-The paragraph "Runs on the final build" states the limits of those runs as fixed text: who produced the model replies, who made the review decisions, and which routes ran against stand-ins only.
-Read that paragraph again when the values are filled, and change it if the conditions of the runs differ.
+The paragraph "Final-build validation pending" does not assume a model route, reviewer or platform.
+When the runs are complete, replace its pending status with the recorded provenance: model route and attestation limits, reviewer identity, scenario exposure, platform, and which checks used authored replies or stand-ins. Filling the macros alone is not sufficient.
 Keep the paper at 8 pages: with values of ordinary length, about nine lines of the last column stay free.
 
 ## One sentence for the student
