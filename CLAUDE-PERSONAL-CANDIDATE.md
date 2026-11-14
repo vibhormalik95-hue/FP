@@ -1,4 +1,6 @@
-# Personal Claude Code integration status
+# Personal Claude Code integration: historical status
+
+This record describes the personal-CLI implementation and checks recorded through 11 November 2026. Its test counts, activation checklist and unresolved results are historical, not a status report for the current checkout. For the current implementation and supported demo entry points, start with [current progress](docs/current-progress.md) and [the app guide](docs/app.md). The original evidence and limitations below are retained for traceability.
 
 The default `_run_process` still rejects launches. `make_claude_personal_infer` accepts an explicitly selected process runner, and `create_claude_personal_app` passes that selection through its transport configuration. No automatic fallback is enabled.
 
