@@ -105,7 +105,8 @@ def test_identifiers_stay_ordered_beyond_ninety_nine_terms():
 def test_the_model_receives_terms_and_no_description_or_item():
     result, seen = run(lambda payload: reply([control([pick(payload['vocabulary'], 'category', 'Alpha')])]))
     payload, schema = seen[0]
-    assert set(payload) == {'system', 'request', 'vocabulary'} and payload['request'] == REQUEST
+    assert set(payload) == {'system', 'request', 'scope_item_count', 'vocabulary'} and payload['request'] == REQUEST
+    assert payload['scope_item_count'] == 8  # the model can see the size that the half-of-scope rule uses
     assert all(set(row) == {'term_id', 'kind', 'level', 'value', 'item_count'} for row in payload['vocabulary'])
     text = json.dumps(payload)
     assert 'SECRET' not in text and 'caption' not in text and 'item_ids' not in text
@@ -117,7 +118,9 @@ def test_one_control_selects_exactly_the_items_that_carry_its_terms():
     result, _ = run(lambda payload: reply([control([pick(payload['vocabulary'], 'tag', 'round'),
                                                     pick(payload['vocabulary'], 'category', 'Delta')])]))
     assert result['status'] == 'review' and result['reason'] == 'authored reason' and result['requires_review']
-    assert all(c['passed'] for c in result['checks']) and len(result['checks']) == 13
+    assert all(c['passed'] for c in result['checks']) and len(result['checks']) == 16
+    assert result['call_attempted'] is True and 'outcome_source' not in result
+    assert result['reply_reason'] == 'authored reason'
     (selected,) = result['controls']
     assert selected['action'] == {'operation': 'exclude', 'strength': 'none', 'intent_span': 'alpha things'}
     assert selected['item_ids'] == [1, 3, 7] and selected['relation'] == 'authored relation'
@@ -167,9 +170,24 @@ def test_two_preferences_give_two_controls_with_their_own_direction():
     (lambda v: [control([pick(v, 'category', 'Alpha'), pick(v, 'category', 'Beta'), pick(v, 'category', 'Delta')])],
      'clarify', 'No control selects more than half of the supplied items'),
     (lambda v: [control([pick(v, 'category', 'Alpha')], span='ALPHA THINGS')],
-     'error', 'Each intent span is a verbatim part of the request'),
+     'error', 'Each intent span is a verbatim part of the request with at least one word'),
     (lambda v: [control([pick(v, 'category', 'Alpha')], span=' ')],
-     'error', 'Each intent span is a verbatim part of the request'),
+     'error', 'Each intent span is a verbatim part of the request with at least one word'),
+    (lambda v: [control([pick(v, 'category', 'Alpha')], span=', ')],
+     'error', 'Each intent span is a verbatim part of the request with at least one word'),
+    # Two controls must cite different words: the same span, or one span inside the other, is refused.
+    (lambda v: [control([pick(v, 'category', 'Alpha')]), control([pick(v, 'category', 'Gamma')], 'boost/light')],
+     'error', 'The intent spans of different controls do not overlap'),
+    (lambda v: [control([pick(v, 'category', 'Alpha')], span='alpha things and more'),
+                control([pick(v, 'category', 'Gamma')], 'boost/light', 'more gamma')],
+     'error', 'The intent spans of different controls do not overlap'),
+    # Different terms with the same members: two instructions for the same items are not settled silently.
+    (lambda v: [control([pick(v, 'category', 'Alpha')], 'boost/strong', 'more gamma'),
+                control([pick(v, 'tag', 'red')], 'exclude/none')],
+     'clarify', 'No two controls give different instructions to the same items'),
+    (lambda v: [control([pick(v, 'category', 'Alpha')], 'boost/light', 'more gamma'),
+                control([pick(v, 'tag', 'round')], 'boost/strong')],
+     'clarify', 'No two controls give different instructions to the same items'),
     (lambda v: [control([pick(v, 'category', 'Alpha')], 'exclude/strong')],
      'error', 'Each control value is one of the declared choices'),
     (lambda v: [control([pick(v, 'category', 'Alpha')], 'remove')],
@@ -179,6 +197,22 @@ def test_each_application_check_stops_a_wrong_proposal(build, status, check):
     result, seen = run(lambda payload: reply(build(payload['vocabulary'])))
     assert result['status'] == status and failed(result) == check and len(seen) == 1
     assert 'clarification' not in result
+    # A reply came back and an application check rejected it.
+    assert result['outcome_source'] == 'reply_rejected' and result['call_attempted'] is True
+
+
+def test_two_controls_with_the_same_instruction_may_share_items():
+    # Removal of the same items through two terms is not a contradiction.
+    result, _ = run(lambda payload: reply([control([pick(payload['vocabulary'], 'category', 'Alpha')]),
+                                           control([pick(payload['vocabulary'], 'tag', 'red')], span='more gamma')]))
+    assert result['status'] == 'review' and [c['item_ids'] for c in result['controls']] == [[1, 2], [1, 2]]
+
+
+def test_spans_are_placed_without_overlap_also_when_a_span_occurs_twice():
+    assert vg._separable('more a, more b', ['more', 'more'])
+    assert not vg._separable('more a', ['more', 'more'])
+    assert not vg._separable('abc', ['ab', 'bc']) and vg._separable('ab bc', ['ab', 'bc'])
+    assert vg._separable('x', ['x'])
 
 
 def test_several_exclusions_cannot_add_up_to_more_than_half_of_the_scope():
@@ -189,7 +223,8 @@ def test_several_exclusions_cannot_add_up_to_more_than_half_of_the_scope():
                       control([pick(v, 'category', 'Delta')], span='Fewer')])
     result, _ = run(build)
     assert result['status'] == 'clarify'
-    assert failed(result) == 'The exclusions together remove at most half of the supplied items'
+    assert failed(result) == 'The removals of this request together remove at most half of the supplied items'
+    assert result['outcome_source'] == 'reply_rejected'
     assert result['checks'][-1]['detail'] == '5 of 8 items'
     # The bound is on removal. An increase and an exclusion may together touch more than half.
 
@@ -216,10 +251,13 @@ def test_an_abstention_with_a_selection_is_an_error(status):
 def test_abstentions_keep_their_meaning_and_select_nothing():
     result, _ = run(reply([], status='no_match'))
     assert result['status'] == 'no_match' and result['reason'] == 'authored reason' and result['controls'] == []
+    # The status and its reason are the reply's own report; the application did not test them.
+    assert result['outcome_source'] == 'model_report' and result['reply_reason'] == 'authored reason'
     result, _ = run(reply([], status='unsupported'))
     assert result['status'] == 'unsupported' and result['reason'] == 'authored reason'
+    assert result['outcome_source'] == 'model_report'
     result, _ = run(reply([], status='ambiguous', alternatives=['one reading', 'another reading']))
-    assert result['status'] == 'clarify'
+    assert result['status'] == 'clarify' and result['outcome_source'] == 'model_report'
     assert result['clarification'] == {
         'model_reason': 'authored reason', 'alternatives': ['one reading', 'another reading'],
         'negation_resolved': True,
@@ -238,6 +276,7 @@ def test_a_proposal_with_an_open_reading_is_a_clarification_that_keeps_the_readi
     assert failed(result) == 'A proposal has no open negation and no competing interpretation'
     assert result['clarification']['alternatives'] == changes.get('alternatives', [])
     assert result['clarification']['negation_resolved'] is changes.get('negation_resolved', True)
+    assert result['outcome_source'] == 'model_report'
 
 
 def test_a_proposal_without_a_control_matches_nothing():
@@ -255,6 +294,7 @@ def test_a_proposal_without_a_control_matches_nothing():
     reply([], negation_resolved=1), reply([], negation_resolved='true'),
     reply([], alternatives='one'), reply([], alternatives=['x'] * 7), reply([], alternatives=['']),
     reply([], alternatives=['x' * 301]), reply([], alternatives=[3]), reply([], alternatives=['line\nbreak']),
+    reply([], alternatives=['zero\u200bwidth']), reply([], alternatives=['lone\ud800surrogate']),
     reply('none'), reply([control([])] * 5), reply(['text']),
     reply([{'control': 'exclude/none', 'intent_span': 'alpha things', 'terms': []}]),
     reply([{**control([]), 'operation': 'exclude'}]),
@@ -267,8 +307,11 @@ def test_a_proposal_without_a_control_matches_nothing():
 def test_a_reply_without_the_declared_fields_and_bounds_is_rejected(raw):
     result, seen = run(raw)
     assert result['status'] == 'error' and result['controls'] == [] and len(seen) == 1
-    assert failed(result) == 'The reply has the declared fields and bounded values'
-    assert result['checks'][-1]['detail']
+    if isinstance(raw, dict) and raw.get('alternatives') == ['lone\ud800surrogate']:
+        assert failed(result) == 'The reply is bounded finite JSON'
+    else:
+        assert failed(result) == 'The reply has the declared fields and bounded values'
+        assert result['checks'][-1]['detail']
 
 
 @pytest.mark.parametrize('raw', [{'status': float('nan')}, {'status': {1, 2}}, {1: 'x'}])
@@ -276,22 +319,46 @@ def test_a_reply_that_is_not_bounded_json_is_rejected(raw):
     result, _ = run(raw)
     assert result['status'] == 'error' and result['reason'] == 'Response is not bounded finite JSON'
     assert 'response_sha256' not in result['provenance']
+    assert result['outcome_source'] == 'reply_rejected' and failed(result) == 'The reply is bounded finite JSON'
 
 
 @pytest.mark.parametrize('request_text', [
-    'Do not hide the alpha things.', "Don't ever remove alpha things", 'never show gamma', 'I want you not to boost it'])
-def test_a_negated_command_is_clarified_before_any_model_call(request_text):
+    'Do not hide the alpha things.', "Don't ever remove alpha things", 'never exclude gamma',
+    'I want you not to boost it', 'Please do NOT really reduce the alpha things'])
+def test_a_request_that_matches_the_negated_command_pattern_is_stopped_before_any_model_call(request_text):
     def infer(payload, schema):
         raise AssertionError('no call may be made')
     result = vg.propose_vocabulary(request_text, index(), infer, model_provenance=MODEL)
-    assert result['status'] == 'clarify' and failed(result) == 'The request does not negate a command'
-    assert result['reason'] == 'Command negation requires an explicit reviewed interpretation'
-    assert 'response_sha256' not in result['provenance']
+    assert result['status'] == 'clarify' and failed(result) == indirect_grounding.GUARD_CHECK
+    # The check line says what a pattern can show; the reason says what the person can do.
+    assert failed(result) == 'The request text does not match the negated-command pattern'
+    assert result['checks'][-1]['detail'] == indirect_grounding.GUARD_PATTERN_WORDS
+    assert result['reason'] == indirect_grounding.GUARD_REASON and 'positive instruction' in result['reason']
+    assert result['outcome_source'] == 'application_check' and result['call_attempted'] is False
+    assert 'response_sha256' not in result['provenance'] and 'reply_reason' not in result
 
 
 def test_the_negation_guard_is_the_one_shared_pattern():
     assert vg.COMMAND_NEGATION is indirect_grounding.COMMAND_NEGATION
     assert not vg.COMMAND_NEGATION.search("I'm not hungry, remove all the stuff that makes me hungry.")
+
+
+@pytest.mark.parametrize('request_text', [
+    "Don't show me the alpha things.", 'Never show me alpha things again.', 'Do not show gamma.'])
+def test_do_not_show_is_a_plain_request_to_remove_and_reaches_the_model(request_text):
+    assert not vg.COMMAND_NEGATION.search(request_text)
+    result, seen = run(reply([], status='no_match'), request=request_text)
+    assert len(seen) == 1 and result['status'] == 'no_match'
+    assert next(c for c in result['checks'] if c['check'] == indirect_grounding.GUARD_CHECK)['passed'] is True
+
+
+@pytest.mark.parametrize('request_text', [
+    'Dont hide the alpha things.', 'Stop hiding the alpha things.', 'Keep the alpha things.',
+    'You must not remove the alpha things.'])
+def test_the_pattern_misses_other_wordings_and_the_docstring_of_the_limit_says_so(request_text):
+    # Documented limit, not a claim: these negated commands are not found and reach the model.
+    assert not vg.COMMAND_NEGATION.search(request_text)
+    assert 'other wordings are not detected' in indirect_grounding.GUARD_PATTERN_WORDS
 
 
 def test_a_negated_personal_state_reaches_the_model():
@@ -301,19 +368,54 @@ def test_a_negated_personal_state_reaches_the_model():
     assert result['status'] == 'review' and len(seen) == 1
 
 
-def test_an_oversized_vocabulary_asks_for_a_narrower_scope_without_a_call():
+def one_item(tags):
+    return {'sha256': 'a' * 64, 'items': {1: {'fields': {'topic_tag': ', '.join(tags)}}, 2: {'fields': {}}}}
+
+
+def size(source):
+    return len(json.dumps(vg.model_view(vg.build_vocabulary(source)), ensure_ascii=False).encode('utf-8'))
+
+
+def test_each_vocabulary_limit_can_be_reached_and_stops_the_request_without_a_call():
     def infer(payload, schema):
         raise AssertionError('no call may be made')
-    many = index()
-    many['items'][1]['fields']['topic_tag'] = ', '.join(f't{n}' for n in range(vg.MAX_TERMS + 1))
+    # The term limit alone: short terms stay far below the byte limit.
+    many = one_item(f't{n}' for n in range(vg.MAX_TERMS + 1))
+    assert size(many) < vg.MAX_VOCABULARY_BYTES
     result = vg.propose_vocabulary(REQUEST, many, infer, model_provenance=MODEL)
     assert result['status'] == 'clarify' and failed(result) == 'The vocabulary fits the stated budget'
-    assert len(result['vocabulary']['terms']) > vg.MAX_TERMS  # reported whole, never cut
-    long = index()
-    long['items'][1]['fields']['topic_tag'] = ', '.join('w' * 90 + str(n) for n in range(120))
+    assert result['checks'][-1]['detail'].startswith(f'{vg.MAX_TERMS + 1} terms of at most {vg.MAX_TERMS}; ')
+    assert len(result['vocabulary']['terms']) == vg.MAX_TERMS + 1  # reported whole, never cut
+    assert result['outcome_source'] == 'application_check' and result['call_attempted'] is False
+    assert 'smaller scope' in result['reason']
+    # The byte limit alone: fewer terms than the term limit, with long values.
+    long = one_item('w' * 200 + str(n) for n in range(60))
+    assert len(vg.build_vocabulary(long)) < vg.MAX_TERMS and size(long) > vg.MAX_VOCABULARY_BYTES
     result = vg.propose_vocabulary(REQUEST, long, infer, model_provenance=MODEL)
-    assert len(result['vocabulary']['terms']) <= vg.MAX_TERMS
     assert result['status'] == 'clarify' and failed(result) == 'The vocabulary fits the stated budget'
+    assert f'bytes of at most {vg.MAX_VOCABULARY_BYTES}' in result['checks'][-1]['detail']
+    # Exactly at the term limit the request goes on to the model.
+    result, seen = run(reply([], status='no_match'), source=one_item(f't{n}' for n in range(vg.MAX_TERMS)))
+    assert len(seen) == 1 and result['checks'][0]['passed'] is True
+
+
+def test_the_budget_counts_the_vocabulary_and_not_the_request_or_the_prompt():
+    # The longest request that the route accepts, in four-byte characters, does not fail the vocabulary budget.
+    result, seen = run(reply([], status='no_match'), request='\U0001F355' * 2000)
+    assert len(seen) == 1 and result['status'] == 'no_match'
+    assert result['checks'][0] == {'check': 'The vocabulary fits the stated budget', 'passed': True,
+                                   'detail': f'11 terms of at most {vg.MAX_TERMS}; {size(index())} bytes of at most '
+                                             f'{vg.MAX_VOCABULARY_BYTES}'}
+
+
+def test_a_scope_without_a_category_or_a_tag_makes_no_call():
+    def infer(payload, schema):
+        raise AssertionError('no call may be made')
+    empty = {'sha256': 'a' * 64, 'items': {1: {'fields': {'caption': 'x'}}, 2: {'fields': {}}}}
+    result = vg.propose_vocabulary(REQUEST, empty, infer, model_provenance=MODEL)
+    assert result['status'] == 'no_match' and failed(result) == 'The scope has at least one category or tag'
+    assert result['outcome_source'] == 'application_check' and result['call_attempted'] is False
+    assert 'No model was called' in result['reason']
 
 
 def test_a_failed_call_is_reported_and_never_retried():
@@ -324,12 +426,72 @@ def test_a_failed_call_is_reported_and_never_retried():
         raise ParserOperationalError('The endpoint refused the key. Check the variable and start again.')
     result = vg.propose_vocabulary(REQUEST, index(), operational, model_provenance=MODEL)
     assert result['status'] == 'error' and len(calls) == 1
-    assert result['reason'] == 'The model call failed: The endpoint refused the key. Check the variable and start again.'
+    # A call was begun and failed. The text of an ordinary operational error can
+    # hold provider or program text, so the page gets type names only.
+    assert result['outcome_source'] == 'provider_failure' and result['call_attempted'] is True
+    assert result['reason'].startswith('The call to the provider failed (ParserOperationalError).')
+    assert 'refused the key' not in result['reason'] and 'reply_reason' not in result
 
     def unexpected(payload, schema):
         raise KeyError('internal detail that is not written for an operator')
     result = vg.propose_vocabulary(REQUEST, index(), unexpected, model_provenance=MODEL)
-    assert result['status'] == 'error' and result['reason'] == 'The model call failed: KeyError'
+    assert result['status'] == 'error' and result['reason'].startswith('The call to the provider failed (KeyError).')
+    assert 'internal detail' not in result['reason']
+
+
+class PageSafe(ParserOperationalError):
+    page_safe = True
+
+
+def test_only_a_page_safe_failure_shows_its_own_sentence_bounded_and_without_control_characters():
+    def refused(payload, schema):
+        raise PageSafe('The endpoint refused the key.\x1b[2K Check the variable\u202e and start again. ' + 'x' * 2000)
+    result = vg.propose_vocabulary(REQUEST, index(), refused, model_provenance=MODEL)
+    assert result['status'] == 'error' and result['outcome_source'] == 'provider_failure'
+    assert result['reason'].startswith('The endpoint refused the key. [2K Check the variable and start again. xxx')
+    assert len(result['reason']) == 600 and '\x1b' not in result['reason'] and '\u202e' not in result['reason']
+
+    def chained(payload, schema):
+        try:
+            raise TimeoutError('provider text that must stay off the page')
+        except TimeoutError as cause:
+            raise ParserOperationalError('more provider text') from cause
+    result = vg.propose_vocabulary(REQUEST, index(), chained, model_provenance=MODEL)
+    assert result['reason'].startswith('The call to the provider failed (ParserOperationalError, caused by TimeoutError).')
+    assert 'provider text' not in result['reason']
+
+
+def test_a_sealed_control_is_recomputed_from_its_terms():
+    result, _ = run(lambda payload: reply([control([pick(payload['vocabulary'], 'tag', 'round'),
+                                                    pick(payload['vocabulary'], 'category', 'Delta')])]))
+    (selected,) = result['controls']
+    sealed = {'item_ids': selected['item_ids'], 'evidence': selected['evidence'],
+              'vocabulary_terms': [{k: t[k] for k in ('term_id', 'kind', 'level', 'field', 'value')}
+                                   for t in selected['terms']]}
+    vg.revalidate_control(sealed, index())  # unchanged: accepted
+    for change in ({'item_ids': [1, 3, 7, 8]}, {'item_ids': [1, 3]},
+                   {'evidence': selected['evidence'][:2]},
+                   {'evidence': [*selected['evidence'][:2], {'item_id': 7, 'field': 'topic_tag', 'quote': 'round'}]},
+                   {'evidence': [{**selected['evidence'][0], 'field': 'first_level_category_name', 'quote': 'Alpha'}, *selected['evidence'][1:]]},
+                   {'evidence': [*selected['evidence'], {'item_id': 1, 'field': 'topic_tag', 'quote': 'red'}]},
+                   {'vocabulary_terms': []},
+                   {'vocabulary_terms': [{**sealed['vocabulary_terms'][0], 'value': 'absent'}]},
+                   {'vocabulary_terms': [{**sealed['vocabulary_terms'][0], 'kind': 'category'}]}):
+        with pytest.raises(ValueError):
+            vg.revalidate_control({**sealed, **change}, index())
+    # A changed source: the term lost one of its items.
+    moved = index()
+    moved['items'][3]['fields']['topic_tag'] = 'blue'
+    with pytest.raises(ValueError, match='differ from the members of its terms'):
+        vg.revalidate_control(sealed, moved)
+
+
+def test_item_labels_are_the_values_that_the_vocabulary_reads():
+    fields = index()['items'][1]['fields']
+    assert vg.item_labels(fields) == [
+        {'kind': 'category', 'level': 1, 'value': 'Alpha'}, {'kind': 'category', 'level': 2, 'value': 'Alpha minor'},
+        {'kind': 'tag', 'level': None, 'value': 'red'}, {'kind': 'tag', 'level': None, 'value': 'round'}]
+    assert vg.item_labels({'caption': 'no label'}) == []
 
 
 def test_the_caller_keeps_its_own_data():
@@ -365,3 +527,20 @@ def test_the_schema_uses_the_shared_control_choices_and_the_prompt_names_no_scen
     lowered = vg.PROMPT.casefold()
     assert not any(word in lowered for word in ('hungry', 'hunger', 'food', 'cooking', 'repair'))
     assert 'unsupported' in lowered and 'ambiguous' in lowered and 'no_match' in lowered
+    # The prompt names the rules that the application enforces on the model's side of the contract.
+    assert 'more than half of the supplied items' in lowered and 'scope_item_count' in lowered
+    assert 'without control or format characters' in lowered
+
+
+def test_no_prompt_of_the_language_routes_holds_a_word_of_a_bundled_example():
+    import re
+    from feedctrl import semantic_review, staged_induction, evidence_audit, synthetic_drafts
+    prompts = {'vocabulary': vg.PROMPT, 'description': indirect_grounding.PROMPT,
+               'action': semantic_review.ACTION_PROMPT, 'definition': staged_induction.DEFINITION_PROMPT,
+               'membership': staged_induction.MEMBERSHIP_PROMPT, 'draft': synthetic_drafts.PROMPT}
+    prompts.update({f'audit:{name}': value for name, value in vars(evidence_audit).items()
+                    if name.endswith('PROMPT') and isinstance(value, str)})
+    words = re.compile(r'hungr|hunger|\bfood\b|cooking|sandwich|bicycle|\bkite\b|eating|astronom|street food', re.I)
+    assert {name: words.findall(text) for name, text in prompts.items() if words.search(text)} == {}
+    # The sentence that an earlier revision left without a verb is whole again.
+    assert 'Respect qualifiers, intersections and exclusions in the intent.' in indirect_grounding.PROMPT

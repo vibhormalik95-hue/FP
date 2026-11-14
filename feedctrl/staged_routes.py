@@ -13,7 +13,9 @@ from feedctrl import evidence_audit
 from feedctrl.indirect_grounding import _digest
 from feedctrl.controls import ParserOperationalError
 from feedctrl.semantic_controls import STRENGTH_WEIGHTS
-from feedctrl.semantic_review import InductionPreview,scoped_index,seal_group
+from feedctrl.indirect_grounding import APPLICATION_CHECK,MODEL_REPORT,PROVIDER_FAILURE,REPLY_REJECTED,failure_sentence
+from feedctrl.semantic_review import (InductionPreview,scoped_index,seal_group,MAX_GROUPS,LIMIT_CHECK,TooManyControls,
+    limit_reason,page_calls,stage_outcome,watch_provider)
 
 # The operator must start classification within the original review window.
 # Once started, two bounded calls and cleanup have one fixed in-flight deadline;
@@ -39,6 +41,12 @@ class DefinitionApproval(BaseModel):
     def affirmative(cls,value):
         if value is not True: raise ValueError('Explicit evidence review is required')
         return value
+
+class DefinitionDiscard(BaseModel):
+    model_config=ConfigDict(extra='forbid')
+    user_id:int=Field(ge=0)
+    plan_id:str=Field(min_length=1,max_length=100)
+
 
 class DefinitionResolution(BaseModel):
     model_config=ConfigDict(extra='forbid')
@@ -78,22 +86,38 @@ def install_staged_routes(app,demo,state_for,review,*,evidence_context,category_
             raise HTTPException(503,str(exc)) from exc
         if (body.strength!='none' if body.operation=='exclude' else body.strength not in STRENGTH_WEIGHTS):
             raise HTTPException(422,'Invalid operation/strength')
-        calls=[]
+        calls=[];raised=[]
         with demo.lock:
             state=state_for(x_session_id,body.user_id)
             nonce=secrets.token_urlsafe(16);revision=state['semantic_revision']
             state.update(semantic_preview_nonce=nonce,semantic_pending=None,semantic_definition_pending=None)
+            applied=len(state['semantic_groups'])
             try:
                 scope=scoped_index(demo.topic_index,body.candidate_ids)
                 inventory=ii.projected_inventory(scope,demo.items,state['semantic_groups'])
             except ValueError as exc: raise HTTPException(422,str(exc)) from exc
             eligible=_digest(sorted(demo.items))
+
+        def not_ready(status,reason,source,**extra):
+            # ``calls_attempted`` counts every provider invocation that was begun, also one that raised.
+            return {'definition_ready':False,'applied':False,'status':status,'reason':reason,
+                'model_calls':page_calls(calls,raised),'calls_attempted':len(calls),
+                'outcome_source':source,'failed_stage':'definition',**extra}
+
+        if body.mode!='replace' and applied+1>MAX_GROUPS:
+            # A new category always adds one control, so the limit is known before any call.
+            return not_ready('limit',limit_reason(applied,1),APPLICATION_CHECK,
+                checks=[{'check':LIMIT_CHECK,'passed':False,'detail':f'{applied} stay applied; this request adds 1'}])
         try:
             infer,model,calls=category_provider.stage('definition',os.getenv('FEEDCTRL_STEERING_MODEL','qwen2.5-coder:7b-instruct'))
-            definition=staged.propose_definition(body.objective,scope,inventory,infer,model)
+            definition=staged.propose_definition(body.objective,scope,inventory,watch_provider(infer,raised),model)
             resolvable=definition['status']=='clarify' and bool(definition.get('clarification',{}).get('candidate'))
             if definition['status']!='definition_review' and not resolvable:
-                return {'definition_ready':False,'applied':False,**definition,'model_calls':deepcopy(calls)}
+                # A duplicate name is an application check on the reply. Every other
+                # status here is the reply's own report (no match, competing meanings).
+                source=REPLY_REJECTED if definition['status']=='duplicate' else MODEL_REPORT
+                return {**not_ready(definition['status'],definition.get('reason'),source),
+                        **{k:v for k,v in deepcopy(definition).items() if k!='status'}}
             with demo.lock:
                 state=state_for(x_session_id,body.user_id)
                 pending={'id':secrets.token_urlsafe(24),'created':time.monotonic(),'revision':revision,
@@ -105,14 +129,18 @@ def install_staged_routes(app,demo,state_for,review,*,evidence_context,category_
                 if resolvable:
                     return {'definition_ready':False,'resolution_ready':True,'resolution_plan_id':pending['id'],
                         'applied':False,**deepcopy(definition),'model_calls':deepcopy(calls),
+                        'calls_attempted':len(calls),'outcome_source':MODEL_REPORT,'failed_stage':'definition',
+                        'review_window_seconds':REVIEW_WINDOW_SECONDS,
                         'scope_ids':sorted(scope['items']),
                         'evidence_context':evidence_context(definition['clarification']['candidate'],scope)}
                 return {'definition_ready':True,'applied':False,'definition_plan_id':pending['id'],
                     'definition':deepcopy(definition),'scope_ids':sorted(scope['items']),
                     'evidence_context':evidence_context(definition['proposal'],scope),
-                    'model_calls':deepcopy(calls),'action_source':'manual'}
+                    'model_calls':deepcopy(calls),'calls_attempted':len(calls),
+                    'review_window_seconds':REVIEW_WINDOW_SECONDS,'action_source':'manual'}
         except (ValueError,ParserOperationalError) as exc:
-            return {'definition_ready':False,'applied':False,'status':'error','reason':str(exc),'model_calls':deepcopy(calls)}
+            reason,source=stage_outcome(exc,calls,raised)
+            return not_ready('error',reason,source)
 
     @app.post('/api/semantic/definition/resolve')
     def resolve(body:DefinitionResolution,x_session_id:str|None=Header(default=None)):
@@ -142,13 +170,26 @@ def install_staged_routes(app,demo,state_for,review,*,evidence_context,category_
                     'action_source':'manual','evidence_context':evidence_context(definition['proposal'],scope)}
             except ValueError as exc: raise HTTPException(409,str(exc)) from exc
 
+    @app.post('/api/semantic/definition/discard')
+    def discard(body:DefinitionDiscard,x_session_id:str|None=Header(default=None)):
+        # An explicit rejection by the person. No provider is asked and nothing is applied.
+        with demo.lock:
+            state=state_for(x_session_id,body.user_id);pending=state.get('semantic_definition_pending')
+            if (not pending or pending['id']!=body.plan_id or pending['session_id']!=x_session_id
+                    or pending['body']['user_id']!=body.user_id):
+                raise HTTPException(409,'No matching definition review')
+            pending['used']=True
+            state['semantic_definition_pending']=None
+            return {'definition_ready':False,'resolution_ready':False,'applied':False,'status':'discarded',
+                'reason':'The definition was rejected. Nothing was classified and nothing was applied.'}
+
     @app.post('/api/semantic/definition/classify')
     def classify(body:DefinitionApproval,x_session_id:str|None=Header(default=None)):
         try:
             category_provider.require_available()
         except ParserOperationalError as exc:
             raise HTTPException(503,str(exc)) from exc
-        calls=[];audit_calls=[]
+        calls=[];audit_calls=[];raised=[];stage=['membership']
         with demo.lock:
             state=state_for(x_session_id,body.user_id);pending=state.get('semantic_definition_pending')
             if not pending or pending['id']!=body.plan_id: raise HTTPException(409,'No matching definition review')
@@ -156,21 +197,38 @@ def install_staged_routes(app,demo,state_for,review,*,evidence_context,category_
             except ValueError as exc: raise HTTPException(409,str(exc)) from exc
             owned=deepcopy(pending);pending['used']=True
             inflight_deadline=time.monotonic()+_CLASSIFICATION_INFLIGHT_SECONDS
+
+        def not_ready(status,reason,source,**extra):
+            # The approved definition is consumed by this attempt; a new request starts again at the definition.
+            # ``raised`` holds the provider failures in call order: classification first, then assessment.
+            first=len([c for c in calls if c.get('status')=='error'])
+            return {'ready':False,'applied':False,'status':status,'reason':reason,
+                'model_calls':page_calls(calls,raised[:first]),
+                'evidence_audit_model_calls':page_calls(audit_calls,raised[first:]),
+                'calls_attempted':len(calls)+len(audit_calls),'outcome_source':source,
+                'failed_stage':stage[0],'definition_consumed':True,**extra}
+
         try:
             infer,model,calls=category_provider.stage('membership',owned['definition']['provenance']['model_id'],
                 expected=owned['definition']['provenance'])
             request=owned['body']
-            envelope=staged.classify_definition(owned['definition'],request['objective'],scope,inventory,infer,model)
+            envelope=staged.classify_definition(owned['definition'],request['objective'],scope,inventory,
+                watch_provider(infer,raised),model)
             if envelope['status']!='review':
-                return {'ready':False,'applied':False,**envelope,'model_calls':deepcopy(calls)}
+                # No member, only unknown items, or a member set that equals an existing category.
+                source=REPLY_REJECTED if envelope['status']=='duplicate' else MODEL_REPORT
+                return {**not_ready(envelope['status'],envelope.get('reason'),source),
+                        **{k:v for k,v in envelope.items() if k!='status'}}
             with demo.lock:
                 current(owned,state_for(x_session_id,body.user_id),x_session_id,body.user_id,inflight_deadline=inflight_deadline)
+            stage[0]='evidence_assessment'
             audit_infer,audit_model,audit_calls=category_provider.stage('evidence_audit',model['model_id'],expected=model)
             if audit_model!=model:raise ValueError('Model identity changed before evidence assessment')
-            envelope=evidence_audit.audit_membership_envelope(envelope,request['objective'],scope,inventory,audit_infer,audit_model)
+            envelope=evidence_audit.audit_membership_envelope(envelope,request['objective'],scope,inventory,
+                watch_provider(audit_infer,raised),audit_model)
             if envelope['status']!='review':
-                return {'ready':False,'applied':False,**envelope,'model_calls':deepcopy(calls),
-                    'evidence_audit_model_calls':deepcopy(audit_calls)}
+                return {**not_ready(envelope['status'],envelope.get('reason'),MODEL_REPORT),
+                        **{k:v for k,v in envelope.items() if k!='status'}}
             with demo.lock:
                 state=state_for(x_session_id,body.user_id)
                 # Validate again with a separate unused copy: a consumed token cannot
@@ -183,13 +241,17 @@ def install_staged_routes(app,demo,state_for,review,*,evidence_context,category_
                     evidence_audit_model_calls=deepcopy(audit_calls))
                 group=seal_group(envelope['proposal']['label'],request['objective'],control,scope,demo.items)
                 groups=([] if request['mode']=='replace' else deepcopy(state['semantic_groups']))+[group]
-                if len(groups)>8: raise ValueError('At most eight active semantic groups')
+                if len(groups)>MAX_GROUPS: raise TooManyControls(len(groups)-1,1)
                 result=review(state,body.user_id,groups,proposal=control)
                 state['semantic_pending']['induction_context']={
                     'candidate_ids':request['candidate_ids'],'inventory_sha256':_digest(inventory)}
                 state['semantic_definition_pending']=None
                 return {**result,'definition_approved':True,'induction':deepcopy(envelope),'model_calls':deepcopy(calls),
-                    'evidence_audit_model_calls':deepcopy(audit_calls)}
+                    'evidence_audit_model_calls':deepcopy(audit_calls),
+                    'calls_attempted':len(calls)+len(audit_calls)}
+        except TooManyControls as exc:
+            return not_ready('limit',str(exc),APPLICATION_CHECK,
+                checks=[{'check':LIMIT_CHECK,'passed':False,'detail':f'{exc.applied} stay applied; this request adds {exc.added}'}])
         except (ValueError,ParserOperationalError) as exc:
-            return {'ready':False,'applied':False,'status':'error','reason':str(exc),'model_calls':deepcopy(calls),
-                'evidence_audit_model_calls':deepcopy(audit_calls)}
+            reason,source=stage_outcome(exc,calls+audit_calls,raised)
+            return not_ready('error',reason,source)

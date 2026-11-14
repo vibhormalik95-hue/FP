@@ -59,7 +59,9 @@ def _declared_backend(value):
     an attestation. Any transport may be configured by the operator at startup.
     """
     return (isinstance(value, str) and bool(value.strip()) and len(value) <= 120
-            and not any(unicodedata.category(c) in {'Cc', 'Cf', 'Cs', 'Zl', 'Zp'} for c in value))
+            and not any(unicodedata.category(c) in {'Cc', 'Cf', 'Cs', 'Zl', 'Zp'} for c in value)
+            # Names that the application itself uses for "no model". An adapter must not carry one.
+            and value.strip().casefold() not in {'manual_category', 'none', 'not_applicable'})
 
 
 def validate_output(raw):

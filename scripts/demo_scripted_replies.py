@@ -114,13 +114,13 @@ _TAGS_REPLIES = {
         'controls': [{'control': 'exclude/none', 'intent_span': 'the Repair category',
                       'relation': _AUTHORED + 'The category Repair has the same name.',
                       'terms': [['category', 'Repair']]}]},
-    'Show me more repair videos, and remove anything about food.': {
+    'Show me more music videos, and remove anything about food.': {
         'status': 'propose', 'negation_resolved': True, 'alternatives': [],
         'reason': _AUTHORED + 'The request holds two separate preferences.',
         'controls': [
-            {'control': 'boost/standard', 'intent_span': 'more repair videos',
-             'relation': _AUTHORED + 'The category Repair covers repair videos.',
-             'terms': [['category', 'Repair']]},
+            {'control': 'boost/standard', 'intent_span': 'more music videos',
+             'relation': _AUTHORED + 'The category Music covers music videos.',
+             'terms': [['category', 'Music']]},
             {'control': 'exclude/none', 'intent_span': 'anything about food',
              'relation': _AUTHORED + 'The category Cooking and the tag street food name food.',
              'terms': _FOOD_TERMS}]},
