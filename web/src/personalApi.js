@@ -53,7 +53,9 @@ export function createApiClient({personal, fetchImpl = fetch, origin = globalThi
       if (response.ok) throw error;
     }
     if (personal && version !== generation) throw new Error('Personal session is locked.');
-    if (!response.ok) throw new Error(typeof payload?.detail === 'string' ? payload.detail : 'Check the input and try again.');
+    // An error answer can carry a structured result (for example a failed provider call); keep it for the page.
+    if (!response.ok) throw Object.assign(new Error(typeof payload?.detail === 'string' ? payload.detail : 'Check the input and try again.'),
+      {status: response.status, payload: payload && typeof payload === 'object' && !Array.isArray(payload) ? payload : null});
     return payload;
   }
   return {unlock, lock, request};

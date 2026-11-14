@@ -91,7 +91,8 @@ class EvidenceContextTests(unittest.TestCase):
         self.assertIn("e.supplied_field_text??", ui)
         self.assertIn("e.truncated?", ui)
         self.assertIn("e.quote_present?", ui)
-        self.assertIn("not semantic relevance", ui)
+        # The review states the limit of a quotation in plain words: it shows that words exist, not that a meaning is right.
+        self.assertIn("The application checked the words, not the meaning.", ui)
 
 
 if __name__ == "__main__":
