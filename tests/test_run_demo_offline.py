@@ -255,7 +255,7 @@ def test_source_fingerprint_is_stable_and_changes_with_served_source(tmp_path):
     first = run_demo.source_fingerprint()
     assert len(first) == 64 and first == run_demo.source_fingerprint()
     copy = tmp_path / 'copy'
-    for folder in ('feedctrl', 'web/dist', 'tools/hosted_validation_current/inputs'):
+    for folder in ('feedctrl', 'web/dist', 'tools/hosted_validation_current/inputs', 'scenarios'):
         shutil.copytree(ROOT / folder, copy / folder)
     (copy / 'scripts').mkdir()
     for name in ('run_demo.py', 'demo_scripted_replies.py'):
@@ -263,7 +263,12 @@ def test_source_fingerprint_is_stable_and_changes_with_served_source(tmp_path):
     assert run_demo.source_fingerprint(copy) == first
     with open(copy / 'feedctrl' / 'staged_routes.py', 'ab') as handle:
         handle.write(b'\n# changed\n')
-    assert run_demo.source_fingerprint(copy) != first
+    changed = run_demo.source_fingerprint(copy)
+    assert changed != first
+    # A scenario outside the pinned validation inputs is served source too.
+    with open(copy / 'scenarios' / 'categories-and-tags' / 'requests.json', 'ab') as handle:
+        handle.write(b'\n')
+    assert run_demo.source_fingerprint(copy) not in (first, changed)
 
 
 def test_source_fingerprint_is_the_same_on_every_operating_system(tmp_path):
@@ -276,6 +281,8 @@ def test_source_fingerprint_is_the_same_on_every_operating_system(tmp_path):
     inputs = 'tools/hosted_validation_current/inputs'
     content = {
         'feedctrl/a.py': b'x = 1\ny = 2\n',
+        'scenarios/tags/README.md': b'items\n',
+        'scenarios/tags/app-data.json': b'{}\n',
         'scripts/demo_scripted_replies.py': b'TABLE = {}\n',
         'scripts/run_demo.py': b'print(1)\n',
         f'{inputs}/REVIEW-NOTES.md': b'notes\n',
@@ -286,7 +293,8 @@ def test_source_fingerprint_is_the_same_on_every_operating_system(tmp_path):
         (tmp_path / name).parent.mkdir(parents=True, exist_ok=True)
         (tmp_path / name).write_bytes(data)
     expected = hashlib.sha256()
-    for name in ('feedctrl/a.py', 'scripts/demo_scripted_replies.py', 'scripts/run_demo.py',
+    for name in ('feedctrl/a.py', 'scenarios/tags/README.md', 'scenarios/tags/app-data.json',
+                 'scripts/demo_scripted_replies.py', 'scripts/run_demo.py',
                  f'{inputs}/REVIEW-NOTES.md', f'{inputs}/app-data.json', 'web/dist/index.html'):
         expected.update(name.encode('utf-8') + b'\0')
         expected.update(hashlib.sha256(content[name]).digest())

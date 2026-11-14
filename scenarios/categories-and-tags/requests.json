@@ -1,0 +1,16 @@
+{
+  "scenario": "tags",
+  "note": "Bundled request texts for the invented items of this folder. The page can insert them. A key \"<method>\" is the main request of a method; \"<method>:<case>\" is a further example.",
+  "requests": {
+    "vocabulary": "I'm not hungry, remove all the stuff that makes me hungry.",
+    "vocabulary:literal": "Hide the Repair category.",
+    "vocabulary:mixed": "Show me more repair videos, and remove anything about food.",
+    "vocabulary:ambiguous": "I have had enough of the heavy stuff.",
+    "vocabulary:unsupported": "Show me at most two cooking videos per day.",
+    "vocabulary:negated": "Do not hide the cooking videos.",
+    "vocabulary:no_match": "Show me fewer videos about astronomy.",
+    "configured_model": "Remove the videos where someone is eating.",
+    "label": "Reviewed description request",
+    "synthetic": "A fictional 40-second clip about repairing a kite, for a test feed."
+  }
+}

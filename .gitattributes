@@ -12,6 +12,8 @@
 # Scenario inputs are identified by SHA-256 in their manifests.
 /tools/hosted_validation/inputs/** -text
 /tools/hosted_validation_current/inputs/** -text
+# The source fingerprint counts scenario files as bytes on disk.
+/scenarios/** -text
 *.png binary
 *.pdf binary
 *.docx binary

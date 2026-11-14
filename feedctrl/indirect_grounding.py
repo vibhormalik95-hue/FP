@@ -48,6 +48,13 @@ Length limits: reason 2000 characters; at most 6 alternatives of 300 characters 
 A longer value is rejected.'''
 
 
+# Conservative English command-negation guard; not a universal language parser.
+# One shared pattern, so that every review route clarifies the same wording.
+COMMAND_NEGATION = re.compile(
+    r"\b(?:do\s+not|don['’]t|never|not\s+to)\s+(?:(?:ever|really|actually|just|simply)\s+)*(?:hide|exclude|remove|boost|reduce|show)\b",
+    re.I)
+
+
 def _digest(value):
     return hashlib.sha256(json.dumps(value, ensure_ascii=False, sort_keys=True,
         separators=(',', ':'), allow_nan=False).encode()).hexdigest()
@@ -144,8 +151,7 @@ def propose_indirect(request: str, action: dict, index: dict, infer: Callable,
                 'evidence': deepcopy(evidence or []), 'provenance': deepcopy(provenance)}
     if len(rows) > max_items or len(json.dumps(payload, ensure_ascii=False)) > max_chars or len(json.dumps(payload, ensure_ascii=False).encode()) > 10000:
         return result('clarify', 'Catalogue exceeds explicit evidence budget; narrow candidates without silent truncation')
-    # Conservative English command-negation guard; not a universal language parser.
-    if re.search(r"\b(?:do\s+not|don['’]t|never|not\s+to)\s+(?:(?:ever|really|actually|just|simply)\s+)*(?:hide|exclude|remove|boost|reduce|show)\b", request, re.I):
+    if COMMAND_NEGATION.search(request):
         return result('clarify', 'Command negation requires an explicit reviewed interpretation')
     try:
         raw = infer(deepcopy(payload), deepcopy(schema))
