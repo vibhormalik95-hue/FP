@@ -131,8 +131,8 @@ See [route trial](route-trial.md).
 
 Run these checks from the source folder. They use no model.
 
-1. **The files.** `python scripts/quickstart.py check` prints the source fingerprint. For the final revision the value is Not yet recorded for the integrated final revision.
-2. **The Python tests.** `python -m pytest -q -p no:cacheprovider`. Expected on the final revision: Not yet run on the integrated final revision.
+1. **The files.** `python scripts/quickstart.py check` prints the source fingerprint. The fingerprint of the integrated final revision has not yet been recorded.
+2. **The Python tests.** `python -m pytest -q -p no:cacheprovider`. No result has yet been recorded for the integrated final revision.
 3. **The guarded checks of the reviewed CLI profile.** `python tools/hosted_validation_current/run_guarded.py .` The output must end with `OK` and `GUARD intercepted events: []`.
 4. **The interface tests.** They need Node.js.
 
@@ -143,7 +143,7 @@ Run these checks from the source folder. They use no model.
    node --test "web/tests/*.mjs"
    ```
 
-   Expected on the final revision: Not yet run on the integrated final revision.
+   No result has yet been recorded for the integrated final revision.
 5. **The browser check.** It drives the page in a real browser and compares the page with the state of the server. Install the browser once:
 
    ```

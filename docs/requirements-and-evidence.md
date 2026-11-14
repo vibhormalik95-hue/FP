@@ -130,7 +130,7 @@ The application reaches a model through a route that the person selects ([model 
 
 | Route | Evidence |
 | --- | --- |
-| File relay | Demonstration with real model output: the runs of 13 November, and Not yet recorded for the integrated final revision.. |
+| File relay | The 13 November runs used real model output. No relay run is recorded here for the integrated final revision. |
 | Command-line program (`cli`) | Stand-in program only. |
 | OpenAI-compatible endpoint, local or hosted | Stand-in server only. |
 | Anthropic API | Stand-in server only. |
@@ -178,7 +178,7 @@ Software checks with authored replies and stand-ins. They are not model evidence
 | Browser, authored replies, scenarios `tags`, `category`, `hunger` | `node tests/browser/demo_flows.cjs --scenario NAME` | Not yet run on the integrated final revision |
 | Source fingerprint | `python scripts/run_demo.py --fingerprint` | Not yet recorded for the integrated final revision. |
 
-The dated 13 November checks used Linux, Python 3.13, Node 22 and headless Chromium. No final integrated-build environment or results are established here.
+No final integrated-build environment or results are established here.
 
 ## Defects that real runs found, corrected on 13 November
 
