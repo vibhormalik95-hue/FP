@@ -28,8 +28,10 @@ from __future__ import annotations
 
 import hashlib
 import json
+import ntpath
 import os
 from pathlib import Path
+import posixpath
 import re
 import shutil
 import signal
@@ -102,16 +104,17 @@ def resolve_program(command, *, os_name=None, which=shutil.which):
     writes there is a shell text that Windows cannot start.
     """
     os_name = os.name if os_name is None else os_name
-    expanded = os.path.expanduser(command)
-    separators = ('/', '\\') if os_name == 'nt' else tuple(filter(None, (os.sep, os.altsep)))
-    if os.path.isabs(expanded) or any(mark in expanded for mark in separators):
-        full = os.path.abspath(expanded)
-        if os_name == 'nt' and not Path(full).suffix:
-            found = which(os.path.basename(full), path=os.path.dirname(full))
-            return os.path.abspath(found) if found else None
-        return full if Path(full).is_file() else None
+    paths = ntpath if os_name == 'nt' else posixpath   # the path rules of that system, also in a test on another one
+    expanded = paths.expanduser(command)
+    separators = ('/', '\\') if os_name == 'nt' else ('/',)
+    if paths.isabs(expanded) or any(mark in expanded for mark in separators):
+        full = paths.abspath(expanded)
+        if os_name == 'nt' and not paths.splitext(full)[1]:
+            found = which(paths.basename(full), path=paths.dirname(full))
+            return paths.abspath(found) if found else None
+        return full if os.path.isfile(full) else None
     found = which(expanded)
-    return os.path.abspath(found) if found else None
+    return paths.abspath(found) if found else None
 
 
 def is_shim(executable):
@@ -480,8 +483,8 @@ def _claude_build(config, record_dir):
                                                                              and len(envelope[name]) <= 60)},
                 usage=routes.bounded_counts(envelope.get('usage'), ('input_tokens', 'output_tokens',
                                                                     'cache_creation_input_tokens', 'cache_read_input_tokens')),
-                reported_models=[routes.one_line(name, 200) for name in names][:10],
-                reported_model=answered, model_match_rule=rule)
+                reported_models=[routes.page_text(name, 200) for name in names][:10],
+                reported_model=None if answered is None else routes.page_text(answered, 200), model_match_rule=rule)
             if type(envelope.get('total_cost_usd')) in (int, float) and 0 <= envelope['total_cost_usd'] < 1e6:
                 receipt.update(estimated_cost_usd=envelope['total_cost_usd'],
                                estimated_cost_note='estimate of the CLI, not a bill')

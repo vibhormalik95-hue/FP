@@ -25,7 +25,11 @@ VALUE_FLAGS = ('--output-format', '--model', '--max-turns', '--permission-mode',
                '--effort', '--max-budget-usd', '--json-schema', '--append-system-prompt', '--system-prompt', '--settings')
 PLAIN_FLAGS = ('-p', '--print', '--safe-mode', '--no-session-persistence', '--no-chrome', '--bare', '--verbose')
 FAULTS = ('not_signed_in', 'max_turns', 'budget', 'exit_code', 'no_envelope', 'other_model', 'extra_model',
-          'fallback_model', 'no_model_usage', 'slow', 'no_structured', *common.REPLY_FAULTS)
+          'fallback_model', 'no_model_usage', 'slow', 'no_structured', 'duplicate_structured', 'nan_structured',
+          'duplicate_envelope', 'warning_line', 'usage_limit', 'overloaded_with_sign_in_words', *common.REPLY_FAULTS)
+# Result texts of a failed call. They are stand-in texts in the style of the CLI, not quotations.
+USAGE_LIMIT = "You've hit your usage limit. Your limit resets 3pm. Wait, or sign in to another account."
+OVERLOADED = 'API Error: 529 {"type":"error","error":{"type":"overloaded_error","message":"Overloaded"}}'
 
 
 def parse(argv):
@@ -54,7 +58,8 @@ def main(argv):
     if log:
         with open(log, 'a', encoding='utf-8') as handle:
             handle.write(json.dumps({'argv': argv, 'environment_names': sorted(os.environ), 'cwd': os.getcwd(),
-                                     'cwd_entries': sorted(os.listdir('.')), 'pid': os.getpid()}) + '\n')
+                                     'cwd_entries': sorted(os.listdir('.')), 'pid': os.getpid(),
+                                     'started': time.time()}) + '\n')
     if argv[:1] in (['--version'], ['-v']):
         print('0.0.0 (stand-in for the Claude Code CLI; not a model)')
         return 0
@@ -88,6 +93,12 @@ def main(argv):
         envelope.update(is_error=True, result='Not logged in. Please run /login')
         print(json.dumps(envelope))
         return 1
+    if fail in ('usage_limit', 'overloaded_with_sign_in_words'):
+        if fail == 'overloaded_with_sign_in_words':
+            sys.stderr.write('[debug] OAuth token refreshed; not logged in to the browser extension\n')
+        envelope.update(is_error=True, subtype='success', result=USAGE_LIMIT if fail == 'usage_limit' else OVERLOADED)
+        print(json.dumps(envelope))
+        return 1
     if fail in ('max_turns', 'budget'):
         envelope.update(is_error=True, subtype='error_max_turns' if fail == 'max_turns' else 'error_max_budget_usd')
         print(json.dumps(envelope))
@@ -106,6 +117,18 @@ def main(argv):
     envelope['result'] = common.faulty(json.dumps(reply, ensure_ascii=False), fail)
     if '--json-schema' in options and fail != 'no_structured':
         envelope['structured_output'] = {'unexpected': True} if fail == 'wrong_schema' else reply
+    if fail == 'warning_line':
+        print('Warning: a newer version of this stand-in is available.')
+    if fail in ('duplicate_structured', 'nan_structured', 'duplicate_envelope'):
+        text = json.dumps(envelope)
+        if fail == 'duplicate_structured':     # the structured output repeats a key: the last one is true
+            text = text[:-1] + ', "structured_output": {"ok": false, "ok": true}}'
+        elif fail == 'nan_structured':
+            text = text[:-1] + ', "structured_output": {"ok": true, "n": NaN}}'
+        else:                                  # two "result" fields
+            text = text[:-1] + ', "result": "{\\"ok\\": false}"}'
+        print(text)
+        return 0
     if fail == 'other_model':
         envelope['modelUsage'] = {'another-model': {}}
     elif fail == 'extra_model':

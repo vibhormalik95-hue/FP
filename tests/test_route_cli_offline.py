@@ -374,3 +374,89 @@ def test_n6_omit_flags_cannot_remove_the_rules_that_take_the_tools_away():
     assert '--tools' not in arguments and arguments[arguments.index('--disallowedTools') + 1] == '*'
     assert model_routes.validate_config({'route': 'cli', 'profile': 'claude-code', 'model': 'm',
                                          'extra_args': ['--verbose', '--debug']})['extra_args'] == ['--verbose', '--debug']
+
+
+# ---------------------------------------------------------------- minor findings of the review
+
+@pytest.mark.parametrize('fail, settings', [('duplicate_structured', {'structured_output': 'json_schema'}),
+                                            ('nan_structured', {'structured_output': 'json_schema'}),
+                                            ('duplicate_envelope', {})])
+def test_f13_the_output_of_the_cli_is_read_by_the_strict_rule(claude, fail, settings):
+    claude.fail(fail)
+    _, _, receipts, error = call(claude(**settings))
+    assert error.category == 'reply_not_json' and 'repeats a key' in error.message
+    assert receipts[0]['outcome'] == 'error'
+
+
+@pytest.mark.parametrize('fail, expected, words', [
+    ('usage_limit', 'rate_limited', 'Wait until the limit resets'),
+    ('overloaded_with_sign_in_words', 'provider_overloaded', 'overloaded'),
+    ('warning_line', 'unexpected_reply', 'Warning: a newer version'),
+])
+def test_f17_the_cause_of_a_cli_failure_is_read_from_the_result_text(claude, fail, expected, words):
+    claude.fail(fail)
+    _, _, _, error = call(claude())
+    assert error.category == expected and words in str(error)
+
+
+def test_f14_the_output_of_a_program_is_bounded_while_it_runs(tmp_path):
+    import resource
+    flood = ('import sys\nkind = sys.argv[1]\nstream = sys.stdout if kind == "out" else sys.stderr\n'
+             'block = "x" * 65536\nfor _ in range(int(sys.argv[2])):\n    stream.write(block)\n'
+             'if kind == "err":\n    sys.stdout.write(\'{"ok": true}\')\n')
+    script = tmp_path / 'flood.py'
+    script.write_text(flood, encoding='ascii')
+    before = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+    started = time.monotonic()
+    config = {'route': 'cli', 'profile': 'generic', 'model': 'declared', 'argv': [sys.executable, str(script), 'out', '6000'],
+              'max_response_bytes': 1000}
+    _, _, _, error = call(config, record_dir=tmp_path / 'a')
+    assert error.category == 'reply_too_large' and time.monotonic() - started < 20
+    assert resource.getrusage(resource.RUSAGE_SELF).ru_maxrss - before < 100_000      # less than 100 MB more (in KB)
+    config['argv'] = [sys.executable, str(script), 'err', '50']                         # about 3 MB on standard error
+    result, _, _, error = call(config, record_dir=tmp_path / 'b')
+    assert error is None and result == {'ok': True}
+    record = (tmp_path / 'b' / 'call-0001-stderr.txt').read_bytes()
+    assert len(record) < route_cli.ERROR_LIMIT + 100 and record.endswith(b'[standard error was cut at 1000000 bytes]\n')
+
+
+def test_f15_a_relative_command_and_a_home_folder_command_are_made_absolute(claude, tmp_path, monkeypatch):
+    launcher = Path(claude()['command'])
+    monkeypatch.chdir(launcher.parent.parent)
+    relative = claude(command=f'./{launcher.parent.name}/{launcher.name}')
+    result = model_routes.check_route(relative, out=lambda line: None)
+    assert result['ok'], result
+    monkeypatch.setenv('HOME', str(launcher.parent.parent))
+    home = claude(command=f'~/{launcher.parent.name}/{launcher.name}')
+    assert route_cli.resolve_program(home['command']) == str(launcher)
+    assert call(home)[0] == {'ok': True}
+
+
+def test_f21_the_generic_profile_also_refuses_cmd_characters_for_a_command_shim(tmp_path):
+    shim = tmp_path / 'tool.cmd'
+    shim.write_text('@echo off\r\n', encoding='ascii')
+    for argv in ([str(shim), '--system', 'a&calc.exe'], [str(shim), '%PATH%'], [str(shim), 'x|y'], [str(shim), 'say "hi"']):
+        with pytest.raises(RouteError) as caught:
+            model_routes.build_route({'route': 'cli', 'profile': 'generic', 'model': 'm', 'argv': argv})
+        assert caught.value.category == 'configuration' and 'cmd.exe' in caught.value.message
+
+
+def test_mutation_one_cli_process_at_a_time(claude):
+    import threading
+    claude.fail('slow')
+    claude.setenv('STANDIN_DELAY', '0.6')
+    infer, _, receipts = model_routes.build_route(claude(max_calls=2))
+    workers = [threading.Thread(target=lambda: call_quietly(infer), daemon=True) for _ in range(2)]
+    for worker in workers:
+        worker.start()
+    for worker in workers:
+        worker.join(20)
+    starts = sorted(entry['started'] for entry in claude.calls())
+    assert len(starts) == 2 and starts[1] - starts[0] >= 0.5
+
+
+def call_quietly(infer):
+    try:
+        infer(dict(PAYLOAD), dict(SCHEMA))
+    except RouteError:
+        pass

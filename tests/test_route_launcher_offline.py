@@ -347,3 +347,112 @@ def test_f05_ctrl_c_stops_the_server_and_the_running_cli_program(tmp_path):
         if server.poll() is None:
             server.kill()
             server.wait()
+
+
+# ---------------------------------------------------------------- minor findings: launcher options, proxy, busy port, Windows stop
+
+def test_n4_the_launcher_options_of_a_route_do_what_they_say(tmp_path, monkeypatch):
+    path = route_file(tmp_path, {'route': 'openai-compatible', 'base_url': 'http://127.0.0.1:9/v1', 'model': MODEL})
+    app, _, summary, _ = run_demo.build_app(options(scenario='hunger', route_file=path, record_dir='None', max_calls=1))
+    assert 'record_dir' not in summary and summary['identity']['route']['max_calls'] == 1
+    assert any('Call allowance for one run: 1 ' in line for line in summary['route'])
+    for name, value in (('declared_model', 'x'), ('transport_note', 'y'), ('relay_timeout_given', 30.0)):
+        with pytest.raises(SystemExit) as stopped:
+            run_demo.build_app(options(scenario='hunger', route_file=path, record_dir='none', **{name: value}))
+        assert 'belong to --provider relay' in str(stopped.value)
+    monkeypatch.setattr(run_demo, 'ROOT', tmp_path)
+    _, _, summary, _ = run_demo.build_app(options(scenario='hunger', route_file=path))
+    assert Path(summary['record_dir']).name.startswith('route-hunger-') and summary['record_dir'].endswith('Z')
+
+
+def test_f20_the_readiness_probe_never_uses_a_proxy(monkeypatch):
+    import http.server
+    import threading
+
+    class Page(http.server.BaseHTTPRequestHandler):
+        def log_message(self, *args):
+            pass
+
+        def do_GET(self):
+            self.send_response(200)
+            self.send_header('Content-Length', '0')
+            self.end_headers()
+
+    server = http.server.ThreadingHTTPServer(('127.0.0.1', 0), Page)
+    threading.Thread(target=server.serve_forever, daemon=True).start()
+    for name in ('http_proxy', 'HTTP_PROXY'):
+        monkeypatch.setenv(name, 'http://127.0.0.1:9')
+    for name in ('no_proxy', 'NO_PROXY'):
+        monkeypatch.setenv(name, '')
+
+    class Running:
+        def poll(self):
+            return None
+
+    try:
+        quickstart.wait_until_served(server.server_port, Running(), seconds=5)
+    finally:
+        server.shutdown()
+        server.server_close()
+
+
+def test_lead_11_rehearse_on_a_busy_port_fails_with_a_clear_message():
+    import socket
+    import subprocess
+    with socket.socket() as busy:
+        busy.bind(('127.0.0.1', 0))
+        busy.listen(1)
+        port = busy.getsockname()[1]
+        done = subprocess.run([sys.executable, str(ROOT / 'scripts' / 'quickstart.py'), 'rehearse', '--port', str(port)],
+                              capture_output=True, text=True, timeout=60, cwd=str(ROOT))
+    assert done.returncode != 0 and f'Port {port}' in done.stderr and 'in use' in done.stderr
+    assert 'keeps running' not in done.stdout
+
+
+def test_lead_11_a_server_that_ends_with_an_error_ends_the_launcher_with_its_code():
+    class Failed:
+        returncode = 1
+
+        def wait(self, timeout=None):
+            return 1
+
+        def poll(self):
+            return 1
+
+    with pytest.raises(SystemExit) as stopped:
+        quickstart.serve_until_stopped(Failed())
+    assert stopped.value.code == 1
+
+
+def test_w3_on_windows_the_launcher_asks_the_server_to_stop_with_ctrl_break(monkeypatch):
+    import signal
+    import subprocess
+    monkeypatch.setattr(quickstart, 'WINDOWS', True)
+    monkeypatch.setattr(signal, 'CTRL_BREAK_EVENT', 1, raising=False)
+    monkeypatch.setattr(subprocess, 'CREATE_NEW_PROCESS_GROUP', 0x200, raising=False)
+    sent = []
+
+    class Server:
+        def __init__(self):
+            self.code = None
+
+        def poll(self):
+            return self.code
+
+        def send_signal(self, value):
+            sent.append(value)
+            self.code = 0
+
+        def wait(self, timeout=None):
+            return self.code
+
+        def terminate(self):
+            sent.append('terminate')
+
+        kill = terminate
+
+    assert quickstart.stop_server(Server()) == 0 and sent == [1]
+    started = {}
+    monkeypatch.setattr(subprocess, 'Popen', lambda *args, **kwargs: started.update(kwargs) or Server())
+    quickstart.run_demo('--scenario', 'tags')
+    assert started['creationflags'] == 0x200

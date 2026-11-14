@@ -392,20 +392,20 @@ def _openai_failure(status, raw, config):
         if any(word in words for word in ('response_format', 'json_schema', 'json_object', 'structured output', 'json mode')):
             others = [value for value in ('json_schema', 'json_object', 'prompt') if value != mode]
             return RouteError('structured_output_unsupported',
-                              f'The endpoint did not accept "structured_output": "{mode}".' + said,
+                              f'The endpoint did not accept "structured_output": "{mode}" (HTTP {status}).' + said,
                               f'Set "structured_output" to "{others[0]}" or "{others[1]}" in the route file and run the check.')
         limit_named = 'max_tokens' in words or 'max_completion_tokens' in words
         if limit_named and any(word in words for word in ('unsupported', 'unrecognized', 'unknown', 'not supported',
                                                            'not allowed', 'unexpected', 'extra')):
             other = 'max_tokens' if config['token_limit_field'] == 'max_completion_tokens' else 'max_completion_tokens'
-            return RouteError('bad_request', 'The endpoint did not accept the output-limit field.' + said,
+            return RouteError('bad_request', f'The endpoint did not accept the output-limit field (HTTP {status}).' + said,
                               f'Set "token_limit_field" to "{other}" in the route file.')
         if limit_named or 'context length' in words or 'context_length' in words or 'context window' in words:
-            return RouteError('bad_request', 'The endpoint did not accept the output limit or the size of the request.' + said,
+            return RouteError('bad_request', f'The endpoint did not accept the output limit or the size of the request (HTTP {status}).' + said,
                               'Lower "max_output_tokens" in the route file to a value that the model supports, '
                               'or choose a smaller evidence scope.')
         if 'temperature' in words or 'seed' in words:
-            return RouteError('bad_request', 'The endpoint did not accept "temperature" or "seed".' + said,
+            return RouteError('bad_request', f'The endpoint did not accept "temperature" or "seed" (HTTP {status}).' + said,
                               'Remove "temperature" and "seed" from the route file.')
         return RouteError('bad_request', f'The endpoint rejected the request (HTTP {status}).' + said)
     if status == 401:
@@ -470,7 +470,7 @@ def _openai_build(config, *, api_key=None, record_dir=None, relay_dir=None):
             # One reply is asked for. With several, the route would have to choose, and it never chooses.
             raise RouteError('unexpected_reply', f'The endpoint returned {len(choices)} choices; one is expected.')
         if isinstance(envelope.get('model'), str):
-            receipt['reported_model'] = routes.ascii_text(routes.one_line(envelope['model'], 200))
+            receipt['reported_model'] = routes.page_text(envelope['model'], 200)
         receipt['usage'] = routes.bounded_counts(envelope.get('usage'), ('prompt_tokens', 'completion_tokens', 'total_tokens'))
         choice = choices[0]
         message = choice.get('message') if isinstance(choice.get('message'), dict) else {}
@@ -694,7 +694,7 @@ def _anthropic_build(config, *, api_key=None, record_dir=None, relay_dir=None):
         if not envelope or envelope.get('type') != 'message' or not isinstance(envelope.get('content'), list):
             raise RouteError('unexpected_reply', 'The API did not return a message object.')
         if isinstance(envelope.get('model'), str):
-            receipt['reported_model'] = routes.ascii_text(routes.one_line(envelope['model'], 200))
+            receipt['reported_model'] = routes.page_text(envelope['model'], 200)
         receipt['usage'] = routes.bounded_counts(envelope.get('usage'), ('input_tokens', 'output_tokens'))
         reason = envelope.get('stop_reason')
         receipt['stop_reason'] = routes.ascii_text(routes.one_line(reason, 40)) if isinstance(reason, str) else None

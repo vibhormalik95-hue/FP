@@ -446,3 +446,232 @@ def test_n1_a_reply_with_several_choices_is_refused():
         server.shutdown()
         server.server_close()
     assert error.category == 'unexpected_reply' and '2 choices' in error.message
+
+
+# ---------------------------------------------------------------- minor findings: a raw server that answers one fixed way
+
+PLAIN_KEY = 'plainkeytestvalue-0123'     # no known key shape
+
+
+class RawServer:
+    """A loopback server whose answer is a function of the request head. Not a model."""
+
+    def __init__(self, answer):
+        self.answer, self.count = answer, 0
+        self.sock = socket.socket()
+        self.sock.bind(('127.0.0.1', 0))
+        self.sock.listen(8)
+        self.url = f'http://127.0.0.1:{self.sock.getsockname()[1]}'
+        self.thread = threading.Thread(target=self._loop, daemon=True)
+
+    def _loop(self):
+        while True:
+            try:
+                connection, _ = self.sock.accept()
+            except OSError:
+                return
+            threading.Thread(target=self._one, args=(connection,), daemon=True).start()
+
+    def _one(self, connection):
+        with connection:
+            data = b''
+            while b'\r\n\r\n' not in data:
+                block = connection.recv(65536)
+                if not block:
+                    return
+                data += block
+            head, _, rest = data.partition(b'\r\n\r\n')
+            length = 0
+            for line in head.split(b'\r\n'):
+                if line.lower().startswith(b'content-length:'):
+                    length = int(line.split(b':', 1)[1])
+            while len(rest) < length:
+                rest += connection.recv(65536)
+            self.count += 1
+            try:
+                self.answer(connection, head.decode('latin-1'))
+            except OSError:
+                pass
+
+    def __enter__(self):
+        self.thread.start()
+        return self
+
+    def __exit__(self, *args):
+        self.sock.close()
+
+
+def header(head, name):
+    for line in head.split('\r\n'):
+        if line.lower().startswith(name.lower() + ':'):
+            return line.split(':', 1)[1].strip()
+    return ''
+
+
+def respond(connection, status, body, headers=None):
+    data = body if isinstance(body, bytes) else json.dumps(body).encode()
+    lines = [f'HTTP/1.1 {status} X', 'Content-Type: application/json', f'Content-Length: {len(data)}', 'Connection: close',
+             *[f'{name}: {value}' for name, value in (headers or {}).items()]]
+    connection.sendall(('\r\n'.join(lines) + '\r\n\r\n').encode('latin-1') + data)
+
+
+def chat(content='{"ok": true}', model=MODEL):
+    return {'id': 'x', 'object': 'chat.completion', 'model': model,
+            'choices': [{'index': 0, 'message': {'role': 'assistant', 'content': content}, 'finish_reason': 'stop'}]}
+
+
+def raw_call(answer, key, tmp_path, **settings):
+    lines = []
+    with RawServer(answer) as server:
+        config = {'route': 'openai-compatible', 'base_url': server.url + '/v1', 'model': MODEL, **settings}
+        if key:
+            config['api_key_env'] = 'MY_KEY'
+        infer, _, receipts = model_routes.build_route(config, api_key=key, record_dir=tmp_path / 'record', log=lines.append)
+        try:
+            result, error = infer(dict(PAYLOAD), dict(SCHEMA)), None
+        except RouteError as caught:
+            result, error = None, caught
+    files = {path.name: path.read_bytes() for path in (tmp_path / 'record').iterdir()}
+    return result, error, receipts, files, lines
+
+
+@pytest.mark.parametrize('where', ['model', 'request_id', 'reply_start', 'reply_value', 'error_type'])
+def test_f06_a_key_that_the_endpoint_repeats_is_removed_at_every_sink(where, tmp_path):
+    def answer(connection, head):
+        bearer = header(head, 'Authorization')
+        if where == 'model':
+            respond(connection, 200, chat(model=bearer.split(' ', 1)[1]))
+        elif where == 'request_id':
+            respond(connection, 200, chat(), {'x-request-id': bearer})
+        elif where == 'reply_start':
+            respond(connection, 200, chat('Invalid header ' + bearer))
+        elif where == 'reply_value':
+            respond(connection, 200, chat(json.dumps({'ok': bearer})))
+        else:
+            respond(connection, 400, {'error': {'message': 'bad', 'type': bearer, 'code': bearer}})
+    result, error, receipts, files, lines = raw_call(answer, PLAIN_KEY, tmp_path)
+    text = json.dumps([str(error), error and error.action, receipts, lines])
+    assert PLAIN_KEY not in text
+    assert all(PLAIN_KEY.encode() not in data for data in files.values())
+    if where == 'request_id':
+        assert result == {'ok': True} and receipts[0]['provider_request_id'] == 'Bearer [credential removed]'
+
+
+def test_f06_a_json_escaped_or_a_short_key_is_removed_from_the_record_and_the_message(tmp_path):
+    slash_key = 'AbCd/EfGh+IjKl/MnOp'
+
+    def escaped(connection, head):
+        text = json.dumps({'error': {'message': 'The key ' + header(head, 'Authorization') + ' may not use this model.'}})
+        respond(connection, 403, text.replace('/', '\\/').encode())
+    _, error, _, files, _ = raw_call(escaped, slash_key, tmp_path / 'a')
+    assert slash_key not in str(error) and slash_key.replace('/', '\\/').encode() not in files['call-0001-response.txt']
+    assert b'[credential removed]' in files['call-0001-response.txt']
+    model_routes.forget_secrets()
+
+    def short(connection, head):
+        respond(connection, 403, {'error': {'message': 'The key ' + header(head, 'Authorization') + ' may not use this model.'}})
+    _, error, _, _, lines = raw_call(short, 'abc', tmp_path / 'b')
+    assert ' abc ' not in str(error) and ' abc ' not in lines[-1] and '[credential removed]' in str(error)
+
+
+def test_f07_the_time_limit_holds_for_the_whole_call(tmp_path):
+    import time
+    body = json.dumps(chat()).encode()
+
+    def drip(connection, head):
+        connection.sendall(b'HTTP/1.1 200 OK\r\nContent-Type: application/json\r\nContent-Length: %d\r\n'
+                           b'Connection: close\r\n\r\n' % len(body))
+        for index in range(len(body)):
+            connection.sendall(body[index:index + 1])
+            time.sleep(0.3)
+    started = time.monotonic()
+    _, error, receipts, _, _ = raw_call(drip, None, tmp_path, timeout_seconds=2)
+    assert error.category == 'timeout' and time.monotonic() - started < 5 and receipts[0]['error_category'] == 'timeout'
+
+
+@pytest.mark.parametrize('status, body, expected, words', [
+    (400, {'error': {'message': 'max_tokens is too large: 16384. This model supports at most 4096 completion tokens.',
+                     'type': 'invalid_request_error'}}, 'bad_request', 'Lower "max_output_tokens"'),
+    (400, {'error': {'message': "Unsupported parameter: 'max_tokens'.", 'type': 'invalid_request_error'}},
+     'bad_request', '"token_limit_field" to "max_completion_tokens"'),
+    (429, {'error': {'message': 'Organization usage limit reached.', 'type': 'usage_limit_reached'}}, 'billing', 'credit'),
+    (429, {'error': {'message': 'Rate limit reached for requests.', 'type': 'rate_limit_error'}}, 'rate_limited', 'Wait'),
+    (200, {'error': {'message': 'model is still loading'}}, 'provider_error', 'loading'),
+    (304, b'', 'unexpected_reply', 'route kind'),
+    (400, {'error': {'message': 'temperature is not supported'}}, 'bad_request', 'Remove "temperature"'),
+])
+def test_f17_a_failure_message_names_the_status_that_came_and_the_right_action(status, body, expected, words, tmp_path):
+    _, error, receipts, _, _ = raw_call(lambda connection, head: respond(connection, status, body), None, tmp_path)
+    assert error.category == expected and words in str(error)
+    if status != 200:
+        assert f'HTTP {status}' in error.message and receipts[0]['http_status'] == status
+
+
+@pytest.mark.parametrize('status, kind, message, expected, shown', [
+    (403, 'authentication_error', 'invalid bearer token', 'authentication', 'HTTP 403'),
+    (400, 'invalid_request_error', 'messages.0.content: text content blocks must be non-empty; check the request format',
+     'bad_request', 'HTTP 400'),
+    (400, 'invalid_request_error', 'output_config.format: structured outputs are not available',
+     'structured_output_unsupported', 'HTTP 400'),
+    (429, 'rate_limit_error', 'slow down', 'rate_limited', 'HTTP 429'),
+])
+def test_f17_anthropic_messages_name_the_status_that_came(status, kind, message, expected, shown, tmp_path):
+    def answer(connection, head):
+        respond(connection, status, {'type': 'error', 'error': {'type': kind, 'message': message}})
+    with RawServer(answer) as server:
+        infer, _, _ = model_routes.build_route(anthropic_config(server), api_key=KEY)
+        with pytest.raises(RouteError) as caught:
+            infer(dict(PAYLOAD), dict(SCHEMA))
+    assert caught.value.category == expected and shown in caught.value.message
+
+
+def test_f18_extra_body_cannot_replace_temperature_or_seed():
+    with pytest.raises(RouteError) as caught:
+        model_routes.validate_config({'route': 'openai-compatible', 'preset': 'ollama', 'model': 'm',
+                                      'extra_body': {'temperature': 1.9, 'seed': 7}})
+    assert 'seed, temperature' in caught.value.message
+    with pytest.raises(RouteError):
+        model_routes.validate_config({'route': 'anthropic', 'model': 'm', 'extra_body': {'temperature': 1}})
+
+
+def test_n3_a_refused_redirect_leaves_its_status_and_names_its_target():
+    with openai_compatible_server.make_server(fail='redirect') as server:
+        _, _, receipts, error = call(openai_config(server))
+    assert error.category == 'redirect_refused' and 'http://127.0.0.1:9/elsewhere' in error.message
+    assert receipts[0]['http_status'] == 302
+
+
+def test_mutation_a_server_on_this_computer_is_never_reached_through_a_proxy(monkeypatch):
+    for name in ('http_proxy', 'HTTP_PROXY', 'all_proxy', 'ALL_PROXY'):
+        monkeypatch.setenv(name, 'http://127.0.0.1:9')
+    for name in ('no_proxy', 'NO_PROXY'):
+        monkeypatch.setenv(name, '')
+    with openai_compatible_server.make_server(replies='echo-ok') as server:
+        result, _, _, error = call(openai_config(server))
+    assert error is None and result == {'ok': True}
+
+
+def test_n7_the_provider_copy_keeps_names_maps_and_nullable_objects_apart():
+    schema = {'type': 'object', 'additionalProperties': False, 'required': ['a', 'm'],
+              '$defs': {'format': {'type': 'string', 'maxLength': 3}},
+              'properties': {'a': {'$ref': '#/$defs/format'},
+                             'm': {'type': 'object', 'additionalProperties': {'type': 'number'}},
+                             'n': {'type': ['object', 'null'], 'properties': {}}}}
+    copy = route_http.provider_schema(schema, close_objects=True)
+    assert copy['$defs'] == {'format': {'type': 'string'}}                  # a name, not the keyword "format"
+    assert copy['properties']['m']['additionalProperties'] == {'type': 'number'}   # a map stays open
+    assert copy['properties']['n']['additionalProperties'] is False          # a nullable object is closed
+    assert route_http.is_strict(schema) is False
+    assert route_http.is_strict({'type': ['object', 'null'], 'properties': {'x': {'type': 'string'}},
+                                 'required': ['x']}) is False
+
+
+def test_n2_the_receipts_are_in_the_order_of_their_ordinals_under_threads():
+    with openai_compatible_server.make_server(replies='echo-ok') as server:
+        infer, _, receipts = model_routes.build_route(openai_config(server, max_calls=12))
+        workers = [threading.Thread(target=lambda: infer(dict(PAYLOAD), dict(SCHEMA)), daemon=True) for _ in range(12)]
+        for worker in workers:
+            worker.start()
+        for worker in workers:
+            worker.join(20)
+    assert [receipt['ordinal'] for receipt in receipts] == list(range(1, 13))

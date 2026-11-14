@@ -581,7 +581,10 @@ def test_compare_marks_a_case_that_one_trial_did_not_run_and_two_different_selec
     rows = {row[0]: row[1:] for row in route_trial.comparison(first, changed)}
     assert rows['vocabulary'][:4] == ['review', 'review', 'yes', 'no']
     assert rows['vocabulary:ambiguous'][:4] == ['clarify', 'no match', 'no', 'not applicable']
-    assert rows['synthetic'] == ['draft ready', 'not run', 'not run in both', 'not run in both', '0.0', 'not run']
+    # The fifth column is the seconds of the first trial: a measured time, so only its form is fixed.
+    assert rows['synthetic'][:4] + rows['synthetic'][5:] == ['draft ready', 'not run', 'not run in both',
+                                                             'not run in both', 'not run']
+    assert float(rows['synthetic'][4]) >= 0
     assert route_trial.comparison_summary(route_trial.comparison(first, changed)) == (
         'Cases that both trials ran: 2. Same outcome: 1. Both gave a review: 1; same items and action in 0 of them.')
     assert route_trial.main(['compare', str(a), str(part)]) == 0 and 'not run' in capsys.readouterr().out

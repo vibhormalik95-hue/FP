@@ -747,8 +747,9 @@ def _logged(infer, log):
         except Exception as error:
             seconds = time.monotonic() - started
             detail = (f'{error.category}: {error.message} What to do: {error.action}' if isinstance(error, RouteError)
-                      else one_line(scrub(str(error) or type(error).__name__)))
-            log(ascii_text(scrub(f'[model route] call {number} FAILED after {seconds:.1f} s. {detail}')))
+                      else str(error) or type(error).__name__)
+            # The one scrub of this line: an error that is not a RouteError was not cleaned when it was built.
+            log(page_text(f'[model route] call {number} FAILED after {seconds:.1f} s. {detail}', 2000))
             raise
         log(f'[model route] call {number} answered in {time.monotonic() - started:.1f} s; the reply passed the format checks')
         return result
@@ -806,6 +807,11 @@ def parse_reply(text, schema):
     if not isinstance(text, str) or not text.strip(_JSON_SPACE):
         raise RouteError('reply_not_json', 'The model returned no text.')
     stripped = text.strip(_JSON_SPACE)
+    for edge in (stripped[0], stripped[-1]):
+        if edge.isspace() or not edge.isprintable():
+            raise RouteError('reply_not_json', f'The reply starts or ends with the character U+{ord(edge):04X}, which is '
+                             'not white space of JSON. It is not removed.',
+                             'Use a model or a server that returns the JSON object alone.')
     start = one_line(scrub(stripped), 60)
     try:
         value = _decode(stripped)

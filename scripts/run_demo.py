@@ -152,16 +152,28 @@ def build_route_provider(args, scenario, summary):
     import getpass
     import time
     from feedctrl import model_routes
-    stamp = time.strftime('%Y%m%d-%H%M%S')
+    # UTC, the clock of the call receipts.
+    stamp = time.strftime('%Y%m%d-%H%M%SZ', time.gmtime())
+    relay_only = [option for option, value in (('--declared-model', args.declared_model),
+                                               ('--transport-note', args.transport_note),
+                                               ('--relay-timeout', getattr(args, 'relay_timeout_given', None)))
+                  if value is not None]
+    if relay_only:
+        raise SystemExit(', '.join(relay_only) + ' belong to --provider relay. With a route file, put the same '
+                         'settings in the file ("declared_model", "transport_note", "timeout_seconds").')
+    record_option = getattr(args, 'record_dir', None)
     try:
         config = model_routes.load_config(getattr(args, 'route_file', None) or ROOT / model_routes.DEFAULT_FILE)
+        if args.max_calls is not None:
+            # The option can set the allowance of this run; the limits of the route kind still hold.
+            config = model_routes.validate_config({**config, 'max_calls': args.max_calls})
         key = model_routes.resolve_api_key(config, ask=getpass.getpass if sys.stdin.isatty() else None)
         relay_dir = record_dir = None
         if config['route'] == 'relay':
             relay_dir = Path(args.relay_dir) if args.relay_dir else ROOT / 'runs' / f'relay-{scenario}-{stamp}'
             summary['relay_dir'] = str(relay_dir.resolve())
-        elif getattr(args, 'record_dir', None) != 'none':
-            record_dir = Path(getattr(args, 'record_dir', None) or ROOT / 'runs' / f'route-{scenario}-{stamp}')
+        elif record_option is None or record_option.strip().lower() != 'none':
+            record_dir = Path(record_option or ROOT / 'runs' / f'route-{scenario}-{stamp}')
             summary['record_dir'] = str(record_dir.resolve())
         provider = model_routes.build_route(config, api_key=key, record_dir=record_dir, relay_dir=relay_dir,
                                             log=lambda line: print(line, flush=True))
@@ -307,12 +319,14 @@ def main(argv=None):
     parser.add_argument('--relay-dir')
     parser.add_argument('--declared-model')
     parser.add_argument('--transport-note')
-    parser.add_argument('--relay-timeout', type=float, default=600)
+    parser.add_argument('--relay-timeout', type=float)
     parser.add_argument('--max-calls', type=int)
     parser.add_argument('--reviewed-config')
     parser.add_argument('--report')
     parser.add_argument('--fingerprint', action='store_true', help='print the source fingerprint and exit')
     args = parser.parse_args(argv)
+    # The relay provider waits 600 s by default; a route file has its own setting.
+    args.relay_timeout_given, args.relay_timeout = args.relay_timeout, 600 if args.relay_timeout is None else args.relay_timeout
     if args.fingerprint:
         print(source_fingerprint())
         return

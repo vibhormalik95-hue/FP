@@ -581,3 +581,231 @@ def test_n1_only_json_white_space_may_stand_around_the_reply(text):
 
 def test_n1_space_tab_cr_and_lf_around_the_reply_are_accepted():
     assert model_routes.parse_reply(' \t\r\n' + GOOD + '\r\n \t', SCHEMA) == {'status': 'propose', 'label': 'Repair'}
+
+
+# ---------------------------------------------------------------- minor findings of the review, and the mutation table
+
+def test_f06_the_scrubber_removes_a_remembered_key_of_any_shape_and_length():
+    clean = model_routes.scrubber(PLAIN_KEY, 'abc')
+    text = clean(f'One {PLAIN_KEY} two "{PLAIN_KEY}" abc and abcdef, url {PLAIN_KEY.replace("-", "%2D")}')
+    assert PLAIN_KEY not in text and ' abc ' not in text and 'abcdef' in text
+    assert model_routes.scrub_bytes(b'x ' + PLAIN_KEY.encode() + b' y') == (b'x [credential removed] y', True)
+
+
+def test_n9_a_plain_word_after_bearer_is_not_taken_for_a_key():
+    text = model_routes.scrub('This endpoint needs Bearer authentication in the Authorization header.')
+    assert text == 'This endpoint needs Bearer authentication in the Authorization header.'
+    assert 'abcdefgh1234' not in model_routes.scrub('Authorization: Bearer abcdefgh1234')
+
+
+def test_f08_control_characters_of_untrusted_text_become_escapes():
+    assert model_routes.ascii_text('\x1b[1A\x07\x7f\u00e9') == '\\x1b[1A\\x07\\x7f\\xe9'
+    with openai_compatible_server.make_server(replies='echo-ok', fail='prose') as server:
+        lines = []
+        model_routes.check_route({'route': 'openai-compatible', 'base_url': server.url + '/v1',
+                                  'model': common.DEFAULT_MODEL}, out=lines.append)
+    assert all(line.isascii() and not any(ord(char) < 32 or ord(char) == 127 for char in line) for line in lines)
+
+
+def test_f10_usual_mistakes_end_in_one_message_and_not_in_a_trace(tmp_path, monkeypatch, capsys):
+    cases = [['setup', '--file', str(tmp_path / 'a.json'), '--no-check', '--route', 'openai-compatible',
+              '--base-url', 'http://[::1:1234/v1', '--model', 'm'],
+             ['setup', '--file', str(tmp_path / 'no-folder' / 'b.json'), '--no-check', '--route', 'relay',
+              '--declared-model', 'x', '--transport-note', 'y'],
+             ['setup', '--file', str(tmp_path / 'c.json'), '--no-check', '--route', 'cli', '--profile', 'generic',
+              '--model', 'm', '--program', 'tool "unclosed']]
+    for argv in cases:
+        with pytest.raises(SystemExit) as stopped:
+            model_route.main(argv)
+        assert isinstance(stopped.value.code, str) and stopped.value.code.isascii()
+    import io
+
+    class Interrupted(io.StringIO):
+        def readline(self, *args):
+            raise KeyboardInterrupt
+
+    monkeypatch.setattr(sys, 'stdin', io.StringIO(''))          # no terminal: the first question meets the end of input
+    with pytest.raises(SystemExit) as stopped:
+        model_route.main(['setup', '--file', str(tmp_path / 'd.json')])
+    assert 'no terminal' in stopped.value.code
+    monkeypatch.setattr(sys, 'stdin', Interrupted())              # Ctrl+C at a question
+    with pytest.raises(SystemExit) as stopped:
+        model_route.main(['setup', '--file', str(tmp_path / 'e.json')])
+    assert stopped.value.code == 'Stopped.'
+    with pytest.raises(RouteError) as caught:   # a zero-width space in the key
+        model_routes.resolve_api_key({**OLLAMA, 'api_key_env': 'MY_KEY'}, environ={'MY_KEY': 'abcd\u200befgh1234'})
+    assert caught.value.category == 'authentication' and 'printable' in caught.value.message
+    file = tmp_path / 'a-file'
+    file.write_text('x')
+    with pytest.raises(RouteError) as caught:
+        model_routes.build_route(OLLAMA, record_dir=file)
+    assert caught.value.category == 'record_failed'
+
+
+def test_f11_the_check_shows_the_real_cause_of_a_key_that_cannot_be_used(tmp_path, capsys, monkeypatch):
+    path = tmp_path / 'route.json'
+    model_routes.save_config(path, {'route': 'openai-compatible', 'base_url': 'http://127.0.0.1:9/v1', 'model': 'm',
+                                    'api_key_env': 'MY_KEY'})
+    monkeypatch.setenv('MY_KEY', 'Bearer abcdefgh12345678')
+    monkeypatch.setattr(sys.stdin, 'isatty', lambda: False, raising=False)
+    assert model_route.main(['check', '--file', str(path)]) == 1
+    output = capsys.readouterr().out
+    assert 'holds a space or a line break' in output and 'is not set' not in output and 'abcdefgh12345678' not in output
+
+
+def test_f12_the_wizard_asks_again_and_never_repeats_a_pasted_key():
+    lines = []
+    pasted = 'sk-proj-PASTEDKEY0123456789abcdefXYZ'
+    config = model_route.wizard(answers('2', '3', 'https://example.invalid/v1', pasted, '$MY_KEY', 'some-model'),
+                                lines.append, {}, lambda config, key=None: [])
+    assert config['api_key_env'] == 'MY_KEY' and pasted not in '\n'.join(lines)
+    # A number outside the list is asked again; it never becomes the model name.
+    config = model_route.wizard(answers('3', '1', '7', '2'), lines.append, {}, lambda config, key=None: ['a', 'b'])
+    assert config['model'] == 'b' and any('from 1 to 2' in line for line in lines)
+    # An effort outside the list is asked again; the message offers no "None".
+    config = model_route.wizard(answers('1', '1', '', 'claude-x-1', 'very high', 'max'), lines.append, {},
+                                lambda config, key=None: [])
+    assert config['effort'] == 'max' and not any('None' in line for line in lines)
+    # A server on another computer: http is accepted only after a yes.
+    config = model_route.wizard(answers('3', '3', 'http://192.168.1.20:11434/v1', 'n', 'http://192.168.1.20:11434/v1', 'y',
+                                        'llama3.1:8b'), lines.append, {}, lambda config, key=None: [])
+    assert config['allow_insecure_http'] is True and model_routes.validate_config(config)['base_url'].startswith('http://192')
+    with pytest.raises(SystemExit) as stopped:
+        model_route.wizard(answers('3', '1'), lines.append, {}, lambda config, key=None: [])
+    assert 'No usable answer' in stopped.value.code
+
+
+def test_f16_a_record_folder_that_cannot_be_written_stops_the_run_with_its_own_message(tmp_path):
+    import shutil
+    with openai_compatible_server.make_server(replies='echo-ok') as server:
+        config = {'route': 'openai-compatible', 'base_url': server.url + '/v1', 'model': common.DEFAULT_MODEL, 'max_calls': 3}
+        infer, _, receipts = model_routes.build_route(config, record_dir=tmp_path / 'gone')
+        shutil.rmtree(tmp_path / 'gone')
+        for _ in range(2):
+            with pytest.raises(RouteError) as caught:
+                infer(dict(model_routes.TEST_PAYLOAD), dict(model_routes.TEST_SCHEMA))
+            assert caught.value.category == 'record_failed' and 'provider' not in caught.value.message
+        assert server.requests == [] and receipts == []
+        # The folder goes away after the request was sent: the paid reply is kept and the run stops after it.
+        folder = tmp_path / 'late'
+        infer, _, receipts = model_routes.build_route(config, record_dir=folder)
+        original = model_routes.Recorder.write
+
+        def write(self, ordinal, name, data):
+            if name == 'response.txt':
+                shutil.rmtree(folder)
+            return original(self, ordinal, name, data)
+
+        model_routes.Recorder.write = write
+        try:
+            assert infer(dict(model_routes.TEST_PAYLOAD), dict(model_routes.TEST_SCHEMA)) == {'ok': True}
+        finally:
+            model_routes.Recorder.write = original
+        assert receipts[0]['record_incomplete'] is True and receipts[0]['receipt_file_written'] is False
+        with pytest.raises(RouteError) as caught:
+            infer(dict(model_routes.TEST_PAYLOAD), dict(model_routes.TEST_SCHEMA))
+        assert caught.value.category == 'record_failed' and len(server.requests) == 1
+
+
+def test_n4_a_record_folder_with_only_file_browser_entries_counts_as_empty(tmp_path):
+    (tmp_path / 'rec').mkdir()
+    (tmp_path / 'rec' / '.DS_Store').write_bytes(b'x')
+    model_routes.build_route(OLLAMA, record_dir=tmp_path / 'rec')
+
+
+def test_mutation_a_record_file_is_never_overwritten(tmp_path):
+    recorder = model_routes.Recorder(tmp_path / 'rec')
+    recorder.write(1, 'response.txt', b'first')
+    with pytest.raises(RouteError) as caught:
+        recorder.write(1, 'response.txt', b'second')
+    assert caught.value.category == 'record_failed' and (tmp_path / 'rec' / 'call-0001-response.txt').read_bytes() == b'first'
+
+
+@pytest.mark.parametrize('raw', [
+    {**OLLAMA, 'model': '-starts-with-a-hyphen'},
+    {**OLLAMA, 'model': '--settings'},
+    {'route': 'openai-compatible', 'base_url': 'https://' + PLAIN_KEY + '@example.invalid/v1', 'model': 'm', 'api_key_env': 'K'},
+    {'route': 'openai-compatible', 'base_url': 'https://user:pass@example.invalid/v1', 'model': 'm', 'api_key_env': 'K'},
+    {**OLLAMA, 'api_key_env': 'MY KEY'}, {**OLLAMA, 'api_key_env': 'MY-KEY'}, {**OLLAMA, 'api_key_env': '1KEY'},
+    {'route': 'relay', 'declared_model': 'x', 'transport_note': 'by hand\x07'},
+    {'route': 'relay', 'declared_model': 'x\x1b[2K', 'transport_note': 'by hand'},
+])
+def test_mutation_settings_that_the_route_refuses(raw):
+    with pytest.raises(RouteError) as caught:
+        model_routes.validate_config(raw)
+    assert caught.value.category == 'configuration'
+
+
+def test_mutation_the_terminal_line_of_a_failed_call_passes_the_scrubber():
+    model_routes.remember_secret(PLAIN_KEY)
+    lines = []
+
+    def broken(payload, schema):
+        raise ValueError('a defect that shows ' + PLAIN_KEY)
+
+    with pytest.raises(ValueError):
+        model_routes._logged(broken, lines.append)({}, {})
+    assert PLAIN_KEY not in lines[0] and '[credential removed]' in lines[0]
+
+
+def test_mutation_the_check_cleans_every_text_that_an_adapter_gives_it():
+    def check(config, *, api_key=None, step):
+        step('endpoint', True, 'The endpoint answered with ' + api_key + ' \x1b[2K')
+        return False
+
+    model_routes.register_route('echo-test', model_routes.RouteAdapter(
+        lambda raw: {'model': 'm', 'max_calls': 1}, lambda *args, **kwargs: None, check,
+        lambda config: [], lambda config: 'ECHO_KEY'))
+    try:
+        lines = []
+        result = model_routes.check_route({'route': 'echo-test'}, api_key=PLAIN_KEY, out=lines.append)
+    finally:
+        model_routes._REGISTRY.pop('echo-test')
+    assert PLAIN_KEY not in json.dumps(result) + '\n'.join(lines) and '\x1b' not in '\n'.join(lines)
+
+
+def test_mutation_the_allowance_counter_is_locked():
+    allowance = model_routes.CallAllowance(2)
+    entered = []
+
+    class Recording:
+        def __enter__(self):
+            entered.append(True)
+
+        def __exit__(self, *args):
+            return False
+
+    allowance._lock = Recording()
+    assert allowance.reserve() == 1 and entered == [True]
+
+
+def test_w4_a_windows_command_line_is_split_by_the_rules_of_windows():
+    split = model_route.split_command
+    assert split(r'"C:\Program Files\Ollama\ollama.exe" run m', os_name='nt') == [
+        r'C:\Program Files\Ollama\ollama.exe', 'run', 'm']
+    assert split('tool --opt="a b" c', os_name='nt') == ['tool', '--opt=a b', 'c']
+    assert split(r'tool C:\path\ "x\"y"', os_name='nt') == ['tool', 'C:\\path\\', 'x"y']
+    with pytest.raises(RouteError):
+        split('tool "unclosed', os_name='nt')
+    assert split("tool 'a b'", os_name='posix') == ['tool', 'a b']
+
+
+def test_w1_a_windows_path_without_an_extension_is_completed_to_its_program_file():
+    from feedctrl import route_cli
+    seen = {}
+
+    def which(name, path=None):
+        seen.update(name=name, path=path)
+        return path + '\\claude.CMD' if name == 'claude' else None
+
+    found = route_cli.resolve_program(r'C:\Users\x\AppData\Roaming\npm\claude', os_name='nt', which=which)
+    assert seen == {'name': 'claude', 'path': r'C:\Users\x\AppData\Roaming\npm'} and found.endswith('claude.CMD')
+    assert route_cli.resolve_program('no-such-tool', os_name='nt', which=lambda name, path=None: None) is None
+
+
+def test_w2_the_program_environment_keeps_the_windows_names_that_the_cli_needs():
+    from feedctrl import route_cli
+    assert {'CLAUDE_CODE_GIT_BASH_PATH', 'PROGRAMFILES', 'APPDATA', 'LOCALAPPDATA', 'USERPROFILE', 'PATHEXT',
+            'SYSTEMROOT'} <= set(route_cli.ENV_ALLOW)
+    assert not {'ANTHROPIC_API_KEY', 'OPENAI_API_KEY', 'CLAUDE_CODE_OAUTH_TOKEN', 'ANTHROPIC_AUTH_TOKEN'} & set(route_cli.ENV_ALLOW)
+    assert 'pass_environment' in route_cli._SIGN_IN_ADVICE
