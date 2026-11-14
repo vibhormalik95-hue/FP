@@ -229,7 +229,7 @@ def scrub_value(value):
     if isinstance(value, list):
         return [scrub_value(item) for item in value]
     if isinstance(value, dict):
-        return {name: scrub_value(item) for name, item in value.items()}
+        return {scrub(name) if isinstance(name, str) else name: scrub_value(item) for name, item in value.items()}
     return value
 
 
@@ -702,9 +702,11 @@ def build_route(config, *, api_key=None, record_dir=None, relay_dir=None, log=No
         if any(char.isspace() for char in api_key) or not api_key.isascii() or not api_key.isprintable():
             raise RouteError('authentication', 'The API key holds white space or a character that is not printable ASCII.',
                              'Copy the key again without the text around it.')
-        # A placeholder such as "lm-studio" for a local server is also a word of
-        # the file, so only a value of the length of a real key is compared.
-        if len(api_key) >= 16 and api_key in _json(_values_only(config)).decode('utf-8'):
+        # A preset label can also be a local-server placeholder ("lm-studio").
+        # Exclude only that label, not arbitrary short keys or request fields.
+        values = {field: value for field, value in config.items() if field != 'preset'}
+        encoded = _json(_values_only(values)).decode('utf-8')
+        if any(form in encoded for form in _forms(api_key)):
             reject('The route file holds the API key itself.',
                    'Remove the key from the file. Keep it only in the environment variable.')
     infer, identity, receipts = adapter.build(config, api_key=api_key, record_dir=record_dir, relay_dir=relay_dir)

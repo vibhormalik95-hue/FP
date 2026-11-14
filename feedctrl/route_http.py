@@ -328,7 +328,7 @@ def _end(recorder, ordinal, receipt, status, headers, raw):
 def _foreign_key_default(raw, base_url, home, name, what):
     """Refuse a key variable that a preset supplies for one host when the file names another host."""
     host = routes.address_host(base_url) or ''
-    if 'api_key_env' not in raw and host != routes.address_host(home) and not routes.is_loopback(host):
+    if 'api_key_env' not in raw and host != routes.address_host(home):
         routes.reject(f'{what} is for {home}. This file names the address {base_url}, and it names no key variable.',
                       f'The key in {name} is not sent to another host by default. Name the variable that holds the key '
                       'for that host in "api_key_env".')

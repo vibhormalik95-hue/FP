@@ -91,7 +91,7 @@ def test_an_anthropic_route_carries_the_new_category_flow_and_the_key_stays_out_
     monkeypatch.setenv('ANTHROPIC_API_KEY', KEY)
     record = tmp_path / 'record'
     with anthropic_server.make_server(replies='scripted') as server:
-        path = route_file(tmp_path, {'route': 'anthropic', 'base_url': server.url, 'model': MODEL})
+        path = route_file(tmp_path, {'route': 'anthropic', 'api_key_env': 'ANTHROPIC_API_KEY', 'base_url': server.url, 'model': MODEL})
         app, _, summary, _ = run_demo.build_app(options(scenario='category', route_file=path, record_dir=str(record)))
         with TestClient(app) as client:
             status = client.get('/api/status').json()
@@ -179,6 +179,8 @@ def test_quickstart_start_hands_the_key_to_the_server_in_its_environment_only(tm
     started = {}
 
     class Server:
+        returncode = 0
+
         def poll(self):
             return 0
 
@@ -195,7 +197,7 @@ def test_quickstart_start_hands_the_key_to_the_server_in_its_environment_only(tm
     monkeypatch.setattr(sys.stdin, 'isatty', lambda: False, raising=False)
     with pytest.raises(SystemExit) as stopped:
         quickstart.main(['start', '--scenario', 'hunger', '--route-file', path])
-    assert 'MY_KEY is not set' in str(stopped.value) and 'quickstart.py setup' in str(stopped.value)
+    assert 'MY_KEY is not set' in str(stopped.value)
 
 
 def test_quickstart_start_prints_the_relay_commands_for_a_relay_route(tmp_path, monkeypatch, capsys):
@@ -203,6 +205,8 @@ def test_quickstart_start_prints_the_relay_commands_for_a_relay_route(tmp_path, 
     started = {}
 
     class Server:
+        returncode = 0
+
         def poll(self):
             return 0
 

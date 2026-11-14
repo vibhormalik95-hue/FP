@@ -194,11 +194,11 @@ Nothing is applied after a failure. Each call counts toward the call allowance, 
 | The model declined to answer | The model refused the request. | Change the request. |
 | The reply was wrapped in a Markdown code fence / was not exactly one JSON object | The model did not follow the format. | Use `structured_output: json_schema` where the server supports it, or a stronger model. |
 | The reply did not match the schema of the request | The model wrote JSON with wrong fields or values. | Try again, or use a stronger model. |
-| The route file names the model ..., and the reply reports ... | Another model answered than the file names. | Put the reported name in `model`, or set `allow_reported_model_mismatch` to true. |
+| The route file names the model ..., and the reply reports ... | Another model answered than the file names. | Check the reported name. Use that exact name in `model` or `accept_reported_models` if it is intended. |
 | The call allowance of this run ... is used | The run reached `max_calls`. | Start the server again, or raise `max_calls`. |
 | The program ... was not found | The command is not installed or not on the PATH. | Install it, or give its full path. |
 | The CLI did not accept its sign-in state | The CLI is not signed in. | Run `claude auth login`, then try again. |
-| This version of the CLI does not know the option ... | The installed CLI is older or newer than the flags expect. | Update the CLI, or add the option to `omit_flags`. |
+| This version of the CLI does not know the option ... | The installed CLI is older or newer than the flags expect. | Update the CLI. Only optional compatibility flags can be omitted; model, output-format and safety flags remain protected. |
 
 ## What is recorded, and what is never recorded
 
@@ -285,3 +285,23 @@ Read on 14 November 2026 (UTC). Each wire detail of the routes comes from these 
 | <https://code.claude.com/docs/en/env-vars> | `ANTHROPIC_API_KEY` replaces the subscription sign-in in print mode when it is set. |
 
 Not verified: the behaviour of any real server, provider or CLI with these requests. The official pages were read; the services were not called.
+
+## Model identity and stopping
+
+A reported model must match the requested name exactly, a dated snapshot suffix,
+or the default `:latest` tag. A version change such as `model-5` to `model-5-5`
+is not a snapshot. `accept_reported_models` lists specific accepted alternative
+names; the receipt records the match rule. CLI output from several models is
+not attributed to the requested model when another model has as many or more
+output tokens.
+
+When the application receives a stop signal, it blocks new route calls and asks
+active HTTP exchanges and CLI process groups to end before server shutdown.
+This is locally verified with stand-ins on Linux, not a real provider. Ending
+a local HTTP connection does not prove that a remote provider stopped processing
+or billing. Windows forced termination and process-tree cleanup still require
+platform acceptance; these tests do not establish Windows job-object containment.
+
+Changing a provider preset's host requires an explicit key-variable setting,
+including a loopback substitute. The setup wizard asks before sending a key
+for model discovery. Never reuse a provider key for an unrelated endpoint.
