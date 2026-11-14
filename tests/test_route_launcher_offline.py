@@ -22,6 +22,7 @@ from feedctrl import model_routes  # noqa: E402
 import quickstart  # noqa: E402
 import run_demo  # noqa: E402
 from standins import anthropic_server, common, openai_compatible_server  # noqa: E402
+from standins.route_state import fresh_route_state  # noqa: E402,F401  (autouse)
 
 KEY = 'sk-test-0123456789abcdefSECRET'
 MODEL = common.DEFAULT_MODEL
@@ -91,7 +92,8 @@ def test_an_anthropic_route_carries_the_new_category_flow_and_the_key_stays_out_
     monkeypatch.setenv('ANTHROPIC_API_KEY', KEY)
     record = tmp_path / 'record'
     with anthropic_server.make_server(replies='scripted') as server:
-        path = route_file(tmp_path, {'route': 'anthropic', 'base_url': server.url, 'model': MODEL})
+        path = route_file(tmp_path, {'route': 'anthropic', 'base_url': server.url, 'model': MODEL,
+                                     'api_key_env': 'ANTHROPIC_API_KEY'})
         app, _, summary, _ = run_demo.build_app(options(scenario='category', route_file=path, record_dir=str(record)))
         with TestClient(app) as client:
             status = client.get('/api/status').json()
@@ -195,7 +197,8 @@ def test_quickstart_start_hands_the_key_to_the_server_in_its_environment_only(tm
     monkeypatch.setattr(sys.stdin, 'isatty', lambda: False, raising=False)
     with pytest.raises(SystemExit) as stopped:
         quickstart.main(['start', '--scenario', 'hunger', '--route-file', path])
-    assert 'MY_KEY is not set' in str(stopped.value) and 'quickstart.py setup' in str(stopped.value)
+    # F11: the real cause, and no advice to run the setup again (the file is good).
+    assert 'MY_KEY is not set' in str(stopped.value) and 'quickstart.py setup' not in str(stopped.value)
 
 
 def test_quickstart_start_prints_the_relay_commands_for_a_relay_route(tmp_path, monkeypatch, capsys):
@@ -239,3 +242,263 @@ def test_the_earlier_quick_start_steps_still_parse():
         parser_error = stopped.code
     assert parser_error == 2
     assert sorted(run_demo.SCENARIOS) == sorted(set(run_demo.SCENARIOS)) and 'category' in run_demo.SCENARIOS
+
+
+# ---------------------------------------------------------------- review findings F04 and F05
+
+def test_f04_quickstart_start_hands_absolute_paths_to_the_server(tmp_path, monkeypatch, capsys):
+    mine = tmp_path / 'my-folder'
+    mine.mkdir()
+    monkeypatch.chdir(mine)
+    model_routes.save_config(mine / 'model-route.json', {'route': 'openai-compatible', 'base_url': 'http://127.0.0.1:9/v1',
+                                                          'model': 'model-of-the-file-in-my-folder'})
+    started = {}
+
+    class Server:
+        def poll(self):
+            return 0
+
+    monkeypatch.setattr(quickstart, 'run_demo', lambda *arguments, env=None: started.update(arguments=arguments) or Server())
+    monkeypatch.setattr(quickstart, 'wait_until_served', lambda port, server: None)
+    monkeypatch.setattr(quickstart, 'keep_serving', lambda server: None)
+    monkeypatch.setattr(quickstart, 'require_free_port', lambda port: None)
+    quickstart.main(['start', '--scenario', 'hunger', '--route-file', 'model-route.json', '--record-dir', 'myrecords'])
+    arguments = started['arguments']
+    served = arguments[arguments.index('--route-file') + 1]
+    records = arguments[arguments.index('--record-dir') + 1]
+    assert served == str(mine / 'model-route.json') and Path(served).is_absolute()
+    assert records == str(mine / 'myrecords') and Path(records).is_absolute()
+    output = capsys.readouterr().out
+    assert 'model-of-the-file-in-my-folder' in output and str(mine / 'model-route.json') in output
+
+
+def _local_get(url, data=None, headers=None, timeout=5):
+    import urllib.request
+    opener = urllib.request.build_opener(urllib.request.ProxyHandler({}))
+    request = urllib.request.Request(url, data=data, headers=headers or {}, method='POST' if data is not None else 'GET')
+    with opener.open(request, timeout=timeout) as response:
+        return response.status, response.read()
+
+
+def _gone(pid):
+    try:
+        os.kill(pid, 0)
+    except ProcessLookupError:
+        return True
+    return False
+
+
+@pytest.mark.skipif(os.name == 'nt', reason='SIGINT to another process and the POSIX launcher file; not run on Windows')
+def test_f05_ctrl_c_stops_the_server_and_the_running_cli_program(tmp_path):
+    import signal
+    import socket
+    import subprocess
+    import threading
+    import time
+    launcher = common.write_launcher(tmp_path / 'bin', ROOT / 'tests' / 'standins' / 'cli_claude_code.py')
+    log = tmp_path / 'cli-log.jsonl'
+    path = route_file(tmp_path, {'route': 'cli', 'profile': 'claude-code', 'command': launcher, 'model': MODEL,
+                                 'pass_environment': ['STANDIN_REPLIES', 'STANDIN_FAIL', 'STANDIN_DELAY', 'STANDIN_LOG']})
+    with socket.socket() as probe:
+        probe.bind(('127.0.0.1', 0))
+        port = probe.getsockname()[1]
+    env = {**os.environ, 'STANDIN_REPLIES': 'scripted', 'STANDIN_FAIL': 'slow', 'STANDIN_DELAY': '60',
+           'STANDIN_LOG': str(log), 'PYTHONUNBUFFERED': '1'}
+    server = subprocess.Popen([sys.executable, str(ROOT / 'scripts' / 'run_demo.py'), '--scenario', 'hunger',
+                               '--provider', 'route', '--route-file', path, '--record-dir', 'none', '--port', str(port)],
+                              cwd=str(ROOT), env=env, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    try:
+        base = f'http://127.0.0.1:{port}'
+        for _ in range(80):
+            try:
+                if _local_get(base + '/')[0] == 200:
+                    break
+            except OSError:
+                time.sleep(0.25)
+        session = json.loads(_local_get(base + '/api/session', b'{}', {'Content-Type': 'application/json'})[1])['session_id']
+        body = (run_demo.SCENARIOS['hunger'] / 'app-preview.json').read_bytes()
+        answer = {}
+
+        def preview():
+            try:
+                answer['status'] = _local_get(base + '/api/semantic/preview', body,
+                                              {'Content-Type': 'application/json', 'X-Session-ID': session}, timeout=90)[0]
+            except Exception as error:   # noqa: BLE001  (an error answer or a closed connection are both acceptable)
+                answer['error'] = type(error).__name__
+
+        threading.Thread(target=preview, daemon=True).start()
+        for _ in range(80):
+            if log.exists() and log.read_text().strip():
+                break
+            time.sleep(0.25)
+        program = json.loads(log.read_text().splitlines()[-1])
+        assert not _gone(program['pid'])
+        started = time.monotonic()
+        server.send_signal(signal.SIGINT)
+        code = server.wait(timeout=30)
+        seconds = time.monotonic() - started
+        output = server.stdout.read().decode('utf-8', 'replace')
+        assert seconds < 15, output
+        assert _gone(program['pid']) and not Path(program['cwd']).exists(), output
+        assert code == 0 and 'Traceback' not in output, output
+        assert 'call 1 FAILED' in output and 'stopping' in output, output
+        assert len(log.read_text().splitlines()) == 1                    # no second call after the stop
+    finally:
+        if server.poll() is None:
+            server.kill()
+            server.wait()
+
+
+# ---------------------------------------------------------------- minor findings: launcher options, proxy, busy port, Windows stop
+
+def test_n4_the_launcher_options_of_a_route_do_what_they_say(tmp_path, monkeypatch):
+    path = route_file(tmp_path, {'route': 'openai-compatible', 'base_url': 'http://127.0.0.1:9/v1', 'model': MODEL})
+    app, _, summary, _ = run_demo.build_app(options(scenario='hunger', route_file=path, record_dir='None', max_calls=1))
+    assert 'record_dir' not in summary and summary['identity']['route']['max_calls'] == 1
+    assert any('Call allowance for one run: 1 ' in line for line in summary['route'])
+    for name, value in (('declared_model', 'x'), ('transport_note', 'y'), ('relay_timeout_given', 30.0)):
+        with pytest.raises(SystemExit) as stopped:
+            run_demo.build_app(options(scenario='hunger', route_file=path, record_dir='none', **{name: value}))
+        assert 'belong to --provider relay' in str(stopped.value)
+    monkeypatch.setattr(run_demo, 'ROOT', tmp_path)
+    _, _, summary, _ = run_demo.build_app(options(scenario='hunger', route_file=path))
+    assert Path(summary['record_dir']).name.startswith('route-hunger-') and summary['record_dir'].endswith('Z')
+
+
+def test_f20_the_readiness_probe_never_uses_a_proxy(monkeypatch):
+    import http.server
+    import threading
+
+    class Page(http.server.BaseHTTPRequestHandler):
+        def log_message(self, *args):
+            pass
+
+        def do_GET(self):
+            self.send_response(200)
+            self.send_header('Content-Length', '0')
+            self.end_headers()
+
+    server = http.server.ThreadingHTTPServer(('127.0.0.1', 0), Page)
+    threading.Thread(target=server.serve_forever, daemon=True).start()
+    for name in ('http_proxy', 'HTTP_PROXY'):
+        monkeypatch.setenv(name, 'http://127.0.0.1:9')
+    for name in ('no_proxy', 'NO_PROXY'):
+        monkeypatch.setenv(name, '')
+
+    class Running:
+        def poll(self):
+            return None
+
+    try:
+        quickstart.wait_until_served(server.server_port, Running(), seconds=5)
+    finally:
+        server.shutdown()
+        server.server_close()
+
+
+def test_lead_11_rehearse_on_a_busy_port_fails_with_a_clear_message():
+    import socket
+    import subprocess
+    with socket.socket() as busy:
+        busy.bind(('127.0.0.1', 0))
+        busy.listen(1)
+        port = busy.getsockname()[1]
+        done = subprocess.run([sys.executable, str(ROOT / 'scripts' / 'quickstart.py'), 'rehearse', '--port', str(port)],
+                              capture_output=True, text=True, timeout=60, cwd=str(ROOT))
+    assert done.returncode != 0 and f'Port {port}' in done.stderr and 'in use' in done.stderr
+    assert 'keeps running' not in done.stdout
+
+
+def test_lead_11_a_server_that_ends_with_an_error_ends_the_launcher_with_its_code():
+    class Failed:
+        returncode = 1
+
+        def wait(self, timeout=None):
+            return 1
+
+        def poll(self):
+            return 1
+
+    with pytest.raises(SystemExit) as stopped:
+        quickstart.serve_until_stopped(Failed())
+    assert stopped.value.code == 1
+
+
+def test_w3_on_windows_the_launcher_asks_the_server_to_stop_with_ctrl_break(monkeypatch):
+    import signal
+    import subprocess
+    monkeypatch.setattr(quickstart, 'WINDOWS', True)
+    monkeypatch.setattr(signal, 'CTRL_BREAK_EVENT', 1, raising=False)
+    monkeypatch.setattr(subprocess, 'CREATE_NEW_PROCESS_GROUP', 0x200, raising=False)
+    sent = []
+
+    class Server:
+        def __init__(self):
+            self.code = None
+
+        def poll(self):
+            return self.code
+
+        def send_signal(self, value):
+            sent.append(value)
+            self.code = 0
+
+        def wait(self, timeout=None):
+            return self.code
+
+        def terminate(self):
+            sent.append('terminate')
+
+        kill = terminate
+
+    assert quickstart.stop_server(Server()) == 0 and sent == [1]
+    started = {}
+    monkeypatch.setattr(subprocess, 'Popen', lambda *args, **kwargs: started.update(kwargs) or Server())
+    quickstart.run_demo('--scenario', 'tags')
+    assert started['creationflags'] == 0x200
+
+
+@pytest.mark.skipif(not Path('/proc').is_dir(), reason='reads the process table of Linux')
+def test_f05_a_stop_signal_to_the_launcher_alone_also_stops_the_server():
+    import signal
+    import socket
+    import subprocess
+    import time
+    with socket.socket() as probe:
+        probe.bind(('127.0.0.1', 0))
+        port = probe.getsockname()[1]
+    launcher = subprocess.Popen([sys.executable, str(ROOT / 'scripts' / 'quickstart.py'), 'rehearse', '--scenario', 'hunger',
+                                 '--port', str(port)], cwd=str(ROOT), stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+                                env={**os.environ, 'PYTHONUNBUFFERED': '1'})
+    children = []
+    try:
+        for _ in range(120):
+            try:
+                if _local_get(f'http://127.0.0.1:{port}/')[0] == 200:
+                    break
+            except OSError:
+                time.sleep(0.25)
+        for entry in Path('/proc').iterdir():
+            try:
+                if entry.name.isdigit() and int((entry / 'stat').read_text().rsplit(')', 1)[1].split()[1]) == launcher.pid:
+                    children.append(int(entry.name))
+            except (OSError, ValueError, IndexError):
+                pass
+        assert children
+        launcher.send_signal(signal.SIGTERM)       # to the launcher only, not to its process group
+        code = launcher.wait(timeout=30)
+        assert code == 128 + signal.SIGTERM
+        for _ in range(50):
+            if all(_gone(pid) for pid in children):
+                break
+            time.sleep(0.1)
+        assert all(_gone(pid) for pid in children)
+    finally:
+        for pid in children:
+            try:
+                os.kill(pid, signal.SIGKILL)
+            except ProcessLookupError:
+                pass
+        if launcher.poll() is None:
+            launcher.kill()
+            launcher.wait()

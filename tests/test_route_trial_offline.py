@@ -30,6 +30,7 @@ import relay_tools  # noqa: E402
 import route_trial  # noqa: E402
 import run_demo  # noqa: E402
 from standins import common, openai_compatible_server  # noqa: E402
+from standins.route_state import fresh_route_state  # noqa: E402,F401  (autouse)
 
 KEY = 'sk-trial-0123456789abcdefSECRET'
 MODEL = common.DEFAULT_MODEL
@@ -457,11 +458,16 @@ def test_ctrl_c_during_a_waiting_model_call_records_the_finished_cases_and_stops
     waited = time.monotonic() - started
     output = capsys.readouterr().out
     record = json.loads((out / 'trial.json').read_text(encoding='utf-8'))
-    assert code == 1 and left == [1] and waited < 3.5            # well before the relay gives up at 4 s
+    assert code == 1 and waited < 3.5                             # well before the relay gives up at 4 s
+    assert model_routes.stop_requested()                          # the waiting model call was told to end
+    for thread in route_trial._IN_FLIGHT:
+        thread.join(2)
+    assert not any(thread.is_alive() for thread in route_trial._IN_FLIGHT)
     assert record['interrupted'] is True and record['cases_chosen'] == ['vocabulary:negated', 'vocabulary:no_match']
     assert [(result['case'], result['outcome']) for result in record['cases']] == [('vocabulary:negated', 'clarify')]
     assert 'Interrupted after 1 of 2 cases. The finished cases are recorded.' in output
-    assert 'A model call was still waiting when the trial was interrupted. The program stops now.' in output
+    # The stop usually ends the wait before the records are written; then no forced end is needed.
+    assert left == [] or (left == [1] and 'A model call was still waiting when the trial was interrupted.' in output)
     assert (out / 'relay' / 'request-0001.json').is_file()        # the open request stays on disk for the record
     for thread in route_trial._IN_FLIGHT:                         # let the abandoned call end before the next test
         thread.join(timeout=10)
@@ -580,7 +586,10 @@ def test_compare_marks_a_case_that_one_trial_did_not_run_and_two_different_selec
     rows = {row[0]: row[1:] for row in route_trial.comparison(first, changed)}
     assert rows['vocabulary'][:4] == ['review', 'review', 'yes', 'no']
     assert rows['vocabulary:ambiguous'][:4] == ['clarify', 'no match', 'no', 'not applicable']
-    assert rows['synthetic'] == ['draft ready', 'not run', 'not run in both', 'not run in both', '0.0', 'not run']
+    # The fifth column is the seconds of the first trial: a measured time, so only its form is fixed.
+    assert rows['synthetic'][:4] + rows['synthetic'][5:] == ['draft ready', 'not run', 'not run in both',
+                                                             'not run in both', 'not run']
+    assert float(rows['synthetic'][4]) >= 0
     assert route_trial.comparison_summary(route_trial.comparison(first, changed)) == (
         'Cases that both trials ran: 2. Same outcome: 1. Both gave a review: 1; same items and action in 0 of them.')
     assert route_trial.main(['compare', str(a), str(part)]) == 0 and 'not run' in capsys.readouterr().out

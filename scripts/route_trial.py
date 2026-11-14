@@ -351,10 +351,21 @@ def send(client, url, headers, body):
             thread.join(0.2)
     except KeyboardInterrupt:
         _IN_FLIGHT.append(thread)
+        stop_model_calls()
         raise
     if 'problem' in box:
         raise box['problem']
     return box['response']
+
+
+def stop_model_calls():
+    """Ctrl+C: end the model call that runs in the request thread.
+
+    The stop flag of the routes closes a running HTTP connection and ends a
+    running program with the programs that it started. No later call starts.
+    """
+    from feedctrl import model_routes
+    model_routes.request_stop()
 
 
 def failed_record(reason):
