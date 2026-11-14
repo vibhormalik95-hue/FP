@@ -368,6 +368,11 @@ def stop_model_calls():
     model_routes.request_stop()
 
 
+def stop_was_requested():
+    from feedctrl import model_routes
+    return model_routes.stop_requested()
+
+
 def failed_record(reason):
     return {'outcome': 'error', 'reason': reason, 'controls': [], 'selected_item_ids': [], 'checks': None,
             'clarification': None, 'definition': None, 'draft': None, 'raw_model_replies': []}
@@ -427,6 +432,15 @@ def run_cases(app, cases, label, *, say=None):
             if say:
                 say(f'case {number} of {len(cases)}: {case["case"]} ({METHODS[case["method"]]["title"]}) ...')
             result = run_case(client, case, user, label, receipts)
+            if stop_was_requested():
+                # A stop request arrived during this case. Python raises
+                # KeyboardInterrupt for Ctrl+C only when its own handler receives
+                # the signal; a server that still runs in this process can hold
+                # another handler, which sets the stop flag of the routes. The
+                # case then ends with a stopped call. It did not finish, so it
+                # is not recorded as an error of the route.
+                interrupted = True
+                break
             results.append(result)
             if say:
                 say(f'  -> {outcome_words(result["outcome"])}; model calls: {result["model_calls"]}; '
