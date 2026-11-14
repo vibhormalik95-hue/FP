@@ -20,7 +20,7 @@ The repository contains a research demonstrator named Feed Control Lab (React an
 
 A proposal never changes the feed. Apply uses exactly the reviewed set. A two-step Undo restores the earlier state.
 
-![Review of every supplied item before a new category is applied](docs/evidence/2026-11-13/new-category/attempt-2-completed/2-membership-review.png)
+![Review of every supplied item before a new category is applied](docs/evidence/2026-11-13/new-category/run-3-final-code/2-membership-review.png)
 
 Two further additions by the student are separate from these controls: a model can write metadata for a fictional item, which goes to a separate feed, and a small comparison of a stronger model with local models exists.
 
@@ -32,7 +32,7 @@ Two further additions by the student are separate from these controls: a model c
 - the two language controls used real model output through an operator relay, and an AI operator made the review decisions. No human review of those runs exists yet;
 - the automatic connection to the Claude Code CLI has not yet completed the whole new-category flow.
 
-These are single runs on small invented scenarios. They show that the controls work. They are not an accuracy result.
+Each language control completed two times on a small invented scenario, the second time on the final code. One earlier new-category attempt was rejected by the app and its record is kept. These runs show that the controls work. They are not an accuracy result.
 
 ## Run the demonstration
 
@@ -87,7 +87,7 @@ Every number below is copied from the document named after it.
 
 - Whole-command agreement with the reference labels was 76 of 100 for Llama and 11 of 100 for rules.
 - Induced control success was 20.145% for Llama, 3.854% for rules and 3.815% for item feedback.
-- Negative: NDCG@10 was 0.02580 for Llama and 0.03184 for item feedback. Conditional requests had no successes.
+- Negative: NDCG@10 was 0.02580 for Llama and 0.03184 for item feedback. Conditional-control success was zero (`deliverables/2026-10-27-feedback/RESULTS-AND-LIMITATIONS.md`).
 - The reference labels came from models. They do not measure independent human accuracy.
 
 **Synthetic-language study of 4 November.** Protocol and results: `deliverables/2026-11-04-prospective-evaluation/PROTOCOL-AND-RESULTS.md`.
@@ -107,7 +107,7 @@ The complete cases, model responses, ranking outputs and recommender checkpoints
 
 ## AI assistance and attribution
 
-- Research provenance and the use of AI assistance: [docs/academic-use.md](docs/academic-use.md) and [the code and contribution map](deliverables/2026-10-27-feedback/CODE-MAP-AND-AI-ASSISTANCE.md). The recent application work, its tests and its documentation were produced with substantial AI assistance, and an AI agent made the review decisions in the 13 November runs. Those documents state what the student did himself.
+- Research provenance and the use of AI assistance: [docs/academic-use.md](docs/academic-use.md) and [the code and contribution map](deliverables/2026-10-27-feedback/CODE-MAP-AND-AI-ASSISTANCE.md). The recent application work, its tests and its documentation were produced with substantial AI assistance, and an AI agent made the review decisions in the 13 November runs and wrote their records. Those documents state what the student did himself.
 - Third-party data and software: [NOTICE.md](NOTICE.md). KuaiRec licence: [notices/KuaiRec-LICENSE.txt](notices/KuaiRec-LICENSE.txt).
 
 ## More

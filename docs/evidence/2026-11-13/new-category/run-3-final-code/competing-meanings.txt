@@ -1,0 +1,47 @@
+Resolve competing category meanings
+
+Unapproved primary candidate. Source quotation checks are not semantic proof.
+
+Model explanation: Three supplied captions each state every condition of the definition about one object. One states that a bent metal bookmark is straightened with pliers and that the existing piece is kept. One states that a torn canvas satchel is mended with a needle and spare thread and that the same bag is kept. One states that a leaking clay jug is sealed and that the same jug remains in use. The definition treats being bent, torn or leaking as a fault, and straightening, mending or sealing as a repair action carried out on that same object. The statements that the piece or the bag is kept, and that the jug remains in use, give the last condition through its two alternatives. These three captions carry three different topic_tag values, so the group comes from stated facts and is not a renamed existing category. The definition does not require actual later use. The satchel caption gives carrying books only as a purpose of the mending ('so it can carry books again'), and that purpose does not establish that the satchel carries books again. For that caption the last condition rests only on the statement that the same bag is kept. Membership of the other supplied items is not decided here. It is left to the classification step under the membership rules.
+
+Repair of a faulty object that is kept or remains in use
+
+An item matches when its description states that an object has a fault, such as being bent, torn or leaking, states that a repair action is carried out on that same object, such as straightening, mending or sealing it, and states that the same object is kept or remains in use. A stated purpose, intention, possibility or capability does not establish that the repair action is carried out or that the object is kept or remains in use. A match needs affirmative evidence in the description for each of these conditions. A not_match needs affirmative evidence in the description that one of these conditions is false. Missing information remains unknown.
+
+Objective: Propose one useful new category from these eight descriptions. Decide the shared concept yourself from the stated facts, rather than taking an existing category code as its meaning. Give a precise definition supported by the descriptions; do not merely rename an existing category or invent missing facts.
+
+Model rationale: Three supplied captions each state every condition of the definition about one object. One states that a bent metal bookmark is straightened with pliers and that the existing piece is kept. One states that a torn canvas satchel is mended with a needle and spare thread and that the same bag is kept. One states that a leaking clay jug is sealed and that the same jug remains in use. The definition treats being bent, torn or leaking as a fault, and straightening, mending or sealing as a repair action carried out on that same object. The statements that the piece or the bag is kept, and that the jug remains in use, give the last condition through its two alternatives. These three captions carry three different topic_tag values, so the group comes from stated facts and is not a renamed existing category. The definition does not require actual later use. The satchel caption gives carrying books only as a purpose of the mending ('so it can carry books again'), and that purpose does not establish that the satchel carries books again. For that caption the last condition rests only on the statement that the same bag is kept. Membership of the other supplied items is not decided here. It is left to the classification step under the membership rules.
+
+Item 41001, caption: "A bent metal bookmark is straightened with pliers and used again. The existing piece is kept.". The first sentence states that a bookmark described as bent is straightened with pliers. This gives the fault condition (being bent) and the repair condition (straightening is carried out on that same object). The second sentence states that the existing piece is kept, which gives the condition that the same object is kept or remains in use through its 'is kept' alternative. The caption also states that the bookmark is used again; the definition does not require that.
+
+Complete supplied field (quote custody, not semantic relevance):
+
+A bent metal bookmark is straightened with pliers and used again. The existing piece is kept.
+
+Item 41002, caption: "A torn canvas satchel is mended with a needle and spare thread so it can carry books again. The same bag is kept.". The first sentence states that a satchel described as torn is mended with a needle and spare thread. This gives the fault condition (being torn) and the repair condition (mending is carried out on that same object). The second sentence states that the same bag is kept, which gives the condition that the same object is kept or remains in use through its 'is kept' alternative. The clause 'so it can carry books again' states a purpose of the mending. It does not establish that the satchel carries books again, and no condition relies on it.
+
+Complete supplied field (quote custody, not semantic relevance):
+
+A torn canvas satchel is mended with a needle and spare thread so it can carry books again. The same bag is kept.
+
+Item 41003, caption: "A leaking clay jug is sealed and returned to watering plants. The same jug remains in use.". The first sentence states that a jug described as leaking is sealed. This gives the fault condition (leaking) and the repair condition (sealing is carried out on that same object). The second sentence states that the same jug remains in use, which gives the condition that the same object is kept or remains in use through its 'remains in use' alternative. The caption also states that the jug is returned to watering plants; the definition does not require that.
+
+Complete supplied field (quote custody, not semantic relevance):
+
+A leaking clay jug is sealed and returned to watering plants. The same jug remains in use.
+
+operator-relay-file-queue / claude-fable-5-2 (session-configured; not attested); digest fa23baf75f8112c57d5c280c36d6042914f751ec7602e3c12c5267c185cd7bc1. Assessed scope: 41001, 41002, 41003, 41004, 41005, 41006, 41007, 41008.
+
+Competing interpretations:
+
+Narrower meaning, repair with stated later use: an item would match only when its description also states, as something that occurs, that the repaired object is used again or is returned to its use. A description that gives later use only as a purpose or capability would have no affirmative evidence for this added condition, so the condition would stay unknown for that item.
+Broader meaning, a faulty object is dealt with by repair or by replacement: an item would match when its description states that an object has a fault and states either that a repair action is carried out on it or that it is disposed of and another object is put in its place. This meaning does not require that the same object is kept.
+Different shared concept, a new object made from material: an item would match when its description states that material is worked into a new object. Two supplied captions state this. One states that paper offcuts are folded into a new tray, and one states that a raw wooden blank is shaped with an electric lathe into a new knob. This meaning rests on different stated facts and does not use the fault, repair or kept conditions.
+
+Explicitly choose the unchanged primary meaning for definition review, or cancel. Alternatives are descriptions, not validated definitions. Editing it does not call a model; only a new explicit review submission does.
+
+Alternatives are unvalidated text descriptions and cannot be classified directly. Choosing the primary meaning makes no model call and approves neither evidence nor membership. This choice expires after five minutes.
+
+ I resolve the competing meanings by choosing this exact, unchanged primary definition for review.
+Continue to definition review
+Cancel category clarification

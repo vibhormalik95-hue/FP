@@ -1,17 +1,18 @@
 {
-  "what": "Browser runs of the served application with real model output through an operator relay",
-  "recorded_utc_date": "2026-11-14",
-  "local_date": "2026-11-13 (America/Vancouver)",
+  "what": "Browser runs of the served application. The model runs used real model output through an operator relay.",
+  "utc_date_of_all_times": "2026-11-14",
+  "local_date": "2026-11-13 (America/Vancouver), afternoon and evening",
   "model": {
     "declared": "claude-fable-5-2 (session-configured; not attested)",
     "requested_family": "fable",
     "requested_effort": "max",
     "attested": false,
-    "how": "sub-agent of the Claude Cowork session; reads one request file, writes one answer file; two tool uses reported per call"
+    "how": "a sub-agent of the Claude Cowork session reads one request file and writes one answer file; the session reported two tool uses for each call"
   },
-  "transport": "operator-relay-file-queue; answer file moved unchanged (byte-identical, checked with cmp)",
+  "transport": "operator-relay-file-queue; each answer file was delivered unchanged (checked with cmp)",
   "reviewer": "AI operator: the lead agent of the same session. Not the student. Not a human review.",
   "data": "eight invented item descriptions per scenario; labelled diagnostic scorer; no trained recommender",
+  "receipt_formats": "Receipts made before revision 40315aa hold assertions and review decisions in one list named checks, name the call records model_calls, and do not record the source. Receipts made from 40315aa hold checks, review_decisions and provider_calls separately and record source_fingerprint. This summary counts assertions and decisions separately for both formats.",
   "not_established": [
     "accuracy on unseen requests",
     "recommendation quality",
@@ -19,32 +20,61 @@
     "the automatic Claude Code CLI path for the complete new-category flow",
     "a human review"
   ],
-  "runs": {
-    "manual_category": {
+  "model_runs": [
+    {
+      "record": "new-category/attempt-1-rejected",
       "source_revision": "26a0b16",
-      "model_calls": 0,
-      "category": "K1",
-      "action": "exclude",
-      "eligible": [
-        8,
-        6,
-        8
+      "source_fingerprint_in_receipt": null,
+      "scenario": "category",
+      "flows_in_this_browser_session": [
+        "manual",
+        "category"
       ],
-      "removed_ids": [
-        41001,
-        41004
+      "started_utc": "2026-11-14T00:17:18.939Z",
+      "finished_utc": "2026-11-14T00:23:59.570Z",
+      "outcome": "stopped before completion; see flows_result",
+      "assertions_passed": 15,
+      "assertions_total": 15,
+      "review_mode": "wait",
+      "reviewer": "AI operator: Claude, the Cowork lead session. Not the student.",
+      "review_decisions": [
+        {
+          "gate": "manual-apply",
+          "decision": "APPROVE",
+          "seconds_to_decide": 11
+        },
+        {
+          "gate": "manual-undo",
+          "decision": "APPROVE",
+          "seconds_to_decide": 8
+        }
       ],
-      "outcome": "completed: preview unchanged, apply exact, undo restored",
-      "record": "new-category/attempt-1-rejected/browser-receipt.json (the manual flow ran first in that browser session)"
-    },
-    "new_category_attempt_1": {
-      "source_revision": "26a0b16",
-      "model_calls": 1,
-      "outcome": "rejected by the application",
-      "reason": "definition was 1062 characters; the enforced limit of 1000 was not stated in the request",
-      "application_message": "no definition to review: error: Invalid bounded text",
-      "applied": false,
-      "calls": [
+      "declared_provider": {
+        "backend": "operator-relay-file-queue",
+        "model": "claude-fable-5-2 (session-configured; not attested)",
+        "live_model": "operator_declared"
+      },
+      "flows": {
+        "manual": {
+          "outcome": "completed: preview unchanged, apply exact, undo restored",
+          "eligible_before_apply_undo": [
+            8,
+            6,
+            8
+          ],
+          "approved_ids": [
+            41001,
+            41004
+          ]
+        },
+        "category": {
+          "outcome": "no definition to review: error: Invalid bounded text",
+          "definition_label": "Faulty object repaired and same object kept",
+          "definition_characters": 1062,
+          "competing_meanings_returned": 3
+        }
+      },
+      "model_calls": [
         {
           "ordinal": 1,
           "request_sha256": "d84662c23c4d57d910003096bd09f96fc87ec4da127bca8df1c5c877554f0762",
@@ -55,110 +85,181 @@
           "seconds_until_delivered": 378.216,
           "transport_outcome": "parsed_transport_only"
         }
+      ],
+      "subagent_usage_reported_by_session": [
+        {
+          "tokens": 101512,
+          "milliseconds": 365688
+        }
       ]
     },
-    "new_category_attempt_2": {
+    {
+      "record": "new-category/attempt-2-completed",
       "source_revision": "010cfe2",
-      "model_calls": 3,
-      "definition_label": "Damaged object repaired and the same object kept or remaining in use",
-      "competing_meanings_shown": true,
-      "classification": [
+      "source_fingerprint_in_receipt": null,
+      "scenario": "category",
+      "flows_in_this_browser_session": [
+        "category"
+      ],
+      "started_utc": "2026-11-14T00:28:47.170Z",
+      "finished_utc": "2026-11-14T00:59:59.563Z",
+      "outcome": "all flows completed",
+      "assertions_passed": 15,
+      "assertions_total": 15,
+      "review_mode": "wait",
+      "reviewer": "AI operator: Claude, the Cowork lead session. Not the student.",
+      "review_decisions": [
         {
-          "item_id": 41001,
-          "verdict": "match"
+          "gate": "category-resolution",
+          "decision": "APPROVE",
+          "seconds_to_decide": 15.5
         },
         {
-          "item_id": 41002,
-          "verdict": "match"
+          "gate": "category-definition",
+          "decision": "APPROVE",
+          "seconds_to_decide": 13.5
         },
         {
-          "item_id": 41003,
-          "verdict": "match"
+          "gate": "category-apply",
+          "decision": "APPROVE",
+          "seconds_to_decide": 15.5
         },
         {
-          "item_id": 41004,
-          "verdict": "not_match"
-        },
-        {
-          "item_id": 41005,
-          "verdict": "unknown"
-        },
-        {
-          "item_id": 41006,
-          "verdict": "unknown"
-        },
-        {
-          "item_id": 41007,
-          "verdict": "unknown"
-        },
-        {
-          "item_id": 41008,
-          "verdict": "unknown"
+          "gate": "category-undo",
+          "decision": "APPROVE",
+          "seconds_to_decide": 5.5
         }
       ],
-      "note_on_classification": "as shown after the evidence assessment; 41005 and 41006 were not_match before being withheld as unknown",
-      "evidence_assessment": [
-        {
-          "item_id": 41001,
-          "assessment": "supported"
-        },
-        {
-          "item_id": 41002,
-          "assessment": "supported"
-        },
-        {
-          "item_id": 41003,
-          "assessment": "supported"
-        },
-        {
-          "item_id": 41004,
-          "assessment": "contradicted"
-        },
-        {
-          "item_id": 41005,
-          "assessment": "not_stated"
-        },
-        {
-          "item_id": 41006,
-          "assessment": "not_stated"
-        },
-        {
-          "item_id": 41007,
-          "assessment": "not_stated"
-        },
-        {
-          "item_id": 41008,
-          "assessment": "not_stated"
-        }
-      ],
-      "approved_member_ids": [
-        41001,
-        41002,
-        41003
-      ],
-      "eligible": [
-        8,
-        5,
-        8
-      ],
-      "outcome": "completed: preview unchanged, apply exact, undo restored",
-      "browser": {
-        "checks_passed": 19,
-        "checks_total": 19,
-        "outcome": "all flows completed",
-        "started_utc": "2026-11-14T00:28:47.170Z",
-        "finished_utc": "2026-11-14T00:59:59.563Z",
-        "declared_provider": {
-          "backend": "operator-relay-file-queue",
-          "model": "claude-fable-5-2 (session-configured; not attested)",
-          "live_model": "operator_declared"
-        },
-        "data_mode": "fixture",
-        "scorer": "deterministic diagnostic scorer",
-        "review_mode": "wait",
-        "reviewer": "AI operator: Claude, the Cowork lead session. Not the student."
+      "declared_provider": {
+        "backend": "operator-relay-file-queue",
+        "model": "claude-fable-5-2 (session-configured; not attested)",
+        "live_model": "operator_declared"
       },
-      "calls": [
+      "flows": {
+        "category": {
+          "outcome": "completed: preview unchanged, apply exact, undo restored",
+          "eligible_before_apply_undo": [
+            8,
+            5,
+            8
+          ],
+          "approved_ids": [
+            41001,
+            41002,
+            41003
+          ],
+          "definition_label": "Damaged object repaired and the same object kept or remaining in use",
+          "definition_characters": 665,
+          "competing_meanings_returned": 2,
+          "classification_by_model": [
+            {
+              "item_id": 41001,
+              "verdict": "match"
+            },
+            {
+              "item_id": 41002,
+              "verdict": "match"
+            },
+            {
+              "item_id": 41003,
+              "verdict": "match"
+            },
+            {
+              "item_id": 41004,
+              "verdict": "not_match"
+            },
+            {
+              "item_id": 41005,
+              "verdict": "not_match"
+            },
+            {
+              "item_id": 41006,
+              "verdict": "not_match"
+            },
+            {
+              "item_id": 41007,
+              "verdict": "unknown"
+            },
+            {
+              "item_id": 41008,
+              "verdict": "unknown"
+            }
+          ],
+          "separate_evidence_assessment_by_model": [
+            {
+              "item_id": 41001,
+              "assessment": "supported"
+            },
+            {
+              "item_id": 41002,
+              "assessment": "supported"
+            },
+            {
+              "item_id": 41003,
+              "assessment": "supported"
+            },
+            {
+              "item_id": 41004,
+              "assessment": "contradicted"
+            },
+            {
+              "item_id": 41005,
+              "assessment": "not_stated"
+            },
+            {
+              "item_id": 41006,
+              "assessment": "not_stated"
+            },
+            {
+              "item_id": 41007,
+              "assessment": "not_stated"
+            },
+            {
+              "item_id": 41008,
+              "assessment": "not_stated"
+            }
+          ],
+          "disposition_shown_for_review": [
+            {
+              "item_id": 41001,
+              "verdict": "match"
+            },
+            {
+              "item_id": 41002,
+              "verdict": "match"
+            },
+            {
+              "item_id": 41003,
+              "verdict": "match"
+            },
+            {
+              "item_id": 41004,
+              "verdict": "not_match"
+            },
+            {
+              "item_id": 41005,
+              "verdict": "unknown"
+            },
+            {
+              "item_id": 41006,
+              "verdict": "unknown"
+            },
+            {
+              "item_id": 41007,
+              "verdict": "unknown"
+            },
+            {
+              "item_id": 41008,
+              "verdict": "unknown"
+            }
+          ],
+          "withheld_as_unknown_after_disagreement": [
+            41005,
+            41006
+          ]
+        }
+      },
+      "model_calls": [
         {
           "ordinal": 1,
           "request_sha256": "b2be22686d7c8ad54cb159c28c8427b60fca714cf71cc4ac284a86b3cfa9a0b1",
@@ -190,45 +291,304 @@
           "transport_outcome": "parsed_transport_only"
         }
       ],
-      "subagent_seconds": [
-        325,
-        478,
-        100
+      "subagent_usage_reported_by_session": [
+        {
+          "seconds": 325
+        },
+        {
+          "seconds": 478
+        },
+        {
+          "seconds": 100
+        }
       ]
     },
-    "indirect_request": {
-      "source_revision": "010ae75",
-      "model_calls": 2,
-      "request": "I'm not hungry, remove all the stuff that makes me hungry.",
-      "interpreted_action": "exclude/none",
-      "approved_member_ids": [
-        81001,
-        81003,
-        81006
+    {
+      "record": "new-category/run-3-final-code",
+      "source_revision": "40315aa",
+      "source_fingerprint_in_receipt": "f5df9878da22bf5a8d1b3b7aaf6ab4bcbf1a53528d73333d71163f38f75b52a6",
+      "scenario": "category",
+      "flows_in_this_browser_session": [
+        "manual",
+        "category"
       ],
-      "eligible": [
-        8,
-        5,
-        8
-      ],
-      "outcome": "completed: preview unchanged, apply exact, undo restored",
-      "browser": {
-        "checks_passed": 17,
-        "checks_total": 17,
-        "outcome": "all flows completed",
-        "started_utc": "2026-11-14T01:08:15.378Z",
-        "finished_utc": "2026-11-14T01:10:47.227Z",
-        "declared_provider": {
-          "backend": "operator-relay-file-queue",
-          "model": "claude-fable-5-2 (session-configured; not attested)",
-          "live_model": "operator_declared"
+      "started_utc": "2026-11-14T01:39:07.083Z",
+      "finished_utc": "2026-11-14T01:57:03.881Z",
+      "outcome": "all flows completed",
+      "assertions_passed": 29,
+      "assertions_total": 29,
+      "review_mode": "wait",
+      "reviewer": "AI operator: Claude, the Cowork lead session. Not the student.",
+      "review_decisions": [
+        {
+          "gate": "manual-apply",
+          "decision": "APPROVE",
+          "seconds_to_decide": 4
         },
-        "data_mode": "fixture",
-        "scorer": "deterministic diagnostic scorer",
-        "review_mode": "wait",
-        "reviewer": "AI operator: Claude, the Cowork lead session. Not the student."
+        {
+          "gate": "manual-undo",
+          "decision": "APPROVE",
+          "seconds_to_decide": 4
+        },
+        {
+          "gate": "category-resolution",
+          "decision": "APPROVE",
+          "seconds_to_decide": 5.5
+        },
+        {
+          "gate": "category-definition",
+          "decision": "APPROVE",
+          "seconds_to_decide": 10
+        },
+        {
+          "gate": "category-apply",
+          "decision": "APPROVE",
+          "seconds_to_decide": 11
+        },
+        {
+          "gate": "category-undo",
+          "decision": "APPROVE",
+          "seconds_to_decide": 6.5
+        }
+      ],
+      "declared_provider": {
+        "backend": "operator-relay-file-queue",
+        "model": "claude-fable-5-2 (session-configured; not attested)",
+        "live_model": "operator_declared"
       },
-      "calls": [
+      "flows": {
+        "manual": {
+          "outcome": "completed: preview unchanged, apply exact, undo restored",
+          "eligible_before_apply_undo": [
+            8,
+            6,
+            8
+          ],
+          "approved_ids": [
+            41001,
+            41004
+          ]
+        },
+        "category": {
+          "outcome": "completed: preview unchanged, apply exact, undo restored",
+          "eligible_before_apply_undo": [
+            8,
+            5,
+            8
+          ],
+          "approved_ids": [
+            41001,
+            41002,
+            41003
+          ],
+          "definition_label": "Repair of a faulty object that is kept or remains in use",
+          "definition_characters": 653,
+          "competing_meanings_returned": 3,
+          "classification_by_model": [
+            {
+              "item_id": 41001,
+              "verdict": "match"
+            },
+            {
+              "item_id": 41002,
+              "verdict": "match"
+            },
+            {
+              "item_id": 41003,
+              "verdict": "match"
+            },
+            {
+              "item_id": 41004,
+              "verdict": "not_match"
+            },
+            {
+              "item_id": 41005,
+              "verdict": "not_match"
+            },
+            {
+              "item_id": 41006,
+              "verdict": "not_match"
+            },
+            {
+              "item_id": 41007,
+              "verdict": "unknown"
+            },
+            {
+              "item_id": 41008,
+              "verdict": "unknown"
+            }
+          ],
+          "separate_evidence_assessment_by_model": [
+            {
+              "item_id": 41001,
+              "assessment": "supported"
+            },
+            {
+              "item_id": 41002,
+              "assessment": "supported"
+            },
+            {
+              "item_id": 41003,
+              "assessment": "supported"
+            },
+            {
+              "item_id": 41004,
+              "assessment": "contradicted"
+            },
+            {
+              "item_id": 41005,
+              "assessment": "not_stated"
+            },
+            {
+              "item_id": 41006,
+              "assessment": "not_stated"
+            },
+            {
+              "item_id": 41007,
+              "assessment": "not_stated"
+            },
+            {
+              "item_id": 41008,
+              "assessment": "not_stated"
+            }
+          ],
+          "disposition_shown_for_review": [
+            {
+              "item_id": 41001,
+              "verdict": "match"
+            },
+            {
+              "item_id": 41002,
+              "verdict": "match"
+            },
+            {
+              "item_id": 41003,
+              "verdict": "match"
+            },
+            {
+              "item_id": 41004,
+              "verdict": "not_match"
+            },
+            {
+              "item_id": 41005,
+              "verdict": "unknown"
+            },
+            {
+              "item_id": 41006,
+              "verdict": "unknown"
+            },
+            {
+              "item_id": 41007,
+              "verdict": "unknown"
+            },
+            {
+              "item_id": 41008,
+              "verdict": "unknown"
+            }
+          ],
+          "withheld_as_unknown_after_disagreement": [
+            41005,
+            41006
+          ]
+        }
+      },
+      "model_calls": [
+        {
+          "ordinal": 1,
+          "request_sha256": "b2be22686d7c8ad54cb159c28c8427b60fca714cf71cc4ac284a86b3cfa9a0b1",
+          "response_sha256": "d78c9da83e157ec19ffb1fc872b97369134c2d3977484f176493a4b48fbb9daa",
+          "response_bytes": 5332,
+          "started_utc": "2026-11-14T01:39:17+00:00",
+          "finished_utc": "2026-11-14T01:47:51+00:00",
+          "seconds_until_delivered": 514.02,
+          "transport_outcome": "parsed_transport_only"
+        },
+        {
+          "ordinal": 2,
+          "request_sha256": "c95fa6b4557f7122e59aa56f7d06572553e68ae5bf864afea353cf413d3c2754",
+          "response_sha256": "dd2f5051d8000652b5bcfb5280a9ce4d68f2fae1aed4483ca4cabfb4b3cb181f",
+          "response_bytes": 5035,
+          "started_utc": "2026-11-14T01:48:08+00:00",
+          "finished_utc": "2026-11-14T01:53:11+00:00",
+          "seconds_until_delivered": 302.544,
+          "transport_outcome": "parsed_transport_only"
+        },
+        {
+          "ordinal": 3,
+          "request_sha256": "20ebd87aaa8a2f704b74dddd878bd5c0f49674f4533e506694791d533106db8d",
+          "response_sha256": "3a7f9ec6f46833f96584fcd3437f37bf66566db77d331acdee09966e2cd797f7",
+          "response_bytes": 4999,
+          "started_utc": "2026-11-14T01:53:11+00:00",
+          "finished_utc": "2026-11-14T01:56:44+00:00",
+          "seconds_until_delivered": 213.715,
+          "transport_outcome": "parsed_transport_only"
+        }
+      ],
+      "subagent_usage_reported_by_session": [
+        {
+          "tokens": 115617,
+          "milliseconds": 495947
+        },
+        {
+          "tokens": 94377,
+          "milliseconds": 293407
+        },
+        {
+          "tokens": 87158,
+          "milliseconds": 203477
+        }
+      ]
+    },
+    {
+      "record": "indirect-request/run-1",
+      "source_revision": "010ae75",
+      "source_fingerprint_in_receipt": null,
+      "scenario": "hunger",
+      "flows_in_this_browser_session": [
+        "indirect"
+      ],
+      "started_utc": "2026-11-14T01:08:15.378Z",
+      "finished_utc": "2026-11-14T01:10:47.227Z",
+      "outcome": "all flows completed",
+      "assertions_passed": 15,
+      "assertions_total": 15,
+      "review_mode": "wait",
+      "reviewer": "AI operator: Claude, the Cowork lead session. Not the student.",
+      "review_decisions": [
+        {
+          "gate": "indirect-apply",
+          "decision": "APPROVE",
+          "seconds_to_decide": 12.5
+        },
+        {
+          "gate": "indirect-undo",
+          "decision": "APPROVE",
+          "seconds_to_decide": 0.5
+        }
+      ],
+      "declared_provider": {
+        "backend": "operator-relay-file-queue",
+        "model": "claude-fable-5-2 (session-configured; not attested)",
+        "live_model": "operator_declared"
+      },
+      "flows": {
+        "indirect": {
+          "outcome": "completed: preview unchanged, apply exact, undo restored",
+          "eligible_before_apply_undo": [
+            8,
+            5,
+            8
+          ],
+          "approved_ids": [
+            81001,
+            81003,
+            81006
+          ],
+          "interpreted_action": "exclude/none",
+          "intent_span": "stuff that makes me hungry"
+        }
+      },
+      "model_calls": [
         {
           "ordinal": 1,
           "request_sha256": "1b265aaa984b4f66043a16f4f2464a1a75684441a53811a22239ef8a501c00a2",
@@ -250,47 +610,171 @@
           "transport_outcome": "parsed_transport_only"
         }
       ],
-      "subagent_seconds": [
-        25,
-        90
+      "subagent_usage_reported_by_session": [
+        {
+          "seconds": 25
+        },
+        {
+          "seconds": 90
+        }
       ]
     },
-    "scripted_regression": {
-      "source_revision": "010ae75",
-      "model_calls": 0,
-      "provider": "authored replies; not a model",
-      "category": {
-        "checks_passed": 29,
-        "checks_total": 29,
-        "outcome": "all flows completed",
-        "started_utc": "2026-11-14T01:06:39.489Z",
-        "finished_utc": "2026-11-14T01:06:44.456Z",
-        "declared_provider": {
-          "backend": "scripted-authored-replies",
-          "model": "none (replies written by hand)",
-          "live_model": false
+    {
+      "record": "indirect-request/run-2-final-code",
+      "source_revision": "40315aa",
+      "source_fingerprint_in_receipt": "f5df9878da22bf5a8d1b3b7aaf6ab4bcbf1a53528d73333d71163f38f75b52a6",
+      "scenario": "hunger",
+      "flows_in_this_browser_session": [
+        "manual",
+        "indirect"
+      ],
+      "started_utc": "2026-11-14T01:57:22.283Z",
+      "finished_utc": "2026-11-14T02:02:27.068Z",
+      "outcome": "all flows completed",
+      "assertions_passed": 27,
+      "assertions_total": 27,
+      "review_mode": "wait",
+      "reviewer": "AI operator: Claude, the Cowork lead session. Not the student.",
+      "review_decisions": [
+        {
+          "gate": "manual-apply",
+          "decision": "APPROVE",
+          "seconds_to_decide": 153.9
         },
-        "data_mode": "fixture",
-        "scorer": "deterministic diagnostic scorer",
-        "review_mode": "auto",
-        "reviewer": "none: review boxes ticked by the script"
+        {
+          "gate": "manual-undo",
+          "decision": "APPROVE",
+          "seconds_to_decide": 4.5
+        },
+        {
+          "gate": "indirect-apply",
+          "decision": "APPROVE",
+          "seconds_to_decide": 11
+        },
+        {
+          "gate": "indirect-undo",
+          "decision": "APPROVE",
+          "seconds_to_decide": 6
+        }
+      ],
+      "declared_provider": {
+        "backend": "operator-relay-file-queue",
+        "model": "claude-fable-5-2 (session-configured; not attested)",
+        "live_model": "operator_declared"
       },
-      "hunger": {
-        "checks_passed": 27,
-        "checks_total": 27,
-        "outcome": "all flows completed",
-        "started_utc": "2026-11-14T01:06:44.703Z",
-        "finished_utc": "2026-11-14T01:06:48.649Z",
-        "declared_provider": {
-          "backend": "scripted-authored-replies",
-          "model": "none (replies written by hand)",
-          "live_model": false
+      "flows": {
+        "manual": {
+          "outcome": "completed: preview unchanged, apply exact, undo restored",
+          "eligible_before_apply_undo": [
+            8,
+            6,
+            8
+          ],
+          "approved_ids": [
+            81002,
+            81004
+          ]
         },
-        "data_mode": "fixture",
-        "scorer": "deterministic diagnostic scorer",
-        "review_mode": "auto",
-        "reviewer": "none: review boxes ticked by the script"
-      }
+        "indirect": {
+          "outcome": "completed: preview unchanged, apply exact, undo restored",
+          "eligible_before_apply_undo": [
+            8,
+            5,
+            8
+          ],
+          "approved_ids": [
+            81001,
+            81003,
+            81006
+          ],
+          "interpreted_action": "exclude/none",
+          "intent_span": "stuff that makes me hungry"
+        }
+      },
+      "model_calls": [
+        {
+          "ordinal": 1,
+          "request_sha256": "1b265aaa984b4f66043a16f4f2464a1a75684441a53811a22239ef8a501c00a2",
+          "response_sha256": "ff72cff67594b8405ea5a3b05a266d7e0d9f5705fb074242e73d50feb62c9834",
+          "response_bytes": 111,
+          "started_utc": "2026-11-14T02:00:03+00:00",
+          "finished_utc": "2026-11-14T02:01:03+00:00",
+          "seconds_until_delivered": 60.56,
+          "transport_outcome": "parsed_transport_only"
+        },
+        {
+          "ordinal": 2,
+          "request_sha256": "cbee7861dca168d23182639ab716ec2cc45975415fdf98163b1907bf120de3a5",
+          "response_sha256": "27f708d999e798a9aaa9042cf9e8ea5b8e6a1cbfd96b908734f375e121b534b3",
+          "response_bytes": 1880,
+          "started_utc": "2026-11-14T02:01:03+00:00",
+          "finished_utc": "2026-11-14T02:02:08+00:00",
+          "seconds_until_delivered": 65.065,
+          "transport_outcome": "parsed_transport_only"
+        }
+      ],
+      "subagent_usage_reported_by_session": [
+        {
+          "tokens": 65658,
+          "milliseconds": 16807
+        },
+        {
+          "tokens": 70044,
+          "milliseconds": 46945
+        }
+      ]
     }
-  }
+  ],
+  "authored_reply_runs": [
+    {
+      "record": "scripted-regression/category-browser-receipt.json",
+      "source_revision": "40315aa",
+      "source_fingerprint_in_receipt": "f5df9878da22bf5a8d1b3b7aaf6ab4bcbf1a53528d73333d71163f38f75b52a6",
+      "scenario": "category",
+      "flows_in_this_browser_session": [
+        "manual",
+        "category"
+      ],
+      "started_utc": "2026-11-14T02:03:09.140Z",
+      "finished_utc": "2026-11-14T02:03:13.727Z",
+      "outcome": "all flows completed",
+      "assertions_passed": 29,
+      "assertions_total": 29,
+      "review_mode": "auto",
+      "reviewer": "none: review boxes ticked by the script",
+      "review_decisions": [],
+      "declared_provider": {
+        "backend": "scripted-authored-replies",
+        "model": "none (replies written by hand)",
+        "live_model": false
+      },
+      "model_calls": 0,
+      "authored_replies_served": 3
+    },
+    {
+      "record": "scripted-regression/hunger-browser-receipt.json",
+      "source_revision": "40315aa",
+      "source_fingerprint_in_receipt": "f5df9878da22bf5a8d1b3b7aaf6ab4bcbf1a53528d73333d71163f38f75b52a6",
+      "scenario": "hunger",
+      "flows_in_this_browser_session": [
+        "manual",
+        "indirect"
+      ],
+      "started_utc": "2026-11-14T02:03:13.965Z",
+      "finished_utc": "2026-11-14T02:03:18.018Z",
+      "outcome": "all flows completed",
+      "assertions_passed": 27,
+      "assertions_total": 27,
+      "review_mode": "auto",
+      "reviewer": "none: review boxes ticked by the script",
+      "review_decisions": [],
+      "declared_provider": {
+        "backend": "scripted-authored-replies",
+        "model": "none (replies written by hand)",
+        "live_model": false
+      },
+      "model_calls": 0,
+      "authored_replies_served": 2
+    }
+  ]
 }

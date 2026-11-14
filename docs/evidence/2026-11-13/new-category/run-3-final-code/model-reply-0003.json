@@ -1,0 +1,60 @@
+{
+  "assessments": [
+    {
+      "item_id": 41001,
+      "assessment": "supported",
+      "field": "caption",
+      "quote": "A bent metal bookmark is straightened with pliers and used again. The existing piece is kept.",
+      "reason": "The caption states all three required conditions. Fault: the bookmark is 'bent'. Repair carried out on the same object: it 'is straightened with pliers'. Retention: it is 'used again' and 'The existing piece is kept'. Each condition is a statement of fact, not a purpose, intention or possibility. The whole definition is therefore affirmed by the item's own text."
+    },
+    {
+      "item_id": 41002,
+      "assessment": "supported",
+      "field": "caption",
+      "quote": "A torn canvas satchel is mended with a needle and spare thread so it can carry books again. The same bag is kept.",
+      "reason": "The caption states all three required conditions. Fault: the satchel is 'torn'. Repair carried out on the same object: it 'is mended with a needle and spare thread'. Retention: 'The same bag is kept'. The clause 'so it can carry books again' is only a stated purpose or capability, so this assessment does not rely on it. The separate sentence about the same bag gives the affirmative evidence that the object is kept. The whole definition is therefore affirmed by the item's own text."
+    },
+    {
+      "item_id": 41003,
+      "assessment": "supported",
+      "field": "caption",
+      "quote": "A leaking clay jug is sealed and returned to watering plants. The same jug remains in use.",
+      "reason": "The caption states all three required conditions. Fault: the jug is 'leaking'. Repair carried out on the same object: it 'is sealed'. Retention: it is 'returned to watering plants' and 'The same jug remains in use'. Each condition is a statement of fact, not a purpose, intention or possibility. The whole definition is therefore affirmed by the item's own text."
+    },
+    {
+      "item_id": 41004,
+      "assessment": "contradicted",
+      "field": "caption",
+      "quote": "A broken desk organizer is put in recycling and a newly purchased organizer is unpacked in its place.",
+      "reason": "The caption states a fault: the organizer is 'broken'. It then states that this same object 'is put in recycling' and that a 'newly purchased organizer is unpacked in its place'. That is an explicit statement that the faulty object is discarded and replaced. The required condition that the same object is kept or remains in use is therefore stated to be false. The caption also states no repair action on the broken organizer. One condition is met and one is explicitly false, so the whole definition is contradicted."
+    },
+    {
+      "item_id": 41005,
+      "assessment": "not_stated",
+      "field": "",
+      "quote": "",
+      "reason": "The caption describes folding paper offcuts into a new tray without glue or powered equipment. It does not state that any object has a fault. It does not state a repair action on a faulty object. It does not state that an existing object is kept or remains in use. It also does not explicitly state that any of these conditions is false. Making a new item is a different activity, but missing information stays unknown. No condition of the definition has affirmative evidence."
+    },
+    {
+      "item_id": 41006,
+      "assessment": "not_stated",
+      "field": "",
+      "quote": "",
+      "reason": "The caption describes shaping a raw wooden blank into a new knob with an electric lathe. It does not state that any object has a fault. It does not state a repair action on a faulty object. It does not state that an existing object is kept or remains in use. It also does not explicitly state that any of these conditions is false. Making a new item is a different activity, but missing information stays unknown. No condition of the definition has affirmative evidence."
+    },
+    {
+      "item_id": 41007,
+      "assessment": "not_stated",
+      "field": "caption",
+      "quote": "No completed activity or finished object is described.",
+      "reason": "The caption shows only a page of knot diagrams. It says itself that no completed activity or finished object is described. It states no fault in an object, no repair action carried out, and no object that is kept or remains in use. The quoted sentence records missing information. It is not a statement that a repair did not happen or that an object was discarded. All three conditions stay unknown."
+    },
+    {
+      "item_id": 41008,
+      "assessment": "not_stated",
+      "field": "caption",
+      "quote": "The subject is not described.",
+      "reason": "The caption gives only a blue background and a 20-second duration. It says itself that the subject is not described. It states no object, no fault, no repair action, and no object that is kept or remains in use. The quoted sentence records missing information. It is not a statement that any required condition is false. All three conditions stay unknown."
+    }
+  ]
+}

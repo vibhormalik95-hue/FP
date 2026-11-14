@@ -1,0 +1,17 @@
+PREVIEW · NOTHING IS APPLIED YET
+
+Manual K1: exclude
+
+Eligible items now: 8. After approval: 6. The feed below stays as it is until you approve in the panel.
+
+Item	Supplied description	Proposal	Result if approved
+41001	A bent metal bookmark is straightened with pliers and used again. The existing piece is kept.	selected	Removed from the feed
+41002	A torn canvas satchel is mended with a needle and spare thread so it can carry books again. The same bag is kept.	not selected	Unchanged
+41003	A leaking clay jug is sealed and returned to watering plants. The same jug remains in use.	not selected	Unchanged
+41004	A broken desk organizer is put in recycling and a newly purchased organizer is unpacked in its place.	selected	Removed from the feed
+41005	Paper offcuts are folded into a new tray. No glue or powered equipment is used.	not selected	Unchanged
+41006	A raw wooden blank is shaped with an electric lathe into a new knob.	not selected	Unchanged
+41007	A page of knot diagrams is shown. No completed activity or finished object is described.	not selected	Unchanged
+41008	The only notes are a blue background and a 20-second duration. The subject is not described.	not selected	Unchanged
+
+A quotation shows that the words exist in the description. It does not show that the decision is right. Read each row before you approve.

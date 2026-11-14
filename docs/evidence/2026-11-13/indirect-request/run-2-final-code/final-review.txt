@@ -1,0 +1,32 @@
+Review the meaning and evidence yourself
+Reviewed indirect request: exclude (none)
+
+Original request: I'm not hungry, remove all the stuff that makes me hungry.
+
+Model relationship: The request pairs a negated personal state ('I'm not hungry') with an affirmative removal intent. The negation describes the user, not the instruction, so the exclude intent stands as supplied. 'Stuff that makes me hungry' is read literally as appetite-triggering content: items whose own captions show edible food being prepared and made ready to eat. No literal overlap with 'hungry' is needed; the inferred relationship is that watching food being cooked, baked or assembled for eating stimulates appetite. Three items carry that evidence in their own caption: 81001 (a tomato-and-pasta dinner prepared, with the finished plate shown), 81003 (bread dough shaped, baked and sliced for eating) and 81006 (vegetables chopped and mixed into a salad intended to be eaten). Items 81002, 81004 and 81007 are not selected because their captions describe repair or travel content and state that no food is shown. Items 81005 and 81008 are not selected because their captions give no description of the subject, so nothing supports membership; sharing the Evening or Afternoon category with a food item is not evidence. The category and topic tag values (Evening, Afternoon, Repair) do not indicate food, so membership rests on each caption alone. The caller's operation (exclude) and strength (none, meaning hard exclusion of the selected items) are unchanged. This is a review proposal and does not execute the control.
+
+Direction and strength: Interpreted by the model.
+
+Selected existing IDs: 81001, 81003, 81006; assessed scope: 81001, 81002, 81003, 81004, 81005, 81006, 81007, 81008
+
+Item 81001, caption: “A cook prepares an edible tomato-and-pasta dinner, showing the ingredients and finished plate”
+
+Item 81003, caption: “A baker shapes edible bread dough, bakes the loaf, and slices it for eating”
+
+Item 81006, caption: “A cook chops edible vegetables and mixes a salad intended to be eaten”
+
+operator-relay-file-queue / claude-fable-5-2 (session-configured; not attested); digest 317b633c63996844b66f6fc3175a2bbad1a489016bd93fc65573794db1f5f60a
+
+Reviewed indirect request: 3/10 baseline; 0/10 proposed.
+
+Proposed IDs: 81002, 81004, 81005, 81007, 81008; 5 eligible. An exact quote proves source existence, not semantic relevance. Model meaning may be wrong; do not approve it if inappropriate.
+
+Full supplied text around each cited quote (display only; check for negation or contrary meaning before approving):
+
+Item 81001, caption: “Skillet lesson: A cook prepares an edible tomato-and-pasta dinner, showing the ingredients and finished plate.”
+
+Item 81003, caption: “Oven lesson: A baker shapes edible bread dough, bakes the loaf, and slices it for eating.”
+
+Item 81006, caption: “Bowl lesson: A cook chops edible vegetables and mixes a salad intended to be eaten.”
+
+Approve this exact item set and apply

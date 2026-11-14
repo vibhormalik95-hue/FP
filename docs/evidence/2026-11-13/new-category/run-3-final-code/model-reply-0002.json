@@ -1,0 +1,60 @@
+{
+  "memberships": [
+    {
+      "item_id": 41001,
+      "verdict": "match",
+      "field": "caption",
+      "evidence_quote": "A bent metal bookmark is straightened with pliers and used again. The existing piece is kept.",
+      "reason": "The caption states all three conditions. Fault: the bookmark is 'bent'. Repair action carried out on that same object: it 'is straightened with pliers'. Same object kept or remains in use: it is 'used again' and 'The existing piece is kept.' The existing piece is the bookmark, the only object in the caption. Each point is stated as a fact that occurs, not as a purpose, intention, possibility or capability."
+    },
+    {
+      "item_id": 41002,
+      "verdict": "match",
+      "field": "caption",
+      "evidence_quote": "A torn canvas satchel is mended with a needle and spare thread so it can carry books again. The same bag is kept.",
+      "reason": "The caption states all three conditions. Fault: the satchel is 'torn'. Repair action carried out on that same object: it 'is mended with a needle and spare thread'. Same object kept: 'The same bag is kept.' The bag is the satchel, the only bag in the caption. The clause 'so it can carry books again' is a stated purpose or capability, so it is not used as evidence. The kept condition rests only on the explicit statement that the same bag is kept."
+    },
+    {
+      "item_id": 41003,
+      "verdict": "match",
+      "field": "caption",
+      "evidence_quote": "A leaking clay jug is sealed and returned to watering plants. The same jug remains in use.",
+      "reason": "The caption states all three conditions. Fault: the jug is 'leaking'. Repair action carried out on that same object: it 'is sealed'. Same object remains in use: it is 'returned to watering plants' and 'The same jug remains in use.' Each point is stated as a fact that occurs, not as a purpose, intention, possibility or capability."
+    },
+    {
+      "item_id": 41004,
+      "verdict": "not_match",
+      "field": "caption",
+      "evidence_quote": "A broken desk organizer is put in recycling and a newly purchased organizer is unpacked in its place.",
+      "reason": "The caption states a fault ('broken'), but it gives affirmative evidence that the kept-or-remains-in-use condition is false. The faulty organizer 'is put in recycling' and 'a newly purchased organizer is unpacked in its place'. The same object is discarded and a different, new object replaces it. Thus the same object is not kept and does not remain in use. The action stated for the faulty object is disposal, not a repair. One false condition is sufficient for not_match."
+    },
+    {
+      "item_id": 41005,
+      "verdict": "not_match",
+      "field": "caption",
+      "evidence_quote": "Paper offcuts are folded into a new tray.",
+      "reason": "The caption states the action that is carried out: paper offcuts 'are folded into a new tray'. This is affirmative evidence that the repair condition is false. The stated action makes a new object from leftover material. It is not a repair action carried out on an object that has a fault. The tray is stated to be 'new', so it is not an existing faulty object that is kept or remains in use. The second sentence, about glue and powered equipment, has no bearing on the definition."
+    },
+    {
+      "item_id": 41006,
+      "verdict": "not_match",
+      "field": "caption",
+      "evidence_quote": "A raw wooden blank is shaped with an electric lathe into a new knob.",
+      "reason": "The caption states the action that is carried out: a 'raw wooden blank' is shaped 'into a new knob'. This is affirmative evidence that the repair condition is false. The stated action makes a new object from raw material. It is not a repair action carried out on an object that has a fault. The knob is stated to be 'new', so it is not an existing faulty object that is kept or remains in use. The use of an electric lathe has no bearing on the definition."
+    },
+    {
+      "item_id": 41007,
+      "verdict": "unknown",
+      "field": "",
+      "evidence_quote": "",
+      "reason": "The caption says only that a page of knot diagrams is shown, and that 'No completed activity or finished object is described.' It does not state that an object has a fault, that a repair action is carried out, or that the same object is kept or remains in use. It also gives no affirmative evidence that one of these conditions is false. The second sentence reports that information is absent from the description. It is not evidence about what occurs. Missing information remains unknown."
+    },
+    {
+      "item_id": 41008,
+      "verdict": "unknown",
+      "field": "",
+      "evidence_quote": "",
+      "reason": "The caption gives only a blue background and a 20-second duration, and says 'The subject is not described.' It gives no information about a fault, a repair action, or whether an object is kept or remains in use. It also gives no affirmative evidence that one of these conditions is false. Missing information remains unknown."
+    }
+  ]
+}
