@@ -9,6 +9,10 @@
 /web/dist/** -text
 /deliverables/** -text
 /docs/evidence/** -text
+# Scenario inputs are identified by SHA-256 in their manifests.
+/tools/hosted_validation/inputs/** -text
+/tools/hosted_validation_current/inputs/** -text
+*.png binary
 *.pdf binary
 *.docx binary
 *.zip binary

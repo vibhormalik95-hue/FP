@@ -1,0 +1,46 @@
+Resolve competing category meanings
+
+Unapproved primary candidate. Source quotation checks are not semantic proof.
+
+Model explanation: Three captions state the same combination of facts. Each of these cited items is in a different existing category, so the group is derived from stated facts and is not a renamed existing code. The bookmark caption states that a bent metal bookmark is straightened with pliers and that the existing piece is kept. The satchel caption states that a torn canvas satchel is mended with a needle and spare thread and that the same bag is kept. The jug caption states that a leaking clay jug is sealed and that the same jug remains in use. The definition therefore requires stated damage or a defect, a stated repair of that object, and a statement that the same object is kept or remains in use. Each condition can be checked against an item's own text. The definition does not require actual later use. The satchel caption gives reuse only as a purpose and a capability ('so it can carry books again'). It does not state that the satchel carries books again. No condition about tools or materials is added, because the three captions do not state a shared tool or material. The other items are not classified here. At classification, a match needs an affirmative statement for every condition, a non-match needs an affirmative statement that a condition is false, and silence stays unknown.
+
+Damaged object repaired and the same object kept or remaining in use
+
+An item matches when its own text makes all of these statements about the same object. The text states that the object has damage or a defect. The text states that the object is repaired, for example straightened, mended or sealed. The text states that this same object is kept or remains in use. Each condition needs an affirmative statement in the item's own text. Actual later use of the object is not required. A stated purpose, intention, possibility or capability does not by itself satisfy a condition. An item is a non-match only when its text affirmatively states that a condition is false. When the text is silent on a condition, membership stays unknown.
+
+Objective: Propose one useful new category from these eight descriptions. Decide the shared concept yourself from the stated facts, rather than taking an existing category code as its meaning. Give a precise definition supported by the descriptions; do not merely rename an existing category or invent missing facts.
+
+Model rationale: Three captions state the same combination of facts. Each of these cited items is in a different existing category, so the group is derived from stated facts and is not a renamed existing code. The bookmark caption states that a bent metal bookmark is straightened with pliers and that the existing piece is kept. The satchel caption states that a torn canvas satchel is mended with a needle and spare thread and that the same bag is kept. The jug caption states that a leaking clay jug is sealed and that the same jug remains in use. The definition therefore requires stated damage or a defect, a stated repair of that object, and a statement that the same object is kept or remains in use. Each condition can be checked against an item's own text. The definition does not require actual later use. The satchel caption gives reuse only as a purpose and a capability ('so it can carry books again'). It does not state that the satchel carries books again. No condition about tools or materials is added, because the three captions do not state a shared tool or material. The other items are not classified here. At classification, a match needs an affirmative statement for every condition, a non-match needs an affirmative statement that a condition is false, and silence stays unknown.
+
+Item 41001, caption: "A bent metal bookmark is straightened with pliers and used again. The existing piece is kept.". The quotation describes a metal bookmark as bent, so it states that the object has damage. It states that the bookmark is straightened with pliers, so it states that the object is repaired. It states that the existing piece is kept, so it states the 'is kept' alternative of the condition that this same object is kept or remains in use. The quotation also states that the bookmark is used again. The definition does not require that fact.
+
+Complete supplied field (quote custody, not semantic relevance):
+
+A bent metal bookmark is straightened with pliers and used again. The existing piece is kept.
+
+Item 41002, caption: "A torn canvas satchel is mended with a needle and spare thread so it can carry books again. The same bag is kept.". The quotation describes a canvas satchel as torn, so it states that the object has damage. It states that the satchel is mended with a needle and spare thread, so it states that the object is repaired. It states that the same bag is kept, so it states the 'is kept' alternative of the condition that this same object is kept or remains in use. The words 'so it can carry books again' state a purpose and a capability. They do not state that the satchel carries books again. The definition does not require that fact.
+
+Complete supplied field (quote custody, not semantic relevance):
+
+A torn canvas satchel is mended with a needle and spare thread so it can carry books again. The same bag is kept.
+
+Item 41003, caption: "A leaking clay jug is sealed and returned to watering plants. The same jug remains in use.". The quotation describes a clay jug as leaking, so it states that the object has a defect. It states that the jug is sealed, so it states that the object is repaired. It states that the same jug remains in use, so it states the 'remains in use' alternative of the condition that this same object is kept or remains in use. The quotation also states that the jug is returned to watering plants. The definition does not require that fact.
+
+Complete supplied field (quote custody, not semantic relevance):
+
+A leaking clay jug is sealed and returned to watering plants. The same jug remains in use.
+
+claude-fable-5-2 (session-configured; not attested); digest 3627f7b2f0db2037543a623ec3ce721f05b32db5173541a606cead894792976f. Assessed scope: 41001, 41002, 41003, 41004, 41005, 41006, 41007, 41008.
+
+Competing interpretations:
+
+Making a new object. Under this reading, an item matches when its text states that material is formed into a new object. Two captions state a fact of this kind: 'Paper offcuts are folded into a new tray' and 'A raw wooden blank is shaped with an electric lathe into a new knob'. This is a different shared concept from the repair and keeping of a damaged object.
+Any handling of a damaged object, whether the same object is repaired and kept or a different object takes its place. This broader reading also covers a caption that states 'A broken desk organizer is put in recycling and a newly purchased organizer is unpacked in its place'. This reading does not require that the same object is kept.
+
+Explicitly choose the unchanged primary meaning for definition review, or cancel. Alternatives are descriptions, not validated definitions. Editing it does not call a model; only a new explicit review submission does.
+
+Alternatives are unvalidated text descriptions and cannot be classified directly. Choosing the primary meaning makes no model call and approves neither evidence nor membership. This choice expires after five minutes.
+
+ I resolve the competing meanings by choosing this exact, unchanged primary definition for review.
+Continue to definition review
+Cancel category clarification

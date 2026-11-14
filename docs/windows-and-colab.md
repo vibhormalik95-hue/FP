@@ -1,6 +1,6 @@
 # Historical Windows 11 and Google Colab setup
 
-**Historical reproduction guide.** Local models and the local recommender are not authorized for the current personal configuration, and automatic personal Claude launch remains disabled. The commands below are retained to explain the earlier experiments; they are not instructions to run them now. Start with [current progress](current-progress.md), [hosted configuration](hosted-only-configuration.md) or [personal Claude status](../CLAUDE-PERSONAL-CANDIDATE.md) for the current app.
+**Historical reproduction guide.** Local models and the local recommender are not authorized for the current personal configuration, and automatic personal Claude launch remains disabled. The commands below are retained to explain the earlier experiments; they are not instructions to run them now. Start with [current progress](current-progress.md), [hosted configuration](hosted-only-configuration.md) or [demonstration guide](demo.md#the-signed-in-claude-code-cli) for the current app.
 
 The original Experiment One run used a Linux CPU VM; the fresh Experiment Two inference ran locally on AI_WORK on 14 October. See [saved results](ai-reference-e2-results-2026-10-14.md). This guide records the setup for a separately authorized Windows or Colab rerun. A Core i9 laptop with 32 GB RAM can run the small SASRec model and a local quantized 8B language model; inference speed depends on the CPU, cooling and any compatible GPU.
 

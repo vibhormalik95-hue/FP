@@ -1,0 +1,57 @@
+# Requirements and evidence
+
+Status on 13 November 2026. This page maps each request from the supervisor's 4 November meeting to the code and to what was actually observed. It separates the supervisor's requests from the student's own additions. It replaces the 11 November worksheet as the current summary; the older page stays as a dated record.
+
+Words used here:
+
+- **observed in the browser**: the served application was driven in a real browser and its server state was compared before and after each step;
+- **relay**: an operator carried each request to a model and returned the reply unchanged;
+- **AI operator**: an AI agent made the review decisions. No human review of these runs exists yet.
+
+## The supervisor's requests
+
+| Request | Code | Evidence observed | What this does not show |
+| --- | --- | --- | --- |
+| **1. Manual category filtering, with measured performance** | `feedctrl/semantic_review.py` (manual category path, `rank_groups`, Apply and Undo). Original benchmark: `feedctrl/controls.py`, `feedctrl/evaluation.py`. | *Measured, frozen Experiment 1:* for boost requests, TCP@10 (the share of the top ten in the target category) was 11.615% with item feedback and 79.222% under the category policy; for mute requests, TCER@10 (the share of the top ten still in the muted category) was 6.112% and zero. Llama parsed 79/100 requests exactly, the rule parser 81/100; the 85% target was missed. Boost lowered NDCG@10 from 0.03012 to 0.01637. *Observed in the browser, 13 November:* excluding category `K1` left the preview unchanged, removed exactly its two items on Apply (8 to 6), and the two-step Undo restored the identical feed. No model call. | That a manual control improves recommendations. The exposure numbers follow from the policy by construction. A complete replay of Experiment 1 is not established ([note](../deliverables/2026-11-04-completion-review/E1-REPLAY-DISCREPANCY.md)). |
+| **2. A new category created from natural language that feeds the filter** | `feedctrl/staged_routes.py`, `staged_induction.py`, `evidence_audit.py`, `source_constraints.py`; review screens in `web/src/SemanticPanel.jsx` and `ReviewTable.jsx`. | *Observed in the browser, 13 November, relay, AI operator:* from an objective that names no concept, the model proposed "Damaged object repaired and the same object kept or remaining in use". The definition was reviewed. All eight items were classified and separately assessed. Three items became members; two disagreements were withheld as unknown. Preview changed nothing; Apply removed exactly the three members (8 to 5); Undo restored the identical feed. *Kept negative result:* the first attempt was rejected because its definition exceeded a length limit that the request did not state. | Accuracy on unseen requests or catalogues. One eight-item invented scenario was used. The reviewer was an AI operator. Through the automatic Claude Code CLI connection, earlier attempts returned definitions that stopped at review; that connection has not yet completed this whole flow. |
+| **3. Requests that do not use the literal words, matched to what exists** | `feedctrl/semantic_review.py` (`interpret_action`), `feedctrl/indirect_grounding.py`. | *Observed in the browser, 13 November, relay, AI operator:* "I'm not hungry, remove all the stuff that makes me hungry." was read as an exclusion. The model selected the three items whose descriptions state that food is prepared to be eaten, with a quotation from each. Preview changed nothing; Apply removed exactly those three (8 to 5); Undo restored the identical feed. *Earlier:* a two-call run through the Claude Code CLI selected the same three items on 11 November, applied through direct Python calls. | That the reading is right for a given person. The result is a reviewed set of existing items, chosen from their descriptions, tags and category names. It is not a mapping to one existing category label. One exposed example is not a reliability figure. |
+| **4. Report progress and what remains** | This page and [current progress](current-progress.md). | See "What remains" below. | |
+| **5. Two or three conference options** | Not code. | Official pages were rechecked on 14 November 2026 (UTC): ACM UMAP 2027 (abstract 22 January, paper 29 January 2027, AoE); ACM SIGIR 2027 full papers (abstract 14 January, paper 21 January 2027, AoE); ACM RecSys 2027 (no deadline published yet). | No venue has been chosen. No submission exists. |
+
+Records for the 13 November runs: [docs/evidence/2026-11-13](evidence/2026-11-13/README.md).
+
+## The student's own additions
+
+These were offered by the student in the same meeting. They are not among the supervisor's three requests.
+
+| Addition | Code | Evidence | Limit |
+| --- | --- | --- | --- |
+| A fictional item with a generated description | `feedctrl/synthetic_drafts.py`, `web/src/SyntheticDraftPanel.jsx` | One run through the Claude Code CLI on 11 November created fictional metadata, admitted it to a separate feed, removed it and restored it, through direct Python calls ([summary](evidence/2026-11-11/FABLE-LUNARIA-PUBLIC-SAFE-SUMMARY.json)). | Not run in a browser. No real video. The separate feed gives every item a neutral score. Not repeated on 13 November. |
+| A comparison with a stronger model | Provider seam in `feedctrl/api.py` and the adapters | A six-case standalone comparison from 5 November: Claude matched 6 of 6 tasks and 36 of 36 item decisions; the local models failed strict JSON validation, which is not a measured accuracy of zero. | Different transports and settings. Six invented cases. Not a ranking of models. Not repeated on 13 November. |
+
+## Checks run on revision `010ae75`
+
+| Check | Command | Result |
+| --- | --- | --- |
+| Python tests | `python -m pytest -p no:cacheprovider -q` | 1077 passed, 1 skipped (the private parser bank is not in this repository) |
+| Validation-profile checks with network and process access blocked | `python tools/hosted_validation_current/run_guarded.py .` | 176 passed; no blocked event |
+| Interface logic | `node --test web/tests/*.mjs` | 59 passed |
+| Browser, scripted provider, category scenario | `node tests/browser/demo_flows.cjs --scenario category --flows manual,category` | 29 of 29 checks |
+| Browser, scripted provider, hunger scenario | `node tests/browser/demo_flows.cjs --scenario hunger --flows manual,indirect` | 27 of 27 checks |
+
+Environment: Linux, Python 3.13.18, Node 22, headless Chromium. These are software checks with authored replies. They are not model evidence.
+
+## Defects found and corrected on 13 November
+
+1. **The review limit also covered model time.** A definition approval is valid for five minutes. The same limit was applied again after each of the two model calls that follow an approval. With a model that needs minutes per call, a correct run failed after its calls were spent. The limit now applies to the reviewer's decision only. Every other check on a stale or replaced approval is unchanged (`tests/test_staged_provider_latency.py`).
+2. **Length limits were enforced but not stated.** A real reply was rejected for a 1,062-character definition. The prompts now state the limits that the validators already enforce.
+3. **Numbered conditions were read as required facts.** A digit in a definition becomes a literal term that an item's text must contain. A definition with numbered conditions could therefore match nothing. The definition prompt now asks for unnumbered conditions and says how digits are treated.
+4. **The published branch did not serve a complete interface.** A stale built file was tracked and the build folder was ignored. The built interface is now tracked and pinned.
+
+## What remains
+
+- Run the complete new-category flow through the automatic Claude Code CLI connection on Windows, with a human reviewer.
+- Record the demonstration with the student reviewing each step.
+- A fresh evaluation on scenarios that were not used during development, with references fixed before any prediction. The scenarios used here are exposed development material.
+- Decide whether request 3 should also name an existing category when one fits.
+- Recommendation quality and user benefit are not measured by this work.

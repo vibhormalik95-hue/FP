@@ -1,5 +1,7 @@
 # Requirement and evidence worksheet
 
+> **Dated record, 11 November 2026.** The current page is [requirements and evidence](requirements-and-evidence.md).
+
 ## Category definition update, 11 November 2026
 
 This successor recognizes the existing counted-list form `all three conditions:` without treating its structural labels as factual numbers. It also asks definition generation to preserve source modality and tense: purpose or capability does not establish an outcome that actually occurred. The instruction applies to each rationale and evidence reason under the exact definition, including its alternatives. It adds no semantic detector, automatic repair, approval or preferred category.

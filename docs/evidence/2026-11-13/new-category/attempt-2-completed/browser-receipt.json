@@ -1,0 +1,406 @@
+{
+  "kind": "browser run of the served application",
+  "started_utc": "2026-11-14T00:28:47.170Z",
+  "base": "http://127.0.0.1:8767",
+  "scenario": "category",
+  "flows": [
+    "category"
+  ],
+  "review_mode": "wait",
+  "reviewer": "AI operator: Claude, the Cowork lead session. Not the student.",
+  "status": {
+    "data_mode": "fixture",
+    "source": "synthetic://friday-new-category-proposal-20261110",
+    "model_mode": "deterministic diagnostic scorer",
+    "users": 1,
+    "items": 8,
+    "categories": 4,
+    "default_parser": "rule",
+    "ollama_model": "llama3.1:8b",
+    "local_models_allowed": false,
+    "provider": {
+      "backend": "operator-relay-file-queue",
+      "model": "claude-fable-5-2 (session-configured; not attested)",
+      "live_model": "operator_declared"
+    },
+    "ollama_status": "Disabled by hosted-only application policy.",
+    "research_note": "Synthetic category controls measure offline behavior; this demo does not establish human agency or satisfaction.",
+    "category_note": "Opaque dataset category IDs; no invented topic names.",
+    "semantic_topic": "Official caption sidecar loaded; exploratory preview only",
+    "asset_note": "Metadata cards only; no original video assets are distributed."
+  },
+  "checks": [
+    {
+      "name": "session established",
+      "passed": true,
+      "detail": null,
+      "utc": "2026-11-14T00:28:48.221Z"
+    },
+    {
+      "name": "category: starts with no applied semantic group",
+      "passed": true,
+      "detail": {
+        "eligible": 8
+      },
+      "utc": "2026-11-14T00:28:48.559Z"
+    },
+    {
+      "name": "review decision at gate category-resolution",
+      "passed": true,
+      "detail": {
+        "decision": "APPROVE",
+        "seconds_to_decide": 15.5
+      },
+      "utc": "2026-11-14T00:39:55.313Z"
+    },
+    {
+      "name": "category: definition proposal changed nothing",
+      "passed": true,
+      "detail": {
+        "label": "Damaged object repaired and the same object kept or remaining in use"
+      },
+      "utc": "2026-11-14T00:39:55.650Z"
+    },
+    {
+      "name": "review decision at gate category-definition",
+      "passed": true,
+      "detail": {
+        "decision": "APPROVE",
+        "seconds_to_decide": 13.5
+      },
+      "utc": "2026-11-14T00:40:09.422Z"
+    },
+    {
+      "name": "category: every supplied item has one membership decision on screen",
+      "passed": true,
+      "detail": {
+        "shown": 8,
+        "supplied": 8
+      },
+      "utc": "2026-11-14T00:59:37.024Z"
+    },
+    {
+      "name": "category: every supplied item has one evidence assessment on screen",
+      "passed": true,
+      "detail": {
+        "shown": 8
+      },
+      "utc": "2026-11-14T00:59:37.025Z"
+    },
+    {
+      "name": "category: preview left the applied feed unchanged",
+      "passed": true,
+      "detail": {
+        "applied_groups": 0,
+        "revision": 0,
+        "eligible": 8
+      },
+      "utc": "2026-11-14T00:59:37.433Z"
+    },
+    {
+      "name": "category: page still shows the starting items during preview",
+      "passed": true,
+      "detail": {
+        "shown": [
+          41006,
+          41007,
+          41008,
+          41001,
+          41002,
+          41003,
+          41004,
+          41005
+        ]
+      },
+      "utc": "2026-11-14T00:59:37.441Z"
+    },
+    {
+      "name": "category: review names the items that would be removed",
+      "passed": true,
+      "detail": {
+        "selected_ids": [
+          41001,
+          41002,
+          41003
+        ]
+      },
+      "utc": "2026-11-14T00:59:37.447Z"
+    },
+    {
+      "name": "category: review table lists every supplied item and marks the approved ones",
+      "passed": true,
+      "detail": {
+        "rows": 8,
+        "marked": 3
+      },
+      "utc": "2026-11-14T00:59:37.454Z"
+    },
+    {
+      "name": "review decision at gate category-apply",
+      "passed": true,
+      "detail": {
+        "decision": "APPROVE",
+        "seconds_to_decide": 15.5
+      },
+      "utc": "2026-11-14T00:59:53.326Z"
+    },
+    {
+      "name": "category: Apply removed exactly the approved items",
+      "passed": true,
+      "detail": {
+        "eligible_before": 8,
+        "eligible_after": 5,
+        "removed": [
+          41001,
+          41002,
+          41003
+        ]
+      },
+      "utc": "2026-11-14T00:59:53.422Z"
+    },
+    {
+      "name": "category: page shows the reduced feed",
+      "passed": true,
+      "detail": {
+        "shown": [
+          41006,
+          41007,
+          41008,
+          41004,
+          41005
+        ]
+      },
+      "utc": "2026-11-14T00:59:53.428Z"
+    },
+    {
+      "name": "category: undo review alone changed nothing",
+      "passed": true,
+      "detail": {
+        "eligible": 5
+      },
+      "utc": "2026-11-14T00:59:53.679Z"
+    },
+    {
+      "name": "review decision at gate category-undo",
+      "passed": true,
+      "detail": {
+        "decision": "APPROVE",
+        "seconds_to_decide": 5.5
+      },
+      "utc": "2026-11-14T00:59:59.338Z"
+    },
+    {
+      "name": "category: Undo restored the exact starting feed",
+      "passed": true,
+      "detail": {
+        "eligible": 8,
+        "identical_to_start": true,
+        "revision": 2
+      },
+      "utc": "2026-11-14T00:59:59.392Z"
+    },
+    {
+      "name": "category: page shows the starting items again",
+      "passed": true,
+      "detail": {
+        "shown": [
+          41006,
+          41007,
+          41008,
+          41001,
+          41002,
+          41003,
+          41004,
+          41005
+        ]
+      },
+      "utc": "2026-11-14T00:59:59.398Z"
+    },
+    {
+      "name": "no script error was raised by the page",
+      "passed": true,
+      "detail": [],
+      "utc": "2026-11-14T00:59:59.563Z"
+    }
+  ],
+  "flows_result": {
+    "category": {
+      "started_utc": "2026-11-14T00:28:48.553Z",
+      "eligible_before": 8,
+      "shown_before": [
+        41006,
+        41007,
+        41008,
+        41001,
+        41002,
+        41003,
+        41004,
+        41005
+      ],
+      "outcome": "completed: preview unchanged, apply exact, undo restored",
+      "competing_meanings_shown": true,
+      "definition_label": "Damaged object repaired and the same object kept or remaining in use",
+      "dispositions": [
+        {
+          "item_id": 41001,
+          "verdict": "match"
+        },
+        {
+          "item_id": 41002,
+          "verdict": "match"
+        },
+        {
+          "item_id": 41003,
+          "verdict": "match"
+        },
+        {
+          "item_id": 41004,
+          "verdict": "not_match"
+        },
+        {
+          "item_id": 41005,
+          "verdict": "unknown"
+        },
+        {
+          "item_id": 41006,
+          "verdict": "unknown"
+        },
+        {
+          "item_id": 41007,
+          "verdict": "unknown"
+        },
+        {
+          "item_id": 41008,
+          "verdict": "unknown"
+        }
+      ],
+      "evidence_assessments": [
+        {
+          "item_id": 41001,
+          "assessment": "supported"
+        },
+        {
+          "item_id": 41002,
+          "assessment": "supported"
+        },
+        {
+          "item_id": 41003,
+          "assessment": "supported"
+        },
+        {
+          "item_id": 41004,
+          "assessment": "contradicted"
+        },
+        {
+          "item_id": 41005,
+          "assessment": "not_stated"
+        },
+        {
+          "item_id": 41006,
+          "assessment": "not_stated"
+        },
+        {
+          "item_id": 41007,
+          "assessment": "not_stated"
+        },
+        {
+          "item_id": 41008,
+          "assessment": "not_stated"
+        }
+      ],
+      "selected_ids": [
+        41001,
+        41002,
+        41003
+      ],
+      "review_text_sha256": "170844ab07ba554cc4a6147b195d83c368785c5f0f00c8cf854d13dd54fad017",
+      "eligible_after_apply": 5,
+      "shown_after_apply": [
+        41006,
+        41007,
+        41008,
+        41004,
+        41005
+      ],
+      "eligible_after_undo": 8,
+      "model_calls": 4,
+      "finished_utc": "2026-11-14T00:59:59.562Z"
+    }
+  },
+  "model_calls": [
+    {
+      "route": "/api/semantic/definition/preview",
+      "list": "model_calls",
+      "stage": "definition",
+      "status": "returned_json",
+      "elapsed_seconds": 650.503,
+      "request_sha256": "4fba6f7356c357967543da9023dcc65af01ebf1c240f98f922b27166e421e38f",
+      "response_sha256": "01257f4e5f6ccf1036f7acec4941956d7c67e9d69281082fd453cc1788242461",
+      "declared_provider": {
+        "backend": "operator-relay-file-queue",
+        "model_id": "claude-fable-5-2 (session-configured; not attested)",
+        "model_revision": "3627f7b2f0db2037543a623ec3ce721f05b32db5173541a606cead894792976f"
+      },
+      "observed_utc": "2026-11-14T00:39:39.281Z"
+    },
+    {
+      "route": "/api/semantic/definition/resolve",
+      "list": "model_calls",
+      "stage": "definition",
+      "status": "returned_json",
+      "elapsed_seconds": 650.503,
+      "request_sha256": "4fba6f7356c357967543da9023dcc65af01ebf1c240f98f922b27166e421e38f",
+      "response_sha256": "01257f4e5f6ccf1036f7acec4941956d7c67e9d69281082fd453cc1788242461",
+      "declared_provider": {
+        "backend": "operator-relay-file-queue",
+        "model_id": "claude-fable-5-2 (session-configured; not attested)",
+        "model_revision": "3627f7b2f0db2037543a623ec3ce721f05b32db5173541a606cead894792976f"
+      },
+      "observed_utc": "2026-11-14T00:39:55.396Z"
+    },
+    {
+      "route": "/api/semantic/definition/classify",
+      "list": "model_calls",
+      "stage": "membership",
+      "status": "returned_json",
+      "elapsed_seconds": 1022.42,
+      "request_sha256": "1d352b09a5e34e89750763555ab24fc8a006458c00e082edf05297ae63bbf862",
+      "response_sha256": "d565dd6ecb3214680eaedce7d358054a9f63c8aaf3277e95f7e26b443063e677",
+      "declared_provider": {
+        "backend": "operator-relay-file-queue",
+        "model_id": "claude-fable-5-2 (session-configured; not attested)",
+        "model_revision": "3627f7b2f0db2037543a623ec3ce721f05b32db5173541a606cead894792976f"
+      },
+      "observed_utc": "2026-11-14T00:59:36.889Z"
+    },
+    {
+      "route": "/api/semantic/definition/classify",
+      "list": "evidence_audit_model_calls",
+      "stage": "evidence_audit",
+      "status": "returned_json",
+      "elapsed_seconds": 144.918,
+      "request_sha256": "1719294b03669134f9222a5fe64c92c79a186496fe97a12b0ad3dd97803a94cf",
+      "response_sha256": "cdbdc21f8e3cc7cce538c70103d560b2248346bb45345e99cb52b8c804b3f2e0",
+      "declared_provider": {
+        "backend": "operator-relay-file-queue",
+        "model_id": "claude-fable-5-2 (session-configured; not attested)",
+        "model_revision": "3627f7b2f0db2037543a623ec3ce721f05b32db5173541a606cead894792976f"
+      },
+      "observed_utc": "2026-11-14T00:59:36.889Z"
+    }
+  ],
+  "screenshots": [
+    "01-start.png",
+    "02-category-objective.png",
+    "03-gate-category-resolution.png",
+    "04-gate-category-definition.png",
+    "05-category-membership-review.png",
+    "06-gate-category-apply.png",
+    "07-category-applied.png",
+    "08-gate-category-undo.png",
+    "09-category-restored.png"
+  ],
+  "finished_utc": "2026-11-14T00:59:59.563Z",
+  "outcome": "all flows completed",
+  "status_strip_text": "FIXTURE DATA deterministic diagnostic scorer Rule parser · diagnostic only 8 items · 1 users PROVIDER · operator-relay-file-queue · claude-fable-5-2 (session-configured; not attested)"
+}

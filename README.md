@@ -1,55 +1,118 @@
-# Natural language controls for short video recommendation
+# Natural-language controls for short-video recommendation
 
-COMP 9500 project by Vibhor Malik, supervised by Dr Borna Noureddin.
+**LLM-Mediated Natural Language Controls for Short-Video Recommender Systems: An Offline Study of Controllability.**
+COMP 9500 M.Sc. research project at BCIT. Student: Vibhor Malik. Supervisor: Dr Borna Noureddin.
 
-The recent work focuses on three ways to control a feed: choosing categories manually, asking an LLM to propose a genuinely new category, and expressing a preference indirectly in ordinary language. The app keeps the recommender separate from these controls so that a model suggestion can be checked before it changes the feed.
+## What this project is
 
-## Current progress
+This project studies how a person can control a short-video feed with plain language.
+A language model translates a request into a proposal. A person reviews the proposal. A fixed, deterministic policy then applies the approved change to the recommender's ranking.
+The study is offline. It uses the KuaiRec dataset (865 users and 2,593 items in the processed subset).
+The repository contains a research demonstrator named Feed Control Lab (React and FastAPI), its tests, the paper and presentation sources, and the experiment protocols and results.
 
-- **Manual category controls:** implemented, with recorded examples of filtering and restoring a feed. These provide a baseline for checking what the language-based controls add.
-- **New LLM-proposed categories:** implemented as definition, membership and evidence-review steps. A recorded example created “offline practice without account creation” across Coding, Design and Language, rather than renaming an existing category.
-- **Indirect requests:** one recorded Claude example handled “Hide desk tools that would tie me to a wall socket.” It selected records that explicitly required mains power. The replies were copied between Claude and the app by an operator; this was not an automatic Claude connection. Other requests remain unsuccessful or ambiguous.
-- **Fictional item descriptions:** a separate local-model example generated metadata for a fictional item. The hosted adapter shares the configured provider and call allowance. One real Claude Code Lunaria run completed preview, admission, removal and restoration through the application’s Python methods. It used one logical invocation; restoration made no additional model call. This was operator-reviewed, headless synthetic evidence, not an HTTP, browser or full-study result.
+## The three controls
 
-These are specific development examples, not a general accuracy result or proof that recommendations improve. See [current progress and remaining work](docs/current-progress.md) for the evidence and [the app guide](docs/app.md) for how the controls fit together.
+**Manual category control.** You choose an existing category and an action. The app filters the feed and does not change the recommender's scores. You can undo the control. This is the baseline for the two language controls.
 
-**The default personal Claude launch remains disabled.** An explicitly selected runner can connect the installed CLI to the app. The bounded Lunaria run used that path; it does not verify every control path. The current configuration keeps local model and recommender execution disabled. The older setup instructions remain available for reproducing the earlier experiments. See [hosted configuration](docs/hosted-only-configuration.md) and [personal Claude status](CLAUDE-PERSONAL-CANDIDATE.md).
+**A new category from natural language.** You describe what you want. A model proposes a definition, and you review it. The model then classifies every supplied item, and a separate model call assesses the evidence without seeing those decisions. You review every item. The approved set goes to the same deterministic filter as the manual control.
 
-The early 11 November category call failed with CLI exit 1. A separate later hosted run proposed “Repaired and kept in use” but stopped for clarification before membership, evidence audit or Apply. Its exclusion of missing descriptions conflicts with the existing unknown-facts rule. The later hunger example selected the pasta, bread and salad descriptions and recorded Apply/Undo of 8→5→8 through Python application calls. These are separate exposed development examples, not browser acceptance or personal appetite predictions. The [11 November evidence summary](docs/evidence/2026-11-11/HOSTED-TWO-SCENARIO-SUMMARY.md) explains both outcomes and their limits.
+**Indirect requests.** A request does not need to name a category. Example: "I'm not hungry, remove all the stuff that makes me hungry." The model interprets the action and proposes existing items, with a quotation from each description. You review the selection before the app applies it. The app can also ask for clarification.
 
-## Category definition update, 11 November 2026
+A proposal never changes the feed. Apply uses exactly the reviewed set. A two-step Undo restores the earlier state.
 
-This successor recognizes the existing counted-list form `all three conditions:` without treating its structural labels as factual numbers. It also asks definition generation to preserve source modality and tense: purpose or capability does not establish an outcome that actually occurred. The instruction applies to each rationale and evidence reason under the exact definition, including its alternatives. It adds no semantic detector, automatic repair, approval or preferred category.
+![Review of every supplied item before a new category is applied](docs/evidence/2026-11-13/new-category/attempt-2-completed/2-membership-review.png)
 
-The latest v4 one-call attempt returned a primary definition and alternatives. Explicit primary selection worked; human evidence review rejected an unsupported capability-to-actual-use claim. No classification, audit, Apply or Undo followed. This successor has no live observation. Earlier hunger and Lunaria successes are bounded direct Python endpoint examples, not browser acceptance or general semantic accuracy. No recording is included.
+Two further additions by the student are separate from these controls: a model can write metadata for a fictional item, which goes to a separate feed, and a small comparison of a stronger model with local models exists.
 
-The current profile is `current-definition-context-20261111`. Its only model-bound request change from the notes-r3 source is `payload.system`; descriptions, metadata, objectives, actions, inventory, schemas, category membership and audit instructions are unchanged. Both configuration templates remain incomplete with all six execution gates false. No approved runtime configuration is supplied.
+## Current status
 
-## Where to start
+[Requirements and evidence](docs/requirements-and-evidence.md) maps each request from the supervisor to the code and to what was observed, including the results that were negative. In short, on 13 November 2026:
 
-- [Current code walkthrough](docs/current-code-walkthrough.md) and [requirement worksheet](docs/requirement-worksheet-2026-11-11.md): code locations, actual evidence and unfinished validation.
-- [Current validation helper](tools/hosted_validation_current/README.md): separate current profile and guarded offline checks. The original helper is preserved as historical evidence.
-- [Current progress](docs/current-progress.md): the recent requirements, observed examples and unfinished work.
-- [App guide](docs/app.md): manual controls, category creation, indirect requests and review before applying a change.
-- [Provider configuration](docs/model-provider-adapters.md) and [category configuration](docs/category-provider-configuration.md): what the code supports and what has not been tested live.
-- [Fictional item drafts](docs/synthetic-item-drafts.md): what is generated, how review works and what remains unverified in the hosted path.
-- [Source verification](docs/source-verification.md): frontend build files, checksums and release checks.
-- Implementation: `feedctrl/`, `scripts/`, `tests/` and `web/`.
+- all three controls completed in a real browser on the served application: preview without change, Apply of exactly the approved items, and Undo to the identical starting feed;
+- the two language controls used real model output through an operator relay, and an AI operator made the review decisions. No human review of those runs exists yet;
+- the automatic connection to the Claude Code CLI has not yet completed the whole new-category flow.
 
-## Earlier research and dated records
+These are single runs on small invented scenarios. They show that the controls work. They are not an accuracy result.
 
-The original study separates language translation from deterministic category enforcement on a fixed recommender. Experiment 1 found large exposure changes under the category policy, with weaker historical next-item ranking for boosts. The fresh Experiment 2 used 100 synthetic requests. Llama matched 76 of 100 model-generated reference commands; category control improved over item feedback, but conditional requests had no successes and next-item NDCG@10 was lower. The [results record](docs/ai-reference-e2-results-2026-10-14.md) retains the exact measures, denominators and reference history.
+## Run the demonstration
 
-The following files are dated records. Their results and wording have been preserved; they should not be read as a description of everything that works in the latest app.
+Python 3.11 or newer.
 
-- [5 November demonstration](deliverables/2026-11-05-final-demo/README.md), including its [walkthrough](deliverables/2026-11-05-final-demo/WALKTHROUGH.md), [claim matrix](deliverables/2026-11-05-final-demo/CLAIM-MATRIX.md) and retained failures.
-- [4 November proposal and deliverable audit](deliverables/2026-11-04-completion-review/PROJECT-COMPLETION-AUDIT.md), [seven-page paper review](deliverables/2026-11-04-completion-review/COMP9500-Current-Paper-Review.pdf) and [E1 replay limitation](deliverables/2026-11-04-completion-review/E1-REPLAY-DISCREPANCY.md). The paper covers the earlier study, not all the recent application work.
-- [4 November synthetic-language study](deliverables/2026-11-04-prospective-evaluation/PROTOCOL-AND-RESULTS.md): 48/100 supported final profiles correct and 19/20 correct diagnostic clarifications. It does not replace E1 or revised E2 or establish an LLM recommendation benefit.
-- [27 October pipeline walkthrough](deliverables/2026-10-27-feedback/PIPELINE-AND-CODE-WALKTHROUGH.md), [code and contribution map](deliverables/2026-10-27-feedback/CODE-MAP-AND-AI-ASSISTANCE.md), [five-condition examples](deliverables/2026-10-27-feedback/FIVE-CONDITION-EXAMPLES.md), and the later [4 November workflow](deliverables/2026-11-04-reviewed-workflow/README.md) and [professor-request audit](deliverables/2026-11-04-reviewed-workflow/CAPABILITY-AND-TRANSCRIPT-AUDIT.md).
-- [19 October paper, presentation and progress packet](deliverables/2026-10-19/README-2026-10-19.md).
+```
+python -m venv .venv
+.venv\Scripts\Activate.ps1        # Windows PowerShell
+source .venv/bin/activate         # Linux or macOS
+python -m pip install -e ".[test]"
+```
 
-Study methods: [Experiment 1](docs/evaluation-protocol.md), [fresh Experiment 2](docs/ai-reference-e2-protocol-2026-10-14.md), [rubric](docs/ai-reference-e2-rubric-2026-10-14.md) and [research provenance](docs/academic-use.md). Saved evidence: [Experiment 2 index](docs/ai-reference-e2-evidence/README.md), [exposed practice run](docs/execution-2026-10-14.md) and `docs/evidence/2026-10-14/`. The earlier paper and presentation sources remain in `paper/research-paper-2026-10-19.tex`, `paper/references.bib` and `presentation-bcit/ai-reference-main.tex`.
+Start one scenario at a time from the repository root. Stop it with Ctrl+C.
 
-The public screening records contain all 300 candidate request texts, including the selected wording. Complete cases, model-generated labels, responses, ranking outputs, SASRec checkpoints and caches are held in `COMP9500-Research-Project-Recovered.zip` (SHA-256 `fe9ef07dbb55902626fe5e5aab20261a57b6fb6e86832267e2249b052d587cc1`). Llama weights are separate. The [Windows and Colab guide](docs/windows-and-colab.md) and [local model guide](docs/LLM_RUNTIME.md) retain the historical reproduction steps. See [third-party notices](NOTICE.md) for data and software attribution.
+```
+python scripts/run_demo.py --scenario category --provider manual
+python scripts/run_demo.py --scenario category --provider scripted
+python scripts/run_demo.py --scenario hunger --provider scripted
+```
 
-Definition review now shows the full cited field beside each exact quotation and reason, including clarification and resolved-primary review. Context is limited to the validated candidate scope; missing or mismatched context is shown as unavailable. It is a read-only display addition, outside model payloads and sealed proposals. Existing approval and expiry rules are unchanged. This fixes an API/UI context gap; the last headless review already displayed scoped records, so the gap did not cause its rejected model claim.
+Open <http://127.0.0.1:8765>, choose **Reviewed topic feed**, then open **Experimental semantic groups**.
+
+- `--provider manual` uses no model.
+- `--provider scripted` uses hand-written rehearsal replies. It is not a model. The page shows "AUTHORED REPLIES · NO MODEL".
+- `--provider relay` lets an operator carry each request to a model.
+- `--provider personal-cli` uses a signed-in Claude Code CLI on Windows and needs a reviewed configuration file.
+
+The [demonstration guide](docs/demo.md) describes each provider, the review steps and the browser check.
+
+## Run the checks
+
+```
+python -m pytest
+node --test web/tests/*.mjs
+node tests/browser/demo_flows.cjs --base http://127.0.0.1:8765 --scenario category --flows manual,category --out runs/browser-check
+```
+
+The browser check needs Playwright and a running demonstration. PyTorch is needed only for the trained recommender and the original experiments: `python -m pip install -e ".[test,recommender]"`.
+
+## Experiments and results
+
+Every number below is copied from the document named after it.
+
+**Experiment 1.** Protocol: [docs/evaluation-protocol.md](docs/evaluation-protocol.md). Paper: `paper/research-paper-2026-10-19.tex`, with the PDF in `deliverables/2026-10-19/`.
+
+- For boost requests, TCP@10 was 11.615% with item feedback and 79.222% under the category policy. For mute requests, TCER@10 was 6.112% and zero (`deliverables/2026-10-27-feedback/RESULTS-AND-LIMITATIONS.md`). The zero comes from the hard filter. It is policy enforcement by construction, not proof of an LLM advantage.
+- Negative: the Llama parser matched 79 of 100 requests exactly. The 85% target was missed (`docs/evaluation-protocol.md`). The rule parser matched 81 of 100 (`deliverables/2026-11-05-final-demo/RESULTS-AND-LIMITS.md`).
+- Negative: boost lowered NDCG@10 from 0.03012 to 0.01637 (`deliverables/2026-10-27-feedback/RESULTS-AND-LIMITATIONS.md`).
+- Negative: a complete replay of Experiment 1 is not established (`deliverables/2026-11-04-completion-review/E1-REPLAY-DISCREPANCY.md`).
+
+**Experiment 2, with model-generated reference labels.** Protocol, rubric and prompts: `docs/ai-reference-e2-*.md` and `.json`. Results: [docs/ai-reference-e2-results-2026-10-14.md](docs/ai-reference-e2-results-2026-10-14.md). Evidence: `docs/ai-reference-e2-evidence/`.
+
+- Whole-command agreement with the reference labels was 76 of 100 for Llama and 11 of 100 for rules.
+- Induced control success was 20.145% for Llama, 3.854% for rules and 3.815% for item feedback.
+- Negative: NDCG@10 was 0.02580 for Llama and 0.03184 for item feedback. Conditional requests had no successes.
+- The reference labels came from models. They do not measure independent human accuracy.
+
+**Synthetic-language study of 4 November.** Protocol and results: `deliverables/2026-11-04-prospective-evaluation/PROTOCOL-AND-RESULTS.md`.
+
+- The pipeline matched the complete intended profile on 48 of 100 supported requests and clarified correctly on 19 of 20 diagnostic requests.
+- The 120 cases gave 49 ready proposals, 61 clarifications, five grounding errors and five parser or schema rejections. These cases are now exposed development material.
+
+The complete cases, model responses, ranking outputs and recommender checkpoints are held in a separate research archive, not in this repository.
+
+## Limits
+
+- The demonstration scenarios use eight invented item descriptions and a labelled diagnostic scorer, not the trained recommender.
+- There is no user study. Requests are synthetic. The ranking measure is a historical next-item proxy.
+- A quotation shows that words are present in a description. It does not show that a membership decision is correct. Two model calls can agree and both be wrong.
+- The development examples are small and exposed. They cannot serve as an unseen test.
+- The manual control check shows that a control is enforced and can be reversed. It does not show that recommendations are better.
+
+## AI assistance and attribution
+
+- Research provenance and the use of AI assistance: [docs/academic-use.md](docs/academic-use.md) and [the code and contribution map](deliverables/2026-10-27-feedback/CODE-MAP-AND-AI-ASSISTANCE.md). The recent application work, its tests and its documentation were produced with substantial AI assistance, and an AI agent made the review decisions in the 13 November runs. Those documents state what the student did himself.
+- Third-party data and software: [NOTICE.md](NOTICE.md). KuaiRec licence: [notices/KuaiRec-LICENSE.txt](notices/KuaiRec-LICENSE.txt).
+
+## More
+
+- [Demonstration guide](docs/demo.md) and [app guide](docs/app.md).
+- [Requirements and evidence](docs/requirements-and-evidence.md) and the [13 November run records](docs/evidence/2026-11-13/README.md).
+- [Provider adapters](docs/model-provider-adapters.md), [category provider configuration](docs/category-provider-configuration.md), [literal source requirements](docs/numbered-source-constraints.md).
+- Dated records of earlier work: [current progress, 11 November](docs/current-progress.md), [5 November demonstration](deliverables/2026-11-05-final-demo/README.md), [4 November audit](deliverables/2026-11-04-completion-review/PROJECT-COMPLETION-AUDIT.md), [19 October paper and presentation](deliverables/2026-10-19/README-2026-10-19.md).

@@ -1,0 +1,283 @@
+{
+  "kind": "browser run of the served application",
+  "started_utc": "2026-11-14T01:08:15.378Z",
+  "base": "http://127.0.0.1:8768",
+  "scenario": "hunger",
+  "flows": [
+    "indirect"
+  ],
+  "review_mode": "wait",
+  "reviewer": "AI operator: Claude, the Cowork lead session. Not the student.",
+  "status": {
+    "data_mode": "fixture",
+    "source": "synthetic://friday-historical-hunger-continuation-20261110",
+    "model_mode": "deterministic diagnostic scorer",
+    "users": 1,
+    "items": 8,
+    "categories": 3,
+    "default_parser": "rule",
+    "ollama_model": "llama3.1:8b",
+    "local_models_allowed": false,
+    "provider": {
+      "backend": "operator-relay-file-queue",
+      "model": "claude-fable-5-2 (session-configured; not attested)",
+      "live_model": "operator_declared"
+    },
+    "scenario_requests": {
+      "configured_model": "I'm not hungry, remove all the stuff that makes me hungry.",
+      "label": "Reviewed indirect request"
+    },
+    "ollama_status": "Disabled by hosted-only application policy.",
+    "research_note": "Synthetic category controls measure offline behavior; this demo does not establish human agency or satisfaction.",
+    "category_note": "Opaque dataset category IDs; no invented topic names.",
+    "semantic_topic": "Official caption sidecar loaded; exploratory preview only",
+    "asset_note": "Metadata cards only; no original video assets are distributed."
+  },
+  "checks": [
+    {
+      "name": "session established",
+      "passed": true,
+      "detail": null,
+      "utc": "2026-11-14T01:08:16.253Z"
+    },
+    {
+      "name": "automatic review is used only when no model is connected",
+      "passed": true,
+      "detail": {
+        "review_mode": "wait",
+        "provider": "operator-relay-file-queue"
+      },
+      "utc": "2026-11-14T01:08:16.253Z"
+    },
+    {
+      "name": "indirect: starts with no applied semantic group",
+      "passed": true,
+      "detail": {
+        "eligible": 8
+      },
+      "utc": "2026-11-14T01:08:16.565Z"
+    },
+    {
+      "name": "the request text is the exact scenario request",
+      "passed": true,
+      "detail": null,
+      "utc": "2026-11-14T01:08:16.640Z"
+    },
+    {
+      "name": "indirect: original request is shown unchanged",
+      "passed": true,
+      "detail": null,
+      "utc": "2026-11-14T01:10:33.201Z"
+    },
+    {
+      "name": "indirect: preview left the applied feed unchanged",
+      "passed": true,
+      "detail": {
+        "applied_groups": 0,
+        "revision": 0,
+        "eligible": 8
+      },
+      "utc": "2026-11-14T01:10:33.398Z"
+    },
+    {
+      "name": "indirect: page still shows the starting items during preview",
+      "passed": true,
+      "detail": {
+        "shown": [
+          81001,
+          81002,
+          81003,
+          81004,
+          81005,
+          81006,
+          81007,
+          81008
+        ]
+      },
+      "utc": "2026-11-14T01:10:33.411Z"
+    },
+    {
+      "name": "indirect: review names the items that would be removed",
+      "passed": true,
+      "detail": {
+        "selected_ids": [
+          81001,
+          81003,
+          81006
+        ]
+      },
+      "utc": "2026-11-14T01:10:33.418Z"
+    },
+    {
+      "name": "indirect: review table lists every supplied item with its own description and marks exactly the approved ones",
+      "passed": true,
+      "detail": {
+        "rows": 8,
+        "marked": [
+          81001,
+          81003,
+          81006
+        ]
+      },
+      "utc": "2026-11-14T01:10:33.424Z"
+    },
+    {
+      "name": "review decision at gate indirect-apply",
+      "passed": true,
+      "detail": {
+        "decision": "APPROVE",
+        "seconds_to_decide": 12.5
+      },
+      "utc": "2026-11-14T01:10:46.121Z"
+    },
+    {
+      "name": "indirect: Apply removed exactly the approved items",
+      "passed": true,
+      "detail": {
+        "eligible_before": 8,
+        "eligible_after": 5,
+        "removed": [
+          81001,
+          81003,
+          81006
+        ]
+      },
+      "utc": "2026-11-14T01:10:46.184Z"
+    },
+    {
+      "name": "indirect: page shows the reduced feed",
+      "passed": true,
+      "detail": {
+        "shown": [
+          81002,
+          81004,
+          81005,
+          81007,
+          81008
+        ]
+      },
+      "utc": "2026-11-14T01:10:46.189Z"
+    },
+    {
+      "name": "indirect: undo review alone changed nothing",
+      "passed": true,
+      "detail": {
+        "eligible": 5
+      },
+      "utc": "2026-11-14T01:10:46.383Z"
+    },
+    {
+      "name": "review decision at gate indirect-undo",
+      "passed": true,
+      "detail": {
+        "decision": "APPROVE",
+        "seconds_to_decide": 0.5
+      },
+      "utc": "2026-11-14T01:10:47.016Z"
+    },
+    {
+      "name": "indirect: Undo restored the exact starting feed",
+      "passed": true,
+      "detail": {
+        "eligible": 8,
+        "identical_to_start": true,
+        "revision": 2
+      },
+      "utc": "2026-11-14T01:10:47.084Z"
+    },
+    {
+      "name": "indirect: page shows the starting items again",
+      "passed": true,
+      "detail": {
+        "shown": [
+          81001,
+          81002,
+          81003,
+          81004,
+          81005,
+          81006,
+          81007,
+          81008
+        ]
+      },
+      "utc": "2026-11-14T01:10:47.090Z"
+    },
+    {
+      "name": "no script error was raised by the page",
+      "passed": true,
+      "detail": [],
+      "utc": "2026-11-14T01:10:47.226Z"
+    }
+  ],
+  "flows_result": {
+    "indirect": {
+      "started_utc": "2026-11-14T01:08:16.559Z",
+      "eligible_before": 8,
+      "shown_before": [
+        81001,
+        81002,
+        81003,
+        81004,
+        81005,
+        81006,
+        81007,
+        81008
+      ],
+      "outcome": "completed: preview unchanged, apply exact, undo restored",
+      "interpreted_action": "exclude/none",
+      "selected_ids": [
+        81001,
+        81003,
+        81006
+      ],
+      "review_text_sha256": "c0aa4ff9d8a1a374322f47f2cb7db557d1bf8df22623d2694657c9f817558a5d",
+      "eligible_after_apply": 5,
+      "shown_after_apply": [
+        81002,
+        81004,
+        81005,
+        81007,
+        81008
+      ],
+      "eligible_after_undo": 8,
+      "model_calls": 2,
+      "finished_utc": "2026-11-14T01:10:47.226Z"
+    }
+  },
+  "model_calls": [
+    {
+      "route": "/api/semantic/preview",
+      "list": "model_calls",
+      "stage": null,
+      "status": null,
+      "elapsed_seconds": null,
+      "request_sha256": "fe001f76fa356b23a4ca5b8220d4e07dfdbb2f7222f1a2e7f0401cbe39f0047e",
+      "response_sha256": "25e14f0844daa9bcbea9bb670185aa650da037284bd961aadd81d7a021bc0c73",
+      "declared_provider": null,
+      "observed_utc": "2026-11-14T01:10:32.976Z"
+    },
+    {
+      "route": "/api/semantic/preview",
+      "list": "model_calls",
+      "stage": null,
+      "status": null,
+      "elapsed_seconds": null,
+      "request_sha256": "a501a07786ba68c5a1ad5f075e95023f8a3a951e4a0dc37e6e442eada088d9c8",
+      "response_sha256": "91c3ec4defc45db01335b314bad33f89845bd7f906de7dfeb2cd3a9d860292e4",
+      "declared_provider": null,
+      "observed_utc": "2026-11-14T01:10:32.976Z"
+    }
+  ],
+  "screenshots": [
+    "01-start.png",
+    "02-indirect-request.png",
+    "03-indirect-review.png",
+    "04-gate-indirect-apply.png",
+    "05-indirect-applied.png",
+    "06-gate-indirect-undo.png",
+    "07-indirect-restored.png"
+  ],
+  "finished_utc": "2026-11-14T01:10:47.227Z",
+  "outcome": "all flows completed",
+  "status_strip_text": "FIXTURE DATA deterministic diagnostic scorer Rule parser · diagnostic only 8 items · 1 users PROVIDER · operator-relay-file-queue · claude-fable-5-2 (session-configured; not attested)"
+}

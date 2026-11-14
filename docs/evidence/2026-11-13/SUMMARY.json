@@ -1,0 +1,296 @@
+{
+  "what": "Browser runs of the served application with real model output through an operator relay",
+  "recorded_utc_date": "2026-11-14",
+  "local_date": "2026-11-13 (America/Vancouver)",
+  "model": {
+    "declared": "claude-fable-5-2 (session-configured; not attested)",
+    "requested_family": "fable",
+    "requested_effort": "max",
+    "attested": false,
+    "how": "sub-agent of the Claude Cowork session; reads one request file, writes one answer file; two tool uses reported per call"
+  },
+  "transport": "operator-relay-file-queue; answer file moved unchanged (byte-identical, checked with cmp)",
+  "reviewer": "AI operator: the lead agent of the same session. Not the student. Not a human review.",
+  "data": "eight invented item descriptions per scenario; labelled diagnostic scorer; no trained recommender",
+  "not_established": [
+    "accuracy on unseen requests",
+    "recommendation quality",
+    "user benefit",
+    "the automatic Claude Code CLI path for the complete new-category flow",
+    "a human review"
+  ],
+  "runs": {
+    "manual_category": {
+      "source_revision": "26a0b16",
+      "model_calls": 0,
+      "category": "K1",
+      "action": "exclude",
+      "eligible": [
+        8,
+        6,
+        8
+      ],
+      "removed_ids": [
+        41001,
+        41004
+      ],
+      "outcome": "completed: preview unchanged, apply exact, undo restored",
+      "record": "new-category/attempt-1-rejected/browser-receipt.json (the manual flow ran first in that browser session)"
+    },
+    "new_category_attempt_1": {
+      "source_revision": "26a0b16",
+      "model_calls": 1,
+      "outcome": "rejected by the application",
+      "reason": "definition was 1062 characters; the enforced limit of 1000 was not stated in the request",
+      "application_message": "no definition to review: error: Invalid bounded text",
+      "applied": false,
+      "calls": [
+        {
+          "ordinal": 1,
+          "request_sha256": "d84662c23c4d57d910003096bd09f96fc87ec4da127bca8df1c5c877554f0762",
+          "response_sha256": "04a5aa14e07f24afb269e6ca433c75defe3aee85e4414582f004c6c4fd98c616",
+          "response_bytes": 4594,
+          "started_utc": "2026-11-14T00:17:40+00:00",
+          "finished_utc": "2026-11-14T00:23:59+00:00",
+          "seconds_until_delivered": 378.216,
+          "transport_outcome": "parsed_transport_only"
+        }
+      ]
+    },
+    "new_category_attempt_2": {
+      "source_revision": "010cfe2",
+      "model_calls": 3,
+      "definition_label": "Damaged object repaired and the same object kept or remaining in use",
+      "competing_meanings_shown": true,
+      "classification": [
+        {
+          "item_id": 41001,
+          "verdict": "match"
+        },
+        {
+          "item_id": 41002,
+          "verdict": "match"
+        },
+        {
+          "item_id": 41003,
+          "verdict": "match"
+        },
+        {
+          "item_id": 41004,
+          "verdict": "not_match"
+        },
+        {
+          "item_id": 41005,
+          "verdict": "unknown"
+        },
+        {
+          "item_id": 41006,
+          "verdict": "unknown"
+        },
+        {
+          "item_id": 41007,
+          "verdict": "unknown"
+        },
+        {
+          "item_id": 41008,
+          "verdict": "unknown"
+        }
+      ],
+      "note_on_classification": "as shown after the evidence assessment; 41005 and 41006 were not_match before being withheld as unknown",
+      "evidence_assessment": [
+        {
+          "item_id": 41001,
+          "assessment": "supported"
+        },
+        {
+          "item_id": 41002,
+          "assessment": "supported"
+        },
+        {
+          "item_id": 41003,
+          "assessment": "supported"
+        },
+        {
+          "item_id": 41004,
+          "assessment": "contradicted"
+        },
+        {
+          "item_id": 41005,
+          "assessment": "not_stated"
+        },
+        {
+          "item_id": 41006,
+          "assessment": "not_stated"
+        },
+        {
+          "item_id": 41007,
+          "assessment": "not_stated"
+        },
+        {
+          "item_id": 41008,
+          "assessment": "not_stated"
+        }
+      ],
+      "approved_member_ids": [
+        41001,
+        41002,
+        41003
+      ],
+      "eligible": [
+        8,
+        5,
+        8
+      ],
+      "outcome": "completed: preview unchanged, apply exact, undo restored",
+      "browser": {
+        "checks_passed": 19,
+        "checks_total": 19,
+        "outcome": "all flows completed",
+        "started_utc": "2026-11-14T00:28:47.170Z",
+        "finished_utc": "2026-11-14T00:59:59.563Z",
+        "declared_provider": {
+          "backend": "operator-relay-file-queue",
+          "model": "claude-fable-5-2 (session-configured; not attested)",
+          "live_model": "operator_declared"
+        },
+        "data_mode": "fixture",
+        "scorer": "deterministic diagnostic scorer",
+        "review_mode": "wait",
+        "reviewer": "AI operator: Claude, the Cowork lead session. Not the student."
+      },
+      "calls": [
+        {
+          "ordinal": 1,
+          "request_sha256": "b2be22686d7c8ad54cb159c28c8427b60fca714cf71cc4ac284a86b3cfa9a0b1",
+          "response_sha256": "bd77d36829d75fe87d0caa05fc17f71cbc4442db8179a3eeec8740d739e90732",
+          "response_bytes": 4845,
+          "started_utc": "2026-11-14T00:28:48+00:00",
+          "finished_utc": "2026-11-14T00:39:39+00:00",
+          "seconds_until_delivered": 650.493,
+          "transport_outcome": "parsed_transport_only"
+        },
+        {
+          "ordinal": 2,
+          "request_sha256": "b2479783a435f225524ccd8ecc3f435f4734f89463019f2fbd196cc708531979",
+          "response_sha256": "5d30f4841cf11f9a50d46d80876debe3fbec9dbcede355664b75f53c477d2323",
+          "response_bytes": 4807,
+          "started_utc": "2026-11-14T00:40:09+00:00",
+          "finished_utc": "2026-11-14T00:57:11+00:00",
+          "seconds_until_delivered": 1022.411,
+          "transport_outcome": "parsed_transport_only"
+        },
+        {
+          "ordinal": 3,
+          "request_sha256": "54e120022daf66338e7b333fe630e1b7e09d802e125f07fdc9ec1e04c3d673d2",
+          "response_sha256": "018308dd8521eb0eddd04cbb095d1e6ee86519d56f9c63f0f793fa5f73fb384f",
+          "response_bytes": 4368,
+          "started_utc": "2026-11-14T00:57:11+00:00",
+          "finished_utc": "2026-11-14T00:59:36+00:00",
+          "seconds_until_delivered": 144.911,
+          "transport_outcome": "parsed_transport_only"
+        }
+      ],
+      "subagent_seconds": [
+        325,
+        478,
+        100
+      ]
+    },
+    "indirect_request": {
+      "source_revision": "010ae75",
+      "model_calls": 2,
+      "request": "I'm not hungry, remove all the stuff that makes me hungry.",
+      "interpreted_action": "exclude/none",
+      "approved_member_ids": [
+        81001,
+        81003,
+        81006
+      ],
+      "eligible": [
+        8,
+        5,
+        8
+      ],
+      "outcome": "completed: preview unchanged, apply exact, undo restored",
+      "browser": {
+        "checks_passed": 17,
+        "checks_total": 17,
+        "outcome": "all flows completed",
+        "started_utc": "2026-11-14T01:08:15.378Z",
+        "finished_utc": "2026-11-14T01:10:47.227Z",
+        "declared_provider": {
+          "backend": "operator-relay-file-queue",
+          "model": "claude-fable-5-2 (session-configured; not attested)",
+          "live_model": "operator_declared"
+        },
+        "data_mode": "fixture",
+        "scorer": "deterministic diagnostic scorer",
+        "review_mode": "wait",
+        "reviewer": "AI operator: Claude, the Cowork lead session. Not the student."
+      },
+      "calls": [
+        {
+          "ordinal": 1,
+          "request_sha256": "1b265aaa984b4f66043a16f4f2464a1a75684441a53811a22239ef8a501c00a2",
+          "response_sha256": "27730e4d4a63f2f62b1703eb0972f7793fd5920f3be0cb46e5c8f16214a48ee6",
+          "response_bytes": 118,
+          "started_utc": "2026-11-14T01:08:16+00:00",
+          "finished_utc": "2026-11-14T01:08:53+00:00",
+          "seconds_until_delivered": 36.287,
+          "transport_outcome": "parsed_transport_only"
+        },
+        {
+          "ordinal": 2,
+          "request_sha256": "cbee7861dca168d23182639ab716ec2cc45975415fdf98163b1907bf120de3a5",
+          "response_sha256": "0882c7be865272a1b5280daa7939ed007d45b158885268a8863851fd5b0b39f7",
+          "response_bytes": 1731,
+          "started_utc": "2026-11-14T01:08:53+00:00",
+          "finished_utc": "2026-11-14T01:10:32+00:00",
+          "seconds_until_delivered": 99.858,
+          "transport_outcome": "parsed_transport_only"
+        }
+      ],
+      "subagent_seconds": [
+        25,
+        90
+      ]
+    },
+    "scripted_regression": {
+      "source_revision": "010ae75",
+      "model_calls": 0,
+      "provider": "authored replies; not a model",
+      "category": {
+        "checks_passed": 29,
+        "checks_total": 29,
+        "outcome": "all flows completed",
+        "started_utc": "2026-11-14T01:06:39.489Z",
+        "finished_utc": "2026-11-14T01:06:44.456Z",
+        "declared_provider": {
+          "backend": "scripted-authored-replies",
+          "model": "none (replies written by hand)",
+          "live_model": false
+        },
+        "data_mode": "fixture",
+        "scorer": "deterministic diagnostic scorer",
+        "review_mode": "auto",
+        "reviewer": "none: review boxes ticked by the script"
+      },
+      "hunger": {
+        "checks_passed": 27,
+        "checks_total": 27,
+        "outcome": "all flows completed",
+        "started_utc": "2026-11-14T01:06:44.703Z",
+        "finished_utc": "2026-11-14T01:06:48.649Z",
+        "declared_provider": {
+          "backend": "scripted-authored-replies",
+          "model": "none (replies written by hand)",
+          "live_model": false
+        },
+        "data_mode": "fixture",
+        "scorer": "deterministic diagnostic scorer",
+        "review_mode": "auto",
+        "reviewer": "none: review boxes ticked by the script"
+      }
+    }
+  }
+}

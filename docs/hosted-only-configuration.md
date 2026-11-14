@@ -1,6 +1,6 @@
 # Hosted-only configuration and current limits
 
-The hosted-only code was added on 9 November 2026. The 9 November implementation checks were offline. A later explicit-runner Lunaria check supplied bounded evidence from direct calls to the application’s Python methods; see [current progress](current-progress.md). It does not establish access to Astra, Sol 6.1 or Terra 6.1. The automatic personal Claude route also remains disabled; see [personal Claude status](../CLAUDE-PERSONAL-CANDIDATE.md).
+The hosted-only code was added on 9 November 2026. The 9 November implementation checks were offline. A later explicit-runner Lunaria check supplied bounded evidence from direct calls to the application’s Python methods; see [current progress](current-progress.md). It does not establish access to Astra, Sol 6.1 or Terra 6.1. The automatic personal Claude route also remains disabled; see [demonstration guide](demo.md#the-signed-in-claude-code-cli).
 
 ## Creating the hosted app
 

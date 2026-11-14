@@ -1,0 +1,31 @@
+{
+  "status": "propose",
+  "label": "Faulty object repaired and same object kept",
+  "definition": "An item is a member when its description affirmatively states all three conditions. Condition 1 (fault): an object is described with a physical fault, meaning a stated defect in its form or function, as in 'bent', 'torn' or 'leaking'. Condition 2 (repair action): the description states that a repair action is performed on that same object, meaning an action that acts on the stated fault, as in 'straightened', 'mended' or 'sealed'. Condition 3 (retention): the description states that the same object is kept, or that it remains in use. Match needs affirmative evidence for all three conditions. Not_match needs affirmative evidence that a condition is false, for example a statement that the faulty object is discarded, or that the object at the end is a new or different object and not the same one. If a condition is not stated either way, membership stays unknown. A stated purpose, intention, possibility or capability does not establish a condition. The definition does not require a statement that the fault is removed or that the object is used again.",
+  "rationale": "Three supplied captions state the same three facts. Caption 41001 states that a bent metal bookmark is straightened with pliers and that the existing piece is kept. Caption 41002 states that a torn canvas satchel is mended with a needle and spare thread and that the same bag is kept. Caption 41003 states that a leaking clay jug is sealed and that the same jug remains in use. The definition uses only these stated facts: a stated fault, a repair action that is performed, and a statement that the same object is kept or remains in use. The three captions come from three different existing categories (K1, K2 and K3), so the definition cuts across the existing codes and is not a renamed existing category. Use after repair is not a condition, because caption 41002 states a purpose and a capability ('so it can carry books again') and does not state that the satchel carries books again. Removal of the fault is not a condition, because caption 41003 states that the jug is sealed and does not state that the leak stops. This is a proposal only. No item is classified and nothing is applied until a user reviews the definition and its evidence.",
+  "alternatives": [
+    "Stricter meaning, repair with stated use: the three conditions plus a statement that the repaired object is used again or remains in use. A stated purpose or capability does not meet the added condition.",
+    "Broader meaning, any stated handling of a faulty object: the faulty object is repaired and kept, or it is discarded and another object takes its place.",
+    "Different concept, a new object is made: the description states that material is folded or shaped into a new object."
+  ],
+  "evidence": [
+    {
+      "item_id": 41001,
+      "field": "caption",
+      "quote": "A bent metal bookmark is straightened with pliers and used again. The existing piece is kept.",
+      "reason": "Condition 1 (fault): the bookmark is described as 'bent'. Condition 2 (repair action): the quote states that it is 'straightened with pliers'. Condition 3 (retention, 'kept' alternative): the quote states that 'The existing piece is kept'. The quote also states that the bookmark is 'used again'. No condition requires that."
+    },
+    {
+      "item_id": 41002,
+      "field": "caption",
+      "quote": "A torn canvas satchel is mended with a needle and spare thread so it can carry books again. The same bag is kept.",
+      "reason": "Condition 1 (fault): the satchel is described as 'torn'. Condition 2 (repair action): the quote states that it is 'mended with a needle and spare thread'. Condition 3 (retention, 'kept' alternative): the quote states that 'The same bag is kept'. The clause 'so it can carry books again' states a purpose and a capability only. The quote does not state that the bag carries books again, and no condition relies on that clause."
+    },
+    {
+      "item_id": 41003,
+      "field": "caption",
+      "quote": "A leaking clay jug is sealed and returned to watering plants. The same jug remains in use.",
+      "reason": "Condition 1 (fault): the jug is described as 'leaking'. Condition 2 (repair action): the quote states that it 'is sealed'. Condition 3 (retention, 'remains in use' alternative): the quote states that 'The same jug remains in use'. The quote also states that the jug is 'returned to watering plants'. The quote does not state that the leak stops, and no condition requires that."
+    }
+  ]
+}

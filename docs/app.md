@@ -4,7 +4,7 @@ Feed Control Lab is a React/FastAPI research app for changing a recommendation f
 
 The recent work adds manual category selection, model-proposed categories and indirect language requests alongside the original A–E comparison. [Current progress](current-progress.md) separates observed examples from untested behavior.
 
-**Current availability:** the default personal Claude launch is disabled; an explicitly selected runner has bounded headless evidence. Local models and the local recommender are not authorized for the current personal configuration. The local startup instructions later on this page are historical reproduction instructions. See [hosted configuration](hosted-only-configuration.md) and [personal Claude status](../CLAUDE-PERSONAL-CANDIDATE.md).
+**Current availability:** the default personal Claude launch is disabled; an explicitly selected runner has bounded headless evidence. Local models and the local recommender are not authorized for the current personal configuration. The local startup instructions later on this page are historical reproduction instructions. See [hosted configuration](hosted-only-configuration.md) and [demonstration guide](demo.md#the-signed-in-claude-code-cli).
 
 ## The recent controls
 

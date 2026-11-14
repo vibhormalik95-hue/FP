@@ -1,0 +1,285 @@
+{
+  "kind": "browser run of the served application",
+  "started_utc": "2026-11-14T00:17:18.939Z",
+  "base": "http://127.0.0.1:8766",
+  "scenario": "category",
+  "flows": [
+    "manual",
+    "category"
+  ],
+  "review_mode": "wait",
+  "reviewer": "AI operator: Claude, the Cowork lead session. Not the student.",
+  "status": {
+    "data_mode": "fixture",
+    "source": "synthetic://friday-new-category-proposal-20261110",
+    "model_mode": "deterministic diagnostic scorer",
+    "users": 1,
+    "items": 8,
+    "categories": 4,
+    "default_parser": "rule",
+    "ollama_model": "llama3.1:8b",
+    "local_models_allowed": false,
+    "provider": {
+      "backend": "operator-relay-file-queue",
+      "model": "claude-fable-5-2 (session-configured; not attested)",
+      "live_model": "operator_declared"
+    },
+    "ollama_status": "Disabled by hosted-only application policy.",
+    "research_note": "Synthetic category controls measure offline behavior; this demo does not establish human agency or satisfaction.",
+    "category_note": "Opaque dataset category IDs; no invented topic names.",
+    "semantic_topic": "Official caption sidecar loaded; exploratory preview only",
+    "asset_note": "Metadata cards only; no original video assets are distributed."
+  },
+  "checks": [
+    {
+      "name": "session established",
+      "passed": true,
+      "detail": null,
+      "utc": "2026-11-14T00:17:19.856Z"
+    },
+    {
+      "name": "manual: starts with no applied semantic group",
+      "passed": true,
+      "detail": {
+        "eligible": 8
+      },
+      "utc": "2026-11-14T00:17:20.224Z"
+    },
+    {
+      "name": "manual: review appears",
+      "passed": true,
+      "detail": null,
+      "utc": "2026-11-14T00:17:20.593Z"
+    },
+    {
+      "name": "manual: no model call was made",
+      "passed": true,
+      "detail": {
+        "model_calls": 0
+      },
+      "utc": "2026-11-14T00:17:20.594Z"
+    },
+    {
+      "name": "manual: preview left the applied feed unchanged",
+      "passed": true,
+      "detail": {
+        "applied_groups": 0,
+        "revision": 0,
+        "eligible": 8
+      },
+      "utc": "2026-11-14T00:17:20.732Z"
+    },
+    {
+      "name": "manual: page still shows the starting items during preview",
+      "passed": true,
+      "detail": {
+        "shown": [
+          41006,
+          41007,
+          41008,
+          41001,
+          41002,
+          41003,
+          41004,
+          41005
+        ]
+      },
+      "utc": "2026-11-14T00:17:20.743Z"
+    },
+    {
+      "name": "manual: review names the items that would be removed",
+      "passed": true,
+      "detail": {
+        "selected_ids": [
+          41001,
+          41004
+        ]
+      },
+      "utc": "2026-11-14T00:17:20.747Z"
+    },
+    {
+      "name": "manual: review table lists every supplied item and marks the approved ones",
+      "passed": true,
+      "detail": {
+        "rows": 8,
+        "marked": 2
+      },
+      "utc": "2026-11-14T00:17:20.760Z"
+    },
+    {
+      "name": "review decision at gate manual-apply",
+      "passed": true,
+      "detail": {
+        "decision": "APPROVE",
+        "seconds_to_decide": 11
+      },
+      "utc": "2026-11-14T00:17:31.938Z"
+    },
+    {
+      "name": "manual: Apply removed exactly the approved items",
+      "passed": true,
+      "detail": {
+        "eligible_before": 8,
+        "eligible_after": 6,
+        "removed": [
+          41001,
+          41004
+        ]
+      },
+      "utc": "2026-11-14T00:17:31.990Z"
+    },
+    {
+      "name": "manual: page shows the reduced feed",
+      "passed": true,
+      "detail": {
+        "shown": [
+          41006,
+          41007,
+          41008,
+          41002,
+          41003,
+          41005
+        ]
+      },
+      "utc": "2026-11-14T00:17:31.999Z"
+    },
+    {
+      "name": "manual: undo review alone changed nothing",
+      "passed": true,
+      "detail": {
+        "eligible": 6
+      },
+      "utc": "2026-11-14T00:17:32.201Z"
+    },
+    {
+      "name": "review decision at gate manual-undo",
+      "passed": true,
+      "detail": {
+        "decision": "APPROVE",
+        "seconds_to_decide": 8
+      },
+      "utc": "2026-11-14T00:17:40.359Z"
+    },
+    {
+      "name": "manual: Undo restored the exact starting feed",
+      "passed": true,
+      "detail": {
+        "eligible": 8,
+        "identical_to_start": true,
+        "revision": 2
+      },
+      "utc": "2026-11-14T00:17:40.437Z"
+    },
+    {
+      "name": "manual: page shows the starting items again",
+      "passed": true,
+      "detail": {
+        "shown": [
+          41006,
+          41007,
+          41008,
+          41001,
+          41002,
+          41003,
+          41004,
+          41005
+        ]
+      },
+      "utc": "2026-11-14T00:17:40.450Z"
+    },
+    {
+      "name": "category: starts with no applied semantic group",
+      "passed": true,
+      "detail": {
+        "eligible": 8
+      },
+      "utc": "2026-11-14T00:17:40.614Z"
+    },
+    {
+      "name": "no script error was raised by the page",
+      "passed": true,
+      "detail": [],
+      "utc": "2026-11-14T00:23:59.569Z"
+    }
+  ],
+  "flows_result": {
+    "manual": {
+      "started_utc": "2026-11-14T00:17:20.217Z",
+      "eligible_before": 8,
+      "shown_before": [
+        41006,
+        41007,
+        41008,
+        41001,
+        41002,
+        41003,
+        41004,
+        41005
+      ],
+      "outcome": "completed: preview unchanged, apply exact, undo restored",
+      "selected_ids": [
+        41001,
+        41004
+      ],
+      "review_text_sha256": "2b4b44c7a5fb07379d5c614d1bed288dad2eccb50dd32bb915c4ab2e10c2acb5",
+      "eligible_after_apply": 6,
+      "shown_after_apply": [
+        41006,
+        41007,
+        41008,
+        41002,
+        41003,
+        41005
+      ],
+      "eligible_after_undo": 8,
+      "model_calls": 0,
+      "finished_utc": "2026-11-14T00:17:40.599Z"
+    },
+    "category": {
+      "started_utc": "2026-11-14T00:17:40.606Z",
+      "eligible_before": 8,
+      "shown_before": [
+        41006,
+        41007,
+        41008,
+        41001,
+        41002,
+        41003,
+        41004,
+        41005
+      ],
+      "outcome": "no definition to review: error: Invalid bounded text",
+      "finished_utc": "2026-11-14T00:23:59.561Z"
+    }
+  },
+  "model_calls": [
+    {
+      "route": "/api/semantic/definition/preview",
+      "list": "model_calls",
+      "stage": "definition",
+      "status": "returned_json",
+      "elapsed_seconds": 378.227,
+      "request_sha256": "5cedf6d8de8c54cf876115be3bb7a12f93802d4491011ca3e5cfffaec2227cc7",
+      "response_sha256": "52af482e6b9b838c780df8a1a868620059afe0562564d6ebd8317843fbf94b17",
+      "declared_provider": {
+        "backend": "operator-relay-file-queue",
+        "model_id": "claude-fable-5-2 (session-configured; not attested)",
+        "model_revision": "93d1a33ee22497a64df6eb663f9638660d4fe842a786b0f67bf52c6cef85ebda"
+      },
+      "observed_utc": "2026-11-14T00:23:59.134Z"
+    }
+  ],
+  "screenshots": [
+    "01-start.png",
+    "02-manual-review.png",
+    "03-gate-manual-apply.png",
+    "04-manual-applied.png",
+    "05-gate-manual-undo.png",
+    "06-manual-restored.png",
+    "07-category-objective.png",
+    "08-category-stopped.png"
+  ],
+  "finished_utc": "2026-11-14T00:23:59.570Z",
+  "outcome": "stopped before completion; see flows_result",
+  "status_strip_text": "FIXTURE DATA deterministic diagnostic scorer Rule parser · diagnostic only 8 items · 1 users PROVIDER · operator-relay-file-queue · claude-fable-5-2 (session-configured; not attested)"
+}

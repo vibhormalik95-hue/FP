@@ -1,6 +1,6 @@
 # Historical local Llama runtime
 
-**Historical reproduction guide.** Local models and the local recommender are not authorized for the current personal configuration, and automatic personal Claude launch remains disabled. The commands below are retained to explain the earlier experiments; they are not instructions to run them now. Start with [current progress](current-progress.md), [hosted configuration](hosted-only-configuration.md) or [personal Claude status](../CLAUDE-PERSONAL-CANDIDATE.md) for the current app.
+**Historical reproduction guide.** Local models and the local recommender are not authorized for the current personal configuration, and automatic personal Claude launch remains disabled. The commands below are retained to explain the earlier experiments; they are not instructions to run them now. Start with [current progress](current-progress.md), [hosted configuration](hosted-only-configuration.md) or [demonstration guide](demo.md#the-signed-in-claude-code-cli) for the current app.
 
 The recorded fresh Experiment Two run completed locally on AI_WORK on 14 October with Ollama 0.34.0 and the `llama3.1:8b` digest recorded in the [study evidence](ai-reference-e2-evidence/README.md). This page lists the runtime settings and steps for a separate rerun.
 

@@ -1,5 +1,7 @@
 # Current progress and remaining work
 
+> **Dated record, 11 November 2026.** For the status on 13 November, including browser runs of all three controls, see [requirements and evidence](requirements-and-evidence.md).
+
 ## Category definition update, 11 November 2026
 
 This successor recognizes the existing counted-list form `all three conditions:` without treating its structural labels as factual numbers. It also asks definition generation to preserve source modality and tense: purpose or capability does not establish an outcome that actually occurred. The instruction applies to each rationale and evidence reason under the exact definition, including its alternatives. It adds no semantic detector, automatic repair, approval or preferred category.
@@ -63,7 +65,7 @@ The current default aggregate passed 176 guarded tests. Runtime/privacy/mocked-W
 
 The recorded examples do not establish general reliability for nuanced requests or new categories, improved recommendation quality, or user satisfaction. These are limits on the conclusions, not additional requirements for finishing the current implementation. The historical next-item results and negative language results remain part of the project.
 
-The [hosted configuration guide](hosted-only-configuration.md) and [personal Claude status](../CLAUDE-PERSONAL-CANDIDATE.md) describe these implementation limits. Offline tests and a successful frontend build check software behavior; they do not replace live model or browser evidence. The dated studies, failures and sealed records remain unchanged.
+The [hosted configuration guide](hosted-only-configuration.md) and [demonstration guide](demo.md#the-signed-in-claude-code-cli) describe these implementation limits. Offline tests and a successful frontend build check software behavior; they do not replace live model or browser evidence. The dated studies, failures and sealed records remain unchanged.
 
 The [current validation guide](../tools/hosted_validation_current/README.md) distinguishes software tests from model evidence. This modality/counting successor has no fresh hosted observation; the preceding v4 attempt reached primary selection but was rejected at evidence review. No demo recording is supplied. The original reports and failed model outputs remain unchanged.
 
