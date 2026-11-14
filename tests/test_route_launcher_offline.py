@@ -22,6 +22,7 @@ from feedctrl import model_routes  # noqa: E402
 import quickstart  # noqa: E402
 import run_demo  # noqa: E402
 from standins import anthropic_server, common, openai_compatible_server  # noqa: E402
+from standins.route_state import fresh_route_state  # noqa: E402,F401  (autouse)
 
 KEY = 'sk-test-0123456789abcdefSECRET'
 MODEL = common.DEFAULT_MODEL
@@ -195,7 +196,8 @@ def test_quickstart_start_hands_the_key_to_the_server_in_its_environment_only(tm
     monkeypatch.setattr(sys.stdin, 'isatty', lambda: False, raising=False)
     with pytest.raises(SystemExit) as stopped:
         quickstart.main(['start', '--scenario', 'hunger', '--route-file', path])
-    assert 'MY_KEY is not set' in str(stopped.value) and 'quickstart.py setup' in str(stopped.value)
+    # F11: the real cause, and no advice to run the setup again (the file is good).
+    assert 'MY_KEY is not set' in str(stopped.value) and 'quickstart.py setup' not in str(stopped.value)
 
 
 def test_quickstart_start_prints_the_relay_commands_for_a_relay_route(tmp_path, monkeypatch, capsys):

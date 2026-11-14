@@ -95,8 +95,9 @@ def stop_server(server, patience=15):
     end already, because Python has no gentler signal for another process there;
     Ctrl+C in the terminal reaches the server itself and stops it gently.
     """
-    if server.poll() is not None:
-        return server.returncode
+    code = server.poll()
+    if code is not None:
+        return code
     for ask, wait in ((lambda: server.send_signal(signal.SIGINT) if sys.platform != 'win32' else server.terminate(), patience),
                       (server.terminate, 5), (server.kill, 5)):
         try:

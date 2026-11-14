@@ -23,6 +23,7 @@ sys.path.insert(0, str(ROOT / 'tests'))
 from feedctrl import model_routes, route_http  # noqa: E402
 from feedctrl.model_routes import RouteError  # noqa: E402
 from standins import anthropic_server, common, openai_compatible_server  # noqa: E402
+from standins.route_state import fresh_route_state  # noqa: E402,F401  (autouse)
 
 KEY = 'sk-test-0123456789abcdefSECRET'
 MODEL = common.DEFAULT_MODEL

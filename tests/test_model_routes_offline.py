@@ -18,6 +18,7 @@ from feedctrl.controls import ParserOperationalError  # noqa: E402
 from feedctrl.model_routes import RouteError  # noqa: E402
 import model_route  # noqa: E402
 from standins import common, openai_compatible_server  # noqa: E402
+from standins.route_state import fresh_route_state  # noqa: E402,F401  (autouse)
 
 KEY = 'sk-test-0123456789abcdefSECRET'
 SCHEMA = {'type': 'object', 'additionalProperties': False, 'required': ['status', 'label'],
@@ -153,9 +154,20 @@ def test_the_key_comes_from_the_named_variable_or_from_a_hidden_prompt():
 def test_build_refuses_a_missing_key_and_a_key_inside_the_file():
     assert category(model_routes.build_route, {'route': 'anthropic', 'model': 'm'}) == 'authentication'
     with_key = {'route': 'openai-compatible', 'base_url': 'http://127.0.0.1:9/v1', 'model': 'm', 'api_key_env': 'MY_KEY',
-                'extra_body': {'comment': 'x' + 'plainvalue1234'}}
-    assert category(model_routes.build_route, with_key, api_key='plainvalue1234') == 'configuration'
+                'extra_body': {'comment': 'x' + 'plainvalue1234abcd'}}
+    assert category(model_routes.build_route, with_key, api_key='plainvalue1234abcd') == 'configuration'
     assert category(model_routes.build_route, with_key, api_key='has space') == 'authentication'
+
+
+def test_a_placeholder_key_that_is_a_word_of_the_file_is_accepted():
+    # F09: a local server accepts any key; its documentation uses words such as "lm-studio".
+    for key, config in (('lm-studio', {'route': 'openai-compatible', 'preset': 'lm-studio', 'model': 'qwen/qwen3-4b',
+                                       'api_key_env': 'LM_KEY'}),
+                        ('ollama', {'route': 'openai-compatible', 'preset': 'ollama', 'model': 'llama3.1:8b',
+                                    'api_key_env': 'OLLAMA_API_KEY'}),
+                        ('1234', {'route': 'openai-compatible', 'preset': 'lm-studio', 'model': 'm', 'api_key_env': 'K'})):
+        infer, identity, receipts = model_routes.build_route(config, api_key=key)
+        assert callable(infer) and receipts == []
 
 
 def test_the_scrubber_removes_the_key_and_key_shaped_text():
@@ -351,7 +363,7 @@ def test_the_wizard_builds_each_kind_of_route_from_numbered_choices():
                       'model': 'second-model'}
     hosted = model_route.wizard(answers('2', '2', '', 'claude-some-model'), quiet, {}, no_models)
     assert hosted == {'route': 'anthropic', 'api_key_env': 'ANTHROPIC_API_KEY', 'model': 'claude-some-model'}
-    openai = model_route.wizard(answers('2', '1', 'MY_OPENAI_KEY', '1'), quiet, {'MY_OPENAI_KEY': KEY},
+    openai = model_route.wizard(answers('2', '1', 'MY_OPENAI_KEY', 'y', '1'), quiet, {'MY_OPENAI_KEY': KEY},
                                 lambda config, key=None: ['listed-with-key'] if key == KEY else [])
     assert openai == {'route': 'openai-compatible', 'preset': 'openai', 'api_key_env': 'MY_OPENAI_KEY', 'model': 'listed-with-key'}
     claude = model_route.wizard(answers('1', '1', '', 'claude-some-model', 'high'), quiet, {}, no_models)

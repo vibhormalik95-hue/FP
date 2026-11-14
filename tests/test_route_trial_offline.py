@@ -30,6 +30,7 @@ import relay_tools  # noqa: E402
 import route_trial  # noqa: E402
 import run_demo  # noqa: E402
 from standins import common, openai_compatible_server  # noqa: E402
+from standins.route_state import fresh_route_state  # noqa: E402,F401  (autouse)
 
 KEY = 'sk-trial-0123456789abcdefSECRET'
 MODEL = common.DEFAULT_MODEL

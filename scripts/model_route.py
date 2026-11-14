@@ -40,6 +40,14 @@ DEFAULT_PATH = ROOT / model_routes.DEFAULT_FILE
 SERVERS = {'1': ('ollama', 'http://127.0.0.1:11434/v1'), '2': ('lm-studio', 'http://127.0.0.1:1234/v1')}
 EFFORTS = ('low', 'medium', 'high', 'xhigh', 'max')
 YES = ('y', 'yes')
+TRIES = 8   # answers to one question; a script that feeds no usable answer must not loop for ever
+
+
+def attempts():
+    """Count the answers to one question. Stop after ``TRIES`` answers that cannot be used."""
+    for _ in range(TRIES):
+        yield
+    raise SystemExit(f'No usable answer after {TRIES} tries. Nothing was written. Run the setup again.')
 
 
 def split_windows(text):
@@ -104,7 +112,7 @@ def listed_models(config, key=None):
 
 def choose(ask, out, question, choices, default='1'):
     """Ask until the answer is one of the numbered choices."""
-    while True:
+    for _ in attempts():
         out(question)
         for number, label in choices:
             out(f'  {number}  {label}')
@@ -120,7 +128,7 @@ def text(ask, question, default=None, *, out=None, problem=None):
     ``problem`` returns a sentence for the terminal, or ``None``. The sentence
     never repeats the answer: an answer can be a key that was pasted by mistake.
     """
-    while True:
+    for _ in attempts():
         answer = (ask(f'{question}{f" [{default}]" if default else ""}: ') or '').strip() or (default or '')
         if not answer:
             continue
@@ -164,7 +172,7 @@ def ask_variable(ask, out, default=None):
 
 def ask_address(ask, out, question):
     """``(address, whether an unencrypted connection to another computer was accepted)``."""
-    while True:
+    for _ in attempts():
         answer = (ask(question + ': ') or '').strip()
         if not answer:
             continue
@@ -189,7 +197,7 @@ def pick_model(ask, out, names, example):
     out('The endpoint lists these models:')
     for number, name in enumerate(names, 1):
         out(f'  {number}  {model_routes.ascii_text(name)}')
-    while True:
+    for _ in attempts():
         answer = text(ask, 'Number of the model, or another exact model name', out=out,
                       problem=lambda value: None if value.isdigit() else _model_problem(value))
         if not answer.isdigit():
@@ -220,7 +228,7 @@ def wizard(ask=input, out=print, environ=None, models=listed_models):
             config = {'route': 'cli', 'profile': 'claude-code', 'command': text(ask, 'Command or full path of the CLI', 'claude'),
                       'model': text(ask, 'Full model name, as the CLI reports it (not a short alias)', out=out,
                                     problem=_model_problem)}
-            while True:
+            for _ in attempts():
                 effort = (ask('Effort (low, medium, high, xhigh, max; empty = the default of the CLI): ') or '').strip()
                 if not effort or effort in EFFORTS:
                     break
@@ -230,7 +238,7 @@ def wizard(ask=input, out=print, environ=None, models=listed_models):
             return config
         out('Example: ollama run llama3.1:8b --format json')
         out('Put a path that holds a space in double quotes.')
-        while True:
+        for _ in attempts():
             try:
                 argv = split_command(text(ask, 'The command line of the program'))
                 model_routes.refuse_key_arguments(argv[1:], 'argv')

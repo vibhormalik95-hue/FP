@@ -201,6 +201,13 @@ def remember_secret(value):
         _SECRETS.sort(key=lambda known: -len(known.pattern))
 
 
+def forget_secrets():
+    """Forget every remembered key. For a test: a short placeholder key such as
+    "ollama" would otherwise be removed from the texts of every later test."""
+    with _SECRETS_LOCK:
+        _SECRETS.clear()
+
+
 def scrub(text):
     """Remove every remembered key and everything that has the shape of a key."""
     text = str(text)

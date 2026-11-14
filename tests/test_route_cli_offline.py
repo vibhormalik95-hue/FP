@@ -19,6 +19,7 @@ sys.path.insert(0, str(ROOT / 'tests'))
 from feedctrl import model_routes, route_cli  # noqa: E402
 from feedctrl.model_routes import RouteError  # noqa: E402
 from standins import common  # noqa: E402
+from standins.route_state import fresh_route_state  # noqa: E402,F401  (autouse)
 
 MODEL = 'claude-standin-not-a-model'
 PAYLOAD = dict(model_routes.TEST_PAYLOAD)
@@ -55,6 +56,10 @@ def call(config, *, record_dir=None, payload=PAYLOAD, schema=SCHEMA):
         return None, identity, receipts, error
 
 
+def receipt_model_rule(receipts):
+    return receipts[-1].get('model_match_rule')
+
+
 def generic(*arguments, **settings):
     return {'route': 'cli', 'profile': 'generic', 'model': 'declared-model-name',
             'argv': [sys.executable, str(ROOT / 'tests' / 'standins' / 'cli_generic.py'), '--replies', 'echo-ok', *arguments],
@@ -77,7 +82,10 @@ def test_one_print_mode_call_with_the_request_on_standard_input_and_a_small_flag
     names = set(seen[0]['environment_names'])
     assert 'ANTHROPIC_API_KEY' not in names and 'OPENAI_API_KEY' not in names and 'STANDIN_REPLIES' in names
     # The shell of the launcher file adds a few names of its own.
-    assert 'PATH' in names and names <= set(route_cli.ENV_ALLOW) | set(PASSED) | {'PWD', 'OLDPWD', 'SHLVL', '_'}
+    assert 'PATH' in names and names <= (set(route_cli.ENV_ALLOW) | set(route_cli.ENV_SET) | set(PASSED)
+                                         | {'PWD', 'OLDPWD', 'SHLVL', '_'})
+    assert {'PYTHONUTF8', 'PYTHONIOENCODING'} <= names                    # N5: a Python program reads UTF-8
+    assert receipt_model_rule(receipts) == 'equal'
     assert seen[0]['cwd_entries'] == [] and Path(seen[0]['cwd']).resolve() != ROOT and not Path(seen[0]['cwd']).exists()
     assert identity['backend'] == 'local-cli-claude-code' and identity['model'] == MODEL and identity['live_model'] is True
     receipt = receipts[0]
