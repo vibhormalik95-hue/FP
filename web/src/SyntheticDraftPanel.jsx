@@ -36,7 +36,7 @@ export default function SyntheticDraftPanel({api,user,resetKey,scenarioRequests,
       <label className="field-label" htmlFor="synthetic-brief">Describe the fictional item</label>
       <textarea id="synthetic-brief" rows={3} maxLength={2000} value={brief} disabled={disabled}
         onChange={e=>{setBrief(e.target.value);setPending(null);}}/>
-      {typeof scenarioRequests?.synthetic==='string'&&<button type="button" className="secondary" disabled={disabled} onClick={()=>{setBrief(scenarioRequests.synthetic);setPending(null);}}>Insert the example brief</button>}
+      {typeof scenarioRequests?.synthetic==='string'&&<button type="button" className="secondary" disabled={disabled} onClick={()=>{setBrief(scenarioRequests.synthetic);setPending(null);}}>Insert the example description</button>}
       <label><input type="checkbox" checked={ack} disabled={disabled} onChange={e=>{setAck(e.target.checked);setPending(null);}}/> I want a fictional item, not a real video or an item of the catalogue.</label>
       {saved?.generation_available===false?<p className="help" data-role="no-draft-provider">No model provider is configured, so no draft can be written.</p>
         :<p className="help">{authored?'The server looks up a hand-written reply for the exact example brief. No data leaves this computer.'

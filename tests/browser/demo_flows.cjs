@@ -541,7 +541,7 @@ function check(name, condition, detail) {
       if (!await gate('category-definition', definition)) { record.outcome = 'definition declined by the reviewer; nothing classified or applied'; return; }
       await definition.getByRole('checkbox').check();
       await show('category: definition approved; waiting for the model (classification, then separate evidence assessment)', null, 1000);
-      answer = await submit(() => definition.getByRole('button', { name: 'Approve definition and classify supplied items' }).click(), '/api/semantic/definition/classify', STAGE_TIMEOUT);
+      answer = await submit(() => definition.getByRole('button', { name: 'Approve the definition and classify the items of the scope' }).click(), '/api/semantic/definition/classify', STAGE_TIMEOUT);
       record.provider_calls += callsIn(answer.body);
       if (!answer.body || answer.body.ready !== true) return stopped('category', record, answer);
       const [body] = (await tableGroups()).filter(group => group.fresh);
@@ -687,7 +687,10 @@ function check(name, condition, detail) {
       const { baseline, record, others } = await startFlow('history');
       await chooseMethod('manual_category');
       const names = await panel.locator('#semantic-category option').evaluateAll(options => options.map(option => option.value));
-      const first = scenario.manualCategory, second = names.find(name => name !== first);
+      // The second control raises a category whose items stand low in the feed, so that its effect on the order is visible.
+      const first = scenario.manualCategory;
+      const low = [...baseline.feed.items].reverse().find(item => item.categories.some(name => name !== first && names.includes(name)));
+      const second = low ? low.categories.find(name => name !== first && names.includes(name)) : names.find(name => name !== first);
       check('history: the scenario has two existing categories', Boolean(first && second), { names });
       const labels = state => state.groups.map(group => group.label);
       async function addManual(category, operation) {
@@ -700,6 +703,9 @@ function check(name, condition, detail) {
       }
       const one = await addManual(first, 'exclude');
       const two = await addManual(second, 'boost');
+      const expectedTwo = expectedFeed(baseline, newControls(two, baseline));
+      check('history: with two controls the applied feed has the order that both controls give', inOrder(two.feed.items.map(item => item.item_id), expectedTwo),
+        { applied: two.feed.items.map(item => item.item_id), expected: expectedTwo.order.slice(0, 10) });
       check('history: two controls are applied', same(labels(two).sort(), [`Manual: ${first}`, `Manual: ${second}`].sort()), { applied: labels(two) });
       // Undo goes back one step: to the state with the first control, not to the empty state.
       await submit(() => panel.getByRole('button', { name: 'Undo the last change (review first)' }).click(), '/api/semantic/history/preview', 30000);
@@ -869,7 +875,7 @@ function check(name, condition, detail) {
       await drafts.getByRole('button', { name: 'Write a fictional draft' }).waitFor({ state: 'visible', timeout: 30000 });
       const start = await fictionalState();
       check('fictional: starts with no fictional item', start.items.length === 0 && start.generation_available !== false, { provider: start.generation_provider });
-      await drafts.getByRole('button', { name: 'Insert the example brief' }).click();
+      await drafts.getByRole('button', { name: 'Insert the example description' }).click();
       check('fictional: the brief is the exact example brief', await drafts.locator('#synthetic-brief').inputValue() === brief);
       await drafts.getByRole('checkbox').check();
       await show('fictional: a brief for an item that does not exist', drafts.locator('#synthetic-brief'), 4000);

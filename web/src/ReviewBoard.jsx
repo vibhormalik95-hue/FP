@@ -310,8 +310,8 @@ function definitionVariant({definition, controls, words, expired, deadlineText})
       {block('decision', 'Your decision', expired ? expiredDecision(controls, 'To get a new definition, press "Propose a definition for review" again.') : <>
         <p className="help">Do not approve a definition that claims something that the descriptions do not state, even if the quotation exists.</p>
         <p className="help">To get another definition, reject this one and change your description in the panel. {deadlineText ? `Decide before ${deadlineText}.` : 'Decide within five minutes.'}</p>
-        <label><input type="checkbox" checked={controls.evidenceReviewed} disabled={controls.disabled} onChange={e=>controls.setEvidenceReviewed(e.target.checked)}/> I reviewed whether the source evidence supports the entire definition.</label>
-        <button className="primary" disabled={controls.disabled||!controls.evidenceReviewed} onClick={controls.classify}>Approve definition and classify supplied items</button>
+        <label><input type="checkbox" checked={controls.evidenceReviewed} disabled={controls.disabled} onChange={e=>controls.setEvidenceReviewed(e.target.checked)}/> I checked that the quotations support the complete definition.</label>
+        <button className="primary" disabled={controls.disabled||!controls.evidenceReviewed} onClick={controls.classify}>Approve the definition and classify the items of the scope</button>
         <button className="secondary" disabled={controls.disabled} onClick={controls.rejectDefinition}>Reject this definition</button>
       </>, 'decision')}
     </div>
