@@ -1,6 +1,6 @@
 # Application progress and remaining work
 
-Updated 14 November 2026 (UTC), against source commit `8db85240db0a947312c3551b5d0e06c71ee5c7b3` on `codex/comp9500-llm-upgrades-20261110`. This is an evidence map, not a declaration that all requirements are complete.
+Updated 14 November 2026 (UTC). Latest manual browser check: source commit `5566fdfe7fedada556b6be0827be6bd6a75ab01a` on `codex/comp9500-llm-upgrades-20261110`. This is an evidence map, not a declaration that all requirements are complete.
 
 ## Latest professor requirements
 
@@ -8,7 +8,7 @@ The latest supplied transcript was received on 4 November; its meeting date is n
 
 | Requirement | Available evidence | Remaining acceptance |
 | --- | --- | --- |
-| Manual categories and measurable performance | [4 November evaluation](../deliverables/2026-11-04-prospective-evaluation/PROTOCOL-AND-RESULTS.md): intended manual profile HR@1 0.023333, NDCG@10 0.061120, fill 1.000; 24 users, 100 authored language cases, three seeds. Separately, the [14 November Windows Opera check](evidence/2026-11-14/OPERA-MANUAL-CONTROLS.md) at 15:19 UTC recorded manual K1 exclusion: 8 to 6 to 8, removing only 41001 and 41004. Preview and Undo review left the feed unchanged; approved Undo restored exact IDs and order. | Manual browser control is established on the named source revision by the browser operator’s recorded report; screenshot files were not retained. The initial category_1 value needed correction to K1. Recheck affected behavior after later source changes. Historical performance and this synthetic manual check remain separate. |
+| Manual categories and measurable performance | [4 November evaluation](../deliverables/2026-11-04-prospective-evaluation/PROTOCOL-AND-RESULTS.md): intended manual profile HR@1 0.023333, NDCG@10 0.061120, fill 1.000; 24 users, 100 authored language cases, three seeds. Separately, the [14 November Windows Opera check](evidence/2026-11-14/OPERA-MANUAL-CONTROLS.md) at 15:57 UTC on `5566fdf` recorded revised-chooser manual K1 exclusion: 8 to 6 to 8, removing only 41001 and 41004. Preview and Undo review left the feed unchanged; approved Undo restored exact IDs and order. | Manual browser control is established on the named source revision by the browser operator’s recorded report; screenshot files were not retained. The revised chooser disabled Review while blank and displayed all four categories in the actual fixture (K1–K4). The initial K1–K7 test expectation was incorrect; fixture inspection reconciled it. Recheck affected behavior after later source changes. Historical performance and this synthetic manual check remain separate. |
 | Create a new category from language and feed it into filtering | [5 November staged induction](../deliverables/2026-11-05-staged-induction/README.md) records a rendered-browser Llama check on seven synthetic coffee, gardening and cycling items. It proposed mains-electric equipment: positives 2/4/6, negatives 1/3/5, unknown 7. Reviewed exclusion changed 7 to 4; Clear restored seven items; Undo restored the excluded group and four-item feed. This historical two-stage example is not the current three-stage flow. Current code also includes separate evidence review. | A complete current Windows model-backed definition, membership, review, Apply and Undo run is not established by the tests below. Bind any submitted recording to the source and provider actually used. |
 | Indirect intent matched to existing categories or tags | [11 November hosted example](evidence/2026-11-11/HOSTED-TWO-SCENARIO-SUMMARY.md) used descriptions of pasta, bread and salad, with direct-Python 8 to 5 to 8. Current [metadata-only regression](../tests/test_existing_metadata_offline.py) removes descriptions and tests `topic_tag` and `first_level_category_name`: accepted authored proposals remove only items 3 and 4, then restore the 36-item baseline. Invalid source fields, quotations and item references are rejected. | The historical description example does not satisfy the stronger category/tag evidence claim. The metadata regression proves handling of authored proposals, not that a real model inferred the correct existing category or tag. Demonstrate that inference separately. |
 
@@ -18,7 +18,7 @@ Feed counts prove reversible control, not recommendation quality, general langua
 
 The inspected source includes the integrated application and built interface, demo quick-start, file relay, CLI operator, metadata-only regression and frozen-input byte checks. Source and interface are not separate unpublished candidates. Shipped code does not establish Windows CLI inference or browser acceptance.
 
-On 14 November, the following command ran on Windows with Python 3.14 against the source above:
+On 14 November, the following command ran on Windows with Python 3.14 against `8db85240db0a947312c3551b5d0e06c71ee5c7b3` (not a rerun on the later chooser revision):
 
 ```powershell
 python -X utf8 -B -m pytest -q -p no:cacheprovider tests/test_existing_metadata_offline.py tests/test_cli_safe_evidence_offline.py tests/test_relay_transport_parity.py
