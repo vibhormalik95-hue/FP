@@ -1,5 +1,11 @@
 import React, {useEffect, useRef, useState} from 'react';
 
+// Plain words for the stored values of the earlier topic tool.
+const ACTION={boost:'Show more',reduce:'Show less, still in the feed',exclude:'Remove from the feed'};
+const SOURCE={manual_structured:'You typed this phrase.',literal_source_phrase:'The phrase is in the item text.'};
+const sentence=text=>{const value=String(text||'').trim();return value&&!/[.!?]$/.test(value)?value+'.':value;};
+const phrase=c=>`${ACTION[c.operation]||c.operation}: "${c.topic}"${c.operation==='exclude'?'':` (${c.strength}${typeof c.adjustment==='number'?`, ${c.adjustment>0?'+':''}${c.adjustment.toFixed(2)}`:''})`}`;
+
 export default function SteeringPanel({api, user, resetKey, onFeed, onApplied, allowLocalModels=true}) {
   const [saved,setSaved]=useState(null), [text,setText]=useState(''), [mode,setMode]=useState('merge');
   const [backend,setBackend]=useState('ollama'), [manual,setManual]=useState([]);
@@ -57,71 +63,71 @@ export default function SteeringPanel({api, user, resetKey, onFeed, onApplied, a
     setClarification(null);setPending(null);
   }
   const disabled=working||user===null;
-  return <section className="panel" aria-label="Reviewed catalogue steering">
-    <div className="section-heading"><span className="step">04</span><h2>Talk to the local feed</h2></div>
-    <p className="help">Compose several topic preferences, review their source subjects, then apply. This controls the local saved-model catalogue, with no YouTube connection. Original A-E results remain separate.</p>
-    <label className="field-label" htmlFor="steering-backend">Interpretation method</label>
+  return <section className="panel" aria-label="Earlier topic tool">
+    <h3>Exact phrases</h3>
+    <p className="help">Type exact phrases, review the matching items, then apply. The tool changes only its own feed. It is separate from the conditions A to E and from the language controls.</p>
+    <label className="field-label" htmlFor="steering-backend">How the phrases are found</label>
     <select id="steering-backend" value={backend} disabled={disabled} onChange={e=>{setBackend(e.target.value);setPending(null);}}>
-      {allowLocalModels&&<option value="ollama">{modelName}: natural language</option>}<option value="manual">Manual: exact source subjects</option>
+      {allowLocalModels&&<option value="ollama">Local model {modelName}: your own words</option>}<option value="manual">Exact phrases that you type (no model)</option>
     </select>
-    <label className="field-label" htmlFor="steering-mode">Update scope</label>
+    <label className="field-label" htmlFor="steering-mode">How to combine with the applied phrases</label>
     <select id="steering-mode" value={mode} disabled={disabled} onChange={e=>{
       setMode(e.target.value);setPending(null);if(e.target.value==='replace')setText(saved?.text||text);
-    }}><option value="merge">Add or change an instruction</option><option value="replace">Replace editable topic profile</option></select>
+    }}><option value="merge">Add or change a phrase</option><option value="replace">Replace every phrase</option></select>
     {backend==='ollama'?<><label className="field-label" htmlFor="steering-text">Your instruction or editable profile</label>
       <textarea id="steering-text" rows={4} maxLength={2000} value={text} disabled={disabled}
         onChange={e=>{setText(e.target.value);setPending(null);}}
         placeholder="A lot more Qingdao, slightly less gaming, and hide cooking completely."/>
-      <p className="help">The model uses your saved subjects for follow-ups. A single last-applied subject can be called "that"; otherwise name it. Directions, strengths and source scope are reviewed before applying. No silent rule fallback.</p></>:<>
-      <label className="field-label" htmlFor="steering-manual-topic">Exact catalogue phrase</label>
+      <p className="help">The model reads your applied phrases for a follow-up request. You can call the last applied phrase "that"; otherwise name it. You review each action, strength and phrase before it applies. There is no rule-based fallback.</p></>:<>
+      <label className="field-label" htmlFor="steering-manual-topic">Exact phrase in the item text</label>
       <input id="steering-manual-topic" value={topic} maxLength={32} disabled={disabled} onChange={e=>setTopic(e.target.value)}/>
-      <label className="field-label" htmlFor="steering-operation">Manual direction</label>
+      <label className="field-label" htmlFor="steering-operation">Action</label>
       <select id="steering-operation" value={operation} disabled={disabled} onChange={e=>setOperation(e.target.value)}>
-        <option value="boost">Increase</option><option value="reduce">Decrease, still eligible</option><option value="exclude">Exclude completely</option>
+        <option value="boost">Show more</option><option value="reduce">Show less, still in the feed</option><option value="exclude">Remove from the feed</option>
       </select>
-      {operation!=='exclude'&&<><label className="field-label" htmlFor="steering-strength">Manual strength</label>
+      {operation!=='exclude'&&<><label className="field-label" htmlFor="steering-strength">Strength of the change</label>
         <select id="steering-strength" value={strength} disabled={disabled} onChange={e=>setStrength(e.target.value)}>
-          <option value="light">A little (0.10)</option><option value="standard">Standard (0.25)</option><option value="strong">A lot (0.40)</option>
+          <option value="light">Light 0.10</option><option value="standard">Standard 0.25</option><option value="strong">Strong 0.40</option>
         </select></>}
       <button className="secondary" disabled={disabled||topic.trim().length<2||manual.length>=8} onClick={()=>{
         setManual([...manual,{topic:topic.trim(),operation,strength:operation==='exclude'?'none':strength}]);setTopic('');setPending(null);
-      }}>Add manual control</button>
-      {manual.map((c,i)=><p className="help" key={i}>{c.operation} {c.topic} ({c.strength}) <button disabled={disabled} aria-label={`Remove draft control ${i+1}`} onClick={()=>{setManual(manual.filter((_,j)=>j!==i));setPending(null);}}>Remove</button></p>)}
+      }}>Add this phrase</button>
+      {manual.map((c,i)=><p className="help" key={i}>{phrase(c)} <button className="text-button" disabled={disabled} aria-label={`Remove the phrase ${c.topic} from the request`} onClick={()=>{setManual(manual.filter((_,j)=>j!==i));setPending(null);}}>Remove</button></p>)}
     </>}
     <button className="primary" disabled={disabled||(backend==='manual'?!manual.length:!text.trim())} onClick={review}>
-      {working?'Working locally...':'Review proposed changes'}</button>
+      {working?'Working...':'Review the change'}</button>
     {error&&<p role="alert" className="alert error">{error}</p>}
-    {question&&<p role="status" className="alert">Clarification needed: {question} Active preferences were kept.</p>}
+    {question&&<p role="status" className="alert">The tool needs a clearer request. {sentence(question)} Nothing was changed.</p>}
     {clarification&&<button className="secondary" disabled={disabled} onClick={()=>chooseSource(clarification.suggested_topic)}>
-      Use exact source phrase {clarification.suggested_topic} and review again</button>}
+      Use the exact phrase "{clarification.suggested_topic}" and review again</button>}
     {clarification?.literal_topic&&clarification.literal_topic!==clarification.suggested_topic&&<button className="secondary" disabled={disabled}
-      onClick={()=>chooseSource(clarification.literal_topic)}>Keep literal source phrase {clarification.literal_topic}</button>}
-    {subjectBindings.map((b,i)=><p className="help" key={b.requested_topic}>Confirmed scope: {b.requested_topic} = {b.source_topic}. <button disabled={disabled}
-      onClick={()=>{setSubjectBindings(subjectBindings.filter((_,j)=>j!==i));setPending(null);}}>Forget choice</button></p>)}
-    {pending&&<div className="saved-profile" role="status"><h3>Review before applying</h3>
+      onClick={()=>chooseSource(clarification.literal_topic)}>Keep the phrase "{clarification.literal_topic}" as you wrote it</button>}
+    {subjectBindings.map((b,i)=><p className="help" key={b.requested_topic}>Confirmed phrase: "{b.requested_topic}" means "{b.source_topic}". <button className="text-button" disabled={disabled}
+      onClick={()=>{setSubjectBindings(subjectBindings.filter((_,j)=>j!==i));setPending(null);}}>Forget this choice</button></p>)}
+    {pending&&<div className="saved-profile" role="status"><h4>Review the change before you apply it</h4>
       {pending.interpretation?.history_action&&pending.interpretation.history_action!=='none'
-        ?<p className="help">Requested action: {pending.interpretation.history_action} the topic profile.</p>
-        :<p className="help">Requested changes: {pending.interpretation?.commands?.map(c=>`${c.operation} ${c.topic} (${c.strength})`).join('; ')}</p>}
-      <p className="help">The resulting profile has {pending.commands.length} subject controls.</p>
+        ?<p className="help">{pending.interpretation.history_action==='undo'?'You asked to undo the last change of the phrases.':'You asked to remove every phrase.'}</p>
+        :<p className="help">Requested: {pending.interpretation?.commands?.map(phrase).join('; ')}.</p>}
+      <p className="help">After approval the tool has {pending.commands.length===1?'1 phrase':`${pending.commands.length} phrases`}.</p>
       {pending.commands.map(c=><div className="steering-review" key={c.topic}>
-        <strong>{c.operation} {c.topic} ({c.strength}, {c.adjustment>0?'+':''}{c.adjustment.toFixed(2)})</strong>
-        <p className="help">Requested subject: {c.requested_topic}; {c.grounding_method}; {c.candidate_matches} source matches.</p>
-        <p className="help">{c.source}</p>
-        <p className="help">Example item IDs: {c.match_evidence.map(x=>x.item_id).join(', ')}</p>
+        <strong>{phrase(c)}</strong>
+        <p className="help">Requested phrase: "{c.requested_topic}". {SOURCE[c.grounding_method]||`Method: ${c.grounding_method}.`} Items whose text holds it: {c.candidate_matches}.</p>
+        {c.source&&<p className="help">{SOURCE[c.source]||`Source: ${c.source}.`}</p>}
+        <p className="help">Examples of these items: {c.match_evidence.map(x=>x.item_id).join(', ')||'none'}.</p>
       </div>)}
-      {pending.preview.topic_exposure.map(c=><p className="help" key={c.topic}>{c.topic}: {c.baseline_top_k_match_count}/10 before; {c.top_k_match_count}/10 proposed.</p>)}
-      <p className="help">Proposed top ten: {pending.preview.items.map(x=>x.item_id).join(', ')}. {Math.round(pending.preview.fill_rate*100)}% fill; {pending.preview.available_items} eligible.</p>
-      <p className="help">Check the subjects yourself. Source matching and a changed order do not prove human relevance. Hard exclusions win overlapping controls.</p>
-      <button className="primary" disabled={disabled} onClick={apply}>Apply reviewed changes</button>
+      {pending.preview.topic_exposure.map(c=><p className="help" key={c.topic}>"{c.topic}": {c.baseline_top_k_match_count} of the first ten now; {c.top_k_match_count} after approval.</p>)}
+      <p className="help">First ten after approval: {pending.preview.items.map(x=>x.item_id).join(', ')}. Eligible items: {pending.preview.available_items}.</p>
+      <p className="help">Check the phrases yourself. A matching phrase and a changed order do not show that an item fits. A removal takes priority over a rank change.</p>
+      <button className="primary" disabled={disabled} onClick={apply}>Approve and apply</button>
     </div>}
-    <div className="saved-profile"><h3>Saved topic profile</h3>
-      <p className="help">{saved?.focus?`Follow-up focus: ${saved.focus}.`:'No unique follow-up focus; name a subject.'}</p>
+    <div className="saved-profile"><h4>Applied phrases</h4>
+      {allowLocalModels&&<p className="help">{saved?.focus?`A follow-up request refers to: ${saved.focus}.`:'No phrase is the clear subject of a follow-up request. Name the phrase.'}</p>}
       {saved?.commands?.length?saved.commands.map(c=><div className="preference" key={c.topic}>
-        <span>{c.operation} {c.topic} ({c.strength})</span><button disabled={disabled} aria-label={`Remove saved topic ${c.topic}`} onClick={()=>remove(c.topic)}>Remove</button>
-      </div>):<p className="help">No saved topic controls.</p>}
-      <button className="secondary" disabled={disabled||!saved?.can_undo} onClick={()=>history('undo')}>Review undo last change</button>
-      <button className="secondary" disabled={disabled||!saved?.commands?.length} onClick={()=>history('clear')}>Review clearing topic profile</button>
-      <p className="help">Undo covers the last ten applied topic changes. Global Reset this user clears all controls and undo history. Reloading starts a fresh session.</p>
+        <span>{phrase(c)}</span><button disabled={disabled} aria-label={`Remove the applied phrase ${c.topic}`} onClick={()=>remove(c.topic)}>×</button>
+      </div>):<p className="help">None.</p>}
+      <button className="secondary" disabled={disabled||!saved?.can_undo} onClick={()=>history('undo')}>Undo the last phrase change (review first)</button>
+      <button className="secondary" disabled={disabled||!saved?.commands?.length} onClick={()=>history('clear')}>Remove every phrase (review first)</button>
+      <p className="help">Undo goes back at most 10 changes. "Reset this user" removes every phrase and the undo history. A reload of the page starts a new session.</p>
     </div>
   </section>;
 }

@@ -49,6 +49,14 @@ Open <http://127.0.0.1:8765>. The status line of the page shows **AUTHORED REPLI
 Do each method once here before you use a model. The [guide to the language controls](demo.md) gives the steps.
 Press Ctrl+C in the terminal to stop the server.
 
+The original conditions A to E need category IDs of the form `category_N`. To try them, rehearse the built-in fixture:
+
+```
+python scripts/quickstart.py rehearse --scenario conditions
+```
+
+The page then opens on "Original study (A to E)". This scenario uses no model and has no language controls. On the other scenarios the instruction and the profile of C, D and E are disabled, and the page says why.
+
 ## 5. Choose a route to a model
 
 ```
@@ -103,6 +111,8 @@ Open <http://127.0.0.1:8765>. The page opens on **Language controls**. The statu
 | `category` | Eight invented items. The manual control and a new category from natural language. |
 | `hunger` | Eight invented items. The manual control and an indirect request matched to item descriptions. |
 
+`start` does not serve the scenario `conditions`, because that scenario has no language controls. Use `rehearse --scenario conditions` for it.
+
 - The terminal prints one line for each model call.
 - The exact request and the raw reply of each call go to a new folder `runs/route-SCENARIO-DATE-TIME/`. Add `--record-dir none` if you do not want these files.
 - Add `--port 8770` if port 8765 is in use.
@@ -117,7 +127,7 @@ Follow the [guide to the language controls](demo.md). In short:
 3. Press **Interpret my request** (for the manual method: **Show the proposed change**).
 4. Read the three blocks of the review and the table of items.
 5. Press **Approve this exact item set and apply**.
-6. Press **Undo the last change (review first)**, then approve the undo.
+6. Press **Undo the last change (review first)**, then press **Approve the undo**.
 
 You can also run the bundled requests through your route without the browser:
 
@@ -131,8 +141,8 @@ See [route trial](route-trial.md).
 
 Run these checks from the source folder. They use no model.
 
-1. **The files.** `python scripts/quickstart.py check` prints the source fingerprint. The fingerprint of the integrated final revision has not yet been recorded.
-2. **The Python tests.** `python -m pytest -q -p no:cacheprovider`. No result has yet been recorded for the integrated final revision.
+1. **The files.** `python scripts/quickstart.py check` prints the source fingerprint. For the final revision the value is `ab1a9d846b33bf0e7e3840b91b69f65747386daec2cf5d38fc621d455c8fcefd`.
+2. **The Python tests.** `python -m pytest -q -p no:cacheprovider`. Expected on the final revision: 1659 passed and 1 skipped with PyTorch; 1655 passed and 2 skipped in a fresh environment without PyTorch.
 3. **The guarded checks of the reviewed CLI profile.** `python tools/hosted_validation_current/run_guarded.py .` The output must end with `OK` and `GUARD intercepted events: []`.
 4. **The interface tests.** They need Node.js.
 
@@ -143,7 +153,7 @@ Run these checks from the source folder. They use no model.
    node --test "web/tests/*.mjs"
    ```
 
-   No result has yet been recorded for the integrated final revision.
+   Expected on the final revision: 114 passed.
 5. **The browser check.** It drives the page in a real browser and compares the page with the state of the server. Install the browser once:
 
    ```
@@ -158,6 +168,7 @@ Run these checks from the source folder. They use no model.
    ```
 
    The last lines must be `OUTCOME all flows completed` and the path of the receipt. `--out` must name a new or empty folder.
+   Do the same for the scenarios `category`, `hunger` and `conditions`, each with its own rehearsal server and its own `--out` folder. Expected on the final revision: with authored replies on Linux: `tags` 209 checks, `category` 104, `hunger` 96, `conditions` 12; all passed, exit code 0 each.
    With a model in place of the rehearsal, add `--review wait --reviewer "your name"`. The script then stops at each review and waits for your decision. See [check a run in a real browser](demo.md#check-a-run-in-a-real-browser).
 
 The two commands that install the browser were not run for this page: the workspace that produced it already had Playwright and Chromium.
@@ -178,5 +189,7 @@ Press Ctrl+C in the terminal of the server. Controls and reviews last for one br
 | `The built interface is missing` | Run `npm ci` and `npm run build` in `web/`. The built interface is part of the repository, so this message means that files are absent. |
 | `Run "python scripts/quickstart.py setup" first.` | The route file `model-route.json` does not exist yet, or it has an error. Run `setup`. |
 | A line that starts with `FAILED` in `doctor` | Read the line `What to do:` below it. The [failure table](model-routes.md#if-something-fails) lists every message. |
-| The page shows "The step stopped with an error" | Read the message in the block "Application checks". It comes from the application or from the model provider. Nothing was applied. |
-| The page shows no model method | The server runs without a model (`--provider manual`). Start it with `rehearse` or `start`. |
+| The page shows "The call to the provider failed", "The application rejected the reply" or "The request failed" | Read the message in the block "Application checks". It comes from the application or from the model provider. Nothing was applied. |
+| The page shows "No authored reply exists for this request" | The server runs with hand-written replies (`rehearse`). They exist only for the bundled requests. Insert a bundled request, or start the server with `start` and a model route. |
+| The model methods are marked "(needs a model provider)" | The server runs without a model (`--provider manual`). Start it with `rehearse` or `start`. |
+| The instruction and the profile of the conditions C, D and E are disabled | The scenario has named categories. Use `python scripts/quickstart.py rehearse --scenario conditions`. |

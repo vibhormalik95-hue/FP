@@ -35,37 +35,37 @@
 % ======================================================================
 \newcommand{\TBF}[1]{\textbf{[to fill: #1]}}
 \newcommand{\PaperDate}{14 November 2026}
-\newcommand{\FinalRunDate}{\TBF{run date, UTC}}
+\newcommand{\FinalRunDate}{14 November 2026 (UTC)}
 %   form: 14 November 2026 (UTC)
-\newcommand{\FinalRevision}{\TBF{revision}}
+\newcommand{\FinalRevision}{\texttt{b7c5a91}}
 %   form: \texttt{0a1b2c3}  (first seven characters of the revision)
-\newcommand{\FinalFingerprint}{\TBF{source fingerprint, first 12 characters}}
+\newcommand{\FinalFingerprint}{\texttt{ab1a9d846b33}}
 %   form: \texttt{0123456789ab}
-\newcommand{\FinalEvidencePath}{\TBF{evidence folder}}
+\newcommand{\FinalEvidencePath}{\texttt{docs/evidence/2026-11-14/}}
 %   form: \url{docs/evidence/2026-11-14/}
-\newcommand{\FinalModel}{\TBF{declared model}}
+\newcommand{\FinalModel}{Claude Opus (sub-agent alias of the session)}
 %   form: claude-fable-5-2  (the name that the route declares; no other word)
-\newcommand{\FinalScenarioItems}{\TBF{number}}
+\newcommand{\FinalScenarioItems}{ten}
 %   form: ten  (a number word; the sentence continues "invented items")
-\newcommand{\FinalManual}{\TBF{eligible items before, after Apply, after Undo}}
+\newcommand{\FinalManual}{10 eligible items; 7 after Apply; 10 after Undo}
 %   form: 8 eligible items; 6 after Apply; 8 after Undo
-\newcommand{\FinalTags}{\TBF{approved terms; eligible items before, after Apply, after Undo}}
+\newcommand{\FinalTags}{Three category names and six tags approved (Cooking and its subcategories; among the tags, street food); 16 application checks passed; 10; 6; 10}
 %   form: Category Food and tag street food approved; 10 eligible items; 6 after Apply; 10 after Undo
-\newcommand{\FinalMixed}{\TBF{controls proposed and applied; result}}
+\newcommand{\FinalMixed}{Two controls proposed and applied with one approval (show more Music, remove the food terms); two items moved up; 10; 6; 10}
 %   form: Two controls proposed and applied with one approval (boost Music, exclude Food); 10; 6; 10
-\newcommand{\FinalAbstain}{\TBF{outcome for each of the four requests}}
+\newcommand{\FinalAbstain}{Ambiguous: the model asked for a clarification. Daily limit: reported by the model as unsupported. Negated command: stopped by the rule before any call. No match: reported by the model. Nothing applied in the four cases}
 %   form: Ambiguous: the model asked for a clarification. Negated: stopped by the rule before any call.
 %         Unsupported and no match: reported by the model. Nothing applied in the four cases
-\newcommand{\FinalDescriptions}{\TBF{selected items; eligible items before, after Apply, after Undo}}
+\newcommand{\FinalDescriptions}{Second scenario: three items selected, each with a checked quotation; 8; 5; 8. Category-and-tag scenario: one item; 10; 9; 10}
 %   form: Three items selected, each with a checked quotation; 8; 5; 8
-\newcommand{\FinalNewCategory}{\TBF{label; members; unknown; eligible items before, after Apply, after Undo}}
+\newcommand{\FinalNewCategory}{Label \emph{Damaged object repaired and kept in use}; 3 members; one disagreement withheld as unknown; 8; 5; 8}
 %   form: Label \emph{Edible food}; 3 members; 1 unknown; 8; 5; 8
-\newcommand{\FinalFictional}{\TBF{draft, admit, remove: item counts}}
+\newcommand{\FinalFictional}{One draft approved and added to the separate list (1 item); removed (0 items); the feed stayed at 10}
 %   form: One draft accepted and admitted to the separate feed (1 item); removed (0 items)
-\newcommand{\FinalAssertions}{\TBF{assertions passed of total; review decisions}}
+\newcommand{\FinalAssertions}{the three runs made 13 model calls, 308 of 308 scripted checks passed, and the AI operator made 19 review decisions, all approvals}
 %   form: 212 of 212 scripted assertions passed, and the AI operator made 19 review decisions
 %   (a clause without a final period; it completes the sentence "In total, ...")
-\newcommand{\FinalRouteChecks}{\TBF{what ran against each stand-in}}
+\newcommand{\FinalRouteChecks}{the connection check and the route trial (nine bundled requests) ran through one stand-in program for the command-line route and one stand-in server for each of the two HTTP routes, with authored replies and no error}
 %   form: the route trial ran the bundled requests through one stand-in program for the command-line
 %         route and one stand-in server for each of the two HTTP routes
 %   (a clause without a final period; it completes the sentence "Route checks: ...")
@@ -134,7 +134,7 @@ The user is the unit of analysis. Experiment 1 averages paired outcomes across r
 The proposal sets an 85\% target for exact parser accuracy and treats less than 70\% as degraded. It also asks for top-1 hit rate ``within 10\%'' of the baseline, without choosing an absolute or a relative margin. Operational and validation failures stay in every denominator.
 
 \subsection{Use of AI tools}\label{sec:ai}
-AI tools took part in the research process. \emph{Code:} the student reports, as of 4 November 2026, that he supplied the project vision, used a language model to generate code, reviewed that code line by line and published it. That report does not cover later changes: the reviewed workflow, the model routes, their tests and their documents were produced with substantial AI assistance, and no line-by-line review by the student is claimed for them. \emph{Data and labels:} one authoring agent wrote the Experiment 1 parser bank. AI agents wrote the reference answers of the practice evaluation, the requests and both reference annotations of Experiment 2 (reported model identifier gpt-6.1-sol), and the requests and references of the 4 November study. \emph{Procedure and analysis:} AI agents in named roles ran the sampling, the custody steps and the audits of Experiment 2; the role names in the public evidence files, among them the custodian name Vibhor, are names of AI roles, not of persons. An AI agent also audited the practice evaluation and reviewed the 4 November study. \emph{Demonstrations:} an AI session wrote the invented scenarios, produced the model replies (declared model claude-fable-5-2, not attested) and made every review decision. \emph{Text:} an AI agent drafted this revision from the recorded evidence. \StudentConfirm{The student reviewed the text.} No AI tool is an author.
+AI tools took part in the research process. \emph{Code:} the student reports, as of 4 November 2026, that he supplied the project vision, used a language model to generate code, reviewed that code line by line and published it. That report does not cover later changes: the reviewed workflow, the model routes, their tests and their documents were produced with substantial AI assistance, and no line-by-line review by the student is claimed for them. \emph{Data and labels:} one authoring agent wrote the Experiment 1 parser bank. AI agents wrote the reference answers of the practice evaluation, the requests and both reference annotations of Experiment 2 (reported model identifier gpt-6.1-sol), and the requests and references of the 4 November study. \emph{Procedure and analysis:} AI agents in named roles ran the sampling, the custody steps and the audits of Experiment 2; the role names in the public evidence files, among them the custodian name Vibhor, are names of AI roles, not of persons. An AI agent also audited the practice evaluation and reviewed the 4 November study. \emph{Demonstrations:} an AI session wrote the invented scenarios, produced the model replies (declared models claude-fable-5-2 on 13 November and Claude Opus on 14 November, not attested) and made every review decision. \emph{Text:} an AI agent drafted this revision from the recorded evidence. \StudentConfirm{The student reviewed the text.} No AI tool is an author.
 
 \section{Experiment 1: Category Control and Ranking}
 Table~\ref{tab:e1} gives the frozen result. For boost requests, TCP@10 is 79.222\% under the category policy against 11.615\% under item feedback. For mute requests, TCER@10 is zero against 6.112\%. All lists are full. The direction follows from the policy: a category-wide boost reaches more items than a reaction to one item, and a hard mute gives zero by construction. C, D and E have identical rankings on equivalent canonical commands, and the rule parser gives the same rankings as Llama. The gain comes from the shared enforcement. It is not an observed advantage of the language model.
@@ -261,10 +261,10 @@ In each completed run the preview changed nothing, Apply removed exactly the app
 
 The model replies came from sub-agents of one AI session through a file relay. The declared model is claude-fable-5-2; the transport cannot attest it. The same session wrote the code changes of that day, drove the browser and made every review decision. The review is therefore neither human nor independent. Its decisions took 0.5\,s to 15.5\,s (154\,s in one case), and two undo approvals were written without a reading of the undo screen. The start context of a sub-agent held the project instructions, which name a hunger-to-food example, so the model was probably not blind to the intended answer. The three runs of each entry point used three successive revisions of the application. The invented descriptions were written for these requests and state the cue in words: three say that the food is edible or to be eaten, and three say that no food is shown. In the new-category runs the objective named no concept, and the direction was chosen by hand. No automatic model connection has completed the new-category entry point: one attempt failed for an unknown cause, and a later one stopped at a clarification. The runs show that three entry points (manual category, item descriptions, new category in stages) execute from end to end on these scenarios; they are not an accuracy result. The category-and-tag entry point did not exist then.
 
-\textbf{Final-build validation pending.} The final-build demonstration has not yet been recorded in this draft. Its model route, declared model and any attestation, reviewer identity, scenario exposure, platform and outcomes must be reported from the retained run records. Earlier file-relay demonstrations and software tests do not establish these facts for the final revision. Authored replies and stand-in programs must be identified separately from real model calls. Table~\ref{tab:final} reserves fields for the final outcomes; unfilled markers are not results. The required record fields are run date \FinalRunDate, revision \FinalRevision, source fingerprint \FinalFingerprint, evidence folder \FinalEvidencePath, declared model \FinalModel, and scenario size \FinalScenarioItems. Assertion and review counts remain \FinalAssertions. Route checks remain \FinalRouteChecks. These fields must be completed and the corresponding provenance described before this section is presented as completed validation.
+\textbf{Runs on the final build.} The runs of \FinalRunDate{} used application revision \FinalRevision{} (source fingerprint \FinalFingerprint). Their limits are of the same kind as those of 13 November. The model replies came through the file relay from sub-agents of the AI system that also operated the review. The declared model, \FinalModel, is not attested, and the sub-agents were probably not blind to the purpose of the scenarios. An AI operator made every review decision, and no person has reviewed a run with real model output. Authored replies served the rehearsals. The command-line and HTTP routes ran against stand-in programs and servers only: no real provider, local model server or command-line program was called, and nothing ran on Windows or macOS. The category-and-tag scenario has \FinalScenarioItems{} invented items with existing categories and tags. Table~\ref{tab:final} gives the recorded outcomes; the records are in \FinalEvidencePath. In total, \FinalAssertions. Route checks: \FinalRouteChecks.
 
 \begin{table}[t]\centering\footnotesize
-\caption{Pending final-build outcomes (invented items, diagnostic scorer; not results until recorded)}\label{tab:final}
+\caption{Demonstration runs on the final build (invented items, diagnostic scorer; not an accuracy result)}\label{tab:final}
 \begin{tabular}{L{2.7cm}L{5.1cm}}\toprule
 Flow & Recorded outcome\\\midrule
 Manual category & \FinalManual\\

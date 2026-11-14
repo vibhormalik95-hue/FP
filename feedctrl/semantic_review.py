@@ -16,13 +16,15 @@ import unicodedata
 from typing import Literal
 
 from fastapi import Header, HTTPException, Query
-from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictInt
+from pydantic import BaseModel, ConfigDict, Field, StrictBool, StrictInt, field_validator
 
 from feedctrl.controls import ParserOperationalError, normalize_scores
-from feedctrl.indirect_grounding import (APPLICATION_CHECK, COMMAND_NEGATION, GUARD_CHECK, GUARD_PATTERN_WORDS,
+from feedctrl.indirect_grounding import (APPLICATION_CHECK, BUDGET_CHECK, BUDGET_REASON, COMMAND_NEGATION,
+                                         GUARD_CHECK, GUARD_PATTERN_WORDS, evidence_budget,
                                          GUARD_REASON, MODEL_REPORT, PROVIDER_FAILURE, REPLY_REJECTED,
                                          _catalogue, _digest, _response_snapshot, clean_page_text,
-                                         failure_sentence, make_local_ollama_infer, propose_indirect)
+                                         failure_sentence, make_local_ollama_infer, propose_indirect,
+                                         rejected_call)
 from feedctrl.label_validation import is_printable_label
 from feedctrl.semantic_controls import STRENGTH_WEIGHTS
 from feedctrl import induction_integration as induction
@@ -50,11 +52,57 @@ Clarify multiple actions, unknown direction, a negated/contradictory command,
 quotas, conditional requests or unresolved references. No history or cross-turn
 context is supplied. When clarifying still emit valid placeholder
 fields; they will not execute. Output only the schema. Nothing is applied."""
+# What the action prompt asks and no application check can test: the direction,
+# whether a command is negated or a request is a quota or a condition, and
+# whether a clarification is needed. For these the model alone decides. The
+# application checks the schema, the declared control and that the span is a
+# verbatim part of the request; the wording guard runs before this call.
 
 
 MAX_GROUPS = 8
 REVIEW_WINDOW_SECONDS = 300
 LIMIT_CHECK = 'At most eight controls stay applied'
+NAME_CHECK = 'The name of the new control is not the name of an applied control'
+
+
+def scope_effect(label, members, outside, scope_size):
+    """Display data: a control changes only the items of its evidence scope.
+
+    ``outside`` lists the items outside the scope that carry the same category
+    or terms. They do not change; the page states this next to the control.
+    """
+    message = f'This control selects {len(members)} of the {scope_size} items in the scope.'
+    if outside:
+        message += (f' {len(outside)} more items with the same category or terms are outside the scope. '
+                    'They do not change.')
+    return {'label': label, 'in_scope_item_ids': list(members), 'outside_scope_item_ids': list(outside),
+            'message': message}
+
+
+def printable_request(value):
+    """The request goes to a provider and onto the review screen. A control or
+    format character can hide or reorder words there, so it is refused."""
+    if any(unicodedata.category(c) in {'Cf', 'Cs'}
+           or (unicodedata.category(c) == 'Cc' and c not in '\n\r\t') for c in value):
+        raise ValueError('Use printable request text without control or format characters')
+    return value
+
+
+def collision_reason(label):
+    """The plain sentence for a name that an applied control already has."""
+    return (f'An applied control already has the name "{clean_page_text(label, 80)}". Nothing was applied. '
+            'Choose another name for this control, or remove the applied control first.')
+
+
+def same_manual_control(group, category, operation):
+    """True when an applied group is the manual control of this category and operation.
+
+    Such a group is the earlier version of the same control, so a new manual
+    control with the same name replaces it (the strength can differ).
+    """
+    proposal = group["proposal"]
+    return (proposal["provenance"]["model"].get("backend") == "manual_category"
+            and group["request"] == category and proposal["action"]["operation"] == operation)
 
 
 def limit_reason(applied, added):
@@ -127,7 +175,8 @@ def stage_outcome(exc, calls, raised):
     if isinstance(exc, ParserOperationalError):
         # Written by the application or by the provider wrapper, never by a reply.
         return failure_sentence(exc), APPLICATION_CHECK if not calls else PROVIDER_FAILURE
-    return clean_page_text(exc), REPLY_REJECTED if returned else APPLICATION_CHECK
+    # ``application_check`` only when no call was begun: the page says then that no model was called.
+    return clean_page_text(exc), REPLY_REJECTED if returned else PROVIDER_FAILURE if calls else APPLICATION_CHECK
 
 
 def plan_notes(groups, catalogue_size):
@@ -181,6 +230,11 @@ class SemanticPreview(BaseModel):
     operation: Literal["boost", "reduce", "exclude"] = "boost"
     strength: Literal["light", "standard", "strong", "none"] = "standard"
     mode: Literal["merge", "replace"] = "merge"
+
+    @field_validator("text")
+    @classmethod
+    def printable(cls, value):
+        return printable_request(value)
 
 
 class SemanticApply(BaseModel):
@@ -508,10 +562,17 @@ def install_semantic_routes(app, demo, *, infer_factory=None, category_infer_fac
                 raise ValueError("Configured adapter requires model-interpreted action; no fallback")
             if body.backend != "configured_model" and body.action_source == "model":
                 raise ValueError("Model action source requires the configured adapter")
-            # A named control replaces an applied control with the same name; every
-            # other applied control stays. The limit is therefore known before any call.
-            kept = [] if body.mode == "replace" else [
-                g for g in existing if g["label"].casefold() != body.label.strip().casefold()]
+            # The person names this control. In merge mode a name that an applied
+            # control already has is a collision, reported before any call: only
+            # the same manual control (same category and operation) is replaced
+            # by its new version. Every other applied control stays, so the
+            # limit is also known before any call.
+            name = body.label.strip().casefold()
+            named = [] if body.mode == "replace" else [g for g in existing if g["label"].casefold() == name]
+            if named and not (manual and all(same_manual_control(g, body.category, body.operation) for g in named)):
+                checks.append({"check": NAME_CHECK, "passed": False, "detail": clean_page_text(body.label, 80)})
+                return not_ready("label_collision", collision_reason(body.label.strip()), APPLICATION_CHECK)
+            kept = [] if body.mode == "replace" else [g for g in existing if g not in named]
             if len(kept) + 1 > MAX_GROUPS:
                 raise TooManyControls(len(kept), 1)
             if manual:
@@ -529,7 +590,7 @@ def install_semantic_routes(app, demo, *, infer_factory=None, category_infer_fac
                 checks.append({"check": "The chosen category exists in the catalogue", "passed": True, "detail": ""})
                 checks.append({"check": "The selected items are exactly the scope items that carry the category",
                                "passed": True, "detail": f"{len(members)} of {len(index['items'])} scope items"})
-                scope_effects = [{"in_scope_item_ids": list(members), "outside_scope_item_ids": outside}]
+                scope_effects = [scope_effect(body.label.strip(), members, outside, len(index["items"]))]
                 proposal = {"status": "review", "requires_review": True, "reason": "Exact existing-category baseline, no model",
                     "action": action, "item_ids": members, "evidence": [], "provenance": {
                         "source_sha256": index["sha256"], "catalogue_sha256": _digest(_catalogue(index)),
@@ -545,6 +606,12 @@ def install_semantic_routes(app, demo, *, infer_factory=None, category_infer_fac
                                "detail": GUARD_PATTERN_WORDS})
                 if not checks[-1]["passed"]:
                     return not_ready("clarify", GUARD_REASON, APPLICATION_CHECK)
+                # The evidence budget is also known before the first call: no call
+                # is spent on a request whose items cannot be sent in the evidence call.
+                passed, detail = evidence_budget(grounding_request, index)
+                checks.append({"check": BUDGET_CHECK, "passed": passed, "detail": detail})
+                if not passed:
+                    return not_ready("clarify", BUDGET_REASON, APPLICATION_CHECK)
                 if body.backend == "configured_model":
                     # Operator-selected transport, never request-supplied URLs or keys.
                     infer, provenance = configured_infer()
@@ -561,13 +628,15 @@ def install_semantic_routes(app, demo, *, infer_factory=None, category_infer_fac
                         failed.append(exc)
                         raise
                     try:
-                        raw = _response_snapshot(raw)
-                    except RecursionError as exc:
+                        bounded = _response_snapshot(raw)
+                    except (TypeError, ValueError, RecursionError) as exc:
+                        # A reply came back and is not bounded JSON. It stays visible as text.
                         attempt["status"] = "reply_rejected"
-                        raise ValueError('Model response exceeds JSON nesting budget') from exc
-                    except (TypeError, ValueError):
-                        attempt["status"] = "reply_rejected"
-                        raise
+                        calls.append(rejected_call(payload, schema, raw))
+                        if stage[0] == "evidence":
+                            return raw  # the evidence step rejects it itself and records the check
+                        raise ValueError("Response is not bounded finite JSON") from exc
+                    raw = bounded
                     attempt["status"] = "returned"
                     calls.append({"request_sha256": _digest(payload), "schema_sha256": _digest(schema),
                         "response_sha256": _digest(raw), "raw_response": deepcopy(raw)})
@@ -607,7 +676,7 @@ def install_semantic_routes(app, demo, *, infer_factory=None, category_infer_fac
                 proposal = propose_indirect(grounding_request, action, index, tracked_infer, model_provenance=provenance)
                 # Checks of the action stage first, then every check of the evidence stage
                 # (the evidence stage repeats the wording guard for callers that use it alone).
-                checks.extend(row for row in proposal.pop("checks") if row["check"] != GUARD_CHECK)
+                checks.extend(row for row in proposal.pop("checks") if row["check"] not in (GUARD_CHECK, BUDGET_CHECK))
                 proposal.pop("call_attempted", None)
                 proposal["action_source"] = 'user_confirmed_target' if confirmation else body.action_source
                 if confirmation:
@@ -623,8 +692,6 @@ def install_semantic_routes(app, demo, *, infer_factory=None, category_infer_fac
             groups = [g for g in kept if g["label"].casefold() != group["label"].casefold()] + [group]
             if len(groups) > MAX_GROUPS:
                 raise TooManyControls(len(groups) - 1, 1)
-            for effect in scope_effects:
-                effect["label"] = group["label"]
             with demo.lock:
                 state = state_for(x_session_id, body.user_id)
                 if state["semantic_revision"] != revision or state.get("semantic_preview_nonce") != nonce:
@@ -634,8 +701,7 @@ def install_semantic_routes(app, demo, *, infer_factory=None, category_infer_fac
                         "calls_attempted": len(attempts), "call_attempts": deepcopy(attempts),
                         "scope_effects": scope_effects}
         except TooManyControls as exc:
-            if manual:
-                raise HTTPException(422, str(exc)) from exc
+            # Its own outcome for every method, also the manual one: a plain sentence, not an error.
             checks.append({"check": LIMIT_CHECK, "passed": False,
                            "detail": f"{exc.applied} stay applied; this request adds {exc.added}"})
             return not_ready("limit", str(exc), APPLICATION_CHECK)
@@ -708,6 +774,11 @@ def install_semantic_routes(app, demo, *, infer_factory=None, category_infer_fac
                     return not_ready("error", failure_sentence(raised[-1]), PROVIDER_FAILURE, induction=envelope)
                 source = (APPLICATION_CHECK if not calls else
                           REPLY_REJECTED if envelope["status"] in ("error", "duplicate") else MODEL_REPORT)
+                if envelope["status"] == "duplicate" and envelope["reason"].startswith("Label already exists"):
+                    # A name collision is its own outcome with a plain sentence.
+                    from feedctrl.staged_routes import duplicate_name  # that module imports this one
+                    reason, name_checks = duplicate_name(calls)
+                    return not_ready("duplicate", reason, source, induction=envelope, checks=name_checks)
                 return not_ready(envelope["status"], envelope["reason"], source, induction=envelope)
             control = induction.category_as_control(envelope, body.objective, index, inventory,
                                                     body.operation, body.strength, provenance)

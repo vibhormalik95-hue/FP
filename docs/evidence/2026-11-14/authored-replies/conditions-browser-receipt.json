@@ -1,0 +1,131 @@
+{
+  "kind": "browser run of the served application",
+  "started_utc": "2026-11-14T16:55:47.677Z",
+  "base": "http://127.0.0.1:8865",
+  "scenario": "conditions",
+  "flows": [
+    "original"
+  ],
+  "review_mode": "auto",
+  "reviewer": "none: review boxes ticked by the script",
+  "source_fingerprint": "ab1a9d846b33bf0e7e3840b91b69f65747386daec2cf5d38fc621d455c8fcefd",
+  "status": {
+    "data_mode": "fixture",
+    "source": "deterministic fixture",
+    "model_mode": "deterministic diagnostic scorer",
+    "users": 3,
+    "items": 36,
+    "categories": 6,
+    "default_parser": "rule",
+    "ollama_model": "llama3.1:8b",
+    "local_models_allowed": false,
+    "provider": null,
+    "scenario_requests": {},
+    "scenario": "conditions",
+    "source_fingerprint": "ab1a9d846b33bf0e7e3840b91b69f65747386daec2cf5d38fc621d455c8fcefd",
+    "ollama_status": "Disabled by hosted-only application policy.",
+    "research_note": "Synthetic category controls measure offline behavior; this demo does not establish human agency or satisfaction.",
+    "category_note": "Opaque dataset category IDs; no invented topic names.",
+    "semantic_topic": "Unavailable until FEEDCTRL_CAPTION_SIDECAR is configured",
+    "caption_data": null,
+    "asset_note": "Metadata cards only; no original video assets are distributed."
+  },
+  "checks": [
+    {
+      "name": "session established",
+      "passed": true,
+      "detail": null,
+      "utc": "2026-11-14T16:55:48.513Z"
+    },
+    {
+      "name": "automatic review is used only when no model is connected",
+      "passed": true,
+      "detail": {
+        "review_mode": "auto",
+        "provider": null
+      },
+      "utc": "2026-11-14T16:55:48.513Z"
+    },
+    {
+      "name": "the page says why the language view is not available",
+      "passed": true,
+      "detail": null,
+      "utc": "2026-11-14T16:55:48.547Z"
+    },
+    {
+      "name": "original: the language view is not offered here, and the page says why",
+      "passed": true,
+      "detail": null,
+      "utc": "2026-11-14T16:55:48.762Z"
+    },
+    {
+      "name": "original: the server accepts the instruction",
+      "passed": true,
+      "detail": null,
+      "utc": "2026-11-14T16:55:48.823Z"
+    },
+    {
+      "name": "original: the message stands next to the instruction and names what was applied",
+      "passed": true,
+      "detail": {
+        "said": "Applied: show more category_0 (rule parser)."
+      },
+      "utc": "2026-11-14T16:55:48.876Z"
+    },
+    {
+      "name": "original: the instruction changes C and E and leaves A, B and D as they were",
+      "passed": true,
+      "detail": null,
+      "utc": "2026-11-14T16:55:48.877Z"
+    },
+    {
+      "name": "original: the server accepts the profile",
+      "passed": true,
+      "detail": null,
+      "utc": "2026-11-14T16:55:48.936Z"
+    },
+    {
+      "name": "original: the profile mutes its category in D and leaves A and B as they were",
+      "passed": true,
+      "detail": null,
+      "utc": "2026-11-14T16:55:48.983Z"
+    },
+    {
+      "name": "original: an instruction without a category is refused next to the instruction, and nothing changes",
+      "passed": true,
+      "detail": null,
+      "utc": "2026-11-14T16:55:49.284Z"
+    },
+    {
+      "name": "original: after the reset the five conditions are as at the start",
+      "passed": true,
+      "detail": null,
+      "utc": "2026-11-14T16:55:49.580Z"
+    },
+    {
+      "name": "no script error was raised by the page",
+      "passed": true,
+      "detail": [],
+      "utc": "2026-11-14T16:55:49.581Z"
+    }
+  ],
+  "review_decisions": [],
+  "flows_result": {
+    "original": {
+      "started_utc": "2026-11-14T16:55:48.704Z",
+      "outcome": "completed: instruction, profile, refused text and reset on category IDs",
+      "finished_utc": "2026-11-14T16:55:49.581Z"
+    }
+  },
+  "provider_calls": [],
+  "calls_attempted": [],
+  "screenshots": [
+    "01-start.png",
+    "02-original-applied.png",
+    "03-original-refused.png"
+  ],
+  "finished_utc": "2026-11-14T16:55:49.581Z",
+  "outcome": "all flows completed",
+  "status_strip_text": "FIXTURE DATA Diagnostic scorer: a fixed formula, not the trained recommender Rule parser · diagnostic only 36 items · 3 users No model provider",
+  "language_view": "not available"
+}

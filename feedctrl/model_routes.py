@@ -201,6 +201,13 @@ def remember_secret(value):
         _SECRETS.sort(key=lambda known: -len(known.pattern))
 
 
+def forget_secrets():
+    """Forget every remembered key. For a test: a short placeholder key such as
+    "ollama" would otherwise be removed from the texts of every later test."""
+    with _SECRETS_LOCK:
+        _SECRETS.clear()
+
+
 def scrub(text):
     """Remove every remembered key and everything that has the shape of a key."""
     text = str(text)
@@ -244,6 +251,11 @@ def scrubber(*secrets):
     return scrub
 
 
+def page_text(value, limit=600):
+    """One line of printable ASCII, cleaned of keys, at most ``limit`` characters."""
+    return one_line(ascii_text(one_line(scrub(value), 20_000)), limit)
+
+
 class RouteError(ParserOperationalError):
     """A route failure that a person can act on.
 
@@ -259,8 +271,8 @@ class RouteError(ParserOperationalError):
             raise ValueError('Unknown route error category')
         sentence, default_action = CATEGORIES[category]
         self.category = category
-        self.message = ascii_text(one_line(scrub(message or sentence)))
-        self.action = ascii_text(one_line(scrub(action or default_action)))
+        self.message = page_text(message or sentence)
+        self.action = page_text(action or default_action)
         self.http_status = None
         super().__init__(f'{self.message} {self.action}')
 
@@ -702,11 +714,18 @@ def build_route(config, *, api_key=None, record_dir=None, relay_dir=None, log=No
         if any(char.isspace() for char in api_key) or not api_key.isascii() or not api_key.isprintable():
             raise RouteError('authentication', 'The API key holds white space or a character that is not printable ASCII.',
                              'Copy the key again without the text around it.')
-        # A preset label can also be a local-server placeholder ("lm-studio").
-        # Exclude only that label, not arbitrary short keys or request fields.
+        # A value of the length of a real key must not be in the file in any
+        # written form. A shorter value is a placeholder for a local server
+        # ("lm-studio", "1234"); it can be a part of another value (a port, a
+        # model name), so it is refused only as a whole value. The preset label
+        # is never compared: it can be the same word as the placeholder.
         values = {field: value for field, value in config.items() if field != 'preset'}
-        encoded = _json(_values_only(values)).decode('utf-8')
-        if any(form in encoded for form in _forms(api_key)):
+        if len(api_key) >= 16:
+            encoded = _json(_values_only(values)).decode('utf-8')
+            held = any(form in encoded for form in _forms(api_key))
+        else:
+            held = api_key in _strings(values)
+        if held:
             reject('The route file holds the API key itself.',
                    'Remove the key from the file. Keep it only in the environment variable.')
     infer, identity, receipts = adapter.build(config, api_key=api_key, record_dir=record_dir, relay_dir=relay_dir)
@@ -725,6 +744,15 @@ def _values_only(value):
     return value
 
 
+def _strings(value):
+    """Every text value of a configuration, at any depth."""
+    if isinstance(value, dict):
+        return [text for item in value.values() for text in _strings(item)]
+    if isinstance(value, list):
+        return [text for item in value for text in _strings(item)]
+    return [value] if isinstance(value, str) else []
+
+
 def _logged(infer, log):
     """Report each call in one line. The line passes the scrubber once more."""
     counter = {'calls': 0}
@@ -737,8 +765,9 @@ def _logged(infer, log):
         except Exception as error:
             seconds = time.monotonic() - started
             detail = (f'{error.category}: {error.message} What to do: {error.action}' if isinstance(error, RouteError)
-                      else one_line(scrub(str(error) or type(error).__name__)))
-            log(ascii_text(scrub(f'[model route] call {number} FAILED after {seconds:.1f} s. {detail}')))
+                      else str(error) or type(error).__name__)
+            # The one scrub of this line: an error that is not a RouteError was not cleaned when it was built.
+            log(page_text(f'[model route] call {number} FAILED after {seconds:.1f} s. {detail}', 2000))
             raise
         log(f'[model route] call {number} answered in {time.monotonic() - started:.1f} s; the reply passed the format checks')
         return result
@@ -796,6 +825,11 @@ def parse_reply(text, schema):
     if not isinstance(text, str) or not text.strip(_JSON_SPACE):
         raise RouteError('reply_not_json', 'The model returned no text.')
     stripped = text.strip(_JSON_SPACE)
+    for edge in (stripped[0], stripped[-1]):
+        if edge.isspace() or not edge.isprintable():
+            raise RouteError('reply_not_json', f'The reply starts or ends with the character U+{ord(edge):04X}, which is '
+                             'not white space of JSON. It is not removed.',
+                             'Use a model or a server that returns the JSON object alone.')
     start = one_line(scrub(stripped), 60)
     try:
         value = _decode(stripped)

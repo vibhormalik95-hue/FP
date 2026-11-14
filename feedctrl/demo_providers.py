@@ -49,21 +49,22 @@ class ProviderMessage(ParserOperationalError):
     page_safe = True
 
 
-SCRIPTED_REFUSAL = ('This server has no model. It holds hand-written replies for the bundled examples with the '
-                    'complete bundled scope, and it has no reply for this request. Nothing was interpreted and '
-                    'nothing was applied. Use "Insert the bundled scenario request" with the complete scope, or '
-                    'start the server with a model route (docs/model-routes.md).')
+SCRIPTED_REFUSAL = ('This server has no model. It holds hand-written replies for the bundled requests with the '
+                    'complete bundled scope. It has no reply for this request. Nothing was interpreted and '
+                    'nothing was applied. Use "Insert the bundled scenario request" and keep the complete scope, '
+                    'or start the server with a model route (docs/model-routes.md).')
 RELAY_FAILURES = {
     'TimeoutError': ('No reply file arrived in the relay folder in time. Nothing was applied. Send the request '
-                     'again, carry the new request to the model and deliver the reply with scripts/relay_tools.py.'),
+                     'again. Give the new request to the model with "scripts/relay_tools.py show", then deliver '
+                     'the reply with "scripts/relay_tools.py deliver".'),
     'FileExistsError': ('The relay folder already holds a file for this request. Nothing was applied. Start the '
                         'server again with a new, empty relay folder.'),
 }
-RELAY_REPLY_REJECTED = ('The reply file in the relay folder was not one acceptable JSON answer for this request. '
-                        'Nothing was applied. Send the request again and deliver the new reply with '
-                        '"scripts/relay_tools.py check" first: it says what is wrong before a call is spent.')
-RELAY_ALLOWANCE = ('The call allowance of this relay run is used. Nothing was applied. Start the server again to '
-                   'begin a new run.')
+RELAY_REPLY_REJECTED = ('The reply file in the relay folder is not one acceptable JSON answer for this request. '
+                        'Nothing was applied. Send the request again. Check the new reply with '
+                        '"scripts/relay_tools.py check" before you deliver it.')
+RELAY_ALLOWANCE = ('This relay run used all its calls. Nothing was applied. Start the server again to begin a '
+                   'new run.')
 
 
 def bind_factories(infer, identity):

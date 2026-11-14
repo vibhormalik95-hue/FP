@@ -1,6 +1,6 @@
 import React, {useEffect, useRef, useState} from 'react';
 import ReviewBoard, {definitionEvidence} from './ReviewBoard.jsx';
-import {actionWords, adoptText, changeRecord, exampleOptions, outcomeView, plural, REVIEW_MARGIN_SECONDS, REVIEW_SECONDS, scopeChoices, sourceWords, stageStates} from './reviewModel.js';
+import {actionWords, adoptText, changeRecord, exampleOptions, outcomeView, plural, REVIEW_MARGIN_SECONDS, REVIEW_SECONDS, scopeChoices, sourceWords, stageOfFailure, stageStates} from './reviewModel.js';
 
 export {definitionEvidence};
 
@@ -53,6 +53,8 @@ export default function SemanticPanel({api,user,resetKey,onFeed,onActive,onUnava
   const [busyStage,setBusyStage]=useState(null),[busyCall,setBusyCall]=useState(false),[stoppedStage,setStoppedStage]=useState(null),[terms,setTerms]=useState(null),[termsError,setTermsError]=useState('');
   // The time at which the open review ends, whether it has ended, the seconds of a running call, and a counter that moves focus to a new result.
   const [deadline,setDeadline]=useState(null),[expired,setExpired]=useState(false),[elapsed,setElapsed]=useState(0),[focusKey,setFocusKey]=useState(0);
+  // A field that changed outside the view of the person: bring it into view after the next render.
+  const [fieldFocus,setFieldFocus]=useState(null);
   // Until the person types a name, the control is named after what it does.
   const label=typedLabel!==null?typedLabel:backend==='manual_category'?`Manual: ${category}`:'My request';
   const setLabel=setTypedLabel;
@@ -61,7 +63,8 @@ export default function SemanticPanel({api,user,resetKey,onFeed,onActive,onUnava
   // `generation` cancels a review that is in flight when an input changes. The first load of the
   // applied controls has its own counter, so that a default value set during the load does not discard it.
   const generation=useRef(0),activeRequest=useRef(null),termsRequest=useRef(0),loadRequest=useRef(0);
-  const reviewOpen=useRef(false),mounted=useRef(false),adoptionNotice=useRef(null);
+  // `notice` is a message that the next change of an input shows in place of the plain "changed" message.
+  const reviewOpen=useRef(false),mounted=useRef(false),notice=useRef(null);
   reviewOpen.current=Boolean(pending||definition||resolution);
   const authored=provider?.live_model===false,words=sourceWords(authored);
   const choices=scopeChoices(saved?saved.feed.baseline_items.length:10);
@@ -87,7 +90,7 @@ export default function SemanticPanel({api,user,resetKey,onFeed,onActive,onUnava
   const inputKey=JSON.stringify([backend,text,label,count,operation,strength,mode,actionSource,category,target,explicitTarget]);
   useEffect(()=>{if(!mounted.current){mounted.current=true;return;}
     ++generation.current;activeRequest.current=null;setWorking(false);const had=reviewOpen.current;clearReview();setFailure(null);setRecordFresh(false);setStoppedStage(null);
-    setMessage(adoptionNotice.current||(had?'You changed the request. The review was discarded. Nothing was applied.':''));adoptionNotice.current=null;},[inputKey]);
+    setMessage(notice.current||(had?'You changed the request. The review was discarded. Nothing was applied.':''));notice.current=null;},[inputKey]);
   useEffect(()=>{setTargetConfirmed(false);},[backend,text,target,count,operation,strength,mode,explicitTarget]);
   useEffect(()=>{setOutcome(null);},[backend]);
   useEffect(()=>{if(category&&!categories.includes(category))setCategory('');},[categories,category]);
@@ -109,7 +112,11 @@ export default function SemanticPanel({api,user,resetKey,onFeed,onActive,onUnava
     const board=document.getElementById('review-board'),title=document.getElementById('review-heading');
     if(board&&board.scrollIntoView)board.scrollIntoView({block:'start'});
     if(title&&title.focus)title.focus({preventScroll:true});},[focusKey]);
-  const arm=()=>{setDeadline(timers.now()+(REVIEW_SECONDS-REVIEW_MARGIN_SECONDS)*1000);setExpired(false);};
+  useEffect(()=>{if(!fieldFocus||typeof document==='undefined')return;const field=document.getElementById(fieldFocus);
+    if(field){if(field.scrollIntoView)field.scrollIntoView({block:'center'});if(field.focus)field.focus({preventScroll:true});}setFieldFocus(null);},[fieldFocus]);
+  // The server states how long it accepts a review (`review_window_seconds`); the page ends a little earlier.
+  const arm=answer=>{const seconds=Number.isFinite(answer?.review_window_seconds)&&answer.review_window_seconds>REVIEW_MARGIN_SECONDS?answer.review_window_seconds:REVIEW_SECONDS;
+    setDeadline(timers.now()+(seconds-REVIEW_MARGIN_SECONDS)*1000);setExpired(false);};
   const shown=()=>setFocusKey(n=>n+1);
   function fail(e,stage){
     const kind=e?.kind==='session'||e?.kind==='network'?e.kind:undefined;
@@ -121,7 +128,8 @@ export default function SemanticPanel({api,user,resetKey,onFeed,onActive,onUnava
     const request=Symbol(),id=generation.current;activeRequest.current=request;setWorking(true);setMessage('');setFailure(null);setBusyStage(stage);setBusyCall(call);setStoppedStage(null);
     if(onActive)onActive();
     if(!keepClarification){setClarification(null);setResolution(null);setResolutionChoice('');}
-    try{await work(id);}catch(e){if(id===generation.current)fail(e,stage);}
+    // An error answer that carries a structured result (outcome_source) is a result without a change, not a crash.
+    try{await work(id);}catch(e){if(id===generation.current){if(e?.payload?.outcome_source)stopped(e.payload,stage);else fail(e,stage);}}
     finally{if(activeRequest.current===request)activeRequest.current=null;if(id===generation.current)setWorking(false);}}
   // The person stops waiting. The call can still finish on the server; this page discards its result.
   function stopWaiting(){if(!activeRequest.current)return;++generation.current;activeRequest.current=null;setWorking(false);
@@ -129,8 +137,8 @@ export default function SemanticPanel({api,user,resetKey,onFeed,onActive,onUnava
   async function load(id){const r=await api(`semantic/groups?user_id=${user}`);
     if(id===generation.current){setSaved(r);return r;}}
   // A result without a proposal. `stage` is the stage in which the request ended.
-  function stopped(p,stage,lost){const result={...p,method:backend,status:p.status||'clarify',request_text:backend==='manual_category'?`category ${category}`:text,lost};
-    setOutcome(result);setStoppedStage(stage);setMessage(`${outcomeView(result,words).heading}. Nothing was applied. See the result.`);shown();}
+  function stopped(p,stage,lost){const result={...p,method:backend,status:p.status||'clarify',request_text:backend==='manual_category'?`category ${category}`:text,lost:lost||(p.definition_consumed?'The definition that you approved is used up. To try again, press "Propose a definition for review" again.':undefined)};
+    setOutcome(result);setStoppedStage(p.failed_stage?stageOfFailure(p.failed_stage,stage||'Interpretation'):stage);setMessage(`${outcomeView(result,words).heading}. Nothing was applied. See the result.`);shown();}
   // The server no longer accepts a review: it is older than five minutes, or a newer request replaced it.
   function expiredNow(stage,reason){clearReview();setOutcome({page:'expired',status:'expired',reason,method:backend,request_text:modelMethod?text:undefined});setStoppedStage(stage);
     setMessage('The review has expired. Nothing was applied.');shown();}
@@ -145,9 +153,9 @@ export default function SemanticPanel({api,user,resetKey,onFeed,onActive,onUnava
         action_source:explicitTarget?'confirmed':backend==='configured_model'?'model':actionSource,
         ...(explicitTarget?{confirmed_target:target,target_confirmed:confirmedNow}:{})});
     if(id!==generation.current)return;
-    if(p.definition_ready){setDefinition(p);arm();setMessage('The proposed definition is ready for your review. Nothing is classified or applied.');shown();}
-    else if(p.ready){setPending(p);arm();setMessage('The review is ready. Nothing is applied yet.');shown();}
-    else if(p.resolution_ready){setResolution(p);setResolutionChoice('');setClarification(p.clarification||null);arm();
+    if(p.definition_ready){setDefinition(p);arm(p);setMessage('The proposed definition is ready for your review. Nothing is classified or applied.');shown();}
+    else if(p.ready){setPending(p);arm(p);setMessage('The review is ready. Nothing is applied yet.');shown();}
+    else if(p.resolution_ready){setResolution(p);setResolutionChoice('');setClarification(p.clarification||null);arm(p);
       setMessage('The reply names more than one meaning. Choose in the result. Nothing is approved or applied.');shown();}
     // A second call of the description method belongs to the evidence stage.
     else stopped(p,backend==='manual_category'?'Evidence':(p.calls_attempted>=2||p.action)?'Evidence':'Interpretation');},false,backend==='manual_category'?'Evidence':'Interpretation',backend!=='manual_category');}
@@ -158,7 +166,7 @@ export default function SemanticPanel({api,user,resetKey,onFeed,onActive,onUnava
       catch(e){if(id===generation.current&&isExpiry(e)){expiredNow('Interpretation',e.message);return;}throw e;}
       if(id!==generation.current)return;
       clearReview();
-      if(p.definition_ready){setDefinition(p);arm();setMessage('The definition is ready for your review. Nothing is classified or applied.');shown();}
+      if(p.definition_ready){setDefinition(p);arm(p);setMessage('The definition is ready for your review. Nothing is classified or applied.');shown();}
       else if(p.status==='cancelled')setMessage('Category clarification cancelled. Nothing was approved or applied.');
       else stopped(p,'Interpretation');
     },true,'Interpretation');
@@ -167,7 +175,7 @@ export default function SemanticPanel({api,user,resetKey,onFeed,onActive,onUnava
     try{p=await api('semantic/definition/classify',{user_id:user,plan_id:definition.definition_plan_id,evidence_reviewed:evidenceReviewed});}
     catch(e){if(id===generation.current&&isExpiry(e)){expiredNow('Interpretation',e.message);return;}throw e;}
     if(id!==generation.current)return;clearReview();
-    if(p.ready){setPending(p);arm();setMessage('The review is ready. Nothing is applied yet.');shown();}
+    if(p.ready){setPending(p);arm(p);setMessage('The review is ready. Nothing is applied yet.');shown();}
     // The approved definition is single use: after a stop here it must be proposed again.
     else stopped(p,'Evidence','The definition that you approved is used up. To try again, press "Propose a definition for review" again.');},false,'Evidence',true);}
   // An explicit rejection of the definition under review. The server forgets the proposal.
@@ -176,7 +184,7 @@ export default function SemanticPanel({api,user,resetKey,onFeed,onActive,onUnava
     catch(e){if(e?.kind)throw e;/* a server without this route, or a review that has already ended: the page forgets the proposal in both cases */}
     if(id!==generation.current)return;clearReview();setMessage('You rejected the definition. Nothing was classified or applied. Change your description to get another definition.');},false,'Interpretation');}
   function history(action){run(async id=>{clearReview();setOutcome(null);const p=await api('semantic/history/preview',{user_id:user,action});
-    if(id!==generation.current)return;if(p.ready){setPending(p);arm();setMessage(action==='undo'?'The undo review is ready. Nothing is changed yet.':'The review of the removal is ready. Nothing is changed yet.');shown();}
+    if(id!==generation.current)return;if(p.ready){setPending(p);arm(p);setMessage(action==='undo'?'The undo review is ready. Nothing is changed yet.':'The review of the removal is ready. Nothing is changed yet.');shown();}
     else setMessage(p.reason||'No earlier state exists.');},false,action==='undo'?'Undo':'Preview');}
   function apply(){run(async id=>{const before=saved,plan=pending;let r;
     try{r=await api('semantic/apply',{user_id:user,plan_id:plan.plan_id});}
@@ -187,9 +195,9 @@ export default function SemanticPanel({api,user,resetKey,onFeed,onActive,onUnava
     setMessage(late?'The expired review is closed. Nothing was applied.':'Review discarded. Nothing was applied.');}
   // A meaning that the reply named becomes part of the person's own request. Nothing is sent until the person submits it.
   function adoptAlternative(value){if(typeof value!=='string'||!value.trim())return;
-    adoptionNotice.current='The meaning is in your request. Nothing was sent. Review it before submitting.';
-    if(backend==='vocabulary'){setText(adoptText(text,value));setMessage('The meaning is added to your request in the panel. Nothing was sent. Submit it when you are ready.');}
-    else{setExplicitTarget(true);setTarget(value);setMessage('The meaning is now your stated target in the panel. Confirm it and choose the action. Nothing was sent.');}}
+    if(backend==='vocabulary'){notice.current='The meaning is added to your request in the panel. Nothing was sent. Submit it when you are ready.';setText(adoptText(text,value));}
+    else{notice.current='The meaning is now your stated target in the panel. Confirm it and choose the action. Nothing was sent.';setExplicitTarget(true);setTarget(value);}
+    setFieldFocus(backend==='vocabulary'?'semantic-text':'semantic-confirmed-target');}
   function insertExample(option){setText(option.text);if(scenarioRequests?.label&&backend==='configured_model')setLabel(scenarioRequests.label);}
   const disabled=working||user===null;
   const category_method=['induction','staged'].includes(backend);
@@ -200,9 +208,11 @@ export default function SemanticPanel({api,user,resetKey,onFeed,onActive,onUnava
   // A result without a change stays on the board while the person rewrites the request; the stage line then shows the first stage again.
   const outcomeNow=outcome&&(outcome.method!==backend?false:!modelMethod||outcome.request_text===text||outcome.page==='expired');
   const history_action=pending?.history_action||'none';
+  // A review that the server refused as too old is an expired result, not a plain stop.
+  const expiredResult=Boolean(outcomeNow&&outcome?.page==='expired');
   const phase=working?'working':expired&&(pending||definition||resolution)?'expired':(resolution||definition)?'interpretation':pending?'preview'
-    :(outcomeNow||failure)?'stopped':record&&recordFresh?(record.kind==='apply'?'applied':record.kind==='undo'?'undone':'cleared'):'idle';
-  const stages=stageStates({method:backend,phase,stage:phase==='working'?busyStage:phase==='expired'?(pending?(history_action==='undo'?'Undo':'Preview'):'Interpretation'):stoppedStage,
+    :expiredResult?'expired':(outcomeNow||failure)?'stopped':record&&recordFresh?(record.kind==='apply'?'applied':record.kind==='undo'?'undone':'cleared'):'idle';
+  const stages=stageStates({method:backend,phase,stage:phase==='working'?busyStage:phase==='expired'?(pending?(history_action==='undo'?'Undo':'Preview'):(definition||resolution)?'Interpretation':stoppedStage):stoppedStage,
     historyAction:history_action,needsInput:Boolean(resolution),canUndo:Boolean(saved?.can_undo)});
   const blocked=pending?.proposal?.target_confirmation&&(!explicitTarget||!confirmedNow)?'This review used a target that you stated. Keep the stated target and its confirmation unchanged to approve.':'';
   const first=saved?.feed.baseline_items||[];
@@ -213,16 +223,16 @@ export default function SemanticPanel({api,user,resetKey,onFeed,onActive,onUnava
   const board=<ReviewBoard variant={variant} failure={failure} method={backend} pending={pending} current={saved} context={context} outcome={outcome}
     definition={definition} resolution={resolution} clarification={clarification} record={record} recordFresh={recordFresh}
     words={words} expired={expired} deadlineText={deadlineText} dataNote={dataNote}
-    controls={{disabled,blocked,apply,discard,resolutionChoice,setResolutionChoice,resolveDefinition,evidenceReviewed,setEvidenceReviewed,classify,rejectDefinition,
+    controls={{disabled,blocked,apply,discard,undo:()=>history('undo'),canUndo:Boolean(saved?.can_undo),resolutionChoice,setResolutionChoice,resolveDefinition,evidenceReviewed,setEvidenceReviewed,classify,rejectDefinition,
       // With authored replies an adopted meaning has no authored reply, so the control would lead to a refusal.
       adoptAlternative:!authored&&['vocabulary','configured_model','ollama'].includes(backend)?adoptAlternative:null,
       alternativeLabel:backend==='vocabulary'?'Add this meaning to my request':'Use this as my stated target'}}/>;
   const termLine=kind=>{const rows=(terms?.terms||[]).filter(kind);return rows.length?rows.map(t=>`${t.value} (${(t.item_ids||[]).length})`).join(', '):'none';};
   const methodName=([value,name,needs,tail])=>!needs?name:value==='ollama'?`${name} (local model ${saved?.configured_model||'not loaded yet'})`
-    :value==='induction'?name:`${name} (${!offered[value]&&noProvider?'needs a model provider':words.suffix}${tail})`;
+    :value==='induction'?name:`${name}${tail} (${!offered[value]&&noProvider?'needs a model provider':words.suffix})`;
   const waitText=busyCall?`${words.waiting}: ${elapsed} s`:'Working...';
   return <details open={open} onToggle={e=>setOpen(e.currentTarget.open)}>
-    <summary>Language controls: change the feed with a reviewed request</summary>
+    <summary>Change the feed with a reviewed request</summary>
     {open&&<section className="panel" aria-label="Language controls panel" aria-busy={working?'true':'false'}>
       <h3>One control, six stages</h3>
       <ol className="stage-line" aria-label="Stages of this control">{stages.map(s=><li key={s.name} data-state={s.state} aria-current={s.state==='now'?'step':undefined}>
@@ -244,7 +254,7 @@ export default function SemanticPanel({api,user,resetKey,onFeed,onActive,onUnava
       <select id="semantic-count" disabled={disabled||(authored&&modelMethod)} value={choices.some(choice=>choice.value===scope)?scope:10} onChange={e=>setCount(Number(e.target.value))}>
         {choices.map(choice=><option key={choice.value} value={choice.value}>{choice.name}</option>)}</select>
       <p className="help">Items in the scope: {saved?.feed.baseline_items.slice(0,scope).join(', ')||'Loading...'}. The application uses no other item, and it does not shorten the list silently. {authored&&modelMethod?'The hand-written replies exist for this complete scope only.':'A request that is too large asks you for a smaller scope.'}</p>
-      {backend==='vocabulary'&&<div aria-label="Existing categories and tags in the scope" className="vocabulary-terms">
+      {backend==='vocabulary'&&<div role="group" aria-label="Existing categories and tags in the scope" className="vocabulary-terms">
         <span className="field-label">Existing categories and tags in the scope</span>
         {terms?<><p className="help">Categories: {termLine(t=>t.kind!=='tag'&&(t.level||1)===1)}.</p>
           <p className="help">Subcategories: {termLine(t=>t.kind!=='tag'&&(t.level||1)>1)}.</p>
@@ -295,12 +305,13 @@ export default function SemanticPanel({api,user,resetKey,onFeed,onActive,onUnava
         {working?waitText:backend==='staged'?'Propose a definition for review':backend==='manual_category'?'Show the proposed change':'Interpret my request'}</button>
       {working&&busyCall&&<button type="button" className="secondary" onClick={stopWaiting}>Stop waiting</button>}
       {working&&busyCall&&<p className="help">{authored?'The server reads a hand-written reply.':'A call can take minutes. "Stop waiting" does not stop the call on the server. It only discards the result on this page.'}</p>}
-      {message&&<p role="status" className="alert">{message}</p>}
-      {(variant||failure)&&portal&&reviewHost&&<p className="help"><span className="wide-only">The result is in the main area, above the feed.</span><span className="narrow-only">The result is below this panel.</span></p>}
+      {/* One live region that is always present, so that a screen reader announces each new message. */}
+      <p role="status" aria-live="polite" className={message?'alert':'status-empty'}>{message}</p>
+      {(variant||failure)&&<p className="help" data-role="result-place">{portal&&reviewHost?'The result is in the main area, above the feed.':'The result is below this panel.'}</p>}
       <h3>Applied controls</h3>
       {saved?(saved.groups.length?<ul className="applied-controls">{saved.groups.map(g=><li key={g.revision}><b>{g.label}</b>: {actionWords(g.proposal.action)}; {g.proposal.item_ids.length===1?'item':'items'} {g.proposal.item_ids.join(', ')}</li>)}</ul>
         :<p className="help">None.</p>):<p className="help">{working?'Loading...':'Not available.'}</p>}
-      <p className="help">{saved?plural(saved.groups.length,'control')+' applied. ':''}Applied controls last for this session only. A reload of the page starts a new session without them. They are not new categories in the dataset.</p>
+      <p className="help">{saved&&saved.groups.length?plural(saved.groups.length,'control')+' applied. ':''}Applied controls last for this session only. A reload of the page starts a new session without them. They are not new categories in the dataset.</p>
       <p className="help">{LIMITS}</p>
       {!saved&&message&&<p className="help">If the applied controls cannot be loaded, you can still review their removal for this user. Approval is required. The original category and topic preferences are preserved.</p>}
       <button className="secondary" disabled={disabled||!saved?.can_undo} onClick={()=>history('undo')}>Undo the last change (review first)</button>

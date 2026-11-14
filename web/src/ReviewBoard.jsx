@@ -14,7 +14,7 @@ export function definitionEvidence(evidence, context) {
   return evidence.map((e,n)=>{
     const row=context?.find(r=>r.item_id===e.item_id&&r.field===e.field&&r.quote===e.quote);
     const available=typeof row?.supplied_field_text==='string';
-    return <div className="help" key={n} aria-label="Definition cited source context">
+    return <div className="help" key={n} role="group" aria-label="Definition cited source context">
       <p>Item {e.item_id}, {fieldWords(e.field)}: the complete text that holds the quotation "{e.quote}". The application checked the words, not the meaning.</p>
       {available?<p style={{whiteSpace:'pre-wrap',overflowWrap:'anywhere'}}>{row.supplied_field_text}</p>:
         <p>Full source field unavailable for this citation.</p>}
@@ -25,7 +25,7 @@ export function definitionEvidence(evidence, context) {
 }
 
 function block(kind, title, children, extra) {
-  return <section className={`block ${extra || ''}`} data-block={kind} aria-label={title}><h4>{title}</h4>{children}</section>;
+  return <section className={`block ${extra || ''}`} data-block={kind} aria-label={title} id={kind === 'decision' ? 'review-decision' : undefined} tabIndex={kind === 'decision' ? -1 : undefined}><h4>{title}</h4>{children}</section>;
 }
 
 function heading(text) {
@@ -50,10 +50,11 @@ function citationChecks(evidence, context) {
 }
 
 function rawReplies(calls, words) {
-  const replies = (calls || []).filter(call => call && (call.raw_response !== undefined || call.raw_output !== undefined));
+  // A reply that is not JSON comes back as bounded text (`raw_text`); it is shown as text, never as markup.
+  const replies = (calls || []).filter(call => call && (call.raw_response !== undefined || call.raw_output !== undefined || typeof call.raw_text === 'string'));
   if (!replies.length) return null;
   return <details className="raw"><summary>{replies.length === 1 ? words.raw : `${words.rawMany} (${replies.length})`}</summary>
-    {replies.map((call, n) => <pre key={n}>{JSON.stringify(call.raw_response !== undefined ? call.raw_response : call.raw_output, null, 2)}</pre>)}</details>;
+    {replies.map((call, n) => <pre key={n}>{call.raw_response !== undefined || call.raw_output !== undefined ? JSON.stringify(call.raw_response !== undefined ? call.raw_response : call.raw_output, null, 2) : call.raw_text}</pre>)}</details>;
 }
 
 function providerLine(model, words) {
@@ -66,7 +67,7 @@ function contextRows(rows, names) {
   const lines = rows.map(e=><p className="help" key={`${e.item_id}-${e.field}-${e.quote}`}>Item {e.item_id}, {fieldWords(e.field)}: “{e.supplied_field_text??'unavailable'}”{e.truncated?' [truncated]':''}{e.quote_present?'':' [quote not found in current text]'}</p>);
   // A chosen category or tag name is the whole evidence, and the table shows it for every item: keep this list folded.
   if (names) return <details className="raw" aria-label="Full cited source context"><summary>The complete field of each selected item that carries a chosen name ({rows.length})</summary>{lines}</details>;
-  return <div aria-label="Full cited source context">
+  return <div role="group" aria-label="Full cited source context">
     <p className="help">The complete text that holds each quotation. The application checked the words, not the meaning. Look for a negation or a contrary sentence before you approve:</p>
     {lines}
   </div>;
@@ -74,7 +75,7 @@ function contextRows(rows, names) {
 
 // The reason that the reply gives for the whole request, when the answer holds one.
 function replyReason(pending) {
-  if (typeof pending.reason === 'string' && pending.reason.trim()) return pending.reason;
+  for (const value of [pending.reply_reason, pending.reason]) if (typeof value === 'string' && value.trim()) return value;
   const raw = (pending.model_calls || []).map(call => call?.raw_response).find(value => value && typeof value.reason === 'string' && value.reason.trim());
   return raw ? raw.reason : null;
 }
@@ -89,7 +90,7 @@ function replyOutput(group, pending, words) {
       <p><b>{group.label}</b></p>
       <p className="help">Direction and strength, {words.read}: <b>{actionWords(action)}</b>.</p>
       <p className="help">Part of your request that names the subject: “{action.intent_span}”.</p>
-      <p className="help">{words.reason} {control?.relation ?? proposal.reason}</p>
+      <p className="help">{words.controlReason} {control?.relation ?? proposal.reason}</p>
       <p className="help">{words.names} {terms.map(termWords).join('; ') || 'none'}.</p>
     </div>;
   }
@@ -110,7 +111,7 @@ function replyOutput(group, pending, words) {
     <p><b>{group.label}</b></p>
     <p className="help">Direction and strength: <b>{actionWords(action)}</b>, {chosen?'chosen by you':words.read}.</p>
     {!chosen&&<p className="help">Part of your request that names the subject: “{action.intent_span}”.</p>}
-    <p className="help">{words.reason} {proposal.reason}</p>
+    <p className="help">{words.controlReason} {proposal.reason}</p>
     <p className="help">{words.quotations} {(proposal.evidence||[]).map(e=>`item ${e.item_id}, ${fieldWords(e.field)}: “${e.quote}”`).join('; ')||'none'}.</p>
   </div>;
 }
@@ -134,7 +135,9 @@ function applicationChecks(group, pending, context, shared, words) {
   const route = routeOf(group), proposal = group.proposal;
   const control = route === 'vocabulary' ? (pending.vocabulary?.controls || []).find(candidate => candidate.label === group.label) : null;
   const envelope = proposal.induction?.envelope, audit = envelope?.evidence_audit;
-  const outside = outsideScope(group, context);
+  // The server states which items of the control are outside the scope; without that field the page computes it for a manual control.
+  const effect = (pending.scope_effects || []).find(entry => entry.label === group.label);
+  const outside = Array.isArray(effect?.outside_scope_item_ids) ? effect.outside_scope_item_ids : outsideScope(group, context);
   const noDecision = proposal.induction?.validated_category?.unknown_ids || [];
   return <div key={group.revision} className="control-checks" data-route={route}>
     <p><b>{group.label}</b></p>
@@ -142,7 +145,8 @@ function applicationChecks(group, pending, context, shared, words) {
       {!shared.server && <p className="help">This page repeated these checks from the reviewed record:</p>}
       {checkList(localChecks(group, pending, context))}</>}
     {control&&<p className="help">Items that each chosen name selects: {control.terms.map(term=>`${termWords(term)}: ${(term.item_ids||[]).join(', ')||'none'}`).join('; ')}.</p>}
-    {route==='manual'&&outside.length>0&&<p className="help" data-role="outside-scope">{plural(outside.length,'item')} of this category {outside.length===1?'is':'are'} outside the evidence scope and {outside.length===1?'does':'do'} not change: {outside.join(', ')}.</p>}
+    {effect?.message&&<p className="help" data-role="scope-effect">{effect.message}</p>}
+    {outside.length>0&&<p className="help" data-role="outside-scope">{plural(outside.length,'item')} with {route==='manual'?'this category':'a chosen name'} {outside.length===1?'is':'are'} outside the evidence scope and {outside.length===1?'does':'do'} not change: {outside.join(', ')}.</p>}
     {audit&&<p className="help">Numbers that an item must contain: {audit.literal_constraints.terms.join(', ')||'none'}. {words.authored?'The second reply':'The second call'} can only remove an item from the selection. It never adds one.</p>}
     {envelope&&<p className="help">Selected items that have an existing category: {envelope.overlaps.map(o=>`${o.member_ids.join(', ')} (${String(o.category_id).replace(/^original:/,'')})`).join('; ')||'none'}.</p>}
     {envelope&&<p className="help">Items without a decision (not selected): {noDecision.join(', ')||'none'}. The name was compared only with the categories in the scope.</p>}
@@ -155,7 +159,7 @@ function applicationChecks(group, pending, context, shared, words) {
 function planNotes(pending) {
   const notes = Array.isArray(pending.plan_notes) ? pending.plan_notes : planConflicts(pending.groups);
   if (!notes.length) return null;
-  return <div className="plan-notes" aria-label="Notes about the whole plan">
+  return <div className="plan-notes" role="group" aria-label="Notes about the whole plan">
     <p><b>Notes about the whole plan</b></p>
     <ul>{notes.map((note, n) => <li key={n} data-kind={note.kind || 'note'}><b>Note:</b> {note.message}{Array.isArray(note.item_ids) && note.item_ids.length > 0 && !String(note.message).includes(String(note.item_ids[0])) ? ` (${note.item_ids.length === 1 ? 'item' : 'items'} ${note.item_ids.join(', ')})` : ''}</li>)}</ul>
     <p className="help">A note is not a failed check. Read it before you approve.</p>
@@ -202,6 +206,7 @@ function reviewVariant({pending, current, context, controls, words, expired, dea
   return <>
     <p className="eyebrow review-flag">{expired ? 'EXPIRED · NOTHING WAS APPLIED' : `PREVIEW · NOTHING IS APPLIED YET${selection ? '' : words.flag}`}</p>
     {heading(title)}
+    <p className="help"><a href="#review-decision" onClick={event => { event.preventDefault(); const target = typeof document !== 'undefined' && document.getElementById('review-decision'); if (target) { target.scrollIntoView({block: 'start'}); target.focus({preventScroll: true}); } }}>Go to your decision</a></p>
     {action === 'none' && requestLines(added)}
     <div className="blocks">
       {selection ? block('reply', 'Your selection', action === 'undo' ? <p className="help">You asked to undo the last approved change. No model is used for this step.</p>
@@ -224,6 +229,7 @@ function reviewVariant({pending, current, context, controls, words, expired, dea
         <p className="help">These checks are mechanical. A passed check shows that names, IDs and quotations exist in the item data. It does not show that the meaning is right.</p></>)}
       {block('decision', 'Your decision', expired ? expiredDecision(controls, `To get a new review, press the button of the request again.${selection ? '' : words.authored ? ' The server reads the authored reply again.' : ' A model method calls the model again.'}`) : <>
         {decisionSummary(pending, current)}
+        {(Array.isArray(pending.plan_notes) ? pending.plan_notes : planConflicts(pending.groups)).length > 0 && <p className="help" data-role="notes-pointer">Read the notes about the whole plan under "Application checks" before you approve.</p>}
         <p><b>Nothing has changed yet.</b> The feed below stays as it is until you approve.</p>
         <p className="help" data-role="deadline">{deadlineText ? `Approve before ${deadlineText}.` : 'Approve within five minutes.'} After that time the server no longer accepts this review.</p>
         {controls.blocked && <p className="help" role="status">{controls.blocked}</p>}
@@ -247,7 +253,7 @@ function resolutionVariant({resolution, clarification, controls, words, expired,
     <div className="blocks">
       {block('reply', words.block, <>
         <p className="help">{words.The} proposed this definition and named other possible meanings. Nothing is approved.</p>
-        <div aria-label="Unapproved primary category">
+        <div role="group" aria-label="Unapproved primary category">
           <p>{words.name} <strong>{candidate.label}</strong></p>
           <p>{candidate.definition}</p>
           <p className="help">{words.reason} {candidate.rationale}</p>
@@ -280,7 +286,7 @@ function resolutionVariant({resolution, clarification, controls, words, expired,
 
 function definitionVariant({definition, controls, words, expired, deadlineText}) {
   const d = definition.definition;
-  return <div aria-label="Category definition review">
+  return <div role="group" aria-label="Category definition review">
     <p className="eyebrow review-flag">{expired ? 'EXPIRED · NOTHING WAS CLASSIFIED OR APPLIED' : `INTERPRETATION · NOTHING IS CLASSIFIED OR APPLIED YET${words.flag}`}</p>
     {heading('Review the proposed definition')}
     <p className="your-request">Your description: “{d.objective}”</p>
@@ -296,7 +302,7 @@ function definitionVariant({definition, controls, words, expired, deadlineText})
       {block('checks', 'Application checks', <>
         {citationChecks(d.proposal.evidence, definition.evidence_context)}
         {definitionEvidence(d.proposal.evidence,definition.evidence_context)}
-        {d.operator_resolution&&<div aria-label="Explicit category resolution record">
+        {d.operator_resolution&&<div role="group" aria-label="Explicit category resolution record">
           <p className="help">You chose this unchanged definition yourself. The original model result remains clarification, not an approval. You must still review the evidence.</p>
           <p className="help">Other meanings in the first reply: {d.original_clarification.clarification.alternatives.join('; ')}</p>
         </div>}
@@ -308,8 +314,8 @@ function definitionVariant({definition, controls, words, expired, deadlineText})
       {block('decision', 'Your decision', expired ? expiredDecision(controls, 'To get a new definition, press "Propose a definition for review" again.') : <>
         <p className="help">Do not approve a definition that claims something that the descriptions do not state, even if the quotation exists.</p>
         <p className="help">To get another definition, reject this one and change your description in the panel. {deadlineText ? `Decide before ${deadlineText}.` : 'Decide within five minutes.'}</p>
-        <label><input type="checkbox" checked={controls.evidenceReviewed} disabled={controls.disabled} onChange={e=>controls.setEvidenceReviewed(e.target.checked)}/> I reviewed whether the source evidence supports the entire definition.</label>
-        <button className="primary" disabled={controls.disabled||!controls.evidenceReviewed} onClick={controls.classify}>Approve definition and classify supplied items</button>
+        <label><input type="checkbox" checked={controls.evidenceReviewed} disabled={controls.disabled} onChange={e=>controls.setEvidenceReviewed(e.target.checked)}/> I checked that the quotations support the complete definition.</label>
+        <button className="primary" disabled={controls.disabled||!controls.evidenceReviewed} onClick={controls.classify}>Approve the definition and classify the items of the scope</button>
         <button className="secondary" disabled={controls.disabled} onClick={controls.rejectDefinition}>Reject this definition</button>
       </>, 'decision')}
     </div>
@@ -325,7 +331,7 @@ function outcomeVariant({outcome, controls, words, request}) {
   // Text of a reply belongs to the first block. The application's own sentences belong to the second block.
   const replyText = view.kind === 'model_report';
   const attempted = typeof outcome.calls_attempted === 'number' ? outcome.calls_attempted : null;
-  return <div aria-label="Result without a proposed change" data-status={outcome.status} data-kind={view.kind}>
+  return <div role="group" aria-label="Result without a proposed change" data-status={outcome.status} data-kind={view.kind}>
     <p className="eyebrow review-flag">NO CHANGE PROPOSED · NOTHING WAS APPLIED{selection || !['model_report', 'reply_rejected', 'provider_failure'].includes(view.kind) ? '' : words.flag}</p>
     {heading(view.heading)}
     {outcome.request_text ? <p className="your-request">{selection ? `Your selection: ${outcome.request_text}` : `Your request: “${outcome.request_text}”`}</p> : null}
@@ -344,7 +350,7 @@ function outcomeVariant({outcome, controls, words, request}) {
         {view.second.map((line, n) => <p className="help" key={n}>{line}</p>)}
         {view.showReason && <p role="status" data-role="reason"><b>{view.kind === 'application_check' ? 'Stopped' : view.kind === 'reply_rejected' ? 'Rejected' : ['provider_failure', 'request_failed', 'session', 'network', 'expired'].includes(view.kind) ? 'Message of the server' : 'Result'}:</b> {outcome.reason || 'No reason was given.'}</p>}
         {checks.length > 0 && checkList(checks)}
-        {attempted !== null && !selection && <p className="help" data-role="calls-attempted">{attempted === 0 ? `No ${words.call} was started.` : `${plural(attempted, words.call)} started for this request.`}</p>}
+        {attempted !== null && !selection && <p className="help" data-role="calls-attempted">{words.authored ? `Authored replies looked up for this request: ${attempted}.` : attempted === 0 ? 'No model call was started.' : `${plural(attempted, 'model call')} started for this request.`}</p>}
         {outcome.model_provenance && !selection && providerLine(outcome.model_provenance, words)}
       </>)}
       {block('decision', 'Your decision', <>
@@ -357,7 +363,7 @@ function outcomeVariant({outcome, controls, words, request}) {
   </div>;
 }
 
-function changedVariant({record, recordFresh}) {
+function changedVariant({record, recordFresh, controls}) {
   const time = record.time instanceof Date ? record.time.toLocaleTimeString() : String(record.time);
   const diff = record.diff;
   const body = <>
@@ -371,14 +377,15 @@ function changedVariant({record, recordFresh}) {
         {diff.enters.length > 0 && <> Entered the first ten: {diff.enters.join(', ')}.</>}
         {diff.moved.length > 0 && <> Changed position: {diff.moved.map(move => `${move.id} (${move.from} to ${move.to})`).join(', ')}.</>}</>}</p>
     {record.kind === 'apply' || record.kind === 'clear'
-      ? <p className="help"><b>To undo:</b> press "Undo the last change (review first)" in the panel, then approve the undo review.</p>
+      ? <><p className="help"><b>To undo:</b> press "Undo this change (review first)", then approve the undo review. The same button is in the panel.</p>
+        {recordFresh && controls?.undo && <button type="button" className="secondary" disabled={controls.disabled || !controls.canUndo} onClick={controls.undo}>Undo this change (review first)</button>}</>
       : <p className="help">To make another change, write a new request in the panel.</p>}
   </>;
   const flag = `${record.kind === 'apply' ? 'APPLIED' : record.kind === 'undo' ? 'UNDONE' : 'CLEARED'} · ${time}`;
   // After a new request starts, the record is an earlier change: keep it, folded, under a title that says so.
   if (!recordFresh) return <details className="earlier-record" aria-label="Last applied change" data-kind={record.kind}>
     <summary>Last applied change ({time}): {record.kind === 'apply' ? 'a change was applied' : record.kind === 'undo' ? 'a change was undone' : 'every control was removed'}</summary>{body}</details>;
-  return <div aria-label="What changed" data-kind={record.kind}>
+  return <div role="group" aria-label="What changed" data-kind={record.kind}>
     <p className="eyebrow">{flag}</p>
     {heading('What changed')}
     {body}

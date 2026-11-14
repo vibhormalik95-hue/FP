@@ -73,5 +73,40 @@
 .controls .panel .help{font-size:11px;line-height:1.7}
 .controls .panel article{margin-top:12px}
 
-/* Language method choices remain readable without relying on colour. */
-.methods{border:1px solid #c9cec4;padding:12px;margin:16px 0;min-width:0}.methods legend{font-weight:600}.methods .method{display:flex;align-items:flex-start;gap:8px;margin:10px 0;line-height:1.5;font-size:14px}.methods input{flex:0 0 auto;width:auto;margin-top:4px}.methods:disabled{opacity:.7}button:disabled{cursor:not-allowed}.review-board{scroll-margin-top:20px}.review-board :focus-visible{outline:3px solid #315d71;outline-offset:3px}.comparison-scroll{overflow-x:auto}.narrow-only{display:none}@media(max-width:700px){.narrow-only{display:block}.wide-only{display:none}.review-table th,.review-table td{font-size:13px}}
+/* Corrections of the interface review (lane fx-ui). */
+.intro.compact{padding:22px 0 14px}.intro.compact h1{font-size:30px;line-height:1.2;letter-spacing:-1px}
+.narrow-only{display:none}
+@media(max-width:760px){p.narrow-only,div.narrow-only{display:block}span.narrow-only{display:inline}.wide-only{display:none}}
+.methods{border:0;padding:0;margin:0;min-width:0}.methods legend{padding:0}
+.methods .method{display:flex;gap:8px;align-items:flex-start;margin:0 0 6px;font-size:12px;line-height:1.5}
+.methods .method input{margin:3px 0 0;flex-shrink:0}
+.methods .method:has(input:disabled){color:#5c6653}
+.your-request{font-size:12px;line-height:1.6;background:#f4f1e2;border-left:3px solid #9a6a1f;padding:6px 10px;margin:0 0 10px}
+.plan-notes{border-top:1px solid #ece6cd;margin-top:10px;padding-top:10px}.plan-notes li[data-kind]{margin-bottom:4px}
+.earlier-record{border:1px solid #e6dfc2;border-radius:6px;padding:8px 12px;background:#fffef8}
+.earlier-record summary{cursor:pointer;font-weight:600}
+.applied-tables{margin-top:12px}.applied-tables summary{cursor:pointer;font-weight:600;font-size:12px;padding:6px 0}
+.data-note{border-top:1px solid #ece6cd;padding-top:8px}
+.confirm-reset{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:12px;color:#92422a}
+.tab-note{margin:-14px 0 18px}
+.alert.inline{margin:12px 0 0}
+.review-board h3:focus{outline:3px solid #7c9952;outline-offset:3px}
+.applied-controls{overflow-wrap:anywhere}
+button:disabled{cursor:not-allowed}
+.status-empty{margin:0;padding:0}
+.controls>*{min-width:0}.review-board{min-width:0;max-width:100%}
+@media(max-width:760px){.controls{grid-template-columns:minmax(0,1fr)}.review-board{padding:14px 12px}.block{padding:10px 12px}}
+/* m14: no text below 11 px; secondary text at #55614c or darker (contrast at least 6 to 1 on the page colours). */
+.disclosure{font-size:12px;color:#4d5a44}
+.brand-sub,.research-tag,.status-chip,.step,.suggestions button,.word-count,.preference b,.item-title>span,.signals,.explanation-origin,.table-category,footer,
+.results-header .eyebrow,.review-mark,.stage-line li,.field-label,.signal-toggle,.metrics span,.asset-type,.item-footer,.category-pills>span,.eyebrow,.rank,thead th,.review-table thead th{font-size:11px}
+.asset-type{opacity:1;color:#4d5a44;letter-spacing:1px}.rank{color:#33402c}
+thead th,.review-table thead th{color:#4d5a44;font-weight:600}
+.review-reason,.metrics span,.word-count,.item-footer,.item-title>span,.category-pills>span,.table-category,footer,.help,.signals,.explanation-origin,.research-tag,.eyebrow,.results-header .eyebrow,.stage-line li,.status-strip,.lede,.intro-note{color:#4d5a44}
+.review-board .review-flag,.review-table .review-flag{color:#7a5214}
+.view-tabs button{color:#3d4d34}
+.view-tabs button.active,.view-tabs button[aria-pressed=true]{background:#fff;color:#1f2e19;font-weight:700;box-shadow:inset 0 -3px 0 #49653b}
+.view-tabs button:disabled{color:#5c6653}
+.checks li[data-passed=false]{color:#7d3520;font-weight:600}
+.feed-note{color:#7a5214}.review-mark{color:#7a5214}
+@media(max-width:760px){h1{font-size:44px;letter-spacing:-2px}.condition{font-size:11px}}

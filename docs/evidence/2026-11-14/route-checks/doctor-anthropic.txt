@@ -1,0 +1,7 @@
+OK      configuration: Route: anthropic; Endpoint: http://127.0.0.1:8872/v1/messages (API version 2026-10-21); Model: standin-model
+OK      credential: A key was read from STANDIN_KEY. It is not shown and not stored.
+OK      endpoint: The endpoint answered and lists the model "standin-model" (1 models listed).
+The next step sends one very small request to the model. It can use a few tokens.
+OK      test call: The model returned the requested JSON object in 0.0 s. Model reported by the reply: standin-model (accepted as the requested model by the rule "equal").
+
+Result: the route works.

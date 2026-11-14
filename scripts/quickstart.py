@@ -59,18 +59,48 @@ def utc_stamp():
     return time.strftime('%Y%m%d-%H%M%SZ', time.gmtime())
 
 
-def require_free_port(port):
-    """Stop with one clear line when another server uses the port."""
+def port_in_use(port):
+    """True when a server listens on the port, or when the system refuses it.
+
+    After a server stops, Linux and macOS hold its port for up to a minute.
+    Nothing listens then, and a new server can take the port at once, because
+    it binds with SO_REUSEADDR. The probe does the same on those systems. A
+    plain bind would report a server that stopped a moment ago as a running
+    one. Windows needs no such option, and there the option would hide a
+    running server. The connection attempt comes first: it also finds a
+    server that listens on every address of the computer.
+    """
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as attempt:
+        attempt.settimeout(1)
+        if attempt.connect_ex(('127.0.0.1', port)) == 0:
+            return True
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as probe:
+        if not WINDOWS:
+            probe.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         try:
             probe.bind(('127.0.0.1', port))
         except OSError:
-            raise SystemExit(f'Port {port} on 127.0.0.1 is in use. Stop the other server, '
-                             'or choose another port with --port.') from None
+            return True
+    return False
+
+
+def require_free_port(port):
+    """Stop with one clear line when another server uses the port."""
+    if port_in_use(port):
+        raise SystemExit(f'Port {port} on 127.0.0.1 is in use. Stop the other server, '
+                         'or choose another port with --port.')
+
+
+WINDOWS = sys.platform == 'win32'
 
 
 def run_demo(*arguments, env=None):
-    return subprocess.Popen([sys.executable, str(ROOT / 'scripts' / 'run_demo.py'), *arguments], cwd=str(ROOT), env=env)
+    # On Windows the server gets a process group of its own, so that this
+    # launcher can send it Ctrl+Break, the gentle stop signal that Windows has
+    # for another process. Ctrl+C in the window then reaches this launcher only.
+    group = {'creationflags': subprocess.CREATE_NEW_PROCESS_GROUP} if WINDOWS else {}
+    return subprocess.Popen([sys.executable, str(ROOT / 'scripts' / 'run_demo.py'), *arguments], cwd=str(ROOT), env=env,
+                            **group)
 
 
 def wait_until_served(port, server, seconds=40):
@@ -90,15 +120,16 @@ def wait_until_served(port, server, seconds=40):
 def stop_server(server, patience=15):
     """End the server: first ask, then wait, then force.
 
-    The server ends its running model calls when it is asked to stop. A forced
-    end cannot do that, so it comes last. On Windows the first step is a forced
-    end already, because Python has no gentler signal for another process there;
-    Ctrl+C in the terminal reaches the server itself and stops it gently.
+    The server ends its running model calls when it is asked to stop (SIGINT,
+    or Ctrl+Break on Windows). A forced end cannot do that, so it comes last.
+    The Windows steps follow the Python documentation; they were not run on
+    Windows.
     """
-    if server.poll() is not None:
-        return server.returncode
-    for ask, wait in ((lambda: server.send_signal(signal.SIGINT) if sys.platform != 'win32' else server.terminate(), patience),
-                      (server.terminate, 5), (server.kill, 5)):
+    code = server.poll()
+    if code is not None:
+        return code
+    gentle = signal.CTRL_BREAK_EVENT if WINDOWS else signal.SIGINT
+    for ask, wait in ((lambda: server.send_signal(gentle), patience), (server.terminate, 5), (server.kill, 5)):
         try:
             ask()
             return server.wait(timeout=wait)
@@ -115,9 +146,13 @@ def keep_serving(server, patience=15):
     try:
         return server.wait()
     except KeyboardInterrupt:
+        print('\nStopping the server ...', flush=True)
+        if WINDOWS:
+            # The server has its own process group, so Ctrl+C did not reach it.
+            stop_server(server, patience=patience)
+            return 0
         # Ctrl+C in a terminal goes to the server as well. It ends its model
         # calls and stops by itself; a forced end follows only when it does not.
-        print('\nStopping the server ...', flush=True)
         try:
             server.wait(timeout=patience)
         except (subprocess.TimeoutExpired, KeyboardInterrupt):
@@ -149,10 +184,20 @@ def check(_):
 
 def rehearse(args):
     require_free_port(args.port)
-    server = run_demo('--scenario', args.scenario, '--provider', 'scripted', '--port', str(args.port))
+    sys.path.insert(0, str(ROOT / 'scripts'))
+    import run_demo as launcher
+    # The fixture scenario for the original conditions has no language controls
+    # and therefore no replies of any kind: it is served with no provider.
+    fixture = args.scenario in launcher.FIXTURE_SCENARIOS
+    server = run_demo('--scenario', args.scenario, '--provider', 'manual' if fixture else 'scripted',
+                      '--port', str(args.port))
     try:
         wait_until_served(args.port, server)
-        print(f'Rehearsal with hand-written replies (no model). Open http://127.0.0.1:{args.port}', flush=True)
+        if fixture:
+            print(f'The original conditions A to E on the built-in fixture (no model). '
+                  f'Open http://127.0.0.1:{args.port}', flush=True)
+        else:
+            print(f'Rehearsal with hand-written replies (no model). Open http://127.0.0.1:{args.port}', flush=True)
         serve_until_stopped(server)
     finally:
         stop_server(server)
@@ -273,7 +318,8 @@ def main(argv=None):
     for name, function in (('rehearse', rehearse), ('live', live)):
         step = steps.add_parser(name)
         if name == 'rehearse':
-            step.add_argument('--scenario', choices=scenarios, default='tags' if 'tags' in scenarios else 'category')
+            step.add_argument('--scenario', choices=sorted([*scenarios, *launcher.FIXTURE_SCENARIOS]),
+                              default='tags' if 'tags' in scenarios else 'category')
         else:
             # The relay operator waits for a fixed number of requests, so this
             # older path serves the two scenarios with one complete flow each.
@@ -296,7 +342,15 @@ def main(argv=None):
     step.add_argument('--record-dir', help='a new folder for the call records, or "none"; default: a new folder under runs/')
     step.set_defaults(run=start)
     args = parser.parse_args(argv)
+    if args.run in (rehearse, live, start) and __name__ == '__main__':
+        # A stop signal to this launcher alone (for example from a process
+        # manager) ends it through its "finally" steps, which stop the server.
+        signal.signal(signal.SIGTERM, _ended_by_signal)
     args.run(args)
+
+
+def _ended_by_signal(number, frame):
+    raise SystemExit(128 + number)
 
 
 if __name__ == '__main__':

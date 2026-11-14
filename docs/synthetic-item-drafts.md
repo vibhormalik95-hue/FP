@@ -7,13 +7,15 @@ It creates no real media, no observed event and no record of the dataset.
 
 ## Use it in the page
 
-Open the view **Language controls**. Under **Fictional item drafts (separate feed)**, open "Fictional item drafts: metadata that a model writes, in a separate feed".
+Open the view **Language controls**. Under **Fictional items (separate list)**, open **Open the fictional items**.
 
-1. Write a brief, or press **Insert the example brief** when a bundled scenario is served.
-2. Tick "I want fictional metadata, not a real video or observed item."
-3. Press **Generate fictional metadata draft**. The application makes one model call for each click. It does not try again by itself.
-4. Read the draft under "Review fictional metadata before admission": the wording, the model and the hashes. A preview adds nothing to a feed.
-5. If the draft is suitable, press **Approve fictional draft and admit to synthetic feed**.
+1. Under "Describe the fictional item", write a description, or press **Insert the example description** when a bundled scenario is served.
+2. Tick "I want a fictional item, not a real video or an item of the catalogue."
+3. Press **Write a fictional draft**. The application makes one model call for each click. It does not try again by itself.
+4. Read the draft under "Review the fictional item before you add it": the wording, the model and the hashes. A preview adds nothing to a list.
+5. If the draft is suitable, press **Approve and add to the list of fictional items**.
+
+With the hand-written replies of `rehearse`, the draft is an authored reply for the exact example description, and the page says that no model wrote it. A server without a provider says that no draft can be written.
 
 A valid reply and a recorded origin do not make the wording suitable. Review it before you admit it.
 
@@ -30,7 +32,7 @@ The API cannot change the origin label.
 
 ## The separate feed
 
-- Admitted drafts appear in a separate feed. Every item there has score 0. The order of admission breaks ties.
+- Admitted drafts appear in a separate list. The server gives every item there the same score 0, so the page shows no score. The list keeps the order in which you added the items.
 - That feed never calls the trained scorer.
 - A fictional item has a text identifier. It cannot enter a control over observed items, the evidence scope of a language control, or the item feedback of the conditions A to E.
 - The catalogue, the categories, the applied language controls and the rankings of A to E stay as they are.
@@ -38,8 +40,8 @@ The API cannot change the origin label.
 ## Removal, restoration and reset
 
 - Records exist only for the current session and user. At most eight items can be admitted.
-- **Remove synthetic item** removes one item. The application keeps the exact generated record, so that **Review restoring last removed synthetic item** can restore it without another model call. A restoration needs a new approval.
-- **Clear synthetic items** and **Reset this user** remove drafts, admitted items and the restoration record.
+- **Remove fictional item ID** removes one item. The application keeps the exact generated record, so that **Review the return of the last removed fictional item** can restore it without another model call. A restoration needs a new approval.
+- **Remove every fictional item** and **Reset this user** remove drafts, admitted items and the restoration record.
 - An admission or a removal makes pending reviews invalid. If the source data changes, the application blocks a stale admission and withholds earlier records from the separate feed.
 
 ## Providers
@@ -48,7 +50,7 @@ The draft uses the provider that the server was started with: the hand-written r
 Only the drafting instruction, the brief and the reply schema go to the provider. The catalogue, the history and existing fictional records do not.
 A server without a provider cannot draft.
 
-A malformed reply, a duplicate field, an unsupported field, invalid text, a URL or an incomplete reply adds nothing. The page shows the reason.
+A malformed reply, a duplicate field, an unsupported field, invalid text, a URL or an incomplete reply adds nothing. The page shows "No draft was written." and the reason. A draft answer carries `calls_attempted` and `outcome_source`, as the language controls do.
 
 ## Evidence, with dates
 
@@ -56,8 +58,8 @@ A malformed reply, a duplicate field, an unsupported field, invalid text, a URL 
 | --- | --- | --- |
 | 5 November 2026 | Document statement (the evidence archive is private) | A local model drafted metadata; preview, approval, the separate feed, removal, reviewed restoration and reset were observed through the browser and the API ([record](../deliverables/2026-11-05-final-demo/CLAIM-MATRIX.md)). |
 | 10 November 2026, 22:46 UTC | Demonstration with real model output | One call through the Claude Code CLI drafted metadata. Preview, admission, removal and restoration ran through the Python methods of the application, with no browser and no HTTP. Restoration replayed the removed record with no model call ([summary](evidence/2026-11-11/FABLE-LUNARIA-PUBLIC-SAFE-SUMMARY.json)). |
-| This revision | Authored replies | The browser flow `fictional` completes on the scenario `tags`: draft, review, admission to the separate feed, removal. |
-| Final build | Demonstration with real model output | Not yet recorded for the integrated final revision. |
+| This revision | Authored replies | The browser flow `fictional` completes on the scenario `tags`: draft, review, admission to the separate list, removal. |
+| Final build | Demonstration with real model output | Final build, 14 November 2026 (UTC): one draft through the file relay (declared model: a Claude Opus sub-agent, not attested), approved by an AI operator, added to the separate list and removed. No person reviewed. Records: `docs/evidence/2026-11-14/``real-model-relay/tags/`. |
 
 ## Limits
 

@@ -91,7 +91,8 @@ class EvidenceContextTests(unittest.TestCase):
         self.assertIn("e.supplied_field_text??", ui)
         self.assertIn("e.truncated?", ui)
         self.assertIn("e.quote_present?", ui)
-        self.assertIn("The application checked the words, not the meaning", ui)
+        # The review states the limit of a quotation in plain words: it shows that words exist, not that a meaning is right.
+        self.assertIn("The application checked the words, not the meaning.", ui)
         self.assertIn("[truncated]", ui)
         self.assertIn("[quote not found in current text]", ui)
         self.assertIn("Full source field unavailable", ui)

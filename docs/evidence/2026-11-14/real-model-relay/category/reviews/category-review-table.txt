@@ -1,0 +1,45 @@
+Evidence for every item in the scope
+
+Each row is one item of the evidence scope. A marked row is selected. An unmarked row is not selected, and the row says why.
+
+Item	Description in the item data	Its categories and tags	Classification under the definition (call 2)	Separate evidence assessment (call 3)	Decision of the application	Result if approved
+41001
+SELECTED
+	A bent metal bookmark is straightened with pliers and used again. The existing piece is kept.	
+K1
+tags: K1
+	matches the definition · "A bent metal bookmark is straightened with pliers and used again. The existing piece is kept." Damage condition: the existing bookmark is bent and is straightened, which the definition lists as a repair. Keep condition: the caption states it is used again and the existing piece is kept. Both conditions have affirmative text.	supported · "A bent metal bookmark is straightened with pliers and used again. The existing piece is kept." The caption states an existing damaged object (bent bookmark) is fixed (straightened) and that the same object is used again and kept. Both required conditions, repair of a damaged existing object and keeping it in use, are affirmatively stated.	Selected: the classification matches and the separate assessment supports it	Removed from the feed
+41002
+SELECTED
+	A torn canvas satchel is mended with a needle and spare thread so it can carry books again. The same bag is kept.	
+K2
+tags: K2
+	matches the definition · "A torn canvas satchel is mended with a needle and spare thread so it can carry books again. The same bag is kept." Damage condition: the existing satchel is torn and is mended. Keep condition: the caption states the same bag is kept. Spare thread is a repair material, not the making of a new object. Both conditions have affirmative text.	supported · "A torn canvas satchel is mended with a needle and spare thread so it can carry books again. The same bag is kept." The caption states a damaged existing object (torn satchel) is mended, and that the same bag is kept for carrying books again. Both the repair condition and the keep condition are affirmatively stated.	Selected: the classification matches and the separate assessment supports it	Removed from the feed
+41003
+SELECTED
+	A leaking clay jug is sealed and returned to watering plants. The same jug remains in use.	
+K3
+tags: K3
+	matches the definition · "A leaking clay jug is sealed and returned to watering plants. The same jug remains in use." Damage condition: the existing jug is leaking and is sealed. Keep condition: the caption states the same jug remains in use. Both conditions have affirmative text.	supported · "A leaking clay jug is sealed and returned to watering plants. The same jug remains in use." The caption states a damaged existing object (leaking jug) is sealed, and that the same jug remains in use. Both the repair condition and the keep condition are affirmatively stated.	Selected: the classification matches and the separate assessment supports it	Removed from the feed
+41004	A broken desk organizer is put in recycling and a newly purchased organizer is unpacked in its place.	
+K1
+tags: K1
+	does not match · "A broken desk organizer is put in recycling and a newly purchased organizer is unpacked in its place." The damaged organizer is discarded to recycling and replaced by a different, newly purchased organizer. The definition states that discard or replacement by a different object makes the keep condition false. No repair is stated.	contradicted · "A broken desk organizer is put in recycling and a newly purchased organizer is unpacked in its place." The caption states the broken organizer is discarded to recycling and replaced by a different, newly purchased object. The definition says discard or replacement by a different object makes the keep condition false. No repair is stated either.	Not selected: it does not match the definition	Unchanged
+41005	Paper offcuts are folded into a new tray. No glue or powered equipment is used.	
+K4
+tags: K4
+	does not match · "Paper offcuts are folded into a new tray." The caption states that a new object is made from leftover material. The definition states that making a new object, even from leftover material, is not a repair of an existing object. The repair condition is therefore false.	contradicted · "Paper offcuts are folded into a new tray." The caption states a new object is made from leftover material. The definition explicitly says making a new object, even from leftover material, is not a repair of an existing object. No damaged existing object is fixed or kept, so the repair condition is false.	Not selected: it does not match the definition	Unchanged
+41006	A raw wooden blank is shaped with an electric lathe into a new knob.	
+K2
+tags: K2
+	does not match · "A raw wooden blank is shaped with an electric lathe into a new knob." The caption states that a new knob is made from a raw blank. The blank is not described as damaged, and making a new object is not a repair of an existing object under the definition. The repair condition is therefore false.	contradicted · "A raw wooden blank is shaped with an electric lathe into a new knob." The caption states a new object (knob) is made from a raw blank. The definition says making a new object is not a repair of an existing object. No damaged existing object is repaired or kept, so the repair condition is false.	Not selected: it does not match the definition	Unchanged
+41007	A page of knot diagrams is shown. No completed activity or finished object is described.	
+K3
+tags: K3
+	does not match · "A page of knot diagrams is shown. No completed activity or finished object is described." The caption affirmatively states its subject (a page of knot diagrams) and states that no completed activity is described. The definition requires the item's own description to state a repair of a damaged object; this description explicitly states it describes no such activity, so the repair condition is false. This is an explicit negative statement, not missing information.	not stated · "No completed activity or finished object is described." The caption describes only a page of knot diagrams and states that no activity or object is described. It does not say whether any damaged object is repaired or kept, so membership is unknown.	Not selected: the two calls do not agree	Unchanged
+41008	The only notes are a blue background and a 20-second duration. The subject is not described.	
+K4
+tags: K4
+	no decision The caption only gives a background colour and a duration and states that the subject is not described. It does not say whether any damaged object is repaired or kept, so under the definition membership is unknown.	not stated · "The subject is not described." The caption gives only a background colour and duration and states the subject is not described. Neither the repair condition nor the keep condition is stated, so membership is unknown.	Not selected: no decision	Unchanged
+
+A quotation or a category name shows that the words exist in the item data. It does not show that the decision is right. Read each row before you approve.

@@ -28,7 +28,8 @@ test('displays exact unapproved candidate, rationale, evidence and nonselectable
   const {calls,ui}=fixture();await show(ui);
   for(const value of [proposal.label,proposal.definition,proposal.rationale,proposal.evidence[0].quote,...clar.clarification.alternatives])assert.ok(ui.text().includes(value));
   assert.equal(ui.button('Continue to definition review').props.disabled,true);
-  assert.equal(ui.nodes().filter(n=>n.type==='input'&&n.props.type==='checkbox'&&n.props.name==='category-resolution').length,1);
+  // One explicit choice: a check box, not a radio button with one option (m15).
+  assert.deepEqual(ui.nodes().filter(n=>n.type==='input'&&n.props.name==='category-resolution').map(n=>n.props.type),['checkbox']);
   assert.equal(ui.find(n=>n.props.name==='category-resolution').props.checked,false);
   const before=calls.length;ui.render();ui.render();assert.equal(calls.length,before);
   assert.equal(calls.filter(c=>c.path==='semantic/definition/preview').length,1);
@@ -43,10 +44,10 @@ test('explicit primary resolution uses only token and choice, then requires a se
   ui.button('Continue to definition review').props.onClick();await ui.settle();
   assert.deepEqual(calls.find(c=>c.path==='semantic/definition/resolve').body,{user_id:1,plan_id:'clarify-token',choice:'review_primary'});
   assert.ok(ui.text().includes('original model result remains clarification'));
-  assert.equal(ui.button('Approve definition and classify supplied items').props.disabled,true);
+  assert.equal(ui.button('Approve the definition and classify the items of the scope').props.disabled,true);
   assert.equal(calls.filter(c=>c.path==='semantic/definition/classify').length,0);
   ui.find(n=>n.type==='input'&&n.props.type==='checkbox'&&n.props.checked===false).props.onChange({target:{checked:true}});ui.render();
-  ui.button('Approve definition and classify supplied items').props.onClick();await ui.settle();
+  ui.button('Approve the definition and classify the items of the scope').props.onClick();await ui.settle();
   assert.deepEqual(calls.find(c=>c.path==='semantic/definition/classify').body,{user_id:1,plan_id:'review-token',evidence_reviewed:true});
   assert.equal(calls.filter(c=>c.path==='semantic/definition/preview').length,1);
 });
@@ -57,7 +58,7 @@ test('repeated clicks before render send only one preview and one resolution',as
   assert.equal(calls.filter(c=>c.path==='semantic/definition/preview').length,1);
   choose(ui);const resolve=ui.button('Continue to definition review').props.onClick;resolve();resolve();ui.render();
   assert.equal(calls.filter(c=>c.path==='semantic/definition/resolve').length,1);
-  complete(review);await ui.settle();assert.equal(ui.button('Approve definition and classify supplied items').props.disabled,true);
+  complete(review);await ui.settle();assert.equal(ui.button('Approve the definition and classify the items of the scope').props.disabled,true);
 });
 
 test('cancel is explicit, single use in UI, and cannot classify or apply',async()=>{
@@ -110,7 +111,7 @@ for(const ordinary of [false,true])test(`full source field remains exact in ${or
     assert.equal(ui.nodes().some(n=>n.props.dangerouslySetInnerHTML),false);
   }
   check();if(!ordinary){choose(ui);ui.button('Continue to definition review').props.onClick();await ui.settle();check();}
-  assert.equal(ui.button('Approve definition and classify supplied items').props.disabled,true);
+  assert.equal(ui.button('Approve the definition and classify the items of the scope').props.disabled,true);
   assert.equal(calls.filter(c=>c.path==='semantic/definition/classify'||c.path==='semantic/apply').length,0);
 });
 

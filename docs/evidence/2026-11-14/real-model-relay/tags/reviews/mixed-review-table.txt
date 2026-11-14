@@ -1,0 +1,98 @@
+Evidence for every item in the scope
+
+Each row is one item of the evidence scope. A marked row is selected. An unmarked row is not selected, and the row says why.
+
+Control: Show more: category "Music", category "Guitar", category "Live sessi... [5705b2] · Show more (standard, +0.25) · new in this review
+Item	Description in the item data	Its categories and tags	Selected or not, and through what	Net result if approved
+61001	Episode 12 of a weeknight series. Running time 58 seconds.	
+Cooking > Home recipes
+tags: dinner, recipe
+	not selected: none of its categories or tags was chosen	Removed from the feed
+61002	Part 3 of a weekend series. Running time 45 seconds.	
+Cooking > Baking
+tags: baking, bread
+	not selected: none of its categories or tags was chosen	Removed from the feed
+61003	An evening walk between stalls. Running time 62 seconds.	
+Travel > City walks
+tags: night market, street food
+	not selected: none of its categories or tags was chosen	Removed from the feed
+61004	A mechanic cleans a bicycle chain between bites of a sandwich.	
+Repair > Bicycle repair
+tags: bicycle, tools
+	not selected: none of its categories or tags was chosen	Unchanged
+61005	An electrician replaces a desk lamp switch.	
+Repair > Home repair
+tags: lamp, tools
+	not selected: none of its categories or tags was chosen	Unchanged
+61006	The camera follows a train crossing a bridge.	
+Travel > Rail journeys
+tags: bridge, train
+	not selected: none of its categories or tags was chosen	Unchanged
+61007
+SELECTED
+	A player repeats a short guitar exercise.	
+Music > Guitar
+tags: guitar, practice
+	selected through category "Music" and category (level 2) "Guitar" and tag "guitar"	Score +0.25; ranked higher: position 4 to 2
+61008
+SELECTED
+	A pianist plays one piece in a small room.	
+Music > Live sessions
+tags: live, piano
+	selected through category "Music" and category (level 2) "Live sessions" and tag "piano"	Score +0.25; ranked higher: position 5 to 4
+61009	Episode 13 of a weeknight series. Running time 51 seconds.	
+Cooking > Home recipes
+tags: recipe, salad
+	not selected: none of its categories or tags was chosen	Removed from the feed
+61010	Untitled clip: no category or tag is supplied.	no category and no tag	not selected: this item has no category and no tag	Unchanged
+Control: Remove: category "Cooking", category "Baking", category "Home recipe... [25c4f8] · Remove from the feed · new in this review
+Item	Description in the item data	Its categories and tags	Selected or not, and through what	Net result if approved
+61001
+SELECTED
+	Episode 12 of a weeknight series. Running time 58 seconds.	
+Cooking > Home recipes
+tags: dinner, recipe
+	selected through category "Cooking" and category (level 2) "Home recipes" and tag "dinner" and tag "recipe"	Removed from the feed
+61002
+SELECTED
+	Part 3 of a weekend series. Running time 45 seconds.	
+Cooking > Baking
+tags: baking, bread
+	selected through category "Cooking" and category (level 2) "Baking" and tag "baking" and tag "bread"	Removed from the feed
+61003
+SELECTED
+	An evening walk between stalls. Running time 62 seconds.	
+Travel > City walks
+tags: night market, street food
+	selected through tag "street food"	Removed from the feed
+61004	A mechanic cleans a bicycle chain between bites of a sandwich.	
+Repair > Bicycle repair
+tags: bicycle, tools
+	not selected: none of its categories or tags was chosen	Unchanged
+61005	An electrician replaces a desk lamp switch.	
+Repair > Home repair
+tags: lamp, tools
+	not selected: none of its categories or tags was chosen	Unchanged
+61006	The camera follows a train crossing a bridge.	
+Travel > Rail journeys
+tags: bridge, train
+	not selected: none of its categories or tags was chosen	Unchanged
+61007	A player repeats a short guitar exercise.	
+Music > Guitar
+tags: guitar, practice
+	not selected: none of its categories or tags was chosen	Score +0.25; ranked higher: position 4 to 2
+61008	A pianist plays one piece in a small room.	
+Music > Live sessions
+tags: live, piano
+	not selected: none of its categories or tags was chosen	Score +0.25; ranked higher: position 5 to 4
+61009
+SELECTED
+	Episode 13 of a weeknight series. Running time 51 seconds.	
+Cooking > Home recipes
+tags: recipe, salad
+	selected through category "Cooking" and category (level 2) "Home recipes" and tag "recipe" and tag "salad"	Removed from the feed
+61010	Untitled clip: no category or tag is supplied.	no category and no tag	not selected: this item has no category and no tag	Unchanged
+
+An item in several controls shows one net result. Removal takes priority over a rank change.
+
+A quotation or a category name shows that the words exist in the item data. It does not show that the decision is right. Read each row before you approve.

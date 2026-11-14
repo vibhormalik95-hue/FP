@@ -12,13 +12,17 @@ npm ci
 npm run build
 ```
 
-Then update the three paths and SHA-256 values in `scripts/check_personal_ui_index.py`, stage the new files, and run:
+Then write the new pins, stage the files and run the check, from the repository root:
 
 ```
+python scripts/repin_built_interface.py
+git add web/dist scripts/check_personal_ui_index.py
 python scripts/check_personal_ui_index.py
 ```
 
-The check compares the staged files with the pinned build. `tests/test_personal_ui_index_offline.py` compares the files on disk with the same pins.
+`repin_built_interface.py` reads `web/dist` and rewrites only the table of paths and SHA-256 values in `scripts/check_personal_ui_index.py`. The check compares the staged files with that table, so stage `web/dist` first. `tests/test_personal_ui_index_offline.py` compares the files on disk with the same pins.
+
+A new build also changes the source fingerprint (`python scripts/run_demo.py --fingerprint`), because the fingerprint covers `web/dist`. A run record of an earlier build then names another fingerprint.
 
 ## Line endings
 

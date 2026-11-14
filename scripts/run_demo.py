@@ -163,16 +163,28 @@ def build_route_provider(args, scenario, summary):
     import getpass
     import time
     from feedctrl import model_routes
-    stamp = time.strftime('%Y%m%d-%H%M%S')
+    # UTC, the clock of the call receipts.
+    stamp = time.strftime('%Y%m%d-%H%M%SZ', time.gmtime())
+    relay_only = [option for option, value in (('--declared-model', args.declared_model),
+                                               ('--transport-note', args.transport_note),
+                                               ('--relay-timeout', getattr(args, 'relay_timeout_given', None)))
+                  if value is not None]
+    if relay_only:
+        raise SystemExit(', '.join(relay_only) + ' belong to --provider relay. With a route file, put the same '
+                         'settings in the file ("declared_model", "transport_note", "timeout_seconds").')
+    record_option = getattr(args, 'record_dir', None)
     try:
         config = model_routes.load_config(getattr(args, 'route_file', None) or ROOT / model_routes.DEFAULT_FILE)
+        if args.max_calls is not None:
+            # The option can set the allowance of this run; the limits of the route kind still hold.
+            config = model_routes.validate_config({**config, 'max_calls': args.max_calls})
         key = model_routes.resolve_api_key(config, ask=getpass.getpass if sys.stdin.isatty() else None)
         relay_dir = record_dir = None
         if config['route'] == 'relay':
             relay_dir = Path(args.relay_dir) if args.relay_dir else ROOT / 'runs' / f'relay-{scenario}-{stamp}'
             summary['relay_dir'] = str(relay_dir.resolve())
-        elif getattr(args, 'record_dir', None) != 'none':
-            record_dir = Path(getattr(args, 'record_dir', None) or ROOT / 'runs' / f'route-{scenario}-{stamp}')
+        elif record_option is None or record_option.strip().lower() != 'none':
+            record_dir = Path(record_option or ROOT / 'runs' / f'route-{scenario}-{stamp}')
             summary['record_dir'] = str(record_dir.resolve())
         provider = model_routes.build_route(config, api_key=key, record_dir=record_dir, relay_dir=relay_dir,
                                             log=lambda line: print(line, flush=True))
@@ -189,9 +201,14 @@ def build_fixture_app(args, scenario):
                          f'{FIXTURE_SCENARIOS[scenario]} Start it with --provider manual.')
     import os
     from feedctrl.api import create_app
-    # The fixture has no caption data. A sidecar path in the environment belongs to another data set.
-    os.environ.pop('FEEDCTRL_CAPTION_SIDECAR', None)
-    app = create_app(fixture=True, allow_local_models=False, allow_local_recommender=False)
+    # The fixture has no caption data. A sidecar path in the environment belongs
+    # to another data set, so it is ignored while the application is built.
+    saved = os.environ.pop('FEEDCTRL_CAPTION_SIDECAR', None)
+    try:
+        app = create_app(fixture=True, allow_local_models=False, allow_local_recommender=False)
+    finally:
+        if saved is not None:
+            os.environ['FEEDCTRL_CAPTION_SIDECAR'] = saved
     app.state.provider_receipts = None
     app.state.scenario_requests = {}
     app.state.scenario_name = scenario
@@ -202,10 +219,11 @@ def build_fixture_app(args, scenario):
 def build_app(args):
     """Return ``(app, port, summary, finish)`` for the selected provider."""
     sys.path.insert(0, str(ROOT))
-    if args.provider == 'personal-cli':
-        return build_personal_cli_app(args)
+    # First: the fixture scenario refuses every provider but manual, also personal-cli.
     if args.scenario in FIXTURE_SCENARIOS:
         return build_fixture_app(args, args.scenario)
+    if args.provider == 'personal-cli':
+        return build_personal_cli_app(args)
 
     from feedctrl.api import create_app
     from feedctrl import demo_providers
@@ -338,12 +356,14 @@ def main(argv=None):
     parser.add_argument('--relay-dir')
     parser.add_argument('--declared-model')
     parser.add_argument('--transport-note')
-    parser.add_argument('--relay-timeout', type=float, default=600)
+    parser.add_argument('--relay-timeout', type=float)
     parser.add_argument('--max-calls', type=int)
     parser.add_argument('--reviewed-config')
     parser.add_argument('--report')
     parser.add_argument('--fingerprint', action='store_true', help='print the source fingerprint and exit')
     args = parser.parse_args(argv)
+    # The relay provider waits 600 s by default; a route file has its own setting.
+    args.relay_timeout_given, args.relay_timeout = args.relay_timeout, 600 if args.relay_timeout is None else args.relay_timeout
     if args.fingerprint:
         print(source_fingerprint())
         return
@@ -353,25 +373,62 @@ def main(argv=None):
 
     app, port, summary, finish = build_app(args)
     app.state.source_fingerprint = summary['source_fingerprint'] = source_fingerprint()
-    import uvicorn
     print(json.dumps({'serving': f'http://127.0.0.1:{port}', **summary}, indent=2, default=str), flush=True)
+    try:
+        serve(app, port)
+    finally:
+        finish()
+
+
+# Seconds that the server waits for open requests after a stop signal. A stop
+# ends every running model call first, so a request ends within about a second.
+GRACEFUL_SECONDS = 10
+
+
+def serve(app, port):
+    """Serve until Ctrl+C or a stop signal (SIGINT, SIGTERM; Ctrl+Break on Windows).
+
+    The signal sets the stop flag of the model routes. A route then refuses
+    every new call, and a watcher ends the running calls: it closes an HTTP
+    connection, and it ends a program with the programs that it started. Then
+    the server waits at most ``GRACEFUL_SECONDS`` for open requests. A second
+    Ctrl+C ends the wait at once.
+    """
+    import contextlib
+    import signal
+    import threading
+    import uvicorn
     from feedctrl import model_routes
 
-    class RouteServer(uvicorn.Server):
+    class StoppingServer(uvicorn.Server):
         def handle_exit(self, sig, frame):
-            # Stop admission before Uvicorn waits for outstanding requests.
-            model_routes.request_stop()
+            model_routes.request_stop()   # only a flag: safe in a signal handler
             super().handle_exit(sig, frame)
 
-    server = RouteServer(uvicorn.Config(
-        app, host='127.0.0.1', port=port, proxy_headers=False, server_header=False,
-        log_level='warning', timeout_graceful_shutdown=5))
+        @contextlib.contextmanager
+        def capture_signals(self):
+            # As uvicorn does, but the signal is not raised again after the
+            # stop, so that the report of a run is closed and the exit code is 0.
+            if threading.current_thread() is not threading.main_thread():
+                yield
+                return
+            names = [signal.SIGINT, signal.SIGTERM] + ([signal.SIGBREAK] if hasattr(signal, 'SIGBREAK') else [])
+            original = {name: signal.signal(name, self.handle_exit) for name in names}
+            try:
+                yield
+            finally:
+                for name, handler in original.items():
+                    signal.signal(name, handler)
+
+    config = uvicorn.Config(app, host='127.0.0.1', port=port, proxy_headers=False, server_header=False,
+                            log_level='warning', timeout_graceful_shutdown=GRACEFUL_SECONDS)
     try:
-        server.run()
+        StoppingServer(config).run()
+    except KeyboardInterrupt:
+        pass
     finally:
         model_routes.request_stop()
-        model_routes.cancel_running()
-        finish()
+        model_routes.cancel_running('stop')
 
 
 if __name__ == '__main__':

@@ -358,11 +358,12 @@ def create_app(data_path=None, model_path=None, fixture=False, semantic_path=Non
     def scenario_requests():
         # Optional exact request texts supplied by the launcher for its bundled
         # scenario, so the operator can insert them without retyping. Display only.
+        # None: no launcher scenario. An empty mapping: a scenario without requests.
         value = getattr(app.state, "scenario_requests", None)
         if not isinstance(value, dict):
             return None
         return {key: text for key, text in value.items()
-                if isinstance(key, str) and isinstance(text, str) and 0 < len(text) <= 2000} or None
+                if isinstance(key, str) and isinstance(text, str) and 0 < len(text) <= 2000}
 
     def scenario_name():
         # Set by the launcher: the name of the bundled scenario that is served. Display only.

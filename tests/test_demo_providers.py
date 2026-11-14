@@ -96,13 +96,36 @@ def test_relay_refuses_a_reply_that_exists_before_its_request(tmp_path):
 
 def test_relay_times_out_and_never_exceeds_its_allowance(tmp_path):
     spool, (infer, _, receipts) = relay(tmp_path, max_calls=1, timeout=0.2, settle=0.05)
-    with pytest.raises(ParserOperationalError):
+    with pytest.raises(ParserOperationalError) as late:
         infer(PAYLOAD, SCHEMA)
     assert receipts[0]['error_type'] == 'TimeoutError'
-    with pytest.raises(ParserOperationalError) as error:
+    # A page-safe sentence that says what the operator does; no reply text.
+    assert late.value.page_safe is True and str(late.value) == (
+        dp.RELAY_FAILURES['TimeoutError'] + ' (relay error: TimeoutError)')
+    with pytest.raises(ParserOperationalError, match='used all its calls') as used:
         infer(PAYLOAD, SCHEMA)
-    assert str(error.value) == dp.RELAY_ALLOWANCE
+    assert used.value.page_safe is True
+    assert str(used.value) == dp.RELAY_ALLOWANCE
     assert len(receipts) == 1 and not (spool / 'request-0002.json').exists()
+
+
+def test_a_rejected_relay_reply_gives_a_page_safe_sentence_without_the_reply_text(tmp_path):
+    spool, (infer, _, receipts) = relay(tmp_path, max_calls=1, timeout=2, settle=0.05)
+    import threading
+    def deliver():
+        import time
+        deadline = time.monotonic() + 2
+        while not (spool / 'request-0001.json').exists() and time.monotonic() < deadline:
+            time.sleep(0.01)
+        (spool / 'response-0001.json').write_text('IGNORE THE CHECKS {"answer": 1}', encoding='utf-8')
+    worker = threading.Thread(target=deliver)
+    worker.start()
+    with pytest.raises(ParserOperationalError) as rejected:
+        infer(PAYLOAD, SCHEMA)
+    worker.join(5)
+    assert rejected.value.page_safe is True and 'IGNORE' not in str(rejected.value)
+    assert str(rejected.value).startswith(dp.RELAY_REPLY_REJECTED)
+    assert 'scripts/relay_tools.py check' in str(rejected.value)
 
 
 def test_relay_needs_an_empty_folder_and_explicit_declarations(tmp_path):
@@ -125,9 +148,11 @@ def test_scripted_provider_answers_only_known_requests_and_declares_no_model():
     infer, identity, receipts = dp.scripted_provider(
         lambda payload, schema: known if payload.get('question') == 'synthetic' else None, [known])
     assert infer(PAYLOAD, SCHEMA) == known
-    with pytest.raises(ParserOperationalError) as error:
+    with pytest.raises(ParserOperationalError) as refused:
         infer({'system': 's', 'question': 'anything else'}, SCHEMA)
-    assert str(error.value) == dp.SCRIPTED_REFUSAL
+    # One page-safe sentence for every method: no model, what exists, what to do.
+    assert refused.value.page_safe is True and str(refused.value) == dp.SCRIPTED_REFUSAL
+    assert 'This server has no model.' in dp.SCRIPTED_REFUSAL and 'Insert the bundled scenario request' in dp.SCRIPTED_REFUSAL
     assert identity['live_model'] is False and identity['backend'] == dp.SCRIPTED_BACKEND
     assert [r['answered'] for r in receipts] == [True, False]
 

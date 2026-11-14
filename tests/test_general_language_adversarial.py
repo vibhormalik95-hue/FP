@@ -235,6 +235,7 @@ def test_contradictory_quote_review_payload_exposes_cited_source_context(make_cl
     ('Do not hide the cello masterclass', 'the cello masterclass'),
     ('never exclude choir warm-ups', 'choir warm-ups'),
     ('Please do NOT really boost drum circles', 'drum circles'),
+    ('don’t   reduce piano drills', 'piano drills'),
     ('don’t   show piano drills less', 'piano drills'),
     ('Do not show more piano drills', 'piano drills'),
     ('never show piano drills more', 'piano drills'),
@@ -242,17 +243,34 @@ def test_contradictory_quote_review_payload_exposes_cited_source_context(make_cl
 def test_command_negation_guard_clarifies_before_grounding(make_client, text, span):
     """Authored mock; proves mechanics/guards only, not model semantic accuracy.
 
-    Even when the action mock wrongly returns a positive exclude, the lexical
-    command-negation guard returns clarify before any grounding call.
+    The wording guard runs before the first model call (lead decision 1, vocab
+    F6). Earlier it ran after the action call, and this test pinned
+    ``mock.stages() == ['action']``. Now no call is made at all.
     """
     mock = Mock(action('exclude/none', span), grounding([ev(1, 'violin lesson')]))
     c = make_client(MUSIC, mock)
     h = session(c)
     before = snapshot(c, h)
     body = assert_not_ready_and_unchanged(c, h, preview(c, h, text), before)
-    assert body['status'] == 'clarify' and body['reason'] == ig.GUARD_REASON
-    assert body['outcome_source'] == ig.APPLICATION_CHECK and body['calls_attempted'] == 0
+    assert body['status'] == 'clarify' and 'negated-command pattern' in body['reason']
     assert body['item_ids'] == [] and mock.stages() == []
+    assert body['calls_attempted'] == 0 and body['outcome_source'] == 'application_check'
+    assert body['reason'] == ig.GUARD_REASON and body['outcome_source'] == ig.APPLICATION_CHECK
+    assert body['checks'] == [{'check': ig.GUARD_CHECK, 'passed': False, 'detail': ig.GUARD_PATTERN_WORDS}]
+
+
+def test_do_not_show_is_an_exclusion_request_that_reaches_the_model(make_client):
+    """Authored mock; proves mechanics only. "show" is no longer a guarded verb (lead decision 1).
+
+    Earlier the pattern held "show" and this wording was refused; it now goes to
+    the model like any other exclusion request, and the reviewer sees the result.
+    """
+    mock = Mock(action('exclude/none', 'violin lessons'), grounding([ev(1, 'violin lesson')]))
+    c = make_client(MUSIC, mock)
+    h = session(c)
+    p = preview(c, h, "Don't show me violin lessons").json()
+    assert mock.stages() == ['action', 'grounding'] and p['ready'] is True and p['applied'] is False
+    assert next(row for row in p['checks'] if row['check'] == ig.GUARD_CHECK)['passed'] is True
 
 
 @pytest.mark.parametrize('text,span', [
@@ -586,14 +604,16 @@ def test_staged_classification_with_invented_member_fails_closed(music_client, m
 def test_no_hunger_specific_routing_in_package_source():
     """Static check; proves absence of hunger-keyed code paths, not model behaviour.
 
-    No prompt example, regex, branch or keyword table in feedctrl contains
-    the demonstration's hunger-specific wording.
+    No line of the package holds the word any more. The description prompt held
+    "(not hungry)" as an example of a negated personal state until lead decision
+    6 (vocab F17) replaced it with a neutral example; this test pinned that line.
     """
     root = Path(feedctrl.__file__).parent
     hits = [(p.name, n, line) for p in sorted(root.glob('*.py'))
             for n, line in enumerate(p.read_text(encoding='utf8').splitlines(), 1)
             if re.search(r'hungr|appetit', line, re.I)]
     assert hits == []
+    assert 'negated personal state (not tired)' in ig.PROMPT
 
 
 @pytest.mark.parametrize('text', ['Do not show piano drills', "Don't show violin lessons", 'never show cello practice'])

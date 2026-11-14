@@ -1,0 +1,7 @@
+OK      configuration: Route: cli; Program: /home/claude/work/runs/final/route-checks/files/bin/claude (Claude Code CLI, print mode, one process for each call); Model: standin-model
+OK      program: claude answered. Version: 0.0.0 (stand-in for the Claude Code CLI; not a model).
+OK      sign-in: The CLI reports that it is signed in (method: stand-in).
+The next step sends one very small request to the model. It can use a few tokens.
+OK      test call: The model returned the requested JSON object in 0.1 s. Model reported by the reply: standin-model (accepted as the requested model by the rule "equal").
+
+Result: the route works.

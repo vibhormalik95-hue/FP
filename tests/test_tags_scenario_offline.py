@@ -172,12 +172,14 @@ def test_the_mixed_request_gives_two_groups_and_both_effects(served):
         ('Remove: category "Cooking", tag "street food"', 'exclude', 'none', 'anything about food', [61001, 61002, 61003, 61009])]
     assert [row['item_id'] for row in plan['vocabulary']['not_selected']] == [61004, 61005, 61006, 61010]
     assert saved(client, headers) == before
+    rank = lambda items: {item['item_id']: item['rank'] for item in items}
     feed = apply(client, headers, plan)['feed']
     shown = {item['item_id']: item for item in feed['items']}
     assert sorted(shown) == [61004, 61005, 61006, 61007, 61008, 61010]
-    positions_before = {item['item_id']: i for i, item in enumerate(before['feed']['items'])}
-    positions_after = {item['item_id']: i for i, item in enumerate(feed['items'])}
-    assert all(positions_after[item] < positions_before[item] for item in (61007, 61008))
+    # The increase is visible: both music items change position in the first ten (vocab F3, ui M9).
+    start, after = rank(before['feed']['items']), rank(feed['items'])
+    assert (start[61007], start[61008]) == (4, 5) and (after[61007], after[61008]) == (2, 4)
+    assert [item['item_id'] for item in feed['items']] == [61004, 61007, 61005, 61008, 61006, 61010]
     assert all(abs(shown[item]['score'] - shown[item]['base_score'] - 0.25) < 1e-9 for item in (61007, 61008))
     assert all(abs(shown[item]['score'] - shown[item]['base_score']) < 1e-9 for item in (61004, 61005, 61006, 61010))
     assert undo(client, headers)['feed'] == before['feed']
@@ -196,7 +198,12 @@ def test_requests_that_cannot_be_applied_change_nothing(served, key, status, pro
         assert len(body['clarification']['alternatives']) == 3
         assert body['clarification']['model_reason'].startswith('Authored rehearsal reply')
     if key == 'vocabulary:negated':
+        assert body['reason'].startswith('The request matches the negated-command pattern')
         assert body['reason'] == __import__('feedctrl.indirect_grounding', fromlist=['GUARD_REASON']).GUARD_REASON
+        assert body['outcome_source'] == 'application_check'
+    else:
+        assert body['outcome_source'] == 'model_report' and body['reply_reason'].startswith('Authored rehearsal reply')
+    assert body['calls_attempted'] == provider_calls
     if status in ('unsupported', 'no_match'):
         assert body['reason'].startswith('Authored rehearsal reply')
     assert saved(client, headers) == before
@@ -208,10 +215,12 @@ def test_a_request_or_a_scope_without_an_authored_reply_is_refused(served):
     client, headers, _ = served
     other = client.post('/api/semantic/vocabulary/preview', headers=headers, json={
         'user_id': 1, 'text': 'Hide the Repair category, please.', 'candidate_ids': IDS}).json()
-    assert other['ready'] is False and other['status'] == 'error' and other['outcome_source'] == 'provider_failure' and other['calls_attempted'] == 1
+    # One page-safe sentence that says what to do; a call was begun and no usable reply came back.
+    assert other['ready'] is False and other['status'] == 'error' and other['reason'].startswith('This server has no model.')
+    assert other['outcome_source'] == 'provider_failure' and other['calls_attempted'] == 1
     narrow = client.post('/api/semantic/vocabulary/preview', headers=headers, json={
         'user_id': 1, 'text': requests()['vocabulary:literal'], 'candidate_ids': IDS[:6]}).json()
-    assert narrow['ready'] is False and narrow['status'] == 'error'
+    assert narrow['ready'] is False and narrow['status'] == 'error' and 'complete bundled scope' in narrow['reason']
 
 
 def test_the_description_request_uses_the_separate_route_and_finds_what_labels_do_not(served):
@@ -295,7 +304,8 @@ def test_the_fictional_brief_is_drafted_reviewed_admitted_and_removed(served):
     assert removed['items'] == [] and calls(app) == 1
     other = client.post('/api/synthetic/preview', headers=headers, json={
         'user_id': 1, 'brief': 'Another fictional brief.', 'synthetic_acknowledged': True}).json()
-    assert other['ready'] is False and 'This server has no model.' in other['reason']
+    assert other['ready'] is False and other['reason'].startswith('This server has no model.')
+    assert other['outcome_source'] == 'provider_failure' and other['calls_attempted'] == 1
 
 
 def test_the_manual_provider_offers_the_terms_and_no_match(tmp_path):
