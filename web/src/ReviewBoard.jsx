@@ -116,7 +116,7 @@ function applicationChecks(group, pending, context, shared) {
     <p><b>{group.label}</b></p>
     {!(shared.checks && route === 'vocabulary') && checkList(localChecks(group, pending, context))}
     {control&&<p className="help">Items that each chosen name selects: {control.terms.map(term=>`${termWords(term)}: ${(term.item_ids||[]).join(', ')||'none'}`).join('; ')}.</p>}
-    {audit&&<p className="help">Required literal terms: {audit.literal_constraints.terms.join(', ')||'none'}. A term that is present can still be negated, quoted or unrelated.</p>}
+    {audit&&<p className="help">Required literal terms: {audit.literal_constraints.terms.join(', ')||'none'}. A term that is present can still be negated, quoted or unrelated. A first classification of unknown or not_match is never raised to a match.</p>}
     {envelope&&<p className="help">Overlap with existing categories: {envelope.overlaps.map(o=>`${o.category_id}: ${o.member_ids.join(',')}`).join('; ')||'none in the supplied inventory'}.</p>}
     {envelope?.normalizations?.map(e=><p className="help" key={e.item_id}>Item {e.item_id}: an uncited field "{e.original_field}" of an unknown verdict was left out of the canonical evidence. The verdict stays unknown. The raw model output is retained.</p>)}
     <p className="help">Selected items: {proposal.item_ids.join(', ')||'none'}. Assessed scope: {group.scope_ids.join(', ')}.</p>

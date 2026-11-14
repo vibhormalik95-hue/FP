@@ -142,7 +142,7 @@ export default function SemanticPanel({api,user,resetKey,onFeed,scenarioRequests
       <h3>One control, six stages</h3>
       <ol className="stage-line" aria-label="Stages of this control">{stages.map(s=><li key={s.name} data-state={s.state} aria-current={s.state==='now'?'step':undefined}>
         <span className="stage-name">{s.name}</span> <span className="stage-state">{STATE_WORDS[s.state]}{s.note?`: ${s.note}`:''}</span></li>)}</ol>
-      <p className="help">A model can propose a change. The application checks the proposal. You review it. Nothing changes until you approve, and you can undo each change. A control is a named set of existing items with one action. It is not a new video and not a new dataset category.</p>
+      <p className="help">A model can propose a change. The application checks the proposal. You review it. Nothing changes until you approve, and you can undo each change. A control is a named set of existing items with one action. It is not a new video and not a new dataset category. These controls are separate from the conditions A to E and from the earlier topic steering.</p>
       <h3>Request</h3>
       <label className="field-label" htmlFor="semantic-backend">Method</label>
       <select id="semantic-backend" disabled={disabled} value={backend} onChange={e=>{setBackend(e.target.value);setExplicitTarget(false);setTypedLabel(null);setPending(null);}}>
