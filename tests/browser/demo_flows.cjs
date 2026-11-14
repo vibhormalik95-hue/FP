@@ -22,6 +22,10 @@
  * when decision-<name>.txt contains APPROVE. Anything else is recorded as a
  * decline and the flow stops with nothing applied.
  *
+ * The receipt lists the script's own checks under "checks", the reviewer's
+ * decisions under "review_decisions" and every provider call under
+ * "provider_calls". A provider call is a model call only when the declared
+ * provider is a model: the scripted provider answers with hand-written replies.
  * The script reports which provider the server declared. It never labels a run
  * as live inference by itself: that depends on the provider line in the receipt.
  * Exit code 0 means every flow completed; 2 means a flow stopped early (for
@@ -70,7 +74,7 @@ const receipt = {
   kind: 'browser run of the served application',
   started_utc: new Date().toISOString(), base: BASE, scenario: SCENARIO, flows: FLOWS, review_mode: REVIEW,
   reviewer: args.reviewer || (REVIEW === 'auto' ? 'none: review boxes ticked by the script' : 'not stated'),
-  status: null, checks: [], flows_result: {}, model_calls: [], screenshots: [], finished_utc: null, outcome: 'started',
+  source_fingerprint: null, status: null, checks: [], review_decisions: [], flows_result: {}, provider_calls: [], screenshots: [], finished_utc: null, outcome: 'started',
 };
 const save = () => fs.writeFileSync(path.join(OUT, 'browser-receipt.json'), JSON.stringify(receipt, null, 2));
 const utc = () => new Date().toISOString();
@@ -102,8 +106,8 @@ function check(name, condition, detail) {
       for (const call of (body && Array.isArray(body[key]) ? body[key] : [])) {
         const requestHash = call.producer_payload_sha256 || call.request_sha256 || null;
         const responseHash = call.raw_response_sha256 || call.response_sha256 || null;
-        if (receipt.model_calls.some(seen => seen.request_sha256 === requestHash && seen.response_sha256 === responseHash)) continue;
-        receipt.model_calls.push({
+        if (receipt.provider_calls.some(seen => seen.request_sha256 === requestHash && seen.response_sha256 === responseHash)) continue;
+        receipt.provider_calls.push({
           route: url.slice(BASE.length), list: key, stage: call.stage || null, status: call.status || null,
           elapsed_seconds: typeof call.elapsed_seconds === 'number' ? Number(call.elapsed_seconds.toFixed(3)) : null,
           request_sha256: requestHash, response_sha256: responseHash,
@@ -150,11 +154,12 @@ function check(name, condition, detail) {
     console.log(`WAIT  review gate "${name}": write APPROVE into ${decision}`);
     const started = Date.now();
     while (!fs.existsSync(decision)) {
-      if (Date.now() - started > GATE_TIMEOUT) { receipt.checks.push({ name: `gate ${name}`, passed: false, detail: 'no decision before the review window closed', utc: utc() }); save(); return false; }
+      if (Date.now() - started > GATE_TIMEOUT) { receipt.review_decisions.push({ gate: name, decision: null, note: 'no decision before the review window closed', utc: utc() }); save(); return false; }
       await page.waitForTimeout(500);
     }
     const answer = fs.readFileSync(decision, 'utf8').trim();
-    receipt.checks.push({ name: `review decision at gate ${name}`, passed: true, detail: { decision: answer.slice(0, 200), seconds_to_decide: Number(((Date.now() - started) / 1000).toFixed(1)) }, utc: utc() });
+    // A decision is the reviewer's act. It is recorded apart from the script's own checks.
+    receipt.review_decisions.push({ gate: name, decision: answer.slice(0, 200), seconds_to_decide: Number(((Date.now() - started) / 1000).toFixed(1)), utc: utc() });
     save();
     return answer === 'APPROVE';
   }
@@ -245,13 +250,13 @@ function check(name, condition, detail) {
       await panel.locator('#semantic-label').fill('Manual ' + scenario.manualCategory);
       await panel.locator('#semantic-category').fill(scenario.manualCategory);
       await panel.locator('#semantic-operation').selectOption('exclude');
-      const callsBefore = receipt.model_calls.length;
+      const callsBefore = receipt.provider_calls.length;
       await panel.getByRole('button', { name: 'Review semantic proposal' }).click();
       check('manual: review appears', await outcome({ review: reviewHeading() }, 30000) === 'review');
-      check('manual: the server reported no model call for this review', receipt.model_calls.length === callsBefore, { model_calls: receipt.model_calls.length - callsBefore });
+      check('manual: the server reported no model call for this review', receipt.provider_calls.length === callsBefore, { model_calls: receipt.provider_calls.length - callsBefore });
       await shot('manual-review');
       await applyAndUndo('manual', baseline, record);
-      record.model_calls = 0;
+      record.provider_calls = 0;
     },
 
     async category() {
@@ -293,7 +298,7 @@ function check(name, condition, detail) {
       check('category: every supplied item has one evidence assessment on screen', assessments.length === baseline.feed.items.length, { shown: assessments.length });
       await shot('category-membership-review');
       await applyAndUndo('category', baseline, record);
-      record.model_calls = receipt.model_calls.filter(call => call.route.includes('/definition/')).length;
+      record.provider_calls = receipt.provider_calls.filter(call => call.route.includes('/definition/')).length;
     },
 
     async indirect() {
@@ -310,7 +315,7 @@ function check(name, condition, detail) {
       check('indirect: original request is shown unchanged', reviewText.includes(scenario.request));
       await shot('indirect-review');
       await applyAndUndo('indirect', baseline, record);
-      record.model_calls = receipt.model_calls.filter(call => call.route.endsWith('/api/semantic/preview')).length;
+      record.provider_calls = receipt.provider_calls.filter(call => call.route.endsWith('/api/semantic/preview')).length;
     },
   };
 
@@ -326,6 +331,7 @@ function check(name, condition, detail) {
     await page.locator('.status-strip').waitFor({ state: 'visible', timeout: 30000 });
     const statusResponse = await context.request.get(BASE + '/api/status', { headers: TOKEN ? { 'X-Personal-Operator-Token': TOKEN } : {} });
     receipt.status = await statusResponse.json();
+    receipt.source_fingerprint = receipt.status.source_fingerprint || null;
     receipt.status_strip_text = (await page.locator('.status-strip').innerText()).replace(/\s+/g, ' ');
     save();
     check('session established', Boolean(session));

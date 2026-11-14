@@ -18,7 +18,7 @@
   "driver_sha256": "5830495263747115d631cf75df14eb57afc32f76894f4fac1a8176460c616823",
   "source_sha256": {
     "feedctrl/__init__.py": "eaabd38e85dd5a5f07362331ac61fb03de4b808055144d328d12e9f8fe5fce39",
-    "feedctrl/api.py": "5c73c71c70802e6638825abb1d225e702c0722cc7809ad51b29d7d3a877ae237",
+    "feedctrl/api.py": "7cdeaa7b66aa907e48e13413547bec404b099ea0d323731dd06e74f2566f8e8b",
     "feedctrl/category_induction_producer.py": "23080f1999ae69a09772673d7010016c5ad0493aaae98f1f4eda1387a2d13ad9",
     "feedctrl/category_provider.py": "e07cc07a9d38c369001485f6db1221e4c7ee43afc70635ae1a00e3b8bfb89df2",
     "feedctrl/claude_personal.py": "5971daefba03dd88fbf3b6b9b107fcb05371210cd660914d9022553e78af3113",

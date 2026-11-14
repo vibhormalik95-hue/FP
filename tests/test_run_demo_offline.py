@@ -249,3 +249,30 @@ def test_personal_cli_indirect_scenario_serves_the_hunger_fixture(personal):
         assert review['groups'][0]['proposal']['item_ids'] == [81001, 81003, 81006]
     finish()
     assert json.loads((tmp / 'i.json').read_text())['attempted'] == 2
+
+
+def test_source_fingerprint_is_stable_and_changes_with_served_source(tmp_path, monkeypatch):
+    first = run_demo.source_fingerprint()
+    assert len(first) == 64 and first == run_demo.source_fingerprint()
+    copy = tmp_path / 'copy'
+    for folder in ('feedctrl', 'web/dist', 'tools/hosted_validation_current/inputs'):
+        shutil.copytree(ROOT / folder, copy / folder)
+    (copy / 'scripts').mkdir()
+    for name in ('run_demo.py', 'demo_scripted_replies.py'):
+        shutil.copy(ROOT / 'scripts' / name, copy / 'scripts' / name)
+    monkeypatch.setattr(run_demo, 'ROOT', copy)
+    monkeypatch.setattr(run_demo, 'INPUTS', copy / 'tools' / 'hosted_validation_current' / 'inputs')
+    assert run_demo.source_fingerprint() == first
+    with open(copy / 'feedctrl' / 'staged_routes.py', 'ab') as handle:
+        handle.write(b'\n# changed\n')
+    assert run_demo.source_fingerprint() != first
+
+
+def test_status_reports_the_fingerprint_only_when_the_launcher_sets_it():
+    app, _, _, _ = run_demo.build_app(options(provider='scripted', scenario='category'))
+    with TestClient(app) as client:
+        assert client.get('/api/status').json()['source_fingerprint'] is None
+        app.state.source_fingerprint = 'a' * 64
+        assert client.get('/api/status').json()['source_fingerprint'] == 'a' * 64
+        app.state.source_fingerprint = '<script>'
+        assert client.get('/api/status').json()['source_fingerprint'] is None

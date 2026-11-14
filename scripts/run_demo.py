@@ -24,6 +24,7 @@ diagnostic scorer. Nothing here sends email, publishes or stores credentials.
 from __future__ import annotations
 
 import argparse
+import hashlib
 import importlib.util
 import json
 from pathlib import Path
@@ -60,6 +61,23 @@ def scenario_requests(name):
     if name == 'category':
         return {'staged': body['objective']}
     return {'configured_model': body['text'], 'label': body['label']}
+
+
+def source_fingerprint():
+    """One SHA-256 over the files that decide what the served app does.
+
+    It covers the application package, the built interface, this launcher, the
+    authored rehearsal replies and the bundled scenario inputs, as bytes on
+    disk. A run receipt that records it can be matched to an exact source tree
+    without Git. Print it with ``python scripts/run_demo.py --fingerprint``.
+    """
+    files = [*(ROOT / 'feedctrl').glob('*.py'), *(ROOT / 'web' / 'dist').rglob('*'), *INPUTS.rglob('*'),
+             ROOT / 'scripts' / 'run_demo.py', ROOT / 'scripts' / 'demo_scripted_replies.py']
+    digest = hashlib.sha256()
+    for path in sorted(path for path in files if path.is_file()):
+        digest.update(path.relative_to(ROOT).as_posix().encode('utf-8') + b'\0')
+        digest.update(hashlib.sha256(path.read_bytes()).digest())
+    return digest.hexdigest()
 
 
 def require_built_interface():
@@ -215,12 +233,17 @@ def main(argv=None):
     parser.add_argument('--max-calls', type=int)
     parser.add_argument('--reviewed-config')
     parser.add_argument('--report')
+    parser.add_argument('--fingerprint', action='store_true', help='print the source fingerprint and exit')
     args = parser.parse_args(argv)
+    if args.fingerprint:
+        print(source_fingerprint())
+        return
     if args.port is not None and not 1024 <= args.port <= 65535:
         raise SystemExit('Choose a port between 1024 and 65535')
     require_built_interface()
 
     app, port, summary, finish = build_app(args)
+    app.state.source_fingerprint = summary['source_fingerprint'] = source_fingerprint()
     import uvicorn
     print(json.dumps({'serving': f'http://127.0.0.1:{port}', **summary}, indent=2, default=str), flush=True)
     try:

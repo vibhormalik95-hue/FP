@@ -359,6 +359,11 @@ def create_app(data_path=None, model_path=None, fixture=False, semantic_path=Non
         return {key: text for key, text in value.items()
                 if isinstance(key, str) and isinstance(text, str) and 0 < len(text) <= 2000} or None
 
+    def source_fingerprint():
+        # Set by the launcher: one hash over the served source, for run receipts.
+        value = getattr(app.state, "source_fingerprint", None)
+        return value if isinstance(value, str) and len(value) == 64 and value.isalnum() else None
+
     @app.middleware("http")
     async def response_headers(request, call_next):
         response = await call_next(request)
@@ -378,6 +383,7 @@ def create_app(data_path=None, model_path=None, fixture=False, semantic_path=Non
                 "local_models_allowed": allow_local_models,
                 "provider": configured_provider(),
                 "scenario_requests": scenario_requests(),
+                "source_fingerprint": source_fingerprint(),
                 "ollama_status": ("Not checked; selecting Ollama makes a real request. Failures remain visible."
                                   if allow_local_models else "Disabled by hosted-only application policy."),
                 "research_note": "Synthetic category controls measure offline behavior; this demo does not establish human agency or satisfaction.",
