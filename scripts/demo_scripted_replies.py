@@ -1,10 +1,11 @@
-"""Hand-written replies for the two bundled demonstration scenarios.
+"""Hand-written replies for the three bundled demonstration scenarios.
 
 These are rehearsal doubles, not model output and not a method. They let the
 review screens, Apply and Undo be exercised with no inference. Each reply is
 returned only for the exact bundled request; every other request is refused.
-Every reason string starts with "Authored rehearsal reply" and the category
-label ends with "(authored rehearsal)", so the text identifies itself on screen.
+Every reason string starts with "Authored rehearsal reply" and each generated
+label or title ends with "(authored rehearsal)", so the text identifies itself
+on screen.
 """
 
 _AUTHORED = 'Authored rehearsal reply, not model output. '
@@ -79,10 +80,102 @@ _HUNGER_GROUNDING = {
     ],
 }
 
+# Scenario "tags" (scenarios/categories-and-tags): requests matched to existing
+# category and tag terms. Each reply is bound to the exact request text and to
+# the exact vocabulary of the ten bundled items: [kind, level, value, items].
+_TAGS_IDS = list(range(61001, 61011))
+_TAGS_VOCABULARY = [
+    ['category', 1, 'Cooking', 3], ['category', 1, 'Music', 2], ['category', 1, 'Repair', 2],
+    ['category', 1, 'Travel', 2],
+    ['category', 2, 'Baking', 1], ['category', 2, 'Bicycle repair', 1], ['category', 2, 'City walks', 1],
+    ['category', 2, 'Guitar', 1], ['category', 2, 'Home recipes', 2], ['category', 2, 'Home repair', 1],
+    ['category', 2, 'Live sessions', 1], ['category', 2, 'Rail journeys', 1],
+    ['tag', None, 'baking', 1], ['tag', None, 'bicycle', 1], ['tag', None, 'bread', 1],
+    ['tag', None, 'bridge', 1], ['tag', None, 'dinner', 1], ['tag', None, 'guitar', 1],
+    ['tag', None, 'lamp', 1], ['tag', None, 'live', 1], ['tag', None, 'night market', 1],
+    ['tag', None, 'piano', 1], ['tag', None, 'practice', 1], ['tag', None, 'recipe', 2],
+    ['tag', None, 'salad', 1], ['tag', None, 'street food', 1], ['tag', None, 'tools', 2],
+    ['tag', None, 'train', 1],
+]
+_FOOD_TERMS = [['category', 'Cooking'], ['tag', 'street food']]
+# One entry for each bundled request. A term is written as [kind, value]; its
+# identifier is read from the request, so no identifier is fixed here.
+_TAGS_REPLIES = {
+    "I'm not hungry, remove all the stuff that makes me hungry.": {
+        'status': 'propose', 'negation_resolved': True, 'alternatives': [],
+        'reason': _AUTHORED + 'Not being hungry is a personal state; the command is to remove what causes hunger.',
+        'controls': [{'control': 'exclude/none', 'intent_span': 'all the stuff that makes me hungry',
+                      'relation': _AUTHORED + 'The category Cooking and the tag street food name food.',
+                      'terms': _FOOD_TERMS}]},
+    'Hide the Repair category.': {
+        'status': 'propose', 'negation_resolved': True, 'alternatives': [],
+        'reason': _AUTHORED + 'The request names one existing category.',
+        'controls': [{'control': 'exclude/none', 'intent_span': 'the Repair category',
+                      'relation': _AUTHORED + 'The category Repair has the same name.',
+                      'terms': [['category', 'Repair']]}]},
+    'Show me more repair videos, and remove anything about food.': {
+        'status': 'propose', 'negation_resolved': True, 'alternatives': [],
+        'reason': _AUTHORED + 'The request holds two separate preferences.',
+        'controls': [
+            {'control': 'boost/standard', 'intent_span': 'more repair videos',
+             'relation': _AUTHORED + 'The category Repair covers repair videos.',
+             'terms': [['category', 'Repair']]},
+            {'control': 'exclude/none', 'intent_span': 'anything about food',
+             'relation': _AUTHORED + 'The category Cooking and the tag street food name food.',
+             'terms': _FOOD_TERMS}]},
+    'I have had enough of the heavy stuff.': {
+        'status': 'ambiguous', 'negation_resolved': True, 'controls': [],
+        'reason': _AUTHORED + 'The word heavy can point to several existing terms.',
+        'alternatives': ['Heavy as in rich food: the category Cooking.',
+                         'Heavy as in tools and manual work: the category Repair.',
+                         'Heavy as in loud music: the category Music.']},
+    'Show me at most two cooking videos per day.': {
+        'status': 'unsupported', 'negation_resolved': True, 'alternatives': [], 'controls': [],
+        'reason': _AUTHORED + ('A limit for each day is a quota. The controls can increase, decrease or '
+                               'exclude whole terms. They cannot count items or use the date.')},
+    'Show me fewer videos about astronomy.': {
+        'status': 'no_match', 'negation_resolved': True, 'alternatives': [], 'controls': [],
+        'reason': _AUTHORED + 'No existing category or tag is about astronomy.'},
+}
+# The separate two-call route that reads descriptions, on the same ten items.
+_EATING_REQUEST = 'Remove the videos where someone is eating.'
+_EATING_ACTION = {'needs_clarification': False, 'question': '', 'control': 'exclude/none',
+                  'intent_span': 'the videos where someone is eating'}
+_EATING_GROUNDING = {
+    'status': 'propose',
+    'reason': _AUTHORED + 'One description states that a person eats.',
+    'negation_resolved': True, 'alternatives': [],
+    'evidence': [{'item_id': 61004, 'field': 'caption', 'quote': 'between bites of a sandwich'}],
+}
+_FICTIONAL_BRIEF = 'A fictional 40-second clip about repairing a kite, for a test feed.'
+_FICTIONAL_DRAFT = {
+    'title': 'Kite repair clip (authored rehearsal)',
+    'description': _AUTHORED + ('A fictional 40-second clip. A torn kite is patched with tape and flies again. '
+                                'No real video exists.'),
+    'category_label': 'Repair (authored rehearsal)',
+}
+
 
 def _catalogue_ids(payload):
     rows = payload.get('catalogue')
     return sorted(row['item_id'] for row in rows) if isinstance(rows, list) else None
+
+
+def _vocabulary_reply(payload):
+    """The authored reply for one bundled request over the exact bundled vocabulary."""
+    vocabulary = payload.get('vocabulary')
+    if not isinstance(vocabulary, list) or not all(isinstance(term, dict) for term in vocabulary):
+        return None
+    supplied = {(term.get('kind'), term.get('level'), term.get('value'), term.get('item_count'))
+                for term in vocabulary}
+    reply = _TAGS_REPLIES.get(payload.get('request'))
+    if reply is None or supplied != {tuple(row) for row in _TAGS_VOCABULARY}:
+        return None
+    identifier = {(term['kind'], term['value']): term['term_id'] for term in vocabulary}
+    controls = [{**control, 'terms': [{'term_id': identifier[(kind, value)], 'value': value}
+                                      for kind, value in control['terms']]}
+                for control in reply['controls']]
+    return {**reply, 'controls': controls}
 
 
 def lookup(payload, schema):
@@ -109,11 +202,22 @@ def lookup(payload, schema):
     elif required == {'needs_clarification', 'question', 'control', 'intent_span'}:
         if payload.get('request') == _HUNGER_REQUEST:
             return _HUNGER_ACTION
+        if payload.get('request') == _EATING_REQUEST:
+            return _EATING_ACTION
     elif required == {'status', 'reason', 'negation_resolved', 'alternatives', 'evidence'}:
         if payload.get('request') == _HUNGER_REQUEST and ids == _HUNGER_IDS:
             return _HUNGER_GROUNDING
+        if payload.get('request') == _EATING_REQUEST and ids == _TAGS_IDS:
+            return _EATING_GROUNDING
+    elif required == {'status', 'reason', 'negation_resolved', 'alternatives', 'controls'}:
+        return _vocabulary_reply(payload)
+    elif required == {'title', 'description', 'category_label'}:
+        if payload.get('brief') == _FICTIONAL_BRIEF:
+            return _FICTIONAL_DRAFT
     return None
 
 
 TABLE = [_CATEGORY_OBJECTIVE, _CATEGORY_DEFINITION, _CATEGORY_MEMBERSHIP, _CATEGORY_AUDIT,
-         _HUNGER_REQUEST, _HUNGER_ACTION, _HUNGER_GROUNDING]
+         _HUNGER_REQUEST, _HUNGER_ACTION, _HUNGER_GROUNDING,
+         _TAGS_VOCABULARY, _TAGS_REPLIES, _EATING_REQUEST, _EATING_ACTION, _EATING_GROUNDING,
+         _FICTIONAL_BRIEF, _FICTIONAL_DRAFT]

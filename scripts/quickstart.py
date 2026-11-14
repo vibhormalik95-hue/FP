@@ -32,7 +32,7 @@ import urllib.error
 import urllib.request
 
 ROOT = Path(__file__).resolve().parents[1]
-CALLS = {'category': 3, 'hunger': 2}
+CALLS = {'category': 3, 'hunger': 2, 'tags': 10}
 
 
 def run_demo(*arguments):

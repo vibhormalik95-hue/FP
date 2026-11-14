@@ -1,0 +1,75 @@
+{
+  "items": [
+    {
+      "categories": [
+        "Cooking"
+      ],
+      "item_id": 61001
+    },
+    {
+      "categories": [
+        "Cooking"
+      ],
+      "item_id": 61002
+    },
+    {
+      "categories": [
+        "Travel"
+      ],
+      "item_id": 61003
+    },
+    {
+      "categories": [
+        "Repair"
+      ],
+      "item_id": 61004
+    },
+    {
+      "categories": [
+        "Repair"
+      ],
+      "item_id": 61005
+    },
+    {
+      "categories": [
+        "Travel"
+      ],
+      "item_id": 61006
+    },
+    {
+      "categories": [
+        "Music"
+      ],
+      "item_id": 61007
+    },
+    {
+      "categories": [
+        "Music"
+      ],
+      "item_id": 61008
+    },
+    {
+      "categories": [
+        "Cooking"
+      ],
+      "item_id": 61009
+    },
+    {
+      "categories": [],
+      "item_id": 61010
+    }
+  ],
+  "metadata": {
+    "is_fixture": true,
+    "kind": "synthetic_fixture",
+    "source": "synthetic://categories-and-tags-scenario-20261114"
+  },
+  "users": [
+    {
+      "request_history": [],
+      "test": [],
+      "train": [],
+      "user_id": 1
+    }
+  ]
+}

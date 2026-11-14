@@ -4,6 +4,7 @@ Examples (run from the repository root):
 
     python scripts/run_demo.py --scenario category --provider manual
     python scripts/run_demo.py --scenario category --provider scripted
+    python scripts/run_demo.py --scenario tags --provider scripted
     python scripts/run_demo.py --scenario hunger --provider relay \
         --relay-dir runs/relay-01 --declared-model claude-fable-5-2 \
         --transport-note "replies pasted by hand from a Claude chat"
@@ -37,13 +38,17 @@ INPUTS = ROOT / 'tools' / 'hosted_validation_current' / 'inputs'
 SCENARIOS = {
     'category': INPUTS / '01-category-discovery',
     'hunger': INPUTS / '02-hunger-continuation',
+    # Existing categories and tags; not bound to the reviewed driver's input pins.
+    'tags': ROOT / 'scenarios' / 'categories-and-tags',
 }
 # The reviewed driver names the indirect-request scenario "indirect".
 DRIVER_SCENARIO = {'category': 'category', 'indirect': 'hunger'}
 # Calls needed by one complete pass: definition + membership + evidence
 # assessment for a new category; action + grounding for an indirect request.
-# A failed stage ends its flow, so a spare call would not be used.
-CALLS = {'category': 3, 'hunger': 2}
+# A failed stage ends its flow, so a spare call would not be used. The tags
+# scenario bundles several one-call requests, a two-call description request
+# and a fictional-item brief, so it gets the largest relay allowance.
+CALLS = {'category': 3, 'hunger': 2, 'tags': 10}
 PERSONAL_PORT = 8765  # the origin the reviewed driver declares for the personal app
 
 
@@ -56,7 +61,17 @@ def scenario_paths(name):
 
 
 def scenario_requests(name):
-    """The exact bundled request text, offered in the page so it is not retyped."""
+    """The exact bundled request text, offered in the page so it is not retyped.
+
+    A scenario with ``requests.json`` supplies a flat mapping. Key ``<method>``
+    is the main request of a method and ``<method>:<case>`` is a further example.
+    """
+    bundled = SCENARIOS[name] / 'requests.json'
+    if bundled.is_file():
+        requests = json.loads(bundled.read_text(encoding='utf-8'))['requests']
+        if not isinstance(requests, dict) or not all(isinstance(text, str) for text in requests.values()):
+            raise SystemExit(f'{bundled} must hold a flat mapping of request texts')
+        return dict(requests)
     body = json.loads((SCENARIOS[name] / 'app-preview.json').read_text(encoding='utf-8'))
     if name == 'category':
         return {'staged': body['objective']}
@@ -67,7 +82,8 @@ def source_fingerprint(root=None):
     """One SHA-256 over the files that decide what the served app does.
 
     It covers the application package, the built interface, this launcher, the
-    authored rehearsal replies and the bundled scenario inputs. A run receipt
+    authored rehearsal replies and the bundled scenario inputs (the pinned
+    validation inputs and the ``scenarios`` folder). A run receipt
     that records it can be matched to an exact source tree without Git. Print
     it with ``python scripts/run_demo.py --fingerprint``.
 
@@ -79,6 +95,7 @@ def source_fingerprint(root=None):
     root = ROOT if root is None else Path(root)
     inputs = root / 'tools' / 'hosted_validation_current' / 'inputs'
     files = [*(root / 'feedctrl').glob('*.py'), *(root / 'web' / 'dist').rglob('*'), *inputs.rglob('*'),
+             *(root / 'scenarios').rglob('*'),
              root / 'scripts' / 'run_demo.py', root / 'scripts' / 'demo_scripted_replies.py']
     digest = hashlib.sha256()
     for parts, path in sorted((path.relative_to(root).parts, path) for path in files if path.is_file()):
@@ -141,7 +158,9 @@ def build_app(args):
         infer = identity = receipts = None
     if infer is not None:
         semantic, category = demo_providers.bind_factories(infer, identity)
-        factories = {'semantic_infer_factory': semantic, 'category_infer_factory': category}
+        # The fictional-item draft uses the same callable and the same allowance.
+        factories = {'semantic_infer_factory': semantic, 'category_infer_factory': category,
+                     'synthetic_infer_factory': semantic}
         summary['identity'] = identity
     app = create_app(data_path=data, semantic_path=sidecar, fixture=False,
                      allow_local_models=False, allow_local_recommender=False, **factories)

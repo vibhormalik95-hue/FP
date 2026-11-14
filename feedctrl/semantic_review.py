@@ -282,7 +282,9 @@ def install_semantic_routes(app, demo, *, infer_factory=None, category_infer_fac
             "category_adapter_available": category_infer_factory is not None,
             "external_adapter_available": infer_factory is not None}
 
-    def review(state, user, groups, history_action="none", proposal=None):
+    def review(state, user, groups, history_action="none", proposal=None, proposals=None):
+        # ``proposals`` is for a review that adds several groups at once: the
+        # cited field of every one of them is shown, not only of one proposal.
         preview_feed = feed(user, groups)  # validate before installing a review token
         plan_id = secrets.token_urlsafe(24)
         state["semantic_pending"] = {"id": plan_id, "created": time.monotonic(),
@@ -292,7 +294,8 @@ def install_semantic_routes(app, demo, *, infer_factory=None, category_infer_fac
             "groups": deepcopy(groups), "proposal": proposal, "feed": preview_feed,
             # Display only: what each item in the reviewed scope says. Not sealed, not approved.
             "scope_items": [{"item_id": item, "source_text": demo.source_text(item)} for item in scope],
-            "evidence_context": evidence_context(proposal),
+            "evidence_context": (evidence_context(proposal) if proposals is None else
+                                 [row for each in proposals for row in evidence_context(each)]),
             "note": "Only the declared supplied items were assessed; quotes are not relevance proof."}
 
     def evidence_context(proposal, index=None):
@@ -526,3 +529,6 @@ def install_semantic_routes(app, demo, *, infer_factory=None, category_infer_fac
 
     from feedctrl.staged_routes import install_staged_routes
     install_staged_routes(app,demo,state_for,review,evidence_context=evidence_context,category_provider=category_provider)
+    from feedctrl.vocabulary_routes import install_vocabulary_routes
+    install_vocabulary_routes(app, demo, state_for, review, configured_infer=configured_infer,
+                              provider_available=infer_factory is not None)

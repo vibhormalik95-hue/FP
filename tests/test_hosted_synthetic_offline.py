@@ -84,7 +84,8 @@ def failure_case(case):
         if case=='oversize': return {**RAW,'title':'x'*121}
         if case=='stale': holder['client'].app.state.demo.items[1]=['changed']
         return RAW
-    identity={**IDENTITY,'backend':'untrusted-provider' if case=='wrong_provider' else IDENTITY['backend']}
+    # Any transport may be configured, but it must name itself: an undeclared one is refused before any call.
+    identity={**IDENTITY,'backend':'unnamed\u200bprovider' if case=='wrong_provider' else IDENTITY['backend']}
     factory=None if case=='absent' else lambda:(infer,identity)
     with patch('feedctrl.synthetic_drafts.make_draft_infer',side_effect=AssertionError('No local fallback')), client(factory) as c:
         holder['client']=c; h=setup(c); result=preview(c,h)
