@@ -1,5 +1,7 @@
 # Numbered criteria and literal source requirements
 
+> **Method note, current.** It describes the literal-term check of the staged category method (`feedctrl/source_constraints.py`). Its sections on observed defects keep their dates.
+
 The literal-witness check in `feedctrl/source_constraints.py` extracts digit-bearing
 terms from the objective and reviewed definition. These are necessary text witnesses,
 not semantic evidence. Source presence does not establish truth, and absent facts,

@@ -13,7 +13,7 @@ Independent review subsequently found a stale inventory bypass on undo in the
 initial integration revisions. The current correction revalidates live scoped
 original/source category mappings on every induced-group use, including restore,
 and preserves the complete user state on rejection. See
-[HISTORY-REVALIDATION-FIX.md](HISTORY-REVALIDATION-FIX.md) for reproduction and checks.
+`HISTORY-REVALIDATION-FIX.md` (a development note that is not in this repository) for reproduction and checks.
 
 This work starts from public revision
 `b3f2934d07159c7818a673bd6486dfd6eae5ad24`. It preserves the original A-E path,

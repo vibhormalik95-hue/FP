@@ -1,5 +1,7 @@
 # Model adapters for indirect requests
 
+> **Dated record, 5 to 11 November 2026.** It describes the guarded OpenAI Responses adapter (`feedctrl/model_adapters.py`), which stays in the source. Current guidance for every model connection: [model routes](model-routes.md).
+
 The indirect-intent workflow calls `infer(payload, schema) -> dict`. Each provider needs an adapter that accepts that input and returns the expected data. Entering a model name alone does not connect its API.
 
 The configuration described here covers indirect intent. Category creation has a [separate configuration interface](category-provider-configuration.md). The original A–E routes, local Ollama behavior and frozen experiments remain unchanged. The latest source also supplies the shared provider to the optional fictional-item adapter through `synthetic_infer_factory`. That wiring has offline tests, and a separate real Claude Code Lunaria check completed the lifecycle through the application’s Python methods. It did not use HTTP or a browser; support for one workflow does not by itself prove that another works. See [current progress](current-progress.md).

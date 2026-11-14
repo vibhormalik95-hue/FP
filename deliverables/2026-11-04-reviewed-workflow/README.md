@@ -30,7 +30,7 @@ This is the current presentation route, not evidence of a student's rehearsal or
 | 14:00-17:00 | Walk through `interpret`, `ground_actions`, `compose`, `rank`, API preview/apply and the React handlers. Explain fixed offsets, overlap/exclusion precedence, revision/expiry and state isolation. Displayed source-text membership is not validated relevance; no actual YouTube algorithm is controlled. |
 | 17:00-20:00 | Show TCP/TCER arithmetic, results and the full proposal audit. Keep E1's 79/100 parser miss, rule/LLM equality, quality decline, E2 zero conditional success and replay limit visible. Attribute the student's reported vision, LLM code generation, line-by-line review and Git push as his account; later assistant changes are separate. State which work is prepared, actually executed or still awaiting feedback. Show the separate frozen synthetic-language result: 48/100 supported profiles correct and 19/20 correct diagnostic clarifications. Its strict first-pass failures remain findings, with no test-bank tuning. |
 
-The technical receipts document prior software checks. They do not establish personal rehearsal, human ground truth or final supervisor acceptance. The original [12-15 minute A-E script](../2026-10-27-demo/PROFESSOR-DEMO-SCRIPT.md) remains a dated subset of this route.
+The technical receipts document prior software checks. They do not establish personal rehearsal, human ground truth or final supervisor acceptance. The original 12-15 minute A-E script of 27 October (not in this repository) remains a dated subset of this route.
 
 ## Pipeline implementation
 

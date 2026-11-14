@@ -1,6 +1,6 @@
 # COMP 9500 professor demo, 27 October 2026
 
-Start with the [39-item plan acceptance audit](PLAN-ACCEPTANCE-AUDIT-2026-10-27.md) and [timed professor demo script](PROFESSOR-DEMO-SCRIPT.md). The [full-talk notes](FINAL-TALK-NOTES-2026-10-27.md) follow the current 30-page BCIT deck; the [cold-review response and claim map](COLD-REVIEW-AND-CLAIM-MAP-2026-10-27.md) lists checks and unresolved findings. The [earlier 26 October evidence matrix](EVIDENCE-AND-135-HOURS.md) remains as a dated progress snapshot. The [dated review paper and slides](../2026-10-19/README-2026-10-19.md), [fresh AI-reference E2 results](../../docs/ai-reference-e2-results-2026-10-14.md), and [compact evidence index](../../docs/ai-reference-e2-evidence/README.md) are also in this repository.
+Start with the [39-item plan acceptance audit](PLAN-ACCEPTANCE-AUDIT-2026-10-27.md) and timed professor demo script (not in this repository). The [full-talk notes](FINAL-TALK-NOTES-2026-10-27.md) follow the current 30-page BCIT deck; the [cold-review response and claim map](COLD-REVIEW-AND-CLAIM-MAP-2026-10-27.md) lists checks and unresolved findings. The earlier 26 October evidence matrix (not in this repository) remains as a dated progress snapshot. The [dated review paper and slides](../2026-10-19/README-2026-10-19.md), [fresh AI-reference E2 results](../../docs/ai-reference-e2-results-2026-10-14.md), and [compact evidence index](../../docs/ai-reference-e2-evidence/README.md) are also in this repository.
 
 ## Launch on the research laptop
 

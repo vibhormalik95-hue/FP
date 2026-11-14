@@ -1,5 +1,7 @@
 # Model routes
 
+> **Current guide.** To install the application first, see [install and run](install-and-run.md).
+
 This page tells you how to connect the application to a language model of your choice.
 You do not need one vendor, one subscription or one operating system.
 
@@ -19,7 +21,7 @@ You select a route in one small file, `model-route.json`. The file never holds a
 
 | Route | How it talks to the model | Use it for | How this project tested it |
 | --- | --- | --- | --- |
-| `relay` | Request and reply files. A person carries each request to a chat application. | Any model that you can reach only by hand. | Real model output, with an operator in the transport: the run records of 13 November 2026 in `docs/evidence/2026-11-13/`. Those runs started the same relay code with `--provider relay`. The selection through a route file was tested without a model. |
+| `relay` | Request and reply files. A person carries each request to a chat application. | Any model that you can reach only by hand. | Real model output, with an operator in the transport: the run records of 13 November 2026 in `docs/evidence/2026-11-13/`. Those runs started the same relay code with `--provider relay`. The selection through a route file was tested without a model. [[FINAL: relay runs on the final build, started through a route file or through --provider relay, with the record path]] |
 | `cli`, profile `claude-code` | Starts the Claude Code CLI one time for each request, in print mode. | A Claude Code CLI on Windows or macOS that is signed in to your own account. | Stand-in program only. The real CLI was not run. |
 | `cli`, profile `generic` | Starts any program that reads a prompt on standard input and writes the reply to standard output. | Other command-line tools, for example `ollama run MODEL --format json`. | Stand-in program only. |
 | `openai-compatible` | `POST {base_url}/chat/completions` | A model server on your computer (Ollama, LM Studio) or a hosted provider that offers this API, with your own key. | Stand-in server only. No real server and no real provider was called. |
@@ -36,7 +38,7 @@ Their documentation was not read for this project, so they are not in the table.
 ## What a model must be able to do
 
 - **Follow a JSON schema.** The reply must be exactly one JSON object that matches the schema of the request. The application does not repair a reply and does not ask a second time.
-- **Read a few thousand tokens.** In the bundled scenarios one request has 2,500 to 6,400 bytes: the instruction, the schema and eight item descriptions. A context window of 8,000 tokens is sufficient for them.
+- **Read a few thousand tokens.** In the bundled scenarios one request has about 1,200 to 5,600 bytes as a route sends it: the instruction, the schema, and the item data or the category and tag names of eight to ten items. A context window of 8,000 tokens is sufficient for them.
 - **Write a few thousand tokens.** The model replies in the 13 November runs had up to 5,700 bytes. A hosted reasoning model counts its reasoning in the output limit. For that reason the default output limit is 16,384 tokens for the hosted routes and 4,096 tokens for a model on your computer.
 
 A weak model can fail these requirements. Then the application rejects the reply and applies nothing.
@@ -45,8 +47,8 @@ A reply in the correct format can still be wrong in meaning. The review before A
 
 ## Set up a route
 
-Install the application first. See the [demonstration guide](demo.md#install).
-Then run the three steps from the repository root, with the virtual environment active.
+Install the application first. See [install and run](install-and-run.md).
+Then run the three steps from the source folder, with the virtual environment active.
 
 ```
 python scripts/quickstart.py setup
@@ -56,7 +58,7 @@ python scripts/quickstart.py start
 
 - `setup` asks a few questions and writes `model-route.json`.
 - `doctor` confirms that the route works. See [Confirm that the route works](#confirm-that-the-route-works).
-- `start` serves the application with the route. Open <http://127.0.0.1:8765>. Add `--scenario hunger` or `--scenario category` to choose a scenario.
+- `start` serves the application with the route. Open <http://127.0.0.1:8765>. The default scenario is `tags`: ten invented items with categories and tags. Add `--scenario category` (a new category) or `--scenario hunger` (an indirect request matched to descriptions) for another scenario.
 
 The commands are the same on Windows (PowerShell) and macOS (zsh). On macOS, type `python3` if `python` is not found.
 The sections below give the answers for each kind of route, and the same setup as one command without questions.
@@ -161,6 +163,8 @@ The check does these steps in order and stops at the first step that fails:
 
 Each line starts with `OK` or `FAILED`. A failed line is followed by `What to do:`. The command ends with exit code 0 only when every step passed.
 
+The check sends one very small request. To send the bundled requests of a scenario through the route without the browser, run `python scripts/quickstart.py try --scenario tags`. See [route trial](route-trial.md).
+
 ```
 OK      configuration: Route: openai-compatible; Endpoint: http://127.0.0.1:11434/v1/chat/completions (preset ollama); Model: llama3.1:8b
 FAILED  endpoint: Nothing listens at http://127.0.0.1:11434/v1/models on this computer.
@@ -210,7 +214,7 @@ The route and the research results are separate.
 
 - Every review in the page shows the provider line and stores the route identity: the kind of route, the model name as requested, and a hash of the route settings. The hash identifies the settings. It does not verify model weights or an account.
 - The frozen experiments of this project (Experiment 1, Experiment 2 and the 4 November study) have their own recorded model configuration. A route does not rerun them and cannot change them.
-- A run through a route is evidence about that model and those settings only. To compare two models, run the same requests through two route files and keep both record folders. Such a comparison is a new experiment. It needs its own protocol before the first run.
+- A run through a route is evidence about that model and those settings only. To compare two models, run the same requests through two route files and keep both record folders ([route trial](route-trial.md) does this without the browser). Such a comparison is a new experiment. It needs its own protocol before the first run.
 - The route serves the reviewed language controls of the page. The original conditions A to E keep their own parser setting.
 
 ## Settings

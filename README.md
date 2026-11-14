@@ -6,114 +6,128 @@ COMP 9500 M.Sc. research project at BCIT. Student: Vibhor Malik. Supervisor: Dr 
 ## What this project is
 
 This project studies how a person can control a short-video feed with plain language.
-A language model translates a request into a proposal. A person reviews the proposal. A fixed, deterministic policy then applies the approved change to the recommender's ranking.
-The study is offline. It uses the KuaiRec dataset (865 users and 2,593 items in the processed subset).
-The repository contains a research demonstrator named Feed Control Lab (React and FastAPI), its tests, the paper and presentation sources, and the experiment protocols and results.
+A language model turns a request into an explicit proposal. The application checks the proposal. A person reviews it. A fixed, deterministic policy then applies exactly the approved change to the ranking.
 
-## The three controls
+The research question is about controllability and expressiveness.
+Which requests can a person state in language? How reliably does a model turn them into an explicit control? What does the control cost in ranking quality?
+The project does not claim that a language model makes recommendations more accurate or users more satisfied.
 
-**Manual category control.** You choose an existing category and an action. The app filters the feed and does not change the recommender's scores. You can undo the control. This is the baseline for the two language controls.
+The study is offline. It uses the KuaiRec dataset (865 users and 2,593 items in the processed subset). There is no user study.
+The repository holds a research application named Feed Control Lab (React and FastAPI), its tests, the experiment protocols and results, and the paper.
 
-**A new category from natural language.** You describe what you want. A model proposes a definition, and you review it. The model then classifies every supplied item, and a separate model call assesses the evidence without seeing those decisions. You review every item. The approved set goes to the same deterministic filter as the manual control.
+## What the application shows
 
-**Indirect requests.** A request does not need to name a category. Example: "I'm not hungry, remove all the stuff that makes me hungry." The model interprets the action and proposes existing items, with a quotation from each description. You review the selection before the app applies it. The app can also ask for clarification.
+The view **Language controls** has four methods. Each one follows the same stages: request, interpretation, evidence, preview, Apply, Undo.
 
-A proposal never changes the feed. Apply uses exactly the reviewed set. A two-step Undo restores the earlier state.
+| Method | What happens | Model calls |
+| --- | --- | --- |
+| Existing category | You choose an existing category and an action. This is the reference for the language controls. | 0 |
+| A request matched to existing categories and tags | You write a request. It does not need a category name. The model chooses existing category and tag names. The application checks each name and selects the items that carry it. | 1 |
+| A request matched to item descriptions | The model reads the direction from the request. It then selects items and cites a quotation from each description. | 2 |
+| A new category from a description | The model proposes a definition, and you review it. The model then classifies every item. A separate call assesses the evidence without seeing the classifications. | 3 |
 
-![Review of every supplied item before a new category is applied](docs/evidence/2026-11-13/new-category/run-4/2-membership-review.png)
+For every method:
 
-Two further additions by the student are separate from these controls: a model can write metadata for a fictional item, which goes to a separate feed, and a small comparison of a stronger model with local models exists.
+- a proposal does not change the feed;
+- the review shows the model output, the application checks and your decision in three separate blocks;
+- a table shows each item in the scope and why it is selected or not selected;
+- Apply uses exactly the reviewed set, and a two-step Undo restores the earlier feed.
 
-## Current status
+The application also shows these things:
 
-[Requirements and evidence](docs/requirements-and-evidence.md) maps each request from the supervisor to the code and to what was observed, including the results that were negative. In short, on 13 November 2026 (the date in Vancouver; the run receipts give UTC times on 14 November):
+- **Mixed requests.** One request can hold several preferences, for example more of one subject and none of another. The review shows each control, and one approval applies them together.
+- **Requests that change nothing.** An ambiguous request, a negated command, a request that the controls cannot express, and a request with no match each give a plain result. Nothing is applied.
+- **A fictional item.** A model writes a title and a description for an item that does not exist. The item goes to a separate feed. It never enters the dataset.
+- **Model routes.** The application can reach a model through a command-line program, a hosted API with your own key, a model server on your computer, or by hand. See [model routes](docs/model-routes.md).
+- **The original study.** The views "Original study (A to E)" and "Compare A to E" hold the five conditions of the original proposal. They are item feedback, explanations, a free-text category instruction, an editable profile, and all channels.
 
-- all three controls completed in a real browser on the served application: preview without change, Apply of exactly the approved items, and Undo to the identical starting feed;
-- the two language controls used real model output through an operator relay, and an AI operator made the review decisions. No human review of those runs exists yet;
-- the automatic connection to the Claude Code CLI has not yet completed the whole new-category flow.
+The supervisor asked for three of these things in a meeting. The student supplied the transcript of that meeting on 4 November 2026. The three things are the manual category control with measured performance, a new category from natural language, and requests that do not use the literal category words.
+[Requirements and evidence](docs/requirements-and-evidence.md) maps each request to code and to evidence.
 
-Each language control completed three times on a small invented scenario. The last runs used the final application code. One earlier new-category attempt was rejected by the app and its record is kept. These runs show each control running from end to end on these scenarios. They are not an accuracy result.
+## Run it in five steps
 
-## Run the demonstration
+You need Python 3.11 or newer. [Install and run](docs/install-and-run.md) gives every command for Windows and for macOS.
 
-Python 3.11 or newer.
+1. **Install.** Create a virtual environment. Then run `python -m pip install -e ".[test]"`.
+2. **Choose a route to a model.** Run `python scripts/quickstart.py setup`. It asks a few questions and writes `model-route.json`. The file never holds an API key.
+3. **Confirm the route.** Run `python scripts/quickstart.py doctor`.
+4. **Start.** Run `python scripts/quickstart.py start --scenario tags`.
+5. **Use the page.** Open <http://127.0.0.1:8765>. The page opens on **Language controls**. The [guide to the language controls](docs/demo.md) describes each method.
 
-```
-python -m venv .venv
-.venv\Scripts\Activate.ps1        # Windows PowerShell
-source .venv/bin/activate         # Linux or macOS
-python -m pip install -e ".[test]"
-```
+Two more commands help:
 
-Start one scenario at a time from the repository root. Stop it with Ctrl+C.
+- `python scripts/quickstart.py rehearse --scenario tags` serves the page with hand-written replies. No model is used. Use it to learn the screens.
+- `python scripts/quickstart.py try --scenario tags` runs the bundled requests through your route without the browser. See [route trial](docs/route-trial.md).
 
-```
-python scripts/quickstart.py check
-python scripts/quickstart.py rehearse --scenario category
-python scripts/quickstart.py live --scenario category --operator cli
-python scripts/quickstart.py live --scenario hunger --operator cli
-```
-
-Open <http://127.0.0.1:8765>, choose **Reviewed topic feed**, then open **Experimental semantic groups**.
-
-- `rehearse` uses hand-written rehearsal replies. It is not a model. The page shows "AUTHORED REPLIES · NO MODEL".
-- `live --operator cli` uses the relay provider, and the Claude Code CLI on your computer answers each request. You review every proposal in the page.
-- `live --operator manual` uses the relay provider, and you carry each request to a model yourself.
-- A reviewed connection to the Claude Code CLI on Windows (`--provider personal-cli`) also exists. It needs a reviewed configuration file.
-
-The [demonstration guide](docs/demo.md) describes each provider, the review steps and the browser check.
-
-## Run the checks
-
-```
-python -m pytest
-node --test web/tests/*.mjs
-node tests/browser/demo_flows.cjs --base http://127.0.0.1:8765 --scenario category --flows manual,category --out runs/browser-check
-```
-
-The Node tests need `npm ci` in `web/` first. The browser check needs Playwright and a running demonstration. PyTorch is needed only for the trained recommender and the original experiments: `python -m pip install -e ".[test,recommender]"`.
+The routes for a command-line program, a hosted API and a local model server were tested with stand-in programs and stand-in servers only.
+A first real call through those routes on Windows or macOS is still to do. Nothing in this repository was run on Windows or macOS for this revision.
 
 ## Experiments and results
 
-Every number below is copied from the document named after it.
+Every number below is copied from the document that is named after it.
 
-**Experiment 1.** Protocol: [docs/evaluation-protocol.md](docs/evaluation-protocol.md). Paper: `paper/research-paper-2026-10-19.tex`, with the PDF in `deliverables/2026-10-19/`.
+**Experiment 1 (frozen).** Protocol: [docs/evaluation-protocol.md](docs/evaluation-protocol.md).
 
-- For boost requests, TCP@10 was 11.615% with item feedback and 79.222% under the category policy. For mute requests, TCER@10 was 6.112% and zero (`deliverables/2026-10-27-feedback/RESULTS-AND-LIMITATIONS.md`). The zero comes from the hard filter. It is policy enforcement by construction, not proof of an LLM advantage.
+- For boost requests, TCP@10 was 11.615% with item feedback and 79.222% under the category policy. For mute requests, TCER@10 was 6.112% and zero (`deliverables/2026-10-27-feedback/RESULTS-AND-LIMITATIONS.md`). The zero comes from the hard filter. It shows that the policy is enforced. It does not show an advantage of the language model.
 - Negative: the Llama parser matched 79 of 100 requests exactly. The 85% target was missed (`docs/evaluation-protocol.md`). The rule parser matched 81 of 100 (`deliverables/2026-11-05-final-demo/RESULTS-AND-LIMITS.md`).
 - Negative: boost lowered NDCG@10 from 0.03012 to 0.01637 (`deliverables/2026-10-27-feedback/RESULTS-AND-LIMITATIONS.md`).
 - Negative: a complete replay of Experiment 1 is not established (`deliverables/2026-11-04-completion-review/E1-REPLAY-DISCREPANCY.md`).
 
-**Experiment 2, with model-generated reference labels.** Protocol, rubric and prompts: `docs/ai-reference-e2-*.md` and `.json`. Results: [docs/ai-reference-e2-results-2026-10-14.md](docs/ai-reference-e2-results-2026-10-14.md). Evidence: `docs/ai-reference-e2-evidence/`.
+**Experiment 2, with model-generated reference labels (frozen).** Protocol, rubric and prompts: `docs/ai-reference-e2-*.md` and `.json`. Results: [docs/ai-reference-e2-results-2026-10-14.md](docs/ai-reference-e2-results-2026-10-14.md). Evidence: `docs/ai-reference-e2-evidence/`.
 
 - Whole-command agreement with the reference labels was 76 of 100 for Llama and 11 of 100 for rules.
 - Induced control success was 20.145% for Llama, 3.854% for rules and 3.815% for item feedback.
 - Negative: NDCG@10 was 0.02580 for Llama and 0.03184 for item feedback. Conditional-control success was zero (`deliverables/2026-10-27-feedback/RESULTS-AND-LIMITATIONS.md`).
-- The reference labels came from models. They do not measure independent human accuracy.
+- The reference labels came from two AI annotators. They do not measure independent human accuracy.
 
-**Synthetic-language study of 4 November.** Protocol and results: `deliverables/2026-11-04-prospective-evaluation/PROTOCOL-AND-RESULTS.md`.
+**Synthetic-language study of 4 November (used once, now exposed).** Protocol and results: `deliverables/2026-11-04-prospective-evaluation/PROTOCOL-AND-RESULTS.md`.
 
-- The pipeline matched the complete intended profile on 48 of 100 supported requests and clarified correctly on 19 of 20 diagnostic requests.
-- The 120 cases gave 49 ready proposals, 61 clarifications, five grounding errors and five parser or schema rejections. These cases are now exposed development material.
+- The pipeline matched the complete intended profile on 48 of 100 supported requests. It clarified correctly on 19 of 20 diagnostic requests.
+- The 120 cases gave 49 ready proposals, 61 clarifications, five grounding errors and five parser or schema rejections.
+- Manual reference against the language pipeline: the intended manual profile changed top-ten exposure by 5.3579 percentage points, and the model-proposed profile by 2.9292 points. These are signed descriptive averages. They are not a success rate.
 
-The complete cases, model responses, ranking outputs and recommender checkpoints are held in a separate research archive, not in this repository.
+The complete cases, model responses, ranking outputs and recommender checkpoints are in a separate research archive. They are not in this repository.
+
+The paper is in [`paper/`](paper/README.md). The current revision is `paper/research-paper-2026-11-14.pdf`. The paper of 19 October is a dated record in `deliverables/2026-10-19/`.
+
+## Experiment evidence and demonstration evidence
+
+Keep three kinds of evidence apart.
+
+**Experiment evidence** comes from a study with a protocol that was fixed before the run: Experiment 1, Experiment 2 and the 4 November study. Their inputs, prompts, labels and results stay as they are.
+
+**Demonstration evidence** is a recorded run of the application on a small invented scenario. It shows that a control ran from request to Undo. It is not an accuracy result.
+
+- *13 November 2026, earlier revision `b9220b4`.* The manual control, a new category and an indirect request matched to descriptions each completed in a real browser. The model replies came through a file relay. An AI agent made the review decisions. No person reviewed those runs. Records: [docs/evidence/2026-11-13](docs/evidence/2026-11-13/README.md).
+- *Final build.* [[FINAL: date, revision and source fingerprint of the final-build runs; which methods completed with real model output through the file relay; who reviewed; link to docs/evidence/2026-11-14/README.md]]
+
+**Software tests** use hand-written replies, stand-in servers and stand-in programs. They check program behaviour. They are not model evidence.
 
 ## Limits
 
-- The demonstration scenarios use eight invented item descriptions and a labelled diagnostic scorer, not the trained recommender.
-- There is no user study. Requests are synthetic. The ranking measure is a historical next-item proxy.
-- A quotation shows that words are present in a description. It does not show that a membership decision is correct. Two model calls can agree and both be wrong.
+- The demonstration scenarios use invented item descriptions and a labelled diagnostic scorer. They do not use the trained recommender.
+- There is no user study. Requests in the experiments are synthetic. The ranking measure is a historical next-item proxy.
+- A quotation or a category name shows that words exist in the item data. It does not show that a membership decision is right. Two model calls can agree and both be wrong.
 - The development examples are small and exposed. They cannot serve as an unseen test.
 - The manual control check shows that a control is enforced and can be reversed. It does not show that recommendations are better.
+- A like-for-like comparison of a local model and a stronger model has not been run. The earlier six-case comparison used different transports and settings.
+- A fictional item is authored demonstration data. It is not a new playable item of the research dataset.
 
 ## AI assistance and attribution
 
 - Research provenance and the use of AI assistance: [docs/academic-use.md](docs/academic-use.md) and [the code and contribution map](deliverables/2026-10-27-feedback/CODE-MAP-AND-AI-ASSISTANCE.md). The recent application work, its tests and its documentation were produced with substantial AI assistance, and an AI agent made the review decisions in the 13 November runs and wrote their records. Those documents state what the student did himself.
 - Third-party data and software: [NOTICE.md](NOTICE.md). KuaiRec licence: [notices/KuaiRec-LICENSE.txt](notices/KuaiRec-LICENSE.txt).
 
-## More
+## Map of the repository
 
-- [Demonstration guide](docs/demo.md) and [app guide](docs/app.md).
-- [Requirements and evidence](docs/requirements-and-evidence.md) and the [13 November run records](docs/evidence/2026-11-13/README.md).
-- [Provider adapters](docs/model-provider-adapters.md), [category provider configuration](docs/category-provider-configuration.md), [literal source requirements](docs/numbered-source-constraints.md).
-- Dated records of earlier work: [current progress, 11 November](docs/current-progress.md), [5 November demonstration](deliverables/2026-11-05-final-demo/README.md), [4 November audit](deliverables/2026-11-04-completion-review/PROJECT-COMPLETION-AUDIT.md), [19 October paper and presentation](deliverables/2026-10-19/README-2026-10-19.md).
+| Path | Content |
+| --- | --- |
+| `feedctrl/` | The application and the experiment code (Python). |
+| `web/` | The interface source and the built interface (`web/dist`). |
+| `scripts/` | The quick start, the launcher, the route tool, the relay tools and the experiment scripts. |
+| `scenarios/`, `tools/hosted_validation_current/inputs/` | The three bundled scenarios with invented items. |
+| `tests/` | Python tests, the browser check and the stand-ins. |
+| `docs/` | Guides, protocols, results and run records. Start with the [index](docs/README.md). |
+| `deliverables/` | Dated records of earlier work. |
+| `paper/`, `presentation-bcit/` | Paper and presentation sources. |
+| `tools/` | The validation driver for the reviewed Claude Code CLI connection. |

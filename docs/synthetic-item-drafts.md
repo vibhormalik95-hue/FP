@@ -1,35 +1,70 @@
 # Fictional item metadata drafts
 
-This optional feature creates a model-written title, description and synthetic category label. It creates no real media, observed event or factual dataset record. A separate local-model development example is recorded in the [5 November demonstration](../deliverables/2026-11-05-final-demo/CLAIM-MATRIX.md).
+> **Current guide.** The evidence statements at the end keep their dates.
 
-**Current status (11 November):** one real Claude Code Lunaria call completed preview, admission, removal and restoration through the application’s Python methods using an explicit runner. Restoration replayed the removed record with no extra model call. This is operator-reviewed headless synthetic evidence, not browser acceptance, real media creation or trained cold-start relevance. The default launch remains disabled. If no permitted adapter is configured, generation remains unavailable. See the [safe result](evidence/2026-11-11/FABLE-LUNARIA-PUBLIC-SAFE-SUMMARY.json).
+This optional feature lets a model write a title, a description and a category label for an item that does not exist.
+It creates no real media, no observed event and no record of the dataset.
 
-## Review before adding a draft
+## Use it in the page
 
-In an authorized configuration with a working provider, open **Reviewed topic feed → Experimental synthetic item drafts**, opt in, enter a fictional brief and generate once. Previewing adds nothing to the feed. Read the wording and generation details, then explicitly approve the draft if it is suitable.
+Open the view **Language controls**. Under **Fictional item drafts (separate feed)**, open "Fictional item drafts: metadata that a model writes, in a separate feed".
 
-Each record keeps its `model_generated_synthetic` origin, a synthetic flag, no media asset, raw output, model/digest, brief/prompt/schema hashes and the original source-version digest. The API cannot change the origin label.
+1. Write a brief, or press **Insert the example brief** when a bundled scenario is served.
+2. Tick "I want fictional metadata, not a real video or observed item."
+3. Press **Generate fictional metadata draft**. The application makes one model call for each click. It does not try again by itself.
+4. Read the draft under "Review fictional metadata before admission": the wording, the model and the hashes. A preview adds nothing to a feed.
+5. If the draft is suitable, press **Approve fictional draft and admit to synthetic feed**.
 
-Approved drafts appear in a separate feed. Every item has score zero; admission order breaks ties. This feed never calls the trained scorer. Synthetic string IDs cannot enter groups over observed items or the original item-feedback controls. The original catalogue, categories, saved source-based groups and A–E rankings are preserved.
+A valid reply and a recorded origin do not make the wording suitable. Review it before you admit it.
+
+## What a record holds
+
+Each record keeps:
+
+- its origin `model_generated_synthetic`, a synthetic flag and no media asset;
+- the raw output of the model, the model name and its digest;
+- hashes of the brief, the prompt and the schema;
+- a digest of the source version.
+
+The API cannot change the origin label.
+
+## The separate feed
+
+- Admitted drafts appear in a separate feed. Every item there has score 0. The order of admission breaks ties.
+- That feed never calls the trained scorer.
+- A fictional item has a text identifier. It cannot enter a control over observed items, the evidence scope of a language control, or the item feedback of the conditions A to E.
+- The catalogue, the categories, the applied language controls and the rankings of A to E stay as they are.
 
 ## Removal, restoration and reset
 
-Records exist only for the current session/user, with up to eight admitted items. Removing an item keeps its exact generated record for a separately reviewed restoration without another model call. Restoration needs fresh approval and retains the original generation details.
+- Records exist only for the current session and user. At most eight items can be admitted.
+- **Remove synthetic item** removes one item. The application keeps the exact generated record, so that **Review restoring last removed synthetic item** can restore it without another model call. A restoration needs a new approval.
+- **Clear synthetic items** and **Reset this user** remove drafts, admitted items and the restoration record.
+- An admission or a removal makes pending reviews invalid. If the source data changes, the application blocks a stale admission and withholds earlier records from the separate feed.
 
-Clear/global reset removes drafts, admitted items and restoration history. Admission or removal invalidates pending reviews, including source-based previews already in progress, while retaining saved source-based preferences. If the source changes, the app blocks stale admission/restoration and withholds earlier records from the synthetic feed.
+## Providers
 
-## Hosted configuration
+The draft uses the provider that the server was started with: the hand-written replies of `rehearse`, a [model route](model-routes.md), the relay, or the reviewed Claude Code CLI connection. A draft counts toward the same call allowance as the other calls.
+Only the drafting instruction, the brief and the reply schema go to the provider. The catalogue, the history and existing fictional records do not.
+A server without a provider cannot draft.
 
-Trusted setup can pass `synthetic_infer_factory` to `create_app`. Both hosted app factories supply their existing provider callable and call allowance, so a drafting attempt draws from the same run budget as the other model-assisted actions. It does not create a fresh allowance or enable the disabled personal Claude launcher.
+A malformed reply, a duplicate field, an unsupported field, invalid text, a URL or an incomplete reply adds nothing. The page shows the reason.
 
-Only the drafting instruction, fictional brief and response schema go to the provider. The observed catalogue and existing synthetic records are not included. The app preserves the returned model/configuration identity and raw response before validation. The usual preview, review, admission, removal, restoration and reset rules still apply, and configured failures do not trigger a local fallback.
+## Evidence, with dates
 
-Independent review passed 92 guarded Python checks, including 3 ASGI checks covering both hosted constructors and request/session/isolation behavior, the item lifecycle, and malformed-response, provider-error and source-change handling. All 7 frontend index checks passed after the build pins were corrected. This evidence uses authored provider replies; the frontend builds also matched. It does not establish real model output, browser behavior or paid-provider execution.
+| Date | Kind | What was observed |
+| --- | --- | --- |
+| 5 November 2026 | Document statement (the evidence archive is private) | A local model drafted metadata; preview, approval, the separate feed, removal, reviewed restoration and reset were observed through the browser and the API ([record](../deliverables/2026-11-05-final-demo/CLAIM-MATRIX.md)). |
+| 10 November 2026, 22:46 UTC | Demonstration with real model output | One call through the Claude Code CLI drafted metadata. Preview, admission, removal and restoration ran through the Python methods of the application, with no browser and no HTTP. Restoration replayed the removed record with no model call ([summary](evidence/2026-11-11/FABLE-LUNARIA-PUBLIC-SAFE-SUMMARY.json)). |
+| This revision | Authored replies | The browser flow `fictional` completes on the scenario `tags`: draft, review, admission to the separate feed, removal. |
+| Final build | Demonstration with real model output | [[FINAL: fictional-item run on the final build: model route, reviewer, record path; or state that none was recorded]] |
+
+## Limits
+
+- A fictional item is authored demonstration data. It is not a new playable item of the research dataset.
+- The separate feed gives no evidence about the recommendation of new items.
+- The feature does not change the frozen studies.
 
 ## Earlier local generation settings
 
-The local adapter uses an explicitly configured installed model over loopback, with temperature 0, seed 42, context 8192, at most 1000 output tokens and 90 seconds plus identity probes. Each preview gets one attempt, with no automatic retry or rule fallback.
-
-Malformed or duplicate-key JSON, unsupported fields/IDs, invalid text, URLs, an incomplete response or a changed model digest adds nothing. The caller can inspect the raw records. A valid response and recorded origin do not guarantee suitable wording, so human review remains necessary.
-
-Offline tests use model substitutes and check application behavior only. Live development examples are separately preserved fixtures, not reliability estimates. The feature does not admit source-backed real media, establish trained cold-start relevance or change the frozen studies.
+This section is a dated record of the first implementation (5 November 2026). The local adapter used an installed model over the loopback address. Its settings were temperature 0, seed 42, context 8192, at most 1,000 output tokens and a time limit of 90 seconds, with identity checks. Each preview had one attempt, with no automatic retry and no rule fallback.
