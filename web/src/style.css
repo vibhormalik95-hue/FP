@@ -93,3 +93,6 @@
 .review-board h3:focus{outline:3px solid #7c9952;outline-offset:3px}
 .applied-controls{overflow-wrap:anywhere}
 button:disabled{cursor:not-allowed}
+.status-empty{margin:0;padding:0}
+.controls>*{min-width:0}.review-board{min-width:0;max-width:100%}
+@media(max-width:760px){.controls{grid-template-columns:minmax(0,1fr)}.review-board{padding:14px 12px}.block{padding:10px 12px}}

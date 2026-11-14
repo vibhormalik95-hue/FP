@@ -559,9 +559,9 @@ function check(name, condition, detail) {
       const { baseline, record } = await startFlow('fictional');
       const brief = receipt.status.scenario_requests ? receipt.status.scenario_requests.synthetic : undefined;
       check('fictional: the server supplies an example brief', typeof brief === 'string' && brief.length > 0);
-      await page.locator('summary', { hasText: 'Fictional item drafts' }).click();
-      const drafts = page.locator('section[aria-label="Synthetic item drafts"]');
-      await drafts.getByRole('button', { name: 'Generate fictional metadata draft' }).waitFor({ state: 'visible', timeout: 30000 });
+      await page.locator('summary', { hasText: 'Fictional items: drafts in a separate list' }).click();
+      const drafts = page.locator('section[aria-label="Fictional items"]');
+      await drafts.getByRole('button', { name: 'Write a fictional draft' }).waitFor({ state: 'visible', timeout: 30000 });
       const start = await fictionalState();
       check('fictional: starts with no fictional item', start.items.length === 0 && start.generation_available !== false, { provider: start.generation_provider });
       await drafts.getByRole('button', { name: 'Insert the example brief' }).click();
@@ -569,7 +569,7 @@ function check(name, condition, detail) {
       await drafts.getByRole('checkbox').check();
       await show('fictional: a brief for an item that does not exist', drafts.locator('#synthetic-brief'), 4000);
       const draft = page.waitForResponse(response => response.url() === BASE + '/api/synthetic/preview', { timeout: STAGE_TIMEOUT });
-      await drafts.getByRole('button', { name: 'Generate fictional metadata draft' }).click();
+      await drafts.getByRole('button', { name: 'Write a fictional draft' }).click();
       const drafted = await (await draft).json();
       record.provider_calls = Array.isArray(drafted.model_calls) ? drafted.model_calls.length : null;
       if (drafted.ready !== true) { record.outcome = `no draft to review: ${drafted.status || 'error'}: ${(drafted.reason || '').slice(0, 300)}`; await shot('fictional-stopped'); return; }
@@ -585,7 +585,7 @@ function check(name, condition, detail) {
       await show('fictional: the draft; waiting for the reviewer', reviewBlock, 6000);
       if (!await gate('fictional-admit', reviewBlock)) { record.outcome = 'draft declined by the reviewer; nothing admitted'; return; }
       const admit = page.waitForResponse(response => response.url() === BASE + '/api/synthetic/admit', { timeout: 30000 });
-      await reviewBlock.getByRole('button', { name: 'Approve fictional draft and admit to synthetic feed' }).click();
+      await reviewBlock.getByRole('button', { name: 'Approve and add to the list of fictional items' }).click();
       await admit;
       const admitted = await fictionalState();
       const observed = await serverState();
@@ -597,7 +597,7 @@ function check(name, condition, detail) {
       await shot('fictional-admitted');
       await show('fictional: admitted to the separate feed; the observed feed is unchanged', drafts.locator('article').first(), 5000);
       const removal = page.waitForResponse(response => response.url() === BASE + '/api/synthetic/remove', { timeout: 30000 });
-      await drafts.getByRole('button', { name: `Remove synthetic item ${drafted.draft.item_id}` }).click();
+      await drafts.getByRole('button', { name: `Remove fictional item ${drafted.draft.item_id}` }).click();
       await removal;
       const removed = await fictionalState();
       check('fictional: removal empties the separate feed', removed.items.length === 0 && removed.feed.items.length === 0 && same((await serverState()).feed, baseline.feed));

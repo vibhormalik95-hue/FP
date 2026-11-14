@@ -25,7 +25,7 @@ export function definitionEvidence(evidence, context) {
 }
 
 function block(kind, title, children, extra) {
-  return <section className={`block ${extra || ''}`} data-block={kind} aria-label={title}><h4>{title}</h4>{children}</section>;
+  return <section className={`block ${extra || ''}`} data-block={kind} aria-label={title} id={kind === 'decision' ? 'review-decision' : undefined} tabIndex={kind === 'decision' ? -1 : undefined}><h4>{title}</h4>{children}</section>;
 }
 
 function heading(text) {
@@ -89,7 +89,7 @@ function replyOutput(group, pending, words) {
       <p><b>{group.label}</b></p>
       <p className="help">Direction and strength, {words.read}: <b>{actionWords(action)}</b>.</p>
       <p className="help">Part of your request that names the subject: “{action.intent_span}”.</p>
-      <p className="help">{words.reason} {control?.relation ?? proposal.reason}</p>
+      <p className="help">{words.controlReason} {control?.relation ?? proposal.reason}</p>
       <p className="help">{words.names} {terms.map(termWords).join('; ') || 'none'}.</p>
     </div>;
   }
@@ -110,7 +110,7 @@ function replyOutput(group, pending, words) {
     <p><b>{group.label}</b></p>
     <p className="help">Direction and strength: <b>{actionWords(action)}</b>, {chosen?'chosen by you':words.read}.</p>
     {!chosen&&<p className="help">Part of your request that names the subject: “{action.intent_span}”.</p>}
-    <p className="help">{words.reason} {proposal.reason}</p>
+    <p className="help">{words.controlReason} {proposal.reason}</p>
     <p className="help">{words.quotations} {(proposal.evidence||[]).map(e=>`item ${e.item_id}, ${fieldWords(e.field)}: “${e.quote}”`).join('; ')||'none'}.</p>
   </div>;
 }
@@ -202,6 +202,7 @@ function reviewVariant({pending, current, context, controls, words, expired, dea
   return <>
     <p className="eyebrow review-flag">{expired ? 'EXPIRED · NOTHING WAS APPLIED' : `PREVIEW · NOTHING IS APPLIED YET${selection ? '' : words.flag}`}</p>
     {heading(title)}
+    <p className="help"><a href="#review-decision" onClick={event => { event.preventDefault(); const target = typeof document !== 'undefined' && document.getElementById('review-decision'); if (target) { target.scrollIntoView({block: 'start'}); target.focus({preventScroll: true}); } }}>Go to your decision</a></p>
     {action === 'none' && requestLines(added)}
     <div className="blocks">
       {selection ? block('reply', 'Your selection', action === 'undo' ? <p className="help">You asked to undo the last approved change. No model is used for this step.</p>
@@ -224,6 +225,7 @@ function reviewVariant({pending, current, context, controls, words, expired, dea
         <p className="help">These checks are mechanical. A passed check shows that names, IDs and quotations exist in the item data. It does not show that the meaning is right.</p></>)}
       {block('decision', 'Your decision', expired ? expiredDecision(controls, `To get a new review, press the button of the request again.${selection ? '' : words.authored ? ' The server reads the authored reply again.' : ' A model method calls the model again.'}`) : <>
         {decisionSummary(pending, current)}
+        {(Array.isArray(pending.plan_notes) ? pending.plan_notes : planConflicts(pending.groups)).length > 0 && <p className="help" data-role="notes-pointer">Read the notes about the whole plan under "Application checks" before you approve.</p>}
         <p><b>Nothing has changed yet.</b> The feed below stays as it is until you approve.</p>
         <p className="help" data-role="deadline">{deadlineText ? `Approve before ${deadlineText}.` : 'Approve within five minutes.'} After that time the server no longer accepts this review.</p>
         {controls.blocked && <p className="help" role="status">{controls.blocked}</p>}
@@ -357,7 +359,7 @@ function outcomeVariant({outcome, controls, words, request}) {
   </div>;
 }
 
-function changedVariant({record, recordFresh}) {
+function changedVariant({record, recordFresh, controls}) {
   const time = record.time instanceof Date ? record.time.toLocaleTimeString() : String(record.time);
   const diff = record.diff;
   const body = <>
@@ -371,7 +373,8 @@ function changedVariant({record, recordFresh}) {
         {diff.enters.length > 0 && <> Entered the first ten: {diff.enters.join(', ')}.</>}
         {diff.moved.length > 0 && <> Changed position: {diff.moved.map(move => `${move.id} (${move.from} to ${move.to})`).join(', ')}.</>}</>}</p>
     {record.kind === 'apply' || record.kind === 'clear'
-      ? <p className="help"><b>To undo:</b> press "Undo the last change (review first)" in the panel, then approve the undo review.</p>
+      ? <><p className="help"><b>To undo:</b> press "Undo this change (review first)", then approve the undo review. The same button is in the panel.</p>
+        {recordFresh && controls?.undo && <button type="button" className="secondary" disabled={controls.disabled || !controls.canUndo} onClick={controls.undo}>Undo this change (review first)</button>}</>
       : <p className="help">To make another change, write a new request in the panel.</p>}
   </>;
   const flag = `${record.kind === 'apply' ? 'APPLIED' : record.kind === 'undo' ? 'UNDONE' : 'CLEARED'} · ${time}`;

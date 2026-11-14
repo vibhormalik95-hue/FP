@@ -20,7 +20,7 @@ export function sourceWords(authored) {
     authored: true,
     block: 'Authored reply (written by hand, not a model)',
     the: 'the authored reply', The: 'The authored reply', suffix: 'authored replies, no model',
-    reason: 'Reason in the authored reply:', names: 'Names in the authored reply:', quotations: 'Quotations in the authored reply:',
+    reason: 'Reason in the authored reply:', controlReason: 'Reason for this control in the authored reply:', names: 'Names in the authored reply:', quotations: 'Quotations in the authored reply:',
     name: 'Name in the authored reply:', raw: 'Raw authored reply', rawMany: 'Raw authored replies',
     caution: 'An authored reply shows the screens only. It says nothing about a model.',
     waiting: 'Reading the authored reply', flag: ' · AUTHORED REPLIES, NO MODEL',
@@ -29,7 +29,7 @@ export function sourceWords(authored) {
     authored: false,
     block: 'Model output (not verified)',
     the: 'the model', The: 'The model', suffix: 'model',
-    reason: 'Reason that the model gave:', names: 'Existing names that the model chose:', quotations: 'Quotations that the model cited:',
+    reason: 'Reason that the model gave:', controlReason: 'Reason that the model gave for this control:', names: 'Existing names that the model chose:', quotations: 'Quotations that the model cited:',
     name: 'Name proposed by the model:', raw: 'Raw model reply', rawMany: 'Raw model replies',
     caution: 'The model can be wrong. This block repeats what it returned. Nothing here is approved.',
     waiting: 'Waiting for the provider', flag: '',
@@ -279,8 +279,12 @@ export function outcomeKind(outcome) {
   if (outcome.thrown) return 'request_failed';                        // the server answered with an error status, not with a result
   if (outcome.method === 'manual_category') return 'manual';
   if (SOURCES.includes(outcome.outcome_source)) return outcome.outcome_source;
-  // A server without `outcome_source`: competing meanings or a reason from a reply can only come from a reply.
+  // A server without `outcome_source`. Only positive evidence counts: competing meanings, or a raw reply in the
+  // list of calls, can only come from a reply. An empty list proves nothing, so the result stays 'unknown'.
   if (outcome.clarification && (outcome.clarification.model_reason || outcome.clarification.alternatives?.length)) return 'model_report';
+  const replied = (outcome.model_calls || []).some(call => call && (call.raw_response !== undefined || call.raw_output !== undefined));
+  if (replied && ['no_match', 'unsupported', 'clarify'].includes(outcome.status)) return 'model_report';
+  if (replied && ['error', 'duplicate'].includes(outcome.status)) return 'reply_rejected';
   return 'unknown';
 }
 

@@ -205,9 +205,11 @@ export default function SemanticPanel({api,user,resetKey,onFeed,onActive,onUnava
   // A result without a change stays on the board while the person rewrites the request; the stage line then shows the first stage again.
   const outcomeNow=outcome&&(outcome.method!==backend?false:!modelMethod||outcome.request_text===text||outcome.page==='expired');
   const history_action=pending?.history_action||'none';
+  // A review that the server refused as too old is an expired result, not a plain stop.
+  const expiredResult=Boolean(outcomeNow&&outcome?.page==='expired');
   const phase=working?'working':expired&&(pending||definition||resolution)?'expired':(resolution||definition)?'interpretation':pending?'preview'
-    :(outcomeNow||failure)?'stopped':record&&recordFresh?(record.kind==='apply'?'applied':record.kind==='undo'?'undone':'cleared'):'idle';
-  const stages=stageStates({method:backend,phase,stage:phase==='working'?busyStage:phase==='expired'?(pending?(history_action==='undo'?'Undo':'Preview'):'Interpretation'):stoppedStage,
+    :expiredResult?'expired':(outcomeNow||failure)?'stopped':record&&recordFresh?(record.kind==='apply'?'applied':record.kind==='undo'?'undone':'cleared'):'idle';
+  const stages=stageStates({method:backend,phase,stage:phase==='working'?busyStage:phase==='expired'?(pending?(history_action==='undo'?'Undo':'Preview'):(definition||resolution)?'Interpretation':stoppedStage):stoppedStage,
     historyAction:history_action,needsInput:Boolean(resolution),canUndo:Boolean(saved?.can_undo)});
   const blocked=pending?.proposal?.target_confirmation&&(!explicitTarget||!confirmedNow)?'This review used a target that you stated. Keep the stated target and its confirmation unchanged to approve.':'';
   const first=saved?.feed.baseline_items||[];
@@ -218,7 +220,7 @@ export default function SemanticPanel({api,user,resetKey,onFeed,onActive,onUnava
   const board=<ReviewBoard variant={variant} failure={failure} method={backend} pending={pending} current={saved} context={context} outcome={outcome}
     definition={definition} resolution={resolution} clarification={clarification} record={record} recordFresh={recordFresh}
     words={words} expired={expired} deadlineText={deadlineText} dataNote={dataNote}
-    controls={{disabled,blocked,apply,discard,resolutionChoice,setResolutionChoice,resolveDefinition,evidenceReviewed,setEvidenceReviewed,classify,rejectDefinition,
+    controls={{disabled,blocked,apply,discard,undo:()=>history('undo'),canUndo:Boolean(saved?.can_undo),resolutionChoice,setResolutionChoice,resolveDefinition,evidenceReviewed,setEvidenceReviewed,classify,rejectDefinition,
       // With authored replies an adopted meaning has no authored reply, so the control would lead to a refusal.
       adoptAlternative:!authored&&['vocabulary','configured_model','ollama'].includes(backend)?adoptAlternative:null,
       alternativeLabel:backend==='vocabulary'?'Add this meaning to my request':'Use this as my stated target'}}/>;
@@ -299,7 +301,8 @@ export default function SemanticPanel({api,user,resetKey,onFeed,onActive,onUnava
         {working?waitText:backend==='staged'?'Propose a definition for review':backend==='manual_category'?'Show the proposed change':'Interpret my request'}</button>
       {working&&busyCall&&<button type="button" className="secondary" onClick={stopWaiting}>Stop waiting</button>}
       {working&&busyCall&&<p className="help">{authored?'The server reads a hand-written reply.':'A call can take minutes. "Stop waiting" does not stop the call on the server. It only discards the result on this page.'}</p>}
-      {message&&<p role="status" className="alert">{message}</p>}
+      {/* One live region that is always present, so that a screen reader announces each new message. */}
+      <p role="status" aria-live="polite" className={message?'alert':'status-empty'}>{message}</p>
       {(variant||failure)&&<p className="help" data-role="result-place">{portal&&reviewHost?'The result is in the main area, above the feed.':'The result is below this panel.'}</p>}
       <h3>Applied controls</h3>
       {saved?(saved.groups.length?<ul className="applied-controls">{saved.groups.map(g=><li key={g.revision}><b>{g.label}</b>: {actionWords(g.proposal.action)}; {g.proposal.item_ids.length===1?'item':'items'} {g.proposal.item_ids.join(', ')}</li>)}</ul>
