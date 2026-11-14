@@ -84,7 +84,8 @@ def failure_case(case):
         if case=='oversize': return {**RAW,'title':'x'*121}
         if case=='stale': holder['client'].app.state.demo.items[1]=['changed']
         return RAW
-    identity={**IDENTITY,'backend':'untrusted-provider' if case=='wrong_provider' else IDENTITY['backend']}
+    # Any transport may be configured, but it must name itself: an undeclared one is refused before any call.
+    identity={**IDENTITY,'backend':'unnamed\u200bprovider' if case=='wrong_provider' else IDENTITY['backend']}
     factory=None if case=='absent' else lambda:(infer,identity)
     with patch('feedctrl.synthetic_drafts.make_draft_infer',side_effect=AssertionError('No local fallback')), client(factory) as c:
         holder['client']=c; h=setup(c); result=preview(c,h)
@@ -93,6 +94,27 @@ def failure_case(case):
         assert items(c,h)['items']==[]
         assert len(called)==(0 if case in ('absent','wrong_provider') else 1)
         assert post(c,h,'synthetic/admit',plan_id='not-a-plan').status_code==409
+
+def declared_provider(backend):
+    """Any transport that names itself may draft; the name is kept in the record."""
+    seen=[]; identity={**IDENTITY,'backend':backend}
+    def infer(payload,schema):
+        seen.append(deepcopy(payload)); return deepcopy(RAW)
+    with patch('feedctrl.synthetic_drafts.make_draft_infer',side_effect=AssertionError('No local fallback')), client(lambda:(infer,identity)) as c:
+        h=setup(c); p=preview(c,h).json()
+        assert p['ready'] and seen==[{'system':sd.PROMPT,'brief':BRIEF}]
+        assert p['draft']['provenance']['model']==identity
+        assert admit(c,h,p).json()['items'][0]['provenance']['model']['backend']==backend
+
+def undeclared_provider(backend):
+    called=[]
+    def infer(payload,schema):
+        called.append(True); return deepcopy(RAW)
+    identity={**IDENTITY,'backend':backend}
+    with patch('feedctrl.synthetic_drafts.make_draft_infer',side_effect=AssertionError('No local fallback')), client(lambda:(infer,identity)) as c:
+        h=setup(c); result=preview(c,h).json()
+        assert not result['ready'] and result['status']=='error' and 'declare a printable backend name' in result['reason']
+        assert called==[] and items(c,h)['items']==[]
 
 def shared_budget(binding,identity):
     budget=HostedRunBudget(3); calls=[]
@@ -158,6 +180,12 @@ class HostedSyntheticOfflineTests(unittest.TestCase):
     def test_failure_cases(self):
         for case in ('absent','provider_error','malformed','oversize','wrong_provider','stale'):
             with self.subTest(case=case): failure_case(case)
+    def test_any_declared_provider_can_draft(self):
+        for backend in ('scripted-authored-replies','operator-relay-file-queue','a route added later'):
+            with self.subTest(backend=backend): declared_provider(backend)
+    def test_a_provider_without_a_printable_name_is_refused_before_any_call(self):
+        for backend in ('','   ',None,7,'x'*121,'two\nlines','zero\u200bwidth','line\u2028separator'):
+            with self.subTest(backend=backend): undeclared_provider(backend)
     def test_openai_shared_budget(self): shared_budget(shared_factories,IDENTITY)
     def test_personal_shared_budget(self): shared_budget(shared_personal_factories,PERSONAL)
     def test_constructors(self): constructors()

@@ -52,6 +52,16 @@ def _text(value, limit, multiline=False):
     return value
 
 
+def _declared_backend(value):
+    """A configured adapter must name itself, so that every record shows its origin.
+
+    The name is the adapter's own declaration, shown to the reviewer; it is not
+    an attestation. Any transport may be configured by the operator at startup.
+    """
+    return (isinstance(value, str) and bool(value.strip()) and len(value) <= 120
+            and not any(unicodedata.category(c) in {'Cc', 'Cf', 'Cs', 'Zl', 'Zp'} for c in value))
+
+
 def validate_output(raw):
     raw = deepcopy(raw)
     if not isinstance(raw, dict) or set(raw) != set(SCHEMA['required']):
@@ -259,9 +269,8 @@ def install_synthetic_routes(app, demo, *, allow_local_models=True, synthetic_in
             if (not isinstance(model, dict) or any(not isinstance(model.get(k), str) or not model[k].strip()
                                                   for k in ('model', 'digest'))):
                 raise ValueError('Draft generation requires model identity and digest')
-            if synthetic_infer_factory is not None and model.get('backend') not in (
-                    'openai-responses', 'claude-code-personal-cli'):
-                raise ValueError('Unsupported configured draft provider')
+            if synthetic_infer_factory is not None and not _declared_backend(model.get('backend')):
+                raise ValueError('Configured draft provider must declare a printable backend name')
             raw = deepcopy(infer(body.brief))
             output = validate_output(raw)
             record = sealed({'item_id': 'synthetic-' + secrets.token_hex(12), **output,
