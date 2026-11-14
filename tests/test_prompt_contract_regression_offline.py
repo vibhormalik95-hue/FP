@@ -2,7 +2,9 @@
 import ast,copy,sys,unittest
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1];BASE=ROOT/'feedctrl';events=[]
+guard_active=True
 def guard(e,a):
+ if not guard_active:return
  if e.startswith('socket.') or e in {'subprocess.Popen','os.system','os.spawn','os.exec','os.startfile','ctypes.dlopen'}:events.append(e);raise RuntimeError('blocked')
 sys.addaudithook(guard)
 def tree(p):return ast.parse(p.read_bytes())
@@ -14,6 +16,17 @@ def text_limits(f):
   if isinstance(n,ast.Call) and isinstance(n.func,ast.Attribute) and n.func.attr=='_text':
    out.append((ast.unparse(n.args[0]),ast.literal_eval(n.args[1]) if len(n.args)>1 and isinstance(n.args[1],ast.Constant) else None))
  return out
+guard_active=False
+
+def setUpModule():
+ global guard_active
+ guard_active=True
+
+def tearDownModule():
+ global guard_active
+ guard_active=False
+ if events:raise AssertionError('Unexpected guarded operations: '+repr(events))
+
 class Contract(unittest.TestCase):
  def test_validator_bounds_match_prompt(self):
   st=tree(BASE/'staged_induction.py');audit=tree(BASE/'evidence_audit.py');producer=tree(BASE/'category_induction_producer.py');fn=function(producer,'_text');self.assertEqual(ast.literal_eval(fn.args.defaults[0]),2000)

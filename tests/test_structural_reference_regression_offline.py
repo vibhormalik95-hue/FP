@@ -3,11 +3,24 @@ import hashlib,importlib.util,json,sys,unittest
 from pathlib import Path
 HERE=Path(__file__).resolve().parents[1];ROOT=HERE
 events=[]
+guard_active=True
 def guard(event,args):
+ if not guard_active:return
  if event.startswith('socket.') or event in {'subprocess.Popen','os.system','os.spawn','os.exec','os.startfile','ctypes.dlopen'}:
   events.append(event);raise RuntimeError('forbidden operation')
 sys.addaudithook(guard);spec=importlib.util.spec_from_file_location('r5_candidate',HERE/'feedctrl/source_constraints.py');m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)
 BASE='All three of the following: (1) an item is damaged; (2) the item is fixed; and (3) the item is kept.'
+guard_active=False
+
+def setUpModule():
+ global guard_active
+ guard_active=True
+
+def tearDownModule():
+ global guard_active
+ guard_active=False
+ if events:raise AssertionError('Unexpected guarded operations: '+repr(events))
+
 class References(unittest.TestCase):
  def terms(self,t,objective=''):return m.literal_requirements(objective,t)['terms']
  def test_long_subjects_and_reference_verbs(self):

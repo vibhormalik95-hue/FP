@@ -2,7 +2,9 @@
 import ast,hashlib,importlib.util,json,sys,unittest
 from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1];TOOL=ROOT/'tools/hosted_validation_current';events=[]
+guard_active=True
 def guard(event,args):
+ if not guard_active:return
  if event.startswith('socket.') or event in {'subprocess.Popen','os.system','os.spawn','os.exec','os.startfile','ctypes.dlopen'}:
   events.append(event);raise RuntimeError('blocked offline operation')
 sys.addaudithook(guard)
@@ -11,6 +13,17 @@ from feedctrl.model_adapters import _json
 first=json.loads((TOOL/'inputs/01-category-discovery/first-model-input.json').read_bytes());tree=ast.parse((ROOT/'feedctrl/staged_induction.py').read_bytes());current=next(n.value.value for n in tree.body if isinstance(n,ast.Assign) and any(isinstance(x,ast.Name) and x.id=='DEFINITION_PROMPT' for x in n.targets))
 def rendered(system):return system+'\n\nReturn exactly one JSON object matching this schema. Do not use Markdown, prose, or additional text. Schema: '+_json(first['schema']).decode('utf8')
 def body():return _json({k:v for k,v in first['payload'].items() if k!='system'})
+guard_active=False
+
+def setUpModule():
+ global guard_active
+ guard_active=True
+
+def tearDownModule():
+ global guard_active
+ guard_active=False
+ if events:raise AssertionError('Unexpected guarded operations: '+repr(events))
+
 class HistoricalBoundary(unittest.TestCase):
  def test_frozen_input_and_manifest_preserved(self):
   sha=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()

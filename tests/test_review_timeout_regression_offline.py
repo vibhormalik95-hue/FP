@@ -3,11 +3,24 @@ import sys,unittest,types,threading,contextlib,math
 from pathlib import Path
 from unittest import mock
 events=[]
+guard_active=True
 def guard(event,args):
+ if not guard_active:return
  if event.startswith('socket.') or event in {'subprocess.Popen','os.system','os.spawn','os.exec','os.startfile','ctypes.dlopen'} or (event=='import' and args and (str(args[0]).split('.')[0] in {'anthropic','openai','ollama','torch','transformers','uvicorn'} or str(args[0])=='feedctrl.windows_job_native')):
   events.append(event);raise RuntimeError('blocked offline operation')
 sys.addaudithook(guard)
 from feedctrl import windows_job_runner as runner,staged_routes as routes,claude_personal as personal
+guard_active=False
+
+def setUpModule():
+ global guard_active
+ guard_active=True
+
+def tearDownModule():
+ global guard_active
+ guard_active=False
+ if events:raise AssertionError('Unexpected guarded operations: '+repr(events))
+
 class Clock:
  def __init__(self,value=0):self.value=value
  def now(self):return self.value
