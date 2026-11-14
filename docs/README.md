@@ -6,13 +6,13 @@
 
 | Document | Content |
 | --- | --- |
-| [Install and run](install-and-run.md) | From the source folder to a running application, on Windows and on macOS, with the final verification sequence. |
+| [Install and run](install-and-run.md) | From the source folder to a running application, on Windows and on macOS, the scenario `conditions` for the original conditions A to E, and the final verification sequence. |
 | [Guide to the language controls](demo.md) | Each method in the page from the request to Undo, the review, the providers and the browser check. |
 | [Model routes](model-routes.md) | How to connect a model: a command-line program, a hosted API with your own key, a model server on your computer, or by hand. |
 | [Route trial](route-trial.md) | Run the bundled requests through a route without the browser. |
 | [Application reference](app.md) | The views, the conditions A to E, the language-control workflow, endpoints, and what a review stores. |
 | [Requirements and evidence](requirements-and-evidence.md) | Each request of the supervisor, the student's own commitments and the clauses of the proposal, mapped to code and to evidence. |
-| [Fictional item drafts](synthetic-item-drafts.md) | Metadata that a model writes for an item that does not exist, in a separate feed. |
+| [Fictional item drafts](synthetic-item-drafts.md) | Metadata that a model writes for an item that does not exist, in a separate list. |
 | [The built interface](source-verification.md) | How to rebuild `web/dist` after a change to the interface source. |
 | [Literal source requirements](numbered-source-constraints.md) | Method note: how the staged category method treats digits and quoted terms in a definition. |
 

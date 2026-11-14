@@ -25,17 +25,18 @@ Other words on this page:
 ## The supervisor's requests
 
 The requests come from a meeting between the student and the supervisor. The student supplied an automatic transcript of it on 4 November 2026. The transcript is not in this repository, and the repository does not verify the meeting date or the audio. Times are positions in that transcript.
+Each request below is a paraphrase of the supervisor's words, not a quotation. The exact words are kept in the private project records.
 
 ### 1. Manual category control, with measured performance
 
-> 08:22: "If you manually have categories, you can match and you can measure the performance [...]"
+At 08:22 the supervisor said that, with categories that are set by hand, requests can be matched to them and the performance can be measured.
 
 Code: `feedctrl/semantic_review.py` (the manual category path, `rank_groups`, Apply and Undo). Original benchmark: `feedctrl/controls.py`, `feedctrl/evaluation.py`.
 
 | Kind | Evidence |
 | --- | --- |
 | Experiment (frozen Experiment 1) | For boost requests, TCP@10 (the share of the first ten items in the target category) was 11.615% with item feedback and 79.222% under the category policy. For mute requests, TCER@10 (the share of the first ten still in the muted category) was 6.112% and zero. Llama parsed 79 of 100 requests exactly and the rule parser 81 of 100; the 85% target was missed. Boost lowered NDCG@10 from 0.03012 to 0.01637. |
-| Study of 4 November (used once, now exposed) | Manual reference against the language pipeline: the intended manual profile changed top-ten exposure by 5.3579 percentage points and the model-proposed profile by 2.9292 points. The pipeline matched the complete intended profile on 48 of 100 supported requests ([protocol and results](../deliverables/2026-11-04-prospective-evaluation/PROTOCOL-AND-RESULTS.md)). These are signed descriptive averages, not a success rate. |
+| Study of 4 November (used once, now exposed) | The intended profile (the model-written reference, applied without a model) against the language pipeline: the intended profile changed top-ten exposure by 5.3579 percentage points and the model-proposed profile by 2.9292 points. An AI author wrote the intended profiles, and another AI role reviewed them. The pipeline matched the complete intended profile on 48 of 100 supported requests ([protocol and results](../deliverables/2026-11-04-prospective-evaluation/PROTOCOL-AND-RESULTS.md)). These are signed descriptive averages, not a success rate. |
 | Demonstration, 13 November, earlier revision `b9220b4`, AI operator, no model call | Excluding category `K1` left the preview unchanged, removed exactly its two items on Apply (8 to 6), and the two-step Undo restored the identical feed. The same was observed for category `Repair` in the second scenario. |
 | Demonstration, final build | [[FINAL: manual control on the final build: scenario, category, item counts before, after Apply and after Undo, reviewer, record path]] |
 
@@ -43,23 +44,23 @@ Limits: the experiment measures exposure to an assigned category. The zero comes
 
 ### 2. A new category from natural language that feeds the filter
 
-> 08:38: "[...] use NLP to create new categories that then feed the filter [...]"
+At 08:38 he asked for language processing that makes new categories, which then go into the filter.
 
-Code: `feedctrl/staged_routes.py`, `staged_induction.py`, `evidence_audit.py`, `source_constraints.py`; review screens in `web/src/ReviewBoard.jsx` and `ReviewTable.jsx`. Method in the page: "A new category from my description (model, in stages)".
+Code: `feedctrl/staged_routes.py`, `staged_induction.py`, `evidence_audit.py`, `source_constraints.py`; review screens in `web/src/ReviewBoard.jsx` and `ReviewTable.jsx`. Method in the page: "A new category from my description, in stages (model)".
 
 | Kind | Evidence |
 | --- | --- |
 | Demonstration with real model output, 13 November, earlier revision, relay, AI operator | Three completed runs. From an objective that names no concept, the model proposed "Defective or damaged object repaired, same object kept or remaining in use" (run 4). All eight items were classified and separately assessed. Three items became members (41001, 41002, 41003). The preview changed nothing; Apply removed exactly the three members (8 to 5); Undo restored the identical feed. The other two completed runs gave the same members from differently worded definitions. In those two runs, two disagreements between the two calls were withheld as unknown; run 4 had none. |
 | Kept negative results | The first attempt of 13 November was rejected: its definition was longer than a limit that the request did not state. On 11 November a call through the Claude Code CLI stopped at clarification, and nothing was classified ([summary](evidence/2026-11-11/HOSTED-TWO-SCENARIO-SUMMARY.md)). A frozen twelve-request study of 5 November with local models gave 0 of 4 supported new-category cases ([results and limits](../deliverables/2026-11-05-final-demo/RESULTS-AND-LIMITS.md)). |
 | Demonstration with real model output, final build | [[FINAL: new-category run on the final build: label, members, item counts, model route, reviewer, record path]] |
-| Authored replies | The browser flow `category` completes on the scenario `category` (8 to 5 to 8). |
+| Authored replies | The browser flow `category` completes on the scenario `category` (8 to 5 to 8). The browser flow `reject` rejects a definition under review; the server then refuses to classify with it. |
 
 Limits: one invented eight-item scenario, repeated. Three runs of one exposed example are not a reliability figure. Two model calls can agree and both be wrong.
 
 ### 3. Requests that do not use the literal words, matched to what exists
 
-> 07:49: "[...] some other word that basically cooking, but it doesn't literally match cooking."
-> 08:38: "[...] use NLP to match what people intend to existing categories and tags."
+At 07:49 he gave the case of a word that means cooking but is not literally that word.
+At 08:38 he asked for language processing that matches what a person intends to the categories and tags that exist.
 
 The application has two separate cases for this request.
 
@@ -86,13 +87,13 @@ Limits for 3a and 3b: the reading is the model's. It is not evidence about a per
 
 ### 4. Progress and what remains
 
-> 09:18: "[...] share it [...] what remains [...]"
+At 09:18 he asked the student to share the work and to say what remains.
 
 This page, the [front page](../README.md) and the section "What remains" below.
 
 ### 5. Two or three conference options
 
-> 11:48 to 12:05: "[...] send me a 2 or 3 options of conferences [...] Maybe their deadline for papers is in January."
+From 11:48 to 12:05 he asked for two or three conference options. He said that their deadline for papers is possibly in January.
 
 Official pages were read on 14 November 2026 (UTC):
 
@@ -111,9 +112,11 @@ These points are part of one workflow. They are not separate requests of the sup
 | Behaviour | Code | Evidence |
 | --- | --- | --- |
 | A mixed request: several preferences in one request, one review, one Apply | `feedctrl/vocabulary_grounding.py` | Authored replies: browser flow `mixed` on the scenario `tags` (two controls from one reply). Final build with real model output: [[FINAL: mixed request on the final build]] |
-| Requests that change nothing: ambiguous, negated command, unsupported, no match | `feedctrl/vocabulary_grounding.py`, `feedctrl/indirect_grounding.py` | Authored replies: browser flow `outcomes`; the feed and the applied controls stay unchanged in each case. The negated command is stopped before any model call. Final build with real model output: [[FINAL: observed result for each of the four requests on the final build]] |
+| Requests that change nothing: ambiguous, negated command, unsupported, no match | `feedctrl/vocabulary_grounding.py`, `feedctrl/indirect_grounding.py` | Authored replies: browser flow `outcomes`; the feed and the applied controls stay unchanged in each case. A request that matches the negated-command pattern (a negated hide, exclude, remove, reduce or boost) is stopped before any model call, in both language routes. "Do not show ..." is not stopped: it goes to the model as a request to remove. Final build with real model output: [[FINAL: observed result for each of the four requests on the final build]] |
 | Review in three blocks, with evidence for selected and not selected items | `web/src/ReviewBoard.jsx`, `web/src/ReviewTable.jsx` | Software tests of the interface (`web/tests/`) and the browser check. |
-| A proposal changes nothing; Apply uses exactly the approved set; a two-step Undo restores the earlier feed | `feedctrl/semantic_review.py` | Asserted by the browser check in every flow, against the state of the server. |
+| A proposal changes nothing; Apply uses exactly the approved set; a two-step Undo restores the earlier feed | `feedctrl/semantic_review.py` | Asserted by the browser check in every flow, against the state of the server. The flow `history` also checks Undo after two controls and the removal of every control. |
+| A failed call, an expired review and a rejected definition apply nothing | `feedctrl/semantic_review.py`, `feedctrl/staged_routes.py`, `web/src/SemanticPanel.jsx` | Authored replies: browser flows `failure`, `expired` and `reject`. The page names a failed call as a failed call. It never says that no call was made. |
+| The original conditions A to E on category IDs | `feedctrl/controls.py`, `web/src/main.jsx` | Browser flow `original`: on the scenario `conditions` the instruction changes C and E, the profile changes D, and A and B stay as they were; on the scenarios with named categories both are disabled, and the page says why. |
 
 ## The student's own commitments
 
@@ -176,6 +179,7 @@ Software checks with authored replies and stand-ins. They are not model evidence
 | Guarded checks | `python tools/hosted_validation_current/run_guarded.py .` | [[FINAL: count and intercepted events]] |
 | Interface logic | `node --test "web/tests/*.mjs"` | [[FINAL: passed]] |
 | Browser, authored replies, scenarios `tags`, `category`, `hunger` | `node tests/browser/demo_flows.cjs --scenario NAME` | [[FINAL: assertions for each scenario]] |
+| Browser, the original conditions, scenario `conditions` | `node tests/browser/demo_flows.cjs --scenario conditions` | [[FINAL: assertions for the scenario conditions]] |
 | Source fingerprint | `python scripts/run_demo.py --fingerprint` | [[FINAL: value]] |
 
 Environment of the checks: Linux, Python 3.13, Node 22, headless Chromium. Nothing was run on Windows or macOS for this revision.
