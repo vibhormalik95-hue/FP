@@ -148,7 +148,7 @@ def make_claude_personal_infer(*, executable, workdir, model, effort, run_budget
                          (max_response_bytes,1,2000000)):
         if type(v) is not int or not low <= v <= high:
             raise ValueError('Invalid bounded transport setting')
-    if type(timeout) not in (int,float) or not math.isfinite(timeout) or not 0 < timeout <= 300:
+    if type(timeout) not in (int,float) or not math.isfinite(timeout) or not 0 < timeout <= 600:
         raise ValueError('Invalid timeout')
     config = {'backend':'claude-code-personal-cli', 'model':model, 'requested_effort':effort,
               'output_mode':output_mode,

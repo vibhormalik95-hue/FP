@@ -1,0 +1,66 @@
+{
+  "01-category-discovery/REVIEW-NOTES.md": {
+    "sha256": "fb2212d5340dd4c55737f139253192620dbd2c6e5d0b5836aa36c014c8eeb969",
+    "bytes": 7265
+  },
+  "01-category-discovery/app-data.json": {
+    "sha256": "0fadef280f57630b5c4ae61265cb665e17ecad51e18c486a3764cdea9d974c1a",
+    "bytes": 500
+  },
+  "01-category-discovery/app-preview.json": {
+    "sha256": "32abdd3b94e75206ad18041716d6784477e7d44aacd1ee2d25f15f626a0f048d",
+    "bytes": 454
+  },
+  "01-category-discovery/existing-inventory.json": {
+    "sha256": "3c9d2453548aeced6a4661cb10bbc7f0bb171de8daf0d6528c213755698622cc",
+    "bytes": 281
+  },
+  "01-category-discovery/first-model-input.json": {
+    "sha256": "4be2a795bd281601dbcba1e95ce44a90dcebf330c143df961cd663d71333d821",
+    "bytes": 5189
+  },
+  "01-category-discovery/metadata.csv": {
+    "sha256": "4d51951dbedc187bb6ad329cabdea495ec11f44e5b1b6a08aadc836c3b383970",
+    "bytes": 960
+  },
+  "01-category-discovery/metadata.json": {
+    "sha256": "9f5135013cc4f28477d1de030549872d5d59219ffa9b8ba24065c58b10d8cd39",
+    "bytes": 1197
+  },
+  "02-hunger-continuation/REVIEW-NOTES.md": {
+    "sha256": "78888ebee117ef22f1ef487cbf02c054d12071b7518bf0baba9c6361703d10ad",
+    "bytes": 7167
+  },
+  "02-hunger-continuation/app-data.json": {
+    "sha256": "71f6cad5fced05d331d5de887069198dc6976f7af5bda2c5e6bea228403fd0cd",
+    "bytes": 553
+  },
+  "02-hunger-continuation/app-preview.json": {
+    "sha256": "431d7db6086efb13d24c5b82fbddfb6be9597ab2137cefb8863ba035dde38b79",
+    "bytes": 251
+  },
+  "02-hunger-continuation/first-model-input.json": {
+    "sha256": "ed7c4f251da784b5a77cad7ba023831159ac2907f936172750dbce012cc1094a",
+    "bytes": 1650
+  },
+  "02-hunger-continuation/historical-source.json": {
+    "sha256": "84909278f4e162349a1b151a1ad31c2d1308392313a7fd736ed3a7074e559408",
+    "bytes": 1431
+  },
+  "02-hunger-continuation/metadata.csv": {
+    "sha256": "ee116b420187b8a6fd70bc26e39a4ec2aaf7c1814470a3a5a66061702c246d00",
+    "bytes": 1074
+  },
+  "02-hunger-continuation/metadata.json": {
+    "sha256": "5b0c77ecd964a5b1486e6b561fb431ba8d1c1baf49622a9a2a65618f32701ff5",
+    "bytes": 1553
+  },
+  "README.md": {
+    "sha256": "4d62355556c836388a727746135c79257c5e10d3477152390f29d596ae56bdf6",
+    "bytes": 2294
+  },
+  "SOURCE-EVIDENCE.json": {
+    "sha256": "3242ae66232a97753095c71019185525782c56fb73081da3032759a8088c6a75",
+    "bytes": 1875
+  }
+}

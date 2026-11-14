@@ -27,6 +27,14 @@ from pathlib import Path
 import sys
 import time
 
+# Support both direct script execution and import by the CLI operator.
+ROOT = Path(__file__).resolve().parents[1]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+from feedctrl.model_adapters import _decode
+from feedctrl.indirect_grounding import _response_snapshot
+
 
 def render(request):
     """The exact text for a model: instruction, schema sentence, then the input."""
@@ -74,11 +82,13 @@ def problem(spool, ordinal, raw):
         return ('the answer file is not UTF-8 text. Windows PowerShell 5.1 writes UTF-16 with ">": '
                 'save the file with Notepad as UTF-8')
     try:
-        answer = json.loads(text)
+        answer = _response_snapshot(_decode(text))
     except json.JSONDecodeError as error:
         return ('the answer file is not one JSON object with nothing around it '
                 f'(line {error.lineno}, column {error.colno}: {error.msg}). '
                 'Remove a Markdown fence or a sentence before or after the object')
+    except (ValueError, RecursionError, UnicodeError) as error:
+        return f'the answer fails the app JSON transport rules: {error}'
     if not isinstance(answer, dict):
         return 'the answer is JSON but not an object'
     from jsonschema import Draft202012Validator

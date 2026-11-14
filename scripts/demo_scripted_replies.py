@@ -42,26 +42,27 @@ _CATEGORY_MEMBERSHIP = {
             'Repair and retention are both stated.'),
     41004: ('not_match', 'put in recycling and a newly purchased organizer is unpacked in its place',
             'The broken object is replaced, not kept.'),
-    41005: ('not_match', 'folded into a new tray', 'A new object is made; no repair is stated.'),
-    41006: ('not_match', 'shaped with an electric lathe into a new knob',
-            'A new object is made; no repair is stated.'),
+    41005: ('unknown', '', 'The text describes folding paper offcuts into a new tray; whether a damaged existing object was repaired and kept is not stated.'),
+    41006: ('unknown', '',
+            'The text describes shaping a raw wooden blank into a new knob; whether a damaged existing object was repaired and kept is not stated.'),
     41007: ('unknown', '', 'No completed activity is described.'),
     41008: ('unknown', '', 'The subject is not described.'),
 }
 # (assessment, quote, reason) per item for the separate evidence assessment.
-# Item 41005 deliberately disagrees with the membership call, so the rehearsal
-# also shows a disagreement being withheld as unknown.
+# Missing repair evidence stays unknown in both authored stages.
+# Deliberately incorrect classifications belong in adversarial tests, not this rehearsal.
 _CATEGORY_AUDIT = {
     41001: ('supported', 'straightened with pliers and used again. The existing piece is kept.',
             'Both conditions are stated.'),
-    41002: ('supported', 'mended with a needle and spare thread', 'Repair is stated; the same bag is kept.'),
+    41002: ('supported', 'mended with a needle and spare thread so it can carry books again. The same bag is kept.',
+            'Mending and retention of the same bag are stated.'),
     41003: ('supported', 'sealed and returned to watering plants. The same jug remains in use.',
             'Both conditions are stated.'),
     41004: ('contradicted', 'a newly purchased organizer is unpacked in its place',
             'The object is replaced.'),
     41005: ('not_stated', '', 'Whether an existing damaged object was repaired is not stated.'),
-    41006: ('contradicted', 'into a new knob', 'A new object is made from a raw blank.'),
-    41007: ('not_stated', '', 'No activity is described.'),
+    41006: ('not_stated', '', 'The text describes shaping a raw wooden blank into a new knob; whether a damaged existing object was repaired and kept is not stated.'),
+    41007: ('not_stated', '', 'No completed activity or finished object is described.'),
     41008: ('not_stated', '', 'The subject is not described.'),
 }
 

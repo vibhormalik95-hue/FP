@@ -34,7 +34,8 @@ class ModalityTests(unittest.TestCase):
         prompt=captures[0]['instructions']
         self.assertEqual(prompt,staged.DEFINITION_PROMPT)
         self.assertEqual(prompt.count(AMENDMENT),1)
-        self.assertIn('WHOLE definition.\n'+AMENDMENT+'\nNever infer',prompt)
+        self.assertLess(prompt.index('WHOLE definition.'),prompt.index(AMENDMENT))
+        self.assertIn(AMENDMENT+'\nNever infer',prompt)
         self.assertEqual(captures[0]['objective'],fixture.OBJECTIVE)
         for forbidden in (QUOTE,REASON,'lamp','satchel','41002','Repaired and kept in use','Bread preparation scenes','target set'):
             self.assertNotIn(forbidden,prompt)

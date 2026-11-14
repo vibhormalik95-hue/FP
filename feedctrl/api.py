@@ -173,7 +173,7 @@ class DemoState:
 
     def steering_state(self, token, user_id):
         if self.topic_index is None:
-            raise HTTPException(503, "Official caption sidecar is required for catalogue steering")
+            raise HTTPException(503, "A caption sidecar is required for catalogue steering")
         state = self.user_state(token, user_id)
         for key, value in (("steering_commands", []), ("steering_revision", 0),
                            ("steering_pending", None), ("steering_text", ""),
@@ -211,11 +211,13 @@ class DemoState:
                 "category_exposure": dict(Counter(c for item in result["items"] for c in item["categories"])),
                 "commands_count": len(commands), "baseline_items": neutral["items"], **result}
 
-    def source_text(self, item_id):
-        """The supplied description of one item, for display beside its ID."""
+    def source_text(self, item_id, *, full=False):
+        """Display an excerpt, or the complete supplied field for review."""
         fields = ((self.topic_index or {}).get("items", {}).get(item_id) or {}).get("fields", {})
         for key in ("caption", "manual_cover_text"):
             if isinstance(fields.get(key), str) and fields[key].strip():
+                if full:
+                    return fields[key]
                 text = fields[key].strip()
                 return text if len(text) <= 400 else text[:399] + "…"
         return None
@@ -284,7 +286,7 @@ class DemoState:
 
     def topic_preview(self, user_id, state, command, condition, limit):
         if self.topic_index is None:
-            raise ValueError("Official caption sidecar is not configured")
+            raise ValueError("A caption sidecar is not configured")
         matched, evidence = match_topic(self.topic_index, command)
         user = self.users[user_id]
         history = list(user["train"]) + list(user["request_history"])
@@ -388,8 +390,9 @@ def create_app(data_path=None, model_path=None, fixture=False, semantic_path=Non
                                   if allow_local_models else "Disabled by hosted-only application policy."),
                 "research_note": "Synthetic category controls measure offline behavior; this demo does not establish human agency or satisfaction.",
                 "category_note": "Opaque dataset category IDs; no invented topic names.",
-                "semantic_topic": ("Official caption sidecar loaded; exploratory preview only"
+                "semantic_topic": ("Caption sidecar loaded; origin not verified; exploratory preview only"
                                    if demo.topic_index else "Unavailable until FEEDCTRL_CAPTION_SIDECAR is configured"),
+                "semantic_topic_available": demo.topic_index is not None,
                 "asset_note": "Metadata cards only; no original video assets are distributed."}
 
     @app.post("/api/session", status_code=201)
@@ -553,7 +556,7 @@ def create_app(data_path=None, model_path=None, fixture=False, semantic_path=Non
         with demo.lock:
             demo.user_state(x_session_id, body.user_id)
         if demo.topic_index is None:
-            raise HTTPException(503, "Official caption sidecar is not configured; no topic preview was run.")
+            raise HTTPException(503, "A caption sidecar is not configured; no topic preview was run.")
         try:
             command = (manual_topic_command(body.operation, body.text, body.strength) if body.backend == "manual"
                        else parse_topic_request(body.text, model=os.getenv("FEEDCTRL_OLLAMA_MODEL", DEFAULT_MODEL),

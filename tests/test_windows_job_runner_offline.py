@@ -64,7 +64,7 @@ class Tests(unittest.TestCase):
         with self.assertRaisesRegex(WindowsRunnerError,'late pipe error'):self.invoke(r)
         self.assertEqual((r.terminated,r.io_calls,r.closed),(1,1,1))
     def test_nonfinite_timeout_rejected_before_launch(self):
-        for bad in (float('nan'),float('inf'),float('-inf'),True,0,301):
+        for bad in (float('nan'),float('inf'),float('-inf'),True,0,601):
             b=Backend(Run([]))
             with self.subTest(timeout=bad),self.assertRaises(ValueError):self.invoke(backend=b,timeout=bad)
             self.assertEqual(b.calls,0)

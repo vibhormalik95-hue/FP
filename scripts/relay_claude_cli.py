@@ -31,6 +31,7 @@ cli-reply-000N.not-delivered.txt.
 import argparse
 import hashlib
 import json
+import math
 import os
 from pathlib import Path
 import shutil
@@ -67,6 +68,103 @@ def cli_arguments(executable, model, effort, budget):
     return flags
 
 
+def strict_result_json(raw):
+    def pairs(items):
+        result = {}
+        for key, value in items:
+            if key in result:
+                raise ValueError('duplicate JSON key')
+            result[key] = value
+        return result
+    def constant(value):
+        raise ValueError('nonfinite JSON constant')
+    def finite_float(value):
+        parsed = float(value)
+        if not math.isfinite(parsed):
+            raise ValueError('nonfinite JSON number')
+        return parsed
+    return json.loads(raw, object_pairs_hook=pairs, parse_constant=constant, parse_float=finite_float)
+
+
+def failure_output_summary(stdout, stderr):
+    """Retain bounded structural evidence, never arbitrary diagnostic text.
+
+    Output may contain prompts, credentials, or private model text. Store only
+    lengths/digests and recognized terminal fields. This is evidence, not an
+    acceptance decision or an automatic retry classification.
+    """
+    summary = {}
+    for name, raw in (('stdout', stdout), ('stderr', stderr)):
+        if raw is None:
+            summary[name] = {'available': False}
+            continue
+        if isinstance(raw, str):
+            raw = raw.encode('utf-8', 'replace')
+        item = {'available': True, 'bytes': len(raw),
+                'sha256': hashlib.sha256(raw).hexdigest()}
+        summary[name] = item
+        if len(raw) > 65536:
+            item['json_status'] = 'over_limit'
+            continue
+        try:
+            envelope = strict_result_json(raw.decode('utf-8'))
+        except (UnicodeDecodeError, ValueError, RecursionError):
+            item['json_status'] = 'invalid'
+            continue
+        if not isinstance(envelope, dict):
+            item['json_status'] = 'not_object'
+            continue
+        item['json_status'] = 'object'
+        terminal = {}
+        choices = {
+            'type': ('result',),
+            'subtype': ('success', 'error_during_execution', 'error_max_turns',
+                        'error_max_budget_usd', 'error_max_structured_output_retries'),
+            'stop_reason': ('end_turn', 'refusal', 'max_tokens', 'tool_use',
+                            'stop_sequence', 'pause_turn'),
+        }
+        for key, allowed in choices.items():
+            if key in envelope:
+                value = envelope[key]
+                terminal[key] = value if isinstance(value, str) and value in allowed else 'unrecognized'
+        if type(envelope.get('is_error')) is bool:
+            terminal['is_error'] = envelope['is_error']
+        turns = envelope.get('num_turns')
+        if type(turns) is int and 0 <= turns <= 1000000:
+            terminal['num_turns'] = turns
+        item['terminal'] = terminal
+    return summary
+
+
+def terminal_result_problem(envelope):
+    """The local one-turn operator only delivers an explicit normal completion."""
+    if (envelope.get('type') != 'result' or envelope.get('subtype') != 'success'
+            or envelope.get('is_error') is not False):
+        return 'the CLI did not report a successful result'
+    if envelope.get('stop_reason') != 'end_turn':
+        return 'the CLI did not report a supported normal stop reason'
+    if type(envelope.get('num_turns')) is not int or envelope['num_turns'] != 1:
+        return 'the CLI did not report exactly one turn'
+    return None
+
+
+def claim_attempt(spool, ordinal, request_sha256):
+    """An immutable exclusive claim survives all failures and process exits."""
+    marker = spool / f'cli-attempt-{ordinal:04d}.json'
+    for existing in (spool / f'cli-call-{ordinal:04d}.json',
+                     spool / f'response-{ordinal:04d}.json'):
+        if existing.exists():
+            raise SystemExit(f'Request {ordinal} already has a receipt or response; no CLI call was made.')
+    try:
+        with marker.open('x', encoding='utf-8') as handle:
+            json.dump({'ordinal': ordinal, 'request_sha256': request_sha256,
+                       'claimed_utc': utc()}, handle)
+            handle.flush()
+            os.fsync(handle.fileno())
+    except FileExistsError:
+        raise SystemExit(f'Request {ordinal} was previously claimed; no CLI call was made.')
+
+
 def one_call(spool, ordinal, executable, args):
     request = relay_tools.wait_for_request(spool, ordinal, args.wait)
     text = relay_tools.render(request).encode('utf-8')
@@ -87,24 +185,26 @@ def one_call(spool, ordinal, executable, args):
             raise SystemExit(f'Request {ordinal} was NOT delivered: {reason}.\n'
                              'The request is still open. Answer it by hand with relay_tools.py, or stop the app.')
 
+    claim_attempt(spool, ordinal, request['request_sha256'])
     print(f'[{utc()}] request {ordinal}: calling the CLI (limit {args.timeout} s) ...', flush=True)
     started = time.monotonic()
     with tempfile.TemporaryDirectory(prefix='relay-cli-') as workdir:
         try:
             done = subprocess.run([executable, *flags], input=text, capture_output=True,
                                   timeout=args.timeout, cwd=workdir, env=env)
-        except subprocess.TimeoutExpired:
+        except subprocess.TimeoutExpired as error:
+            record['failure_output'] = failure_output_summary(error.stdout, error.stderr)
             finish(f'the CLI did not finish within {args.timeout} s')
         except OSError as error:
             finish(f'the CLI could not be started ({error.__class__.__name__})')
     record.update(exit_code=done.returncode, stdout_sha256=hashlib.sha256(done.stdout).hexdigest(),
                   stdout_bytes=len(done.stdout))
     if done.returncode != 0:
-        tail = done.stderr.decode('utf-8', 'replace').strip().splitlines()[-1:] or ['no message']
-        finish(f'the CLI ended with exit code {done.returncode}: {tail[0][:300]}')
+        record['failure_output'] = failure_output_summary(done.stdout, done.stderr)
+        finish(f'the CLI ended with exit code {done.returncode}; see bounded failure_output in the receipt')
     try:
-        envelope = json.loads(done.stdout.decode('utf-8'))
-    except (UnicodeDecodeError, json.JSONDecodeError):
+        envelope = strict_result_json(done.stdout.decode('utf-8'))
+    except (UnicodeDecodeError, ValueError):
         finish('the CLI output was not one JSON result', done.stdout)
     if not isinstance(envelope, dict):
         finish('the CLI output was not a JSON result object', done.stdout)
@@ -116,8 +216,9 @@ def one_call(spool, ordinal, executable, args):
                   reported_models=models)
     reply = envelope.get('result')
     reply_bytes = reply.encode('utf-8') if isinstance(reply, str) else None
-    if envelope.get('type') != 'result' or envelope.get('subtype') != 'success' or envelope.get('is_error') is not False:
-        finish('the CLI did not report a successful result', reply_bytes)
+    terminal_problem = terminal_result_problem(envelope)
+    if terminal_problem:
+        finish(terminal_problem, reply_bytes)
     if reply_bytes is None:
         finish('the CLI result holds no text')
     if models != [args.model] and not args.allow_other_models:

@@ -2,6 +2,7 @@
 from copy import deepcopy
 import json
 import asyncio
+from pathlib import Path
 import unittest
 from unittest.mock import patch
 from feedctrl.claude_personal import make_claude_personal_infer
@@ -23,7 +24,7 @@ def envelope(result=None):
             'usage':{'input_tokens':1,'output_tokens':4},'modelUsage':{MODEL:{'outputTokens':4}},'total_cost_usd':0.01}
 def raw(value):return json.dumps(value).encode()
 def options(budget=None):
-    return dict(executable='/not-a-real-cli',workdir='/not-a-real-dir',model=MODEL,effort='max',
+    return dict(executable=str(Path.cwd()/'not-a-real-cli'),workdir=str(Path.cwd()/'not-a-real-dir'),model=MODEL,effort='max',
       run_budget=budget or HostedRunBudget(3),estimated_per_invocation_usd=.10,output_mode='schema_tool',
       runtime_authorized=True,data_authorized=True,subscription_and_usage_authorized=True,
       executable_reviewed=True,managed_runtime_reviewed=True,process_containment_reviewed=True,reviewed_cli_version='2.1.321')

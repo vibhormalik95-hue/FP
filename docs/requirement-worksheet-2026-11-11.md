@@ -1,4 +1,6 @@
-# Requirement and evidence worksheet
+# Requirement and evidence worksheet: 11 November 2026
+
+**Historical snapshot.** The results and runtime descriptions below belong to 11 November. They are preserved as recorded, not a statement of current availability or acceptance. See [current progress](current-progress.md) for later evidence and [the code walkthrough](current-code-walkthrough.md) for the implementation map.
 
 > **Dated record, 11 November 2026.** This page is not current guidance. The current page is [requirements and evidence](requirements-and-evidence.md).
 
