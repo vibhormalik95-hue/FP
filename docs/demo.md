@@ -122,6 +122,8 @@ node tests/browser/demo_flows.cjs --base http://127.0.0.1:8765 --scenario hunger
 
 It checks that a preview leaves the applied feed unchanged, that Apply removes exactly the approved items, and that Undo restores the identical feed. It writes screenshots and `browser-receipt.json`.
 
+The receipt records the source fingerprint of the server that it used. `python scripts/run_demo.py --fingerprint` prints the fingerprint of your files. The value is the same on Windows, Linux and macOS for the same files, so a receipt can be matched to a source tree without Git.
+
 With a model connected, add `--review wait --reviewer "your name"`. The script stops at each review. It continues only when you write `APPROVE` into the decision file that it names. Any other text is recorded as a decline. Set `FEEDCTRL_OPERATOR_TOKEN` when the page asks for a token.
 
 Exit code 0 means every flow completed. Exit code 2 means a flow stopped early, for example after a declined review or a rejected reply. Exit code 1 means a check failed.

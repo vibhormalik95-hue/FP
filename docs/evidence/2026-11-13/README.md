@@ -8,7 +8,7 @@ All times are UTC on 14 November 2026. In Vancouver that is the afternoon and ev
 
 - **The model.** Each model reply came from a sub-agent of the Claude Cowork session that did this work. The session asked for model family "fable" and effort "max". The session is configured for `claude-fable-5-2`. The transport cannot confirm which model served a reply, so the model name is a declaration.
 - **The transport.** The app wrote each request to a file (the relay provider). The sub-agent read the request text from one file and wrote one answer file. The session reported two tool uses for each sub-agent. The session's lead agent delivered each answer file to the app unchanged; `cmp` reported identical bytes. This is an operator relay. It is not the automatic Claude Code CLI connection.
-- **The reviewer.** The lead AI agent of that session made every review decision. The student did not, and no human reviewed these runs. The same agent also wrote the code changes of 13 November, so the review is not independent. In the two final-code runs the agent read each model reply before it delivered the reply, and then read the review screen. The decision times in the receipts measure only the time from the appearance of a screen to the decision: 0.5 s to 15.5 s, and 154 s for one gate. The 0.5 s decision is the undo approval of indirect run 1, which the agent wrote without a separate reading of that screen. A human reviewer needs more time and has five minutes for each decision. The notes are in each `operator-review-notes.md`.
+- **The reviewer.** The lead AI agent of that session made every review decision. The student did not, and no human reviewed these runs. The same agent also wrote the code changes of 13 November, so the review is not independent. In run 3 of the new category and in run 2 of the indirect request, the agent read each model reply before it delivered the reply, and then read the review screen. The decision times in the receipts measure only the time from the appearance of a screen to the decision: 0.5 s to 15.5 s, and 154 s for one gate. The 0.5 s decision is the undo approval of indirect run 1, which the agent wrote without a separate reading of that screen. A human reviewer needs more time and has five minutes for each decision. The notes are in each `operator-review-notes.md`.
 - **The data.** Eight invented item descriptions per scenario, and a labelled diagnostic scorer. No trained recommender ran.
 - **The scope.** Each language control completed two times, on exposed development scenarios. These runs show that the controls work from end to end with real model output. They are not an accuracy result, and they say nothing about recommendation quality or user benefit.
 
@@ -18,17 +18,19 @@ All times are UTC on 14 November 2026. In Vancouver that is the afternoon and ev
 | --- | --- | --- | --- |
 | `new-category/attempt-1-rejected` | `26a0b16` | 1 | **Rejected.** The model's definition was 1,062 characters. The app enforces a 1,000-character limit that the request did not state. The definition also numbered its conditions (1, 2, 3). Nothing was classified or applied. In the same browser session, the manual control completed first (category `K1`, 8 to 6 to 8). |
 | `new-category/attempt-2-completed` | `010cfe2` | 3 | Completed (8 to 5 to 8). |
-| `new-category/run-3-final-code` | `40315aa` | 3 | Completed (8 to 5 to 8), after the manual control in the same session (category `K1`, 8 to 6 to 8). |
 | `indirect-request/run-1` | `010ae75` | 2 | Completed (8 to 5 to 8). |
-| `indirect-request/run-2-final-code` | `40315aa` | 2 | Completed (8 to 5 to 8), after the manual control in the same session (category `Repair`, 8 to 6 to 8). |
+| `new-category/run-3` | `40315aa` | 3 | Completed (8 to 5 to 8), after the manual control in the same session (category `K1`, 8 to 6 to 8). |
+| `indirect-request/run-2` | `40315aa` | 2 | Completed (8 to 5 to 8), after the manual control in the same session (category `Repair`, 8 to 6 to 8). |
 
-Revision `40315aa` is the final application code of this work. Its receipts record a source fingerprint: `f5df9878da22bf5a8d1b3b7aaf6ab4bcbf1a53528d73333d71163f38f75b52a6`. To compare, run `python scripts/run_demo.py --fingerprint` in a checkout of that revision. Earlier receipts do not record the source; their revisions are stated by the operator.
+**Which code served the last two runs.** Revision `40315aa`. Its receipts record a source fingerprint: `f5df9878da22bf5a8d1b3b7aaf6ab4bcbf1a53528d73333d71163f38f75b52a6`. After those runs, one more code change was made (revision `8e628cf`): the function that computes the fingerprint now gives the same value on Windows, Linux and macOS. No other application file changed. For the tree of `40315aa` the new function prints the value above. For `8e628cf` and later it prints `7ca56c807e4fbf909490bb3fd4edafd57d85e82d2a9ca1cf77476ac20c7668da`, because the launcher file is itself part of the fingerprint. The model runs were not repeated after that change. Print the value of a checkout with `python scripts/run_demo.py --fingerprint`.
 
-After attempt 1, the prompts were changed to state the limits that the validators already enforce, and to ask for unnumbered conditions (revision `010cfe2`). Schemas and validators did not change. Attempt 2 is a new attempt after that change. It is not a repeat of the same request text. Run 3 and indirect run 2 are repeats on the final code after a completed run. They are not retries after a failure.
+Receipts made before `40315aa` do not record the source. Their revisions are stated by the operator: each of those runs started after the commit of its revision and before the next change.
+
+After attempt 1, the prompts were changed to state the limits that the validators already enforce, and to ask for unnumbered conditions (revision `010cfe2`). Schemas and validators did not change. Attempt 2 is a new attempt after that change. It is not a repeat of the same request text. Run 3 and indirect run 2 are repeats on later code after a completed run. They are not retries after a failure.
 
 Counting in the receipts. An earlier receipt holds assertions and review decisions in one list. Attempt 2 has 19 entries: 15 assertions and 4 decisions. Indirect run 1 has 17 entries: 15 assertions and 2 decisions. A receipt from `40315aa` holds them separately. Every assertion in every listed run passed.
 
-## New category, run 3 on the final code
+## New category, run 3
 
 Objective (unchanged, from the bundled scenario): propose one useful new category from the eight descriptions. The objective names no concept.
 
@@ -46,7 +48,7 @@ Attempt 2 gave the same members and the same two withheld items from a different
 
 Before revision `26a0b16` neither run could have completed: the five-minute review limit also covered the model calls that follow an approval.
 
-## Indirect request, run 2 on the final code
+## Indirect request, run 2
 
 Request (unchanged): "I'm not hungry, remove all the stuff that makes me hungry." It names no existing category.
 
@@ -60,7 +62,7 @@ The link from "food being prepared" to "makes me hungry" is the model's reading 
 
 ## Runs with authored replies (no model)
 
-`scripted-regression/` holds two receipts from revision `40315aa` with the scripted provider: 29 of 29 and 27 of 27 assertions passed. The replies were written by hand and the review boxes were ticked by the script. These runs check the screens, Apply and Undo. They are not model evidence.
+`scripted-regression/` holds two receipts from revision `8e628cf` with the scripted provider: 29 of 29 and 27 of 27 assertions passed. Their fingerprint is the `7ca56c80…` value above. The replies were written by hand and the review boxes were ticked by the script. These runs check the screens, Apply and Undo. They are not model evidence.
 
 ## The task text for a sub-agent
 
@@ -81,7 +83,7 @@ Rules:
 - When the file is written, reply with the single word: written
 ```
 
-The request text file is made with `python scripts/relay_tools.py show`. It contains the application's instruction, the schema and the input, and nothing else. The task text of the earlier sub-agent calls was not saved to a file. It asked for the same two steps.
+The request text file is made with `python scripts/relay_tools.py show`. It contains the application's instruction, the schema and the input, and fixed frame lines. The task text of the earlier sub-agent calls was not saved to a file. It asked for the same two steps.
 
 ## Files
 

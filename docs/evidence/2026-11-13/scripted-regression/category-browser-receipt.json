@@ -1,7 +1,7 @@
 {
   "kind": "browser run of the served application",
-  "started_utc": "2026-11-14T02:03:09.140Z",
-  "base": "http://127.0.0.1:8771",
+  "started_utc": "2026-11-14T02:19:12.750Z",
+  "base": "http://127.0.0.1:8773",
   "scenario": "category",
   "flows": [
     "manual",
@@ -9,7 +9,7 @@
   ],
   "review_mode": "auto",
   "reviewer": "none: review boxes ticked by the script",
-  "source_fingerprint": "f5df9878da22bf5a8d1b3b7aaf6ab4bcbf1a53528d73333d71163f38f75b52a6",
+  "source_fingerprint": "7ca56c807e4fbf909490bb3fd4edafd57d85e82d2a9ca1cf77476ac20c7668da",
   "status": {
     "data_mode": "fixture",
     "source": "synthetic://friday-new-category-proposal-20261110",
@@ -28,7 +28,7 @@
     "scenario_requests": {
       "staged": "Propose one useful new category from these eight descriptions. Decide the shared concept yourself from the stated facts, rather than taking an existing category code as its meaning. Give a precise definition supported by the descriptions; do not merely rename an existing category or invent missing facts."
     },
-    "source_fingerprint": "f5df9878da22bf5a8d1b3b7aaf6ab4bcbf1a53528d73333d71163f38f75b52a6",
+    "source_fingerprint": "7ca56c807e4fbf909490bb3fd4edafd57d85e82d2a9ca1cf77476ac20c7668da",
     "ollama_status": "Disabled by hosted-only application policy.",
     "research_note": "Synthetic category controls measure offline behavior; this demo does not establish human agency or satisfaction.",
     "category_note": "Opaque dataset category IDs; no invented topic names.",
@@ -40,7 +40,7 @@
       "name": "session established",
       "passed": true,
       "detail": null,
-      "utc": "2026-11-14T02:03:10.022Z"
+      "utc": "2026-11-14T02:19:13.832Z"
     },
     {
       "name": "automatic review is used only when no model is connected",
@@ -49,7 +49,7 @@
         "review_mode": "auto",
         "provider": "scripted-authored-replies"
       },
-      "utc": "2026-11-14T02:03:10.022Z"
+      "utc": "2026-11-14T02:19:13.832Z"
     },
     {
       "name": "manual: starts with no applied semantic group",
@@ -57,13 +57,13 @@
       "detail": {
         "eligible": 8
       },
-      "utc": "2026-11-14T02:03:10.360Z"
+      "utc": "2026-11-14T02:19:14.235Z"
     },
     {
       "name": "manual: review appears",
       "passed": true,
       "detail": null,
-      "utc": "2026-11-14T02:03:10.721Z"
+      "utc": "2026-11-14T02:19:14.644Z"
     },
     {
       "name": "manual: the server reported no model call for this review",
@@ -71,7 +71,7 @@
       "detail": {
         "model_calls": 0
       },
-      "utc": "2026-11-14T02:03:10.722Z"
+      "utc": "2026-11-14T02:19:14.645Z"
     },
     {
       "name": "manual: preview left the applied feed unchanged",
@@ -81,7 +81,7 @@
         "revision": 0,
         "eligible": 8
       },
-      "utc": "2026-11-14T02:03:10.860Z"
+      "utc": "2026-11-14T02:19:14.820Z"
     },
     {
       "name": "manual: page still shows the starting items during preview",
@@ -98,7 +98,7 @@
           41005
         ]
       },
-      "utc": "2026-11-14T02:03:10.868Z"
+      "utc": "2026-11-14T02:19:14.830Z"
     },
     {
       "name": "manual: review names the items that would be removed",
@@ -109,7 +109,7 @@
           41004
         ]
       },
-      "utc": "2026-11-14T02:03:10.872Z"
+      "utc": "2026-11-14T02:19:14.836Z"
     },
     {
       "name": "manual: review table lists every supplied item with its own description and marks exactly the approved ones",
@@ -121,7 +121,7 @@
           41004
         ]
       },
-      "utc": "2026-11-14T02:03:10.882Z"
+      "utc": "2026-11-14T02:19:14.845Z"
     },
     {
       "name": "manual: Apply removed exactly the approved items",
@@ -134,7 +134,7 @@
           41004
         ]
       },
-      "utc": "2026-11-14T02:03:11.087Z"
+      "utc": "2026-11-14T02:19:15.093Z"
     },
     {
       "name": "manual: page shows the reduced feed",
@@ -149,7 +149,7 @@
           41005
         ]
       },
-      "utc": "2026-11-14T02:03:11.094Z"
+      "utc": "2026-11-14T02:19:15.098Z"
     },
     {
       "name": "manual: undo review alone changed nothing",
@@ -157,7 +157,7 @@
       "detail": {
         "eligible": 6
       },
-      "utc": "2026-11-14T02:03:11.281Z"
+      "utc": "2026-11-14T02:19:15.311Z"
     },
     {
       "name": "manual: Undo restored the exact starting feed",
@@ -167,7 +167,7 @@
         "identical_to_start": true,
         "revision": 2
       },
-      "utc": "2026-11-14T02:03:11.471Z"
+      "utc": "2026-11-14T02:19:15.544Z"
     },
     {
       "name": "manual: page shows the starting items again",
@@ -184,7 +184,7 @@
           41005
         ]
       },
-      "utc": "2026-11-14T02:03:11.477Z"
+      "utc": "2026-11-14T02:19:15.557Z"
     },
     {
       "name": "category: starts with no applied semantic group",
@@ -192,13 +192,13 @@
       "detail": {
         "eligible": 8
       },
-      "utc": "2026-11-14T02:03:11.594Z"
+      "utc": "2026-11-14T02:19:15.691Z"
     },
     {
       "name": "the request text is the exact scenario request",
       "passed": true,
       "detail": null,
-      "utc": "2026-11-14T02:03:11.640Z"
+      "utc": "2026-11-14T02:19:15.735Z"
     },
     {
       "name": "category: definition proposal changed nothing",
@@ -206,7 +206,7 @@
       "detail": {
         "label": "Repaired existing object that is kept (authored rehearsal)"
       },
-      "utc": "2026-11-14T02:03:12.078Z"
+      "utc": "2026-11-14T02:19:16.227Z"
     },
     {
       "name": "category: every supplied item has one membership decision on screen",
@@ -215,7 +215,7 @@
         "shown": 8,
         "supplied": 8
       },
-      "utc": "2026-11-14T02:03:12.611Z"
+      "utc": "2026-11-14T02:19:16.781Z"
     },
     {
       "name": "category: every supplied item has one evidence assessment on screen",
@@ -223,7 +223,7 @@
       "detail": {
         "shown": 8
       },
-      "utc": "2026-11-14T02:03:12.611Z"
+      "utc": "2026-11-14T02:19:16.782Z"
     },
     {
       "name": "category: preview left the applied feed unchanged",
@@ -233,7 +233,7 @@
         "revision": 2,
         "eligible": 8
       },
-      "utc": "2026-11-14T02:03:12.833Z"
+      "utc": "2026-11-14T02:19:17.053Z"
     },
     {
       "name": "category: page still shows the starting items during preview",
@@ -250,7 +250,7 @@
           41005
         ]
       },
-      "utc": "2026-11-14T02:03:12.841Z"
+      "utc": "2026-11-14T02:19:17.060Z"
     },
     {
       "name": "category: review names the items that would be removed",
@@ -262,7 +262,7 @@
           41003
         ]
       },
-      "utc": "2026-11-14T02:03:12.846Z"
+      "utc": "2026-11-14T02:19:17.064Z"
     },
     {
       "name": "category: review table lists every supplied item with its own description and marks exactly the approved ones",
@@ -275,7 +275,7 @@
           41003
         ]
       },
-      "utc": "2026-11-14T02:03:12.854Z"
+      "utc": "2026-11-14T02:19:17.070Z"
     },
     {
       "name": "category: Apply removed exactly the approved items",
@@ -289,7 +289,7 @@
           41003
         ]
       },
-      "utc": "2026-11-14T02:03:13.168Z"
+      "utc": "2026-11-14T02:19:17.410Z"
     },
     {
       "name": "category: page shows the reduced feed",
@@ -303,7 +303,7 @@
           41005
         ]
       },
-      "utc": "2026-11-14T02:03:13.176Z"
+      "utc": "2026-11-14T02:19:17.415Z"
     },
     {
       "name": "category: undo review alone changed nothing",
@@ -311,7 +311,7 @@
       "detail": {
         "eligible": 5
       },
-      "utc": "2026-11-14T02:03:13.380Z"
+      "utc": "2026-11-14T02:19:17.628Z"
     },
     {
       "name": "category: Undo restored the exact starting feed",
@@ -321,7 +321,7 @@
         "identical_to_start": true,
         "revision": 4
       },
-      "utc": "2026-11-14T02:03:13.589Z"
+      "utc": "2026-11-14T02:19:17.854Z"
     },
     {
       "name": "category: page shows the starting items again",
@@ -338,19 +338,19 @@
           41005
         ]
       },
-      "utc": "2026-11-14T02:03:13.596Z"
+      "utc": "2026-11-14T02:19:17.859Z"
     },
     {
       "name": "no script error was raised by the page",
       "passed": true,
       "detail": [],
-      "utc": "2026-11-14T02:03:13.727Z"
+      "utc": "2026-11-14T02:19:17.990Z"
     }
   ],
   "review_decisions": [],
   "flows_result": {
     "manual": {
-      "started_utc": "2026-11-14T02:03:10.355Z",
+      "started_utc": "2026-11-14T02:19:14.230Z",
       "eligible_before": 8,
       "shown_before": [
         41006,
@@ -379,10 +379,10 @@
       ],
       "eligible_after_undo": 8,
       "provider_calls": 0,
-      "finished_utc": "2026-11-14T02:03:11.585Z"
+      "finished_utc": "2026-11-14T02:19:15.680Z"
     },
     "category": {
-      "started_utc": "2026-11-14T02:03:11.592Z",
+      "started_utc": "2026-11-14T02:19:15.688Z",
       "eligible_before": 8,
       "shown_before": [
         41006,
@@ -480,7 +480,7 @@
       ],
       "eligible_after_undo": 8,
       "provider_calls": 3,
-      "finished_utc": "2026-11-14T02:03:13.726Z"
+      "finished_utc": "2026-11-14T02:19:17.990Z"
     }
   },
   "provider_calls": [
@@ -489,7 +489,7 @@
       "list": "model_calls",
       "stage": "definition",
       "status": "returned_json",
-      "elapsed_seconds": 0.001,
+      "elapsed_seconds": 0,
       "request_sha256": "4fba6f7356c357967543da9023dcc65af01ebf1c240f98f922b27166e421e38f",
       "response_sha256": "f7f8c01bf6e33129aea88ee01a3e4d2c2b48d1fa874eae26dfebf401be76ad6c",
       "declared_provider": {
@@ -497,7 +497,7 @@
         "model_id": "none (replies written by hand)",
         "model_revision": "be47253be69c501f33e3a188b4a77f0e619f378f876dffe3b61148ebb9dc500b"
       },
-      "observed_utc": "2026-11-14T02:03:11.822Z"
+      "observed_utc": "2026-11-14T02:19:15.985Z"
     },
     {
       "route": "/api/semantic/definition/classify",
@@ -512,7 +512,7 @@
         "model_id": "none (replies written by hand)",
         "model_revision": "be47253be69c501f33e3a188b4a77f0e619f378f876dffe3b61148ebb9dc500b"
       },
-      "observed_utc": "2026-11-14T02:03:12.370Z"
+      "observed_utc": "2026-11-14T02:19:16.558Z"
     },
     {
       "route": "/api/semantic/definition/classify",
@@ -527,7 +527,7 @@
         "model_id": "none (replies written by hand)",
         "model_revision": "be47253be69c501f33e3a188b4a77f0e619f378f876dffe3b61148ebb9dc500b"
       },
-      "observed_utc": "2026-11-14T02:03:12.370Z"
+      "observed_utc": "2026-11-14T02:19:16.558Z"
     }
   ],
   "screenshots": [
@@ -545,7 +545,7 @@
     "12-gate-category-undo.png",
     "13-category-restored.png"
   ],
-  "finished_utc": "2026-11-14T02:03:13.727Z",
+  "finished_utc": "2026-11-14T02:19:17.990Z",
   "outcome": "all flows completed",
   "status_strip_text": "FIXTURE DATA deterministic diagnostic scorer Rule parser · diagnostic only 8 items · 1 users AUTHORED REPLIES · NO MODEL"
 }

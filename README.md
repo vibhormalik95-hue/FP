@@ -20,7 +20,7 @@ The repository contains a research demonstrator named Feed Control Lab (React an
 
 A proposal never changes the feed. Apply uses exactly the reviewed set. A two-step Undo restores the earlier state.
 
-![Review of every supplied item before a new category is applied](docs/evidence/2026-11-13/new-category/run-3-final-code/2-membership-review.png)
+![Review of every supplied item before a new category is applied](docs/evidence/2026-11-13/new-category/run-3/2-membership-review.png)
 
 Two further additions by the student are separate from these controls: a model can write metadata for a fictional item, which goes to a separate feed, and a small comparison of a stronger model with local models exists.
 
@@ -32,7 +32,7 @@ Two further additions by the student are separate from these controls: a model c
 - the two language controls used real model output through an operator relay, and an AI operator made the review decisions. No human review of those runs exists yet;
 - the automatic connection to the Claude Code CLI has not yet completed the whole new-category flow.
 
-Each language control completed two times on a small invented scenario, the second time on the final code. One earlier new-category attempt was rejected by the app and its record is kept. These runs show that the controls work. They are not an accuracy result.
+Each language control completed two times on a small invented scenario. One earlier new-category attempt was rejected by the app and its record is kept. These runs show that the controls work. They are not an accuracy result.
 
 ## Run the demonstration
 

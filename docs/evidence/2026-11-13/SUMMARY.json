@@ -13,6 +13,11 @@
   "reviewer": "AI operator: the lead agent of the same session. Not the student. Not a human review.",
   "data": "eight invented item descriptions per scenario; labelled diagnostic scorer; no trained recommender",
   "receipt_formats": "Receipts made before revision 40315aa hold assertions and review decisions in one list named checks, name the call records model_calls, and do not record the source. Receipts made from 40315aa hold checks, review_decisions and provider_calls separately and record source_fingerprint. This summary counts assertions and decisions separately for both formats.",
+  "source_fingerprints": {
+    "40315aa": "f5df9878da22bf5a8d1b3b7aaf6ab4bcbf1a53528d73333d71163f38f75b52a6",
+    "8e628cf": "7ca56c807e4fbf909490bb3fd4edafd57d85e82d2a9ca1cf77476ac20c7668da",
+    "note": "Revision 8e628cf changes only the function that computes the fingerprint (and its test). That function prints the 40315aa value for the tree of 40315aa. The model runs were not repeated after 8e628cf."
+  },
   "not_established": [
     "accuracy on unseen requests",
     "recommendation quality",
@@ -304,7 +309,87 @@
       ]
     },
     {
-      "record": "new-category/run-3-final-code",
+      "record": "indirect-request/run-1",
+      "source_revision": "010ae75",
+      "source_fingerprint_in_receipt": null,
+      "scenario": "hunger",
+      "flows_in_this_browser_session": [
+        "indirect"
+      ],
+      "started_utc": "2026-11-14T01:08:15.378Z",
+      "finished_utc": "2026-11-14T01:10:47.227Z",
+      "outcome": "all flows completed",
+      "assertions_passed": 15,
+      "assertions_total": 15,
+      "review_mode": "wait",
+      "reviewer": "AI operator: Claude, the Cowork lead session. Not the student.",
+      "review_decisions": [
+        {
+          "gate": "indirect-apply",
+          "decision": "APPROVE",
+          "seconds_to_decide": 12.5
+        },
+        {
+          "gate": "indirect-undo",
+          "decision": "APPROVE",
+          "seconds_to_decide": 0.5
+        }
+      ],
+      "declared_provider": {
+        "backend": "operator-relay-file-queue",
+        "model": "claude-fable-5-2 (session-configured; not attested)",
+        "live_model": "operator_declared"
+      },
+      "flows": {
+        "indirect": {
+          "outcome": "completed: preview unchanged, apply exact, undo restored",
+          "eligible_before_apply_undo": [
+            8,
+            5,
+            8
+          ],
+          "approved_ids": [
+            81001,
+            81003,
+            81006
+          ],
+          "interpreted_action": "exclude/none",
+          "intent_span": "stuff that makes me hungry"
+        }
+      },
+      "model_calls": [
+        {
+          "ordinal": 1,
+          "request_sha256": "1b265aaa984b4f66043a16f4f2464a1a75684441a53811a22239ef8a501c00a2",
+          "response_sha256": "27730e4d4a63f2f62b1703eb0972f7793fd5920f3be0cb46e5c8f16214a48ee6",
+          "response_bytes": 118,
+          "started_utc": "2026-11-14T01:08:16+00:00",
+          "finished_utc": "2026-11-14T01:08:53+00:00",
+          "seconds_until_delivered": 36.287,
+          "transport_outcome": "parsed_transport_only"
+        },
+        {
+          "ordinal": 2,
+          "request_sha256": "cbee7861dca168d23182639ab716ec2cc45975415fdf98163b1907bf120de3a5",
+          "response_sha256": "0882c7be865272a1b5280daa7939ed007d45b158885268a8863851fd5b0b39f7",
+          "response_bytes": 1731,
+          "started_utc": "2026-11-14T01:08:53+00:00",
+          "finished_utc": "2026-11-14T01:10:32+00:00",
+          "seconds_until_delivered": 99.858,
+          "transport_outcome": "parsed_transport_only"
+        }
+      ],
+      "subagent_usage_reported_by_session": [
+        {
+          "seconds": 25
+        },
+        {
+          "seconds": 90
+        }
+      ]
+    },
+    {
+      "record": "new-category/run-3",
       "source_revision": "40315aa",
       "source_fingerprint_in_receipt": "f5df9878da22bf5a8d1b3b7aaf6ab4bcbf1a53528d73333d71163f38f75b52a6",
       "scenario": "category",
@@ -540,87 +625,7 @@
       ]
     },
     {
-      "record": "indirect-request/run-1",
-      "source_revision": "010ae75",
-      "source_fingerprint_in_receipt": null,
-      "scenario": "hunger",
-      "flows_in_this_browser_session": [
-        "indirect"
-      ],
-      "started_utc": "2026-11-14T01:08:15.378Z",
-      "finished_utc": "2026-11-14T01:10:47.227Z",
-      "outcome": "all flows completed",
-      "assertions_passed": 15,
-      "assertions_total": 15,
-      "review_mode": "wait",
-      "reviewer": "AI operator: Claude, the Cowork lead session. Not the student.",
-      "review_decisions": [
-        {
-          "gate": "indirect-apply",
-          "decision": "APPROVE",
-          "seconds_to_decide": 12.5
-        },
-        {
-          "gate": "indirect-undo",
-          "decision": "APPROVE",
-          "seconds_to_decide": 0.5
-        }
-      ],
-      "declared_provider": {
-        "backend": "operator-relay-file-queue",
-        "model": "claude-fable-5-2 (session-configured; not attested)",
-        "live_model": "operator_declared"
-      },
-      "flows": {
-        "indirect": {
-          "outcome": "completed: preview unchanged, apply exact, undo restored",
-          "eligible_before_apply_undo": [
-            8,
-            5,
-            8
-          ],
-          "approved_ids": [
-            81001,
-            81003,
-            81006
-          ],
-          "interpreted_action": "exclude/none",
-          "intent_span": "stuff that makes me hungry"
-        }
-      },
-      "model_calls": [
-        {
-          "ordinal": 1,
-          "request_sha256": "1b265aaa984b4f66043a16f4f2464a1a75684441a53811a22239ef8a501c00a2",
-          "response_sha256": "27730e4d4a63f2f62b1703eb0972f7793fd5920f3be0cb46e5c8f16214a48ee6",
-          "response_bytes": 118,
-          "started_utc": "2026-11-14T01:08:16+00:00",
-          "finished_utc": "2026-11-14T01:08:53+00:00",
-          "seconds_until_delivered": 36.287,
-          "transport_outcome": "parsed_transport_only"
-        },
-        {
-          "ordinal": 2,
-          "request_sha256": "cbee7861dca168d23182639ab716ec2cc45975415fdf98163b1907bf120de3a5",
-          "response_sha256": "0882c7be865272a1b5280daa7939ed007d45b158885268a8863851fd5b0b39f7",
-          "response_bytes": 1731,
-          "started_utc": "2026-11-14T01:08:53+00:00",
-          "finished_utc": "2026-11-14T01:10:32+00:00",
-          "seconds_until_delivered": 99.858,
-          "transport_outcome": "parsed_transport_only"
-        }
-      ],
-      "subagent_usage_reported_by_session": [
-        {
-          "seconds": 25
-        },
-        {
-          "seconds": 90
-        }
-      ]
-    },
-    {
-      "record": "indirect-request/run-2-final-code",
+      "record": "indirect-request/run-2",
       "source_revision": "40315aa",
       "source_fingerprint_in_receipt": "f5df9878da22bf5a8d1b3b7aaf6ab4bcbf1a53528d73333d71163f38f75b52a6",
       "scenario": "hunger",
@@ -728,15 +733,15 @@
   "authored_reply_runs": [
     {
       "record": "scripted-regression/category-browser-receipt.json",
-      "source_revision": "40315aa",
-      "source_fingerprint_in_receipt": "f5df9878da22bf5a8d1b3b7aaf6ab4bcbf1a53528d73333d71163f38f75b52a6",
+      "source_revision": "8e628cf",
+      "source_fingerprint_in_receipt": "7ca56c807e4fbf909490bb3fd4edafd57d85e82d2a9ca1cf77476ac20c7668da",
       "scenario": "category",
       "flows_in_this_browser_session": [
         "manual",
         "category"
       ],
-      "started_utc": "2026-11-14T02:03:09.140Z",
-      "finished_utc": "2026-11-14T02:03:13.727Z",
+      "started_utc": "2026-11-14T02:19:12.750Z",
+      "finished_utc": "2026-11-14T02:19:17.990Z",
       "outcome": "all flows completed",
       "assertions_passed": 29,
       "assertions_total": 29,
@@ -753,15 +758,15 @@
     },
     {
       "record": "scripted-regression/hunger-browser-receipt.json",
-      "source_revision": "40315aa",
-      "source_fingerprint_in_receipt": "f5df9878da22bf5a8d1b3b7aaf6ab4bcbf1a53528d73333d71163f38f75b52a6",
+      "source_revision": "8e628cf",
+      "source_fingerprint_in_receipt": "7ca56c807e4fbf909490bb3fd4edafd57d85e82d2a9ca1cf77476ac20c7668da",
       "scenario": "hunger",
       "flows_in_this_browser_session": [
         "manual",
         "indirect"
       ],
-      "started_utc": "2026-11-14T02:03:13.965Z",
-      "finished_utc": "2026-11-14T02:03:18.018Z",
+      "started_utc": "2026-11-14T02:19:18.263Z",
+      "finished_utc": "2026-11-14T02:19:22.174Z",
       "outcome": "all flows completed",
       "assertions_passed": 27,
       "assertions_total": 27,
