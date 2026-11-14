@@ -70,7 +70,7 @@ node --test web/tests/*.mjs
 node tests/browser/demo_flows.cjs --base http://127.0.0.1:8765 --scenario category --flows manual,category --out runs/browser-check
 ```
 
-The browser check needs Playwright and a running demonstration. PyTorch is needed only for the trained recommender and the original experiments: `python -m pip install -e ".[test,recommender]"`.
+The Node tests need `npm ci` in `web/` first. The browser check needs Playwright and a running demonstration. PyTorch is needed only for the trained recommender and the original experiments: `python -m pip install -e ".[test,recommender]"`.
 
 ## Experiments and results
 

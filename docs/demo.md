@@ -130,8 +130,9 @@ Exit code 0 means every flow completed. Exit code 2 means a flow stopped early, 
 
 ```
 python -m pytest
-node --test web/tests/*.mjs
 python tools/hosted_validation_current/run_guarded.py .
+cd web && npm ci && cd ..
+node --test web/tests/*.mjs
 ```
 
-These are software checks with authored replies. They are not model evidence.
+These are software checks with authored replies. They are not model evidence. A rebuild with `npm run build` in `web/` reproduces the tracked interface files byte for byte.

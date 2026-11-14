@@ -35,7 +35,7 @@ These were offered by the student in the same meeting. They are not among the su
 | --- | --- | --- |
 | Python tests | `python -m pytest -p no:cacheprovider -q` | 1077 passed, 1 skipped (the private parser bank is not in this repository) |
 | Validation-profile checks with network and process access blocked | `python tools/hosted_validation_current/run_guarded.py .` | 176 passed; no blocked event |
-| Interface logic | `node --test web/tests/*.mjs` | 59 passed |
+| Interface logic | `node --test web/tests/*.mjs` (after `npm ci` in `web/`) | 59 passed |
 | Browser, scripted provider, category scenario | `node tests/browser/demo_flows.cjs --scenario category --flows manual,category` | 29 of 29 checks |
 | Browser, scripted provider, hunger scenario | `node tests/browser/demo_flows.cjs --scenario hunger --flows manual,indirect` | 27 of 27 checks |
 
