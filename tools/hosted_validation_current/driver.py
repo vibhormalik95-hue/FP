@@ -22,8 +22,8 @@ IDENTITY_BASIS = {
 }
 
 CAPS = {'category': 3, 'indirect': 2}
-INPUT_MANIFEST_SHA256 = 'e4e36c14e3947324e1f34458f49df432130c7b5904aefda672953daabbb91655'
-PROFILE_ID = 'current-definition-context-20261111'
+INPUT_MANIFEST_SHA256 = '5010b24f91507ff2b6bc56ccde248a1c010cbfca7f8b9f5431319d55f0479d3b'
+PROFILE_ID = 'current-definition-limits-20261113'
 SCENARIO_DIRS = {'category':'01-category-discovery', 'indirect':'02-hunger-continuation'}
 GATES = ('runtime_authorized', 'data_authorized', 'subscription_and_usage_authorized',
          'executable_reviewed', 'managed_runtime_reviewed', 'process_containment_reviewed')

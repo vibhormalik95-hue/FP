@@ -15,18 +15,19 @@
   "workdir": null,
   "operator_token": null,
   "reviewer_reference": null,
-  "driver_sha256": "e384f90c920b94b5ca792b64e1d9949976ac90cefa30f8fb06aa5573690bd361",
+  "driver_sha256": "f97ec8e5f4dabcd2b82fa408338714bf85a998c15500ed41bf52630de8e00d7f",
   "source_sha256": {
     "feedctrl/__init__.py": "eaabd38e85dd5a5f07362331ac61fb03de4b808055144d328d12e9f8fe5fce39",
-    "feedctrl/api.py": "408f49ddf6f8060e683886c1a3bce3d92fd2271c3cc78e1ae630faf5c084a74f",
+    "feedctrl/api.py": "52d12583afb87029578c748aa479d86b2529435672037d482a215203b02e728e",
     "feedctrl/category_induction_producer.py": "23080f1999ae69a09772673d7010016c5ad0493aaae98f1f4eda1387a2d13ad9",
     "feedctrl/category_provider.py": "e07cc07a9d38c369001485f6db1221e4c7ee43afc70635ae1a00e3b8bfb89df2",
     "feedctrl/claude_personal.py": "5971daefba03dd88fbf3b6b9b107fcb05371210cd660914d9022553e78af3113",
     "feedctrl/claude_personal_app.py": "f5ceaabadbf91fa2ea5f8dc5fbeb3f0b6fafa5f2d7246e5e1dec0f90de213447",
     "feedctrl/controls.py": "1488f03b7e36f79d964b40ef6d9eb343f8b2c33374eb2766714cd2ae028f2c57",
     "feedctrl/data.py": "890bceb61ca57abd44399604c025e977d7ac7a52bb80bc894ca17c6b41b7645a",
+    "feedctrl/demo_providers.py": "3caa6982cda543a0c0bd6abb26ff9c91bf836c6e3572319ddefcb3ca4eec95ab",
     "feedctrl/evaluation.py": "0739f634b369d540bc4347f65463788f8f8a67fcbc475d76f9497b6887c49604",
-    "feedctrl/evidence_audit.py": "b6e6ba47d1dead69f055a35b2f94adc9102d230cbce29003a839948b17990d27",
+    "feedctrl/evidence_audit.py": "7f19792efc9329425977b7b0fe55af035c7d5254b46f0558f408fb87a6400461",
     "feedctrl/experiment2_controls.py": "2566f41a94770a2a2904fda35262fc0d8d6f4be0a6b47879d1b0da452b18a8b6",
     "feedctrl/experiment2_evaluation.py": "24671587df4a613d1d0570e7ad5f0e3da69f9e5ce345492ced05e3fb443ab2a3",
     "feedctrl/explanations.py": "a2e27f03191522c0cf58793a802f8424c2eab7b0a3751d658139db62ccea4692",
@@ -40,11 +41,11 @@
     "feedctrl/parser_benchmark.py": "2cae6f085a4b52f31f387595a6a5deee5b1804c15d9232003d16152b683935c4",
     "feedctrl/semantic_controls.py": "d5b29ab1ec41d2822d48def85f86e7f9bcbe16db6092cadaf457351c5c501ab9",
     "feedctrl/semantic_induction.py": "69bcbd0aab2b76ec1d88cdd176d230fcf881ede54945afcf509546e026e187ab",
-    "feedctrl/semantic_review.py": "ed77f30b5b7d019d440313760f7faa17129433f3cf645b5bccb376c6b21d33ef",
+    "feedctrl/semantic_review.py": "24751fe16384075eaa5b575ebce05866d7cec99d059e2918c695a7ee03ba112d",
     "feedctrl/semantic_workflow.py": "a94a938bc375da8ffa975835fa24321296d5e30d557cc4f1afecc335e92145a4",
     "feedctrl/source_constraints.py": "e3e16c8c291633bd64426ce57dcb65cf2b47d6c5dbe24e127804f23655f3150a",
-    "feedctrl/staged_induction.py": "2178eee900baf87dbda0dbb5761fcc9898ca4177029cbe2ed6097e8cf8c35c52",
-    "feedctrl/staged_routes.py": "ea3abdc0e281ba5f85a1dbbc7a8b918a5037d86b194836f5c383e4bf867ce465",
+    "feedctrl/staged_induction.py": "06674281291cdec6abced5f0a5b8991a2e9e0dc18e3ac9ca6489aa55f1b7ca01",
+    "feedctrl/staged_routes.py": "ad1e13262b1cc37fbb794d6f042091039eeded8fe4bd02197161143892704ca8",
     "feedctrl/synthetic_drafts.py": "e6d0aae1df121dc0c3937c66eef5ffe7d23273c1ddd714c1117f2071f1bd3d8b",
     "feedctrl/windows_job_native.py": "d081495c2c07dc1645373e111f6253d88b5c490a0f8fe3fdd04ffef1b3be5fb0",
     "feedctrl/windows_job_runner.py": "cea74bc85108e6109dc1d0609b14a805ab4b0c7c025b24b2a1f3d9f525f893c3"
@@ -85,6 +86,6 @@
       "https://code.claude.com/docs/en/model-config#work-with-fable"
     ]
   },
-  "input_manifest_sha256": "e4e36c14e3947324e1f34458f49df432130c7b5904aefda672953daabbb91655",
-  "profile_id": "current-definition-context-20261111"
+  "input_manifest_sha256": "5010b24f91507ff2b6bc56ccde248a1c010cbfca7f8b9f5431319d55f0479d3b",
+  "profile_id": "current-definition-limits-20261113"
 }
