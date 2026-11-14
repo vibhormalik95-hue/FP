@@ -13,6 +13,11 @@
         own key, a local model server, or the relay), confirm that it works, and
         serve the app with it. See docs/model-routes.md.
 
+    python scripts/quickstart.py try --scenario tags
+        Send the bundled requests of a scenario through the model route, with no
+        browser, and print what the application made of each reply. Nothing is
+        applied. See docs/route-trial.md.
+
     python scripts/quickstart.py live --scenario category --operator cli
     python scripts/quickstart.py live --scenario category --operator manual
         The earlier relay path. The app writes each request to a folder. With
@@ -187,6 +192,11 @@ def main(argv=None):
         sys.path.insert(0, str(ROOT / 'scripts'))
         import model_route
         raise SystemExit(model_route.main([ROUTE_TOOL[argv[0]], *argv[1:]]))
+    if argv[:1] == ['try']:
+        # The same for the route trial: "try" is "python scripts/route_trial.py run".
+        sys.path.insert(0, str(ROOT / 'scripts'))
+        import route_trial
+        raise SystemExit(route_trial.main(['run', *argv[1:]]))
     parser = argparse.ArgumentParser(description=__doc__.split('\n\n')[0])
     steps = parser.add_subparsers(dest='step', required=True)
     steps.add_parser('check').set_defaults(run=check)
@@ -208,6 +218,7 @@ def main(argv=None):
             step.add_argument('--allow-other-models', action='store_true')
     for name, command in ROUTE_TOOL.items():   # listed for --help; handled above
         steps.add_parser(name, help=f'the same as "python scripts/model_route.py {command}"')
+    steps.add_parser('try', help='the same as "python scripts/route_trial.py run"')
     sys.path.insert(0, str(ROOT / 'scripts'))
     import run_demo as launcher
     step = steps.add_parser('start')
