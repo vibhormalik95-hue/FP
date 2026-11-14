@@ -226,7 +226,7 @@ export default function SemanticPanel({api,user,resetKey,onFeed,onActive,onUnava
       alternativeLabel:backend==='vocabulary'?'Add this meaning to my request':'Use this as my stated target'}}/>;
   const termLine=kind=>{const rows=(terms?.terms||[]).filter(kind);return rows.length?rows.map(t=>`${t.value} (${(t.item_ids||[]).length})`).join(', '):'none';};
   const methodName=([value,name,needs,tail])=>!needs?name:value==='ollama'?`${name} (local model ${saved?.configured_model||'not loaded yet'})`
-    :value==='induction'?name:`${name} (${!offered[value]&&noProvider?'needs a model provider':words.suffix}${tail})`;
+    :value==='induction'?name:`${name}${tail} (${!offered[value]&&noProvider?'needs a model provider':words.suffix})`;
   const waitText=busyCall?`${words.waiting}: ${elapsed} s`:'Working...';
   return <details open={open} onToggle={e=>setOpen(e.currentTarget.open)}>
     <summary>Language controls: change the feed with a reviewed request</summary>
@@ -307,7 +307,7 @@ export default function SemanticPanel({api,user,resetKey,onFeed,onActive,onUnava
       <h3>Applied controls</h3>
       {saved?(saved.groups.length?<ul className="applied-controls">{saved.groups.map(g=><li key={g.revision}><b>{g.label}</b>: {actionWords(g.proposal.action)}; {g.proposal.item_ids.length===1?'item':'items'} {g.proposal.item_ids.join(', ')}</li>)}</ul>
         :<p className="help">None.</p>):<p className="help">{working?'Loading...':'Not available.'}</p>}
-      <p className="help">{saved?plural(saved.groups.length,'control')+' applied. ':''}Applied controls last for this session only. A reload of the page starts a new session without them. They are not new categories in the dataset.</p>
+      <p className="help">{saved&&saved.groups.length?plural(saved.groups.length,'control')+' applied. ':''}Applied controls last for this session only. A reload of the page starts a new session without them. They are not new categories in the dataset.</p>
       <p className="help">{LIMITS}</p>
       {!saved&&message&&<p className="help">If the applied controls cannot be loaded, you can still review their removal for this user. Approval is required. The original category and topic preferences are preserved.</p>}
       <button className="secondary" disabled={disabled||!saved?.can_undo} onClick={()=>history('undo')}>Undo the last change (review first)</button>

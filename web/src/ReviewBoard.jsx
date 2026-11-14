@@ -346,7 +346,7 @@ function outcomeVariant({outcome, controls, words, request}) {
         {view.second.map((line, n) => <p className="help" key={n}>{line}</p>)}
         {view.showReason && <p role="status" data-role="reason"><b>{view.kind === 'application_check' ? 'Stopped' : view.kind === 'reply_rejected' ? 'Rejected' : ['provider_failure', 'request_failed', 'session', 'network', 'expired'].includes(view.kind) ? 'Message of the server' : 'Result'}:</b> {outcome.reason || 'No reason was given.'}</p>}
         {checks.length > 0 && checkList(checks)}
-        {attempted !== null && !selection && <p className="help" data-role="calls-attempted">{attempted === 0 ? `No ${words.call} was started.` : `${plural(attempted, words.call)} started for this request.`}</p>}
+        {attempted !== null && !selection && <p className="help" data-role="calls-attempted">{words.authored ? `Authored replies looked up for this request: ${attempted}.` : attempted === 0 ? 'No model call was started.' : `${plural(attempted, 'model call')} started for this request.`}</p>}
         {outcome.model_provenance && !selection && providerLine(outcome.model_provenance, words)}
       </>)}
       {block('decision', 'Your decision', <>

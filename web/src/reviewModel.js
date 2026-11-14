@@ -318,7 +318,7 @@ export function outcomeView(outcome, words = sourceWords(false)) {
     view.next = ['Choose another category, or a larger evidence scope.'];
   } else if (kind === 'application_check') {
     view.heading = 'The application stopped the request';
-    view.first = [`No ${words.call} was made. The application stopped the request with its own check.`];
+    view.first = [`${words.authored ? 'The server did not look up an authored reply.' : 'No model call was made.'} The application stopped the request with its own check.`];
     view.next = ['Read the reason and the failed check under "Application checks".'];
     if (/negat/i.test(failed + ' ' + (outcome.reason || ''))) view.next.push('The application does not interpret a negated command such as "do not hide ...". Write what you want as a positive instruction, for example "remove ..." or "show more ...".');
     else if (/budget|too (long|large|many)/i.test(failed + ' ' + (outcome.reason || ''))) view.next.push('Choose a smaller evidence scope.');

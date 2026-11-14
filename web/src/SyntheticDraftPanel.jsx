@@ -32,7 +32,7 @@ export default function SyntheticDraftPanel({api,user,resetKey,scenarioRequests,
     <summary>Fictional items: drafts in a separate list</summary>
     {open&&<section className="panel" aria-label="Fictional items">
       <h3>Draft a fictional item</h3>
-      <p className="help">{authored?'A hand-written reply gives a title, a description and a category name for an item that does not exist. No model writes it.':'A model writes a title, a description and a category name for an item that does not exist.'} Nothing real is created: no media, no item of the catalogue and no verified fact. A fictional item lasts for this session only. It never enters the conditions A to E, the catalogue, the evidence scope of a language control or the trained scorer.</p>
+      <p className="help">{authored?'A hand-written reply gives a title, a description and a category name for an item that does not exist. No model writes it.':saved?.generation_available===false?'With a model provider, a model writes a title, a description and a category name for an item that does not exist.':'A model writes a title, a description and a category name for an item that does not exist.'} Nothing real is created: no media, no item of the catalogue and no verified fact. A fictional item lasts for this session only. It never enters the conditions A to E, the catalogue, the evidence scope of a language control or the trained scorer.</p>
       <label className="field-label" htmlFor="synthetic-brief">Describe the fictional item</label>
       <textarea id="synthetic-brief" rows={3} maxLength={2000} value={brief} disabled={disabled}
         onChange={e=>{setBrief(e.target.value);setPending(null);}}/>
