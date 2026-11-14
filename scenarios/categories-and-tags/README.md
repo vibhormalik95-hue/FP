@@ -71,7 +71,7 @@ A real model can select other terms. Review each proposal before you apply it.
 
 ## Limits to know
 
-- The negated-command pattern is one English pattern: do not, don't, never or not to, followed by hide, exclude, remove, reduce or boost. Another wording of a negated command is not detected. It goes to the model and then to the reviewer. "Do not show ..." is a plain request to remove and is not stopped.
+- The negated-command pattern is one English pattern: do not, don't, never or not to, followed by hide, exclude, remove, reduce or boost, or by "show ... more" or "show ... less". Another wording of a negated command is not detected. It goes to the model and then to the reviewer. "Do not show ..." without "more" or "less" is a plain request to remove and is not stopped.
 - A control changes only the items of the evidence scope. This scenario has ten items and the scope is the whole list, so the difference cannot be seen here.
 - The limits of one request (one control over at most half of the scope; the removals of one request over at most half of the scope) do not count controls that are already applied. The review lists overlaps, contradictions and a total removal of more than half of the items as notes. A note does not stop the request.
-- At most eight controls stay applied. A ninth control is refused before any model call, with a sentence that says what to do.
+- At most eight controls stay applied. A ninth control is refused with a sentence that says what to do. The manual method and the method with item descriptions refuse it before any model call. The method with categories and tags decides after the interpretation call, because a reply can replace an applied control and then fits.

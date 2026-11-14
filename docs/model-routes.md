@@ -31,7 +31,7 @@ A stand-in is a small program that answers in the documented format with replies
 The stand-in tests show that each route sends the documented request, reads the documented reply and names each failure.
 They do not show that a real provider or a real CLI accepts the request.
 
-**All tests ran on Linux. No run on Windows or macOS exists.** A first real call through the `cli`, `openai-compatible` and `anthropic` routes on Windows and on macOS is still to do.
+**All tests of the model routes ran on Linux. No model route ran on Windows or macOS.** The published branch holds one record of the manual method in a browser on Windows, on two earlier revisions and without a model: [OPERA-MANUAL-CONTROLS.md](evidence/2026-11-14/OPERA-MANUAL-CONTROLS.md). A first real call through the `cli`, `openai-compatible` and `anthropic` routes on Windows and on macOS is still to do.
 The parts of the code that apply only to Windows (the split of a command line, the check of a `.cmd` or `.bat` program, the completion of a program path, the stop of a program and of the server) were checked with unit tests on Linux only.
 
 Other servers with an OpenAI-compatible API, for example the llama.cpp server or vLLM, can work with the `openai-compatible` route.

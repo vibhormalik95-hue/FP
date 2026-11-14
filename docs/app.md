@@ -68,7 +68,7 @@ The method with categories and tags names each control from its action and its n
 
 | Status | When | Source |
 | --- | --- | --- |
-| `clarify` | The reply names competing meanings or leaves a negation open. Or a control would select more than half of the scope. Or two controls give opposite instructions to the same items. Or the request matches the negated-command pattern (a negated hide, exclude, remove, reduce or boost); this check runs before any model call, in both language routes. "Do not show ..." does not match the pattern: it goes to the model as a request to remove. | the reply, or an application check |
+| `clarify` | The reply names competing meanings or leaves a negation open. Or a control would select more than half of the scope. Or two controls give opposite instructions to the same items. Or the request matches the negated-command pattern (a negated hide, exclude, remove, reduce or boost, or a negated "show ... more" or "show ... less"); this check runs before any model call, in both language routes. "Do not show ..." without "more" or "less" does not match the pattern: it goes to the model as a request to remove. | the reply, or an application check |
 | `no_match` | The reply reports that no existing name, or no description, supports the request. A scope without a category or a tag gives `no_match` with no call. | the reply, or an application check |
 | `unsupported` | The reply reports that the request needs an operation that these controls do not have: a quota, a time, a condition, an order or an exception. The method with categories and tags has this result. | the reply |
 | `error` | A call failed, or the application rejected the reply. | the provider, or the application |

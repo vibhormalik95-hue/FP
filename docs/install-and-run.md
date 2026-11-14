@@ -90,7 +90,7 @@ Example with a model server on this computer:
 OK      configuration: Route: openai-compatible; Endpoint: http://127.0.0.1:11434/v1/chat/completions (preset ollama); Model: llama3.1:8b
 OK      endpoint: The endpoint answered and lists the model "llama3.1:8b" (1 models listed).
 The next step sends one very small request to the model. It can use a few tokens.
-OK      test call: The model returned the requested JSON object in 2.1 s. Model reported by the reply: llama3.1:8b.
+OK      test call: The model returned the requested JSON object in 2.1 s. Model reported by the reply: llama3.1:8b (accepted as the requested model by the rule "equal").
 
 Result: the route works.
 ```

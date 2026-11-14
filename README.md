@@ -58,7 +58,7 @@ You need Python 3.11 or newer. [Install and run](docs/install-and-run.md) gives 
 4. **Start.** Run `python scripts/quickstart.py start --scenario tags`.
 5. **Use the page.** Open <http://127.0.0.1:8765>. The page opens on **Language controls**. The [guide to the language controls](docs/demo.md) describes each method.
 
-Two more commands help:
+Three more commands help:
 
 - `python scripts/quickstart.py rehearse --scenario tags` serves the page with hand-written replies. No model is used. Use it to learn the screens.
 - `python scripts/quickstart.py rehearse --scenario conditions` serves the original conditions A to E on the built-in fixture (36 items, categories `category_0` to `category_5`, three users). It uses no model and has no language controls.
@@ -104,7 +104,7 @@ Keep three kinds of evidence apart.
 
 **Demonstration evidence** is a recorded run of the application on a small invented scenario. It shows that a control ran from request to Undo. It is not an accuracy result.
 
-- *13 November 2026, earlier revision `b9220b4`.* The manual control, a new category and an indirect request matched to descriptions each completed in a real browser. The model replies came through a file relay. An AI agent made the review decisions. No person reviewed those runs. Records: [docs/evidence/2026-11-13](docs/evidence/2026-11-13/README.md).
+- *13 November 2026, earlier revisions (`26a0b16` to `936d0f4`).* The manual control, a new category and an indirect request matched to descriptions each completed in a real browser. The model replies came through a file relay. An AI agent made the review decisions. No person reviewed those runs. Records: [docs/evidence/2026-11-13](docs/evidence/2026-11-13/README.md).
 - *14 November 2026, the package line before the merge.* On revision `b7c5a91` (source fingerprint `ab1a9d846b33...`), every method completed in a real browser with real model output through the file relay: the request matched to existing categories and tags, a mixed request, the request matched to item descriptions, the new category in stages and the fictional item, with the manual control as reference (13 model calls, 308 script checks passed). Four requests that must change nothing changed nothing. An AI operator made all 19 review decisions; no person has reviewed a run. The model name is declared, not attested. Records: [docs/evidence/2026-11-14/](docs/evidence/2026-11-14/README.md).
 - *14 November 2026, the integrated revision.* The published work branch and the package line were merged into one revision (`e797ce1`, source fingerprint `24d0a8246edc...`). It has the prompts of the published branch for the new category and the page and routes of the package line. Between 19:04 and 19:12 UTC every method completed again on it in a real browser with real model output through the file relay (13 model calls, 321 script checks passed), and the four requests that must change nothing changed nothing. An AI operator made all 19 review decisions; no person has reviewed a run. The model name is declared, not attested. Records: [docs/evidence/2026-11-14-integrated/](docs/evidence/2026-11-14-integrated/README.md).
 

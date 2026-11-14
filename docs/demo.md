@@ -124,7 +124,7 @@ Limits that the application enforces:
 
 - One control cannot select more than half of the items in the scope. The removals of one request together cannot remove more than half.
 - The list of names that goes to the model has at most 120 names and 12,000 bytes. A larger list asks you for a smaller scope.
-- A request that matches the negated-command pattern stops before any model call. The pattern is a negated hide, exclude, remove, reduce or boost, for example "Do not hide ...", or a negated "show ... more" or "show ... less". It is one English pattern: another wording of a negated command goes to the model and then to you. "Do not show ..." does not match the pattern. It goes to the model as a request to remove.
+- A request that matches the negated-command pattern stops before any model call. The pattern is a negated hide, exclude, remove, reduce or boost, for example "Do not hide ...", or a negated "show ... more" or "show ... less". It is one English pattern: another wording of a negated command goes to the model and then to you. "Do not show ..." without "more" or "less" does not match the pattern. It goes to the model as a request to remove.
 - A request with a control character or a format character is refused (HTTP 422).
 
 ## My request, matched to item descriptions (model)
