@@ -47,7 +47,7 @@ def control_label(control, taken):
         # A catalogue value may hold a format character. Identifiers never do.
         label = f"{word}: terms {' + '.join(term['term_id'] for term in control['terms'])}"
     if len(label) > 80:
-        label = label[:79].rstrip() + '…'
+        label = label[:79].rstrip() + '\u2026'  # horizontal ellipsis
     base, number = label, 2
     while label.casefold() in taken:
         suffix = f' ({number})'
@@ -100,6 +100,8 @@ def install_vocabulary_routes(app, demo, state_for, review, *, configured_infer,
             return value
 
         try:
+            # The existing terms are part of every answer, also when the provider cannot start.
+            vocabulary['terms'] = grounding.build_vocabulary(index)
             # Operator-selected transport, never request-supplied URLs or keys.
             infer, provenance = configured_infer()
 

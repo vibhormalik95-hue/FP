@@ -117,7 +117,7 @@ def test_one_control_selects_exactly_the_items_that_carry_its_terms():
     result, _ = run(lambda payload: reply([control([pick(payload['vocabulary'], 'tag', 'round'),
                                                     pick(payload['vocabulary'], 'category', 'Delta')])]))
     assert result['status'] == 'review' and result['reason'] == 'authored reason' and result['requires_review']
-    assert all(c['passed'] for c in result['checks']) and len(result['checks']) == 12
+    assert all(c['passed'] for c in result['checks']) and len(result['checks']) == 13
     (selected,) = result['controls']
     assert selected['action'] == {'operation': 'exclude', 'strength': 'none', 'intent_span': 'alpha things'}
     assert selected['item_ids'] == [1, 3, 7] and selected['relation'] == 'authored relation'
@@ -179,6 +179,26 @@ def test_each_application_check_stops_a_wrong_proposal(build, status, check):
     result, seen = run(lambda payload: reply(build(payload['vocabulary'])))
     assert result['status'] == status and failed(result) == check and len(seen) == 1
     assert 'clarification' not in result
+
+
+def test_several_exclusions_cannot_add_up_to_more_than_half_of_the_scope():
+    def build(payload):
+        v = payload['vocabulary']
+        return reply([control([pick(v, 'category', 'Alpha')], span='alpha things'),
+                      control([pick(v, 'category', 'Beta')], span='more gamma'),
+                      control([pick(v, 'category', 'Delta')], span='Fewer')])
+    result, _ = run(build)
+    assert result['status'] == 'clarify'
+    assert failed(result) == 'The exclusions together remove at most half of the supplied items'
+    assert result['checks'][-1]['detail'] == '5 of 8 items'
+    # The bound is on removal. An increase and an exclusion may together touch more than half.
+
+    def mixed(payload):
+        v = payload['vocabulary']
+        return reply([control([pick(v, 'category', 'Alpha'), pick(v, 'category', 'Beta')], span='alpha things'),
+                      control([pick(v, 'category', 'Gamma'), pick(v, 'category', 'Delta')], 'boost/light', 'more gamma')])
+    result, _ = run(mixed)
+    assert result['status'] == 'review' and [len(c['item_ids']) for c in result['controls']] == [4, 3]
 
 
 def test_exactly_half_of_the_scope_is_still_accepted():

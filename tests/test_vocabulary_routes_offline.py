@@ -160,7 +160,7 @@ def test_a_proposal_is_reviewed_applied_and_undone_without_touching_the_other_co
         {'kind': 'category', 'level': 1, 'value': 'Beta'}, {'kind': 'tag', 'level': None, 'value': 'blue'},
         {'kind': 'tag', 'level': None, 'value': 'round'}]
     assert vocabulary['not_selected'][-1] == {'item_id': 8, 'terms': []}  # no label: nothing can select it
-    assert all(c['passed'] for c in vocabulary['checks']) and len(vocabulary['checks']) == 12
+    assert all(c['passed'] for c in vocabulary['checks']) and len(vocabulary['checks']) == 13
     assert [row['item_id'] for row in plan['scope_items']] == SCOPE
     assert [(row['item_id'], row['field'], row['quote'], row['supplied_field_text'], row['quote_present'])
             for row in plan['evidence_context']] == [
@@ -343,6 +343,22 @@ def test_a_provider_that_cannot_start_is_an_operational_failure(tmp_path):
         reply = preview(client, h)
         assert reply.status_code == 502 and 'not installed' in reply.json()['detail']
         assert saved(client, h)['groups'] == []
+
+
+def test_a_provider_without_an_identity_is_refused_and_the_terms_are_still_shown(tmp_path):
+    called = []
+
+    def infer(payload, schema):
+        called.append(1)
+        return {}
+    app = create_app(fixture=True, semantic_path=source(tmp_path), allow_local_models=False,
+                     semantic_infer_factory=lambda: (infer, {'backend': 'unnamed'}))
+    with TestClient(app) as client:
+        h = headers(client)
+        body = preview(client, h).json()
+        assert body['ready'] is False and body['status'] == 'error' and 'provenance' in body['reason']
+        assert len(body['vocabulary']['terms']) == 8 and body['vocabulary']['checks'] == []
+        assert body['model_calls'] == [] and body['model_provenance'] is None and called == []
 
 
 def control_of(operation, *terms):

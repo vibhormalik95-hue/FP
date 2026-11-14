@@ -27,7 +27,7 @@ MAX_TERMS = 200
 MAX_REQUEST_BYTES = 10000
 MAX_CONTROLS = 4
 MAX_CONTROL_TERMS = 12
-_TAG_SEPARATORS = re.compile('[,，;；|]')
+_TAG_SEPARATORS = re.compile('[,\uff0c;\uff1b|]')  # also the full-width comma and semicolon
 
 SCHEMA = {'type': 'object', 'additionalProperties': False,
     'required': ['status', 'reason', 'negation_resolved', 'alternatives', 'controls'],
@@ -183,8 +183,8 @@ def propose_vocabulary(request: str, index: dict, infer: Callable, *, model_prov
     The result always lists the application checks that ran, in order, each with
     a pass or fail result, apart from what the model wrote. Statuses: ``review``
     (every check passed), ``clarify``, ``no_match``, ``unsupported`` and
-    ``error``. Only ``review`` carries controls. There is no repair of a reply
-    and no second call.
+    ``error``. Only ``review`` carries controls. A reply is never corrected and
+    there is no second call.
     """
     if not isinstance(request, str) or not 1 <= len(request.strip()) or len(request) > 2000:
         raise ValueError('Request must contain 1-2000 characters')
@@ -314,4 +314,10 @@ def propose_vocabulary(request: str, index: dict, infer: Callable, *, model_prov
     if not check('No control selects more than half of the supplied items', broad is None,
                  '' if broad is None else f'control {broad}: {len(accepted[broad - 1]["item_ids"])} of {len(rows)} items'):
         return result('clarify', 'Proposed scope exceeds half of supplied candidates')
+    # Several narrow exclusions must not add up to the broad removal that one control may not make.
+    removed = {item for control in accepted if control['action']['operation'] == 'exclude'
+               for item in control['item_ids']}
+    if not check('The exclusions together remove at most half of the supplied items',
+                 len(removed) <= len(rows) * max_fraction, f'{len(removed)} of {len(rows)} items'):
+        return result('clarify', 'The exclusions of this request together exceed half of supplied candidates')
     return result('review', reason, accepted)

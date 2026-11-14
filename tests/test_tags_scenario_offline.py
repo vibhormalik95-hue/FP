@@ -321,6 +321,40 @@ def test_the_relay_provider_serves_the_scenario_with_its_larger_allowance(tmp_pa
         assert status['scenario_requests'] == requests()
 
 
+def test_a_relayed_reply_to_the_vocabulary_request_is_checked_against_its_schema(tmp_path):
+    """The relay writes the exact request and validates the delivered file. No model is involved here."""
+    import os
+    import threading
+    import time
+    from feedctrl import vocabulary_grounding
+    spool = tmp_path / 'relay'
+    app, _, _, _ = run_demo.build_app(options(
+        provider='relay', relay_dir=str(spool), declared_model='declared by a test',
+        transport_note='the test delivers a hand-written reply file'))
+    with TestClient(app) as client:
+        headers = {'X-Session-ID': client.post('/api/session', json={}).json()['session_id']}
+        result = {}
+        worker = threading.Thread(target=lambda: result.update(body=match(client, headers, 'vocabulary:mixed')))
+        worker.start()
+        request_path, deadline = spool / 'request-0001.json', time.monotonic() + 20
+        while not request_path.exists() and time.monotonic() < deadline:
+            time.sleep(0.05)
+        request = json.loads(request_path.read_text(encoding='utf-8'))
+        assert request['system'] == vocabulary_grounding.PROMPT and request['schema'] == vocabulary_grounding.SCHEMA
+        assert set(request['payload']) == {'request', 'vocabulary'}
+        assert 'Episode' not in json.dumps(request['payload'])  # no description leaves the application
+        reply = demo_scripted_replies.lookup(request['payload'], request['schema'])
+        partial = spool / 'answer.partial'
+        partial.write_text(json.dumps(reply), encoding='utf-8')
+        os.replace(partial, spool / 'response-0001.json')
+        worker.join(20)
+        body = result['body']
+        assert body['ready'] and [g['label'] for g in body['groups']] == ['Increase: Repair', 'Exclude: Cooking + street food']
+        assert body['model_provenance']['backend'] == 'operator-relay-file-queue'
+        receipt = json.loads((spool / 'receipt-0001.json').read_text(encoding='utf-8'))
+        assert receipt['outcome'] == 'parsed_transport_only'
+
+
 def test_the_fingerprint_covers_the_scenario_folder(tmp_path):
     import shutil
     copy = tmp_path / 'copy'
