@@ -11,6 +11,7 @@ import json
 from pathlib import Path
 import shutil
 import sys
+from types import SimpleNamespace
 
 import pytest
 from fastapi.testclient import TestClient
@@ -126,6 +127,40 @@ def sha(path):
 def personal(tmp_path, monkeypatch):
     """A reviewed-configuration double and an authored runner. Nothing is launched."""
     import feedctrl.windows_job_runner as runner_module
+    # Test-only current contract. Historical production inputs and driver stay frozen.
+    fixture = ROOT / 'tests' / 'fixtures' / 'personal_cli_current'
+    inputs = tmp_path / 'current-test-inputs'
+    shutil.copytree(run_demo.INPUTS, inputs)
+    for relative in ('MANIFEST.json', '01-category-discovery/first-model-input.json'):
+        shutil.copyfile(fixture / relative, inputs / relative)
+    # Git checkouts may use CRLF; canonicalize only the temporary test copy.
+    for path in inputs.rglob('*'):
+        if path.is_file():
+            path.write_bytes(path.read_bytes().replace(b'\r\n', b'\n'))
+    test_pin = '7273bdc69e1390be6c9d265314998c2483d5c6eaef298a48f7c330afca205626'
+    assert sha(inputs / 'MANIFEST.json') == test_pin
+    monkeypatch.setattr(run_demo, 'INPUTS', inputs)
+    original_util = run_demo.importlib.util
+
+    def test_spec(name, path):
+        spec = original_util.spec_from_file_location(name, path)
+        original_loader = spec.loader
+
+        class TestPinLoader:
+            def create_module(self, spec):
+                return original_loader.create_module(spec)
+
+            def exec_module(self, module):
+                original_loader.exec_module(module)
+                module.INPUT_MANIFEST_SHA256 = test_pin
+
+        spec.loader = TestPinLoader()
+        return spec
+
+    # Patch only run_demo's reference, not the shared importlib module.
+    monkeypatch.setattr(run_demo, 'importlib', SimpleNamespace(util=SimpleNamespace(
+        spec_from_file_location=test_spec,
+        module_from_spec=original_util.module_from_spec)))
     calls = []
 
     def authored_runner(argv, data, env, cwd, timeout, maximum):
@@ -144,6 +179,10 @@ def personal(tmp_path, monkeypatch):
     def make(scenario='category', name='config.json'):
         template = 'reviewed-config.TEMPLATE.json' if scenario == 'category' else 'reviewed-indirect-config.TEMPLATE.json'
         config = json.loads((ROOT / 'tools' / 'hosted_validation_current' / template).read_text())
+        config['input_manifest_sha256'] = test_pin
+        config['driver_sha256'] = sha(ROOT / 'tools' / 'hosted_validation_current' / 'driver.py')
+        config['source_sha256'] = {p.relative_to(ROOT).as_posix(): sha(p)
+                                   for p in (ROOT / 'feedctrl').glob('*.py')}
         executable = tmp_path / 'not-a-program.bin'
         executable.write_bytes(b'not a program')
         workdir = tmp_path / 'work'
@@ -168,7 +207,7 @@ def personal_client(app):
     return TestClient(app, base_url='http://127.0.0.1:8765', client=('127.0.0.1', 50000))
 
 
-def test_templates_pin_the_current_source_so_a_reviewed_configuration_can_validate(personal):
+def test_scoped_configuration_pins_current_source_and_test_inputs(personal):
     make, _, tmp = personal
     run_demo.build_app(options(provider='personal-cli', reviewed_config=str(make()), report=str(tmp / 'r.json')))
 
@@ -307,3 +346,27 @@ def test_status_reports_the_fingerprint_only_when_the_launcher_sets_it():
         assert client.get('/api/status').json()['source_fingerprint'] == 'a' * 64
         app.state.source_fingerprint = '<script>'
         assert client.get('/api/status').json()['source_fingerprint'] is None
+
+@pytest.mark.parametrize('field', ['system', 'objective'])
+def test_offline_input_drift_stops_before_authored_runner(personal, field):
+    make, calls, tmp = personal
+    path = run_demo.INPUTS / '01-category-discovery' / 'first-model-input.json'
+    data = json.loads(path.read_text(encoding='utf-8'))
+    data['payload'][field] = str(data['payload'].get(field, '')) + ' changed'
+    path.write_text(json.dumps(data), encoding='utf-8')
+    with pytest.raises(ValueError, match='Input drift'):
+        run_demo.build_app(options(provider='personal-cli', reviewed_config=str(make()),
+                                   report=str(tmp / 'drift-report.json')))
+    assert calls == []
+
+
+def test_production_driver_and_frozen_input_pin_are_unchanged():
+    import importlib.util
+    path = ROOT / 'tools' / 'hosted_validation_current' / 'driver.py'
+    spec = importlib.util.spec_from_file_location('unmodified_production_driver', path)
+    driver = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(driver)
+    original = 'e4e36c14e3947324e1f34458f49df432130c7b5904aefda672953daabbb91655'
+    assert driver.INPUT_MANIFEST_SHA256 == original
+    manifest = ROOT / 'tools' / 'hosted_validation_current' / 'inputs' / 'MANIFEST.json'
+    assert hashlib.sha256(manifest.read_bytes().replace(b'\r\n', b'\n')).hexdigest() == original
