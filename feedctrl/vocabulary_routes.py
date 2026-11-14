@@ -57,8 +57,7 @@ def same_control(group, control):
     """True when an applied group is a category and tag control with this action and these terms."""
     proposal = group['proposal']
     return (proposal.get('grounding') == 'vocabulary'
-            and (proposal['action']['operation'], proposal['action']['strength'])
-            == (control['action']['operation'], control['action']['strength'])
+            and proposal['action']['operation'] == control['action']['operation']
             and {term_key(term) for term in proposal.get('vocabulary_terms', [])}
             == {term_key(term) for term in control['terms']})
 

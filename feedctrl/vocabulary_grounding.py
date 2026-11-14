@@ -229,17 +229,21 @@ def revalidate_control(proposal, index):
     chosen = proposal.get('vocabulary_terms')
     if not isinstance(chosen, list) or not chosen:
         raise ValueError('Category and tag control has no terms')
-    members = set()
+    members, selected_keys = set(), set()
     for term in chosen:
         current = terms.get((term.get('field'), term.get('value'))) if isinstance(term, dict) else None
         if current is None or current['kind'] != term.get('kind'):
             raise ValueError('A term of this control no longer exists in the supplied items')
+        selected_keys.add((current['field'], current['value']))
         members.update(current['item_ids'])
     if sorted(members) != list(proposal['item_ids']):
         raise ValueError('The members of this control differ from the members of its terms')
     cited = {}
     for row in proposal['evidence']:
-        cited.setdefault(row['item_id'], (row['field'], row['quote']))
+        key = (row['field'], row['quote'])
+        if key not in selected_keys or row['item_id'] not in terms[key]['item_ids']:
+            raise ValueError('A citation does not name a selected term of its item')
+        cited.setdefault(row['item_id'], key)
     if (set(cited) != members
             or any(key not in terms or item not in terms[key]['item_ids'] for item, key in cited.items())):
         raise ValueError('The citations of this control differ from its terms')

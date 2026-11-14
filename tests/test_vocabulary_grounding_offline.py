@@ -307,8 +307,11 @@ def test_a_proposal_without_a_control_matches_nothing():
 def test_a_reply_without_the_declared_fields_and_bounds_is_rejected(raw):
     result, seen = run(raw)
     assert result['status'] == 'error' and result['controls'] == [] and len(seen) == 1
-    assert failed(result) == 'The reply has the declared fields and bounded values'
-    assert result['checks'][-1]['detail']
+    if isinstance(raw, dict) and raw.get('alternatives') == ['lone\ud800surrogate']:
+        assert failed(result) == 'The reply is bounded finite JSON'
+    else:
+        assert failed(result) == 'The reply has the declared fields and bounded values'
+        assert result['checks'][-1]['detail']
 
 
 @pytest.mark.parametrize('raw', [{'status': float('nan')}, {'status': {1, 2}}, {1: 'x'}])
@@ -469,6 +472,8 @@ def test_a_sealed_control_is_recomputed_from_its_terms():
     for change in ({'item_ids': [1, 3, 7, 8]}, {'item_ids': [1, 3]},
                    {'evidence': selected['evidence'][:2]},
                    {'evidence': [*selected['evidence'][:2], {'item_id': 7, 'field': 'topic_tag', 'quote': 'round'}]},
+                   {'evidence': [{**selected['evidence'][0], 'field': 'first_level_category_name', 'quote': 'Alpha'}, *selected['evidence'][1:]]},
+                   {'evidence': [*selected['evidence'], {'item_id': 1, 'field': 'topic_tag', 'quote': 'red'}]},
                    {'vocabulary_terms': []},
                    {'vocabulary_terms': [{**sealed['vocabulary_terms'][0], 'value': 'absent'}]},
                    {'vocabulary_terms': [{**sealed['vocabulary_terms'][0], 'kind': 'category'}]}):

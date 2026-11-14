@@ -136,7 +136,7 @@ def test_a_proposal_is_reviewed_applied_and_undone_without_touching_the_other_co
     assert plan['model_provenance'] == IDENTITY and len(plan['model_calls']) == 1
     assert set(plan['model_calls'][0]) == {'request_sha256', 'schema_sha256', 'response_sha256', 'raw_response'}
     (group,) = plan['groups']
-    assert group['label'] == 'Exclude: Alpha' and group['request'] == TEXT and group['scope_ids'] == SCOPE
+    assert group['label'] == 'Remove: category "Alpha"' and group['request'] == TEXT and group['scope_ids'] == SCOPE
     sealed = group['proposal']
     assert sealed['status'] == 'review' and sealed['requires_review'] and sealed['action_source'] == 'model'
     assert sealed['grounding'] == 'vocabulary' and sealed['item_ids'] == [1, 2]
@@ -151,28 +151,28 @@ def test_a_proposal_is_reviewed_applied_and_undone_without_touching_the_other_co
     vocabulary = plan['vocabulary']
     assert set(vocabulary) == {'terms', 'controls', 'not_selected', 'checks'}
     assert vocabulary['controls'] == [{
-        'label': 'Exclude: Alpha', 'operation': 'exclude', 'strength': 'none', 'intent_span': 'alpha things',
+        'label': 'Remove: category "Alpha"', 'operation': 'exclude', 'strength': 'none', 'intent_span': 'alpha things',
         'relation': 'authored relation for alpha things', 'item_ids': [1, 2],
-        'terms': [{'term_id': 'T01', 'kind': 'category', 'level': 1, 'field': 'first_level_category_name',
+        'outside_scope_item_ids': [], 'terms': [{'term_id': 'T01', 'kind': 'category', 'level': 1, 'field': 'first_level_category_name',
                    'value': 'Alpha', 'item_ids': [1, 2]}]}]
     assert [row['item_id'] for row in vocabulary['not_selected']] == [3, 4, 5, 6, 7, 8]
     assert vocabulary['not_selected'][0]['terms'] == [
         {'kind': 'category', 'level': 1, 'value': 'Beta'}, {'kind': 'tag', 'level': None, 'value': 'blue'},
         {'kind': 'tag', 'level': None, 'value': 'round'}]
     assert vocabulary['not_selected'][-1] == {'item_id': 8, 'terms': []}  # no label: nothing can select it
-    assert all(c['passed'] for c in vocabulary['checks']) and len(vocabulary['checks']) == 13
+    assert all(c['passed'] for c in vocabulary['checks']) and len(vocabulary['checks']) == 16
     assert [row['item_id'] for row in plan['scope_items']] == SCOPE
     assert [(row['item_id'], row['field'], row['quote'], row['supplied_field_text'], row['quote_present'])
             for row in plan['evidence_context']] == [
         (1, 'first_level_category_name', 'Alpha', 'Alpha', True),
         (2, 'first_level_category_name', 'Alpha', 'Alpha', True)]
     # The model saw terms only.
-    assert set(provider.payloads[0]) == {'system', 'request', 'vocabulary'}
+    assert set(provider.payloads[0]) == {'system', 'request', 'scope_item_count', 'vocabulary'}
     assert 'Description' not in str(provider.payloads[0])
     # A preview changes nothing.
     assert saved(client, h) == before
     applied = apply(client, h, plan).json()
-    assert applied['applied'] and [g['label'] for g in applied['groups']] == ['Exclude: Alpha']
+    assert applied['applied'] and [g['label'] for g in applied['groups']] == ['Remove: category "Alpha"']
     assert applied['feed']['available_items'] == before['feed']['available_items'] - 2
     assert not {1, 2} & {item['item_id'] for item in applied['feed']['items']}
     assert client.get('/api/compare?user_id=1', headers=h).json() == compare
@@ -189,7 +189,7 @@ def test_two_preferences_become_two_groups_with_both_effects(served):
     before = saved(client, h)
     provider.answer = proposal(ALPHA, GAMMA)
     plan = preview(client, h).json()
-    assert plan['ready'] and [g['label'] for g in plan['groups']] == ['Exclude: Alpha', 'Increase: Gamma']
+    assert plan['ready'] and [g['label'] for g in plan['groups']] == ['Remove: category "Alpha"', 'Show more: category "Gamma"']
     assert [c['item_ids'] for c in plan['vocabulary']['controls']] == [[1, 2], [5, 6]]
     assert [row['item_id'] for row in plan['vocabulary']['not_selected']] == [3, 4, 7, 8]
     assert sorted(row['item_id'] for row in plan['evidence_context']) == [1, 2, 5, 6]
@@ -211,18 +211,18 @@ def test_merge_replaces_the_same_name_and_keeps_others_and_replace_starts_again(
     apply(client, h, preview(client, h).json())
     provider.answer = proposal(GAMMA)
     plan = preview(client, h).json()
-    assert [g['label'] for g in plan['groups']] == ['Exclude: Alpha', 'Increase: Gamma']
+    assert [g['label'] for g in plan['groups']] == ['Remove: category "Alpha"', 'Show more: category "Gamma"']
     apply(client, h, plan)
     # The same operation and terms again: the earlier group of that name is replaced, not doubled.
     provider.answer = proposal(('boost/light', 'more gamma', [('category', 'Gamma')]))
     plan = preview(client, h).json()
-    assert [g['label'] for g in plan['groups']] == ['Exclude: Alpha', 'Increase: Gamma']
+    assert [g['label'] for g in plan['groups']] == ['Remove: category "Alpha"', 'Show more: category "Gamma"']
     assert plan['groups'][1]['proposal']['action']['strength'] == 'light'
     apply(client, h, plan)
     provider.answer = proposal(('reduce/standard', 'Fewer alpha things', [('tag', 'round')]))
     plan = preview(client, h, mode='replace').json()
-    assert [g['label'] for g in plan['groups']] == ['Decrease: round']
-    assert [g['label'] for g in apply(client, h, plan).json()['groups']] == ['Decrease: round']
+    assert [g['label'] for g in plan['groups']] == ['Show less: tag "round"']
+    assert [g['label'] for g in apply(client, h, plan).json()['groups']] == ['Show less: tag "round"']
 
 
 def test_a_newer_review_or_a_changed_profile_withholds_an_older_result(served):
@@ -263,7 +263,9 @@ def test_a_result_that_is_not_ready_installs_no_plan_and_shows_the_checks(served
     if status == 'clarify':
         assert body['clarification']['alternatives'] == ['reading one', 'reading two']
     if isinstance(answer, Exception):
-        assert body['reason'] == 'The model call failed: The provider is not reachable. Start it and try again.'
+        assert 'ParserOperationalError' in body['reason'] and 'not reachable' not in body['reason']
+        assert body['calls_attempted'] == 1 and body['call_attempts'][0]['status'] == 'failed'
+        assert body['outcome_source'] == 'provider_failure'
     assert saved(client, h) == before
     assert client.post('/api/semantic/apply', headers=h, json={'user_id': 1, 'plan_id': 'none'}).status_code == 409
 
@@ -274,8 +276,8 @@ def test_a_negated_command_is_clarified_without_a_call(served):
     body = preview(client, h, text='Do not hide the alpha things.').json()
     assert body['status'] == 'clarify' and body['model_calls'] == [] and provider.payloads == []
     assert body['vocabulary']['checks'][-1] == {
-        'check': 'The request does not negate a command', 'passed': False,
-        'detail': 'Conservative English wording guard; it runs before any model call'}
+        'check': vocabulary_routes.grounding.GUARD_CHECK, 'passed': False,
+        'detail': vocabulary_routes.grounding.GUARD_PATTERN_WORDS}
 
 
 def test_a_changed_term_value_is_refused_and_named_in_the_checks(served):
@@ -303,7 +305,7 @@ def test_at_most_eight_groups_stay_active(served):
         assert apply(client, h, preview(client, h).json()).status_code == 200, number
     provider.answer = proposal(('boost/light', 'more gamma', [('category', 'Gamma')]))
     body = preview(client, h).json()
-    assert body['ready'] is False and body['status'] == 'error' and 'eight' in body['reason']
+    assert body['ready'] is False and body['status'] == 'limit' and '8' in body['reason']
     assert len(saved(client, h)['groups']) == 8
 
 
@@ -341,7 +343,7 @@ def test_a_provider_that_cannot_start_is_an_operational_failure(tmp_path):
     with TestClient(app) as client:
         h = headers(client)
         reply = preview(client, h)
-        assert reply.status_code == 502 and 'not installed' in reply.json()['detail']
+        assert reply.status_code == 502 and 'ParserOperationalError' in reply.json()['detail'] and 'not installed' not in reply.json()['detail']
         assert saved(client, h)['groups'] == []
 
 
@@ -362,25 +364,25 @@ def test_a_provider_without_an_identity_is_refused_and_the_terms_are_still_shown
 
 
 def control_of(operation, *terms):
-    return {'action': {'operation': operation}, 'terms': [{'term_id': identifier, 'value': value}
+    return {'action': {'operation': operation, 'strength': 'none' if operation == 'exclude' else 'standard'}, 'terms': [{'term_id': identifier, 'value': value, 'kind': 'category', 'field': 'first_level_category_name'}
                                                           for identifier, value in terms]}
 
 
 def test_group_names_are_printable_bounded_and_distinct():
     taken = set()
     assert vocabulary_routes.control_label(control_of('exclude', ('T01', 'Alpha'), ('T09', 'red')), taken) \
-        == 'Exclude: Alpha + red'
-    assert vocabulary_routes.control_label(control_of('boost', ('T01', 'Alpha')), taken) == 'Increase: Alpha'
-    assert vocabulary_routes.control_label(control_of('reduce', ('T01', 'Alpha')), taken) == 'Decrease: Alpha'
+        == 'Remove: category "Alpha", category "red"'
+    assert vocabulary_routes.control_label(control_of('boost', ('T01', 'Alpha')), taken) == 'Show more: category "Alpha"'
+    assert vocabulary_routes.control_label(control_of('reduce', ('T01', 'Alpha')), taken) == 'Show less: category "Alpha"'
     # A second control that would get the same name in one proposal gets a number.
-    assert vocabulary_routes.control_label(control_of('boost', ('T01', 'Alpha')), taken) == 'Increase: Alpha (2)'
+    assert vocabulary_routes.control_label(control_of('boost', ('T01', 'Alpha')), taken) == 'Show more: category "Alpha" (2)'
     long = vocabulary_routes.control_label(control_of('exclude', ('T02', 'w' * 200)), taken)
-    assert len(long) == 80 and long.endswith('…')
+    assert len(long) <= 80 and '... [' in long and long.endswith(']')
     again = vocabulary_routes.control_label(control_of('exclude', ('T02', 'w' * 200)), taken)
     assert len(again) <= 80 and again.endswith(' (2)') and again != long
     # A catalogue value with a format character is not put into a name.
     hidden = vocabulary_routes.control_label(control_of('exclude', ('T03', 'zero​width')), taken)
-    assert hidden == 'Exclude: terms T03'
+    assert hidden == 'Remove: terms T03'
 
 
 def test_a_catalogue_value_with_a_format_character_still_gives_a_usable_group(tmp_path):
@@ -392,6 +394,60 @@ def test_a_catalogue_value_with_a_format_character_still_gives_a_usable_group(tm
         h = headers(client)
         provider.answer = proposal(('exclude/none', 'alpha things', [('category', 'Del​ta')]))
         plan = preview(client, h).json()
-        assert plan['ready'] and plan['groups'][0]['label'] == 'Exclude: terms T03'
+        assert plan['ready'] and plan['groups'][0]['label'] == 'Remove: terms T03'
         assert plan['groups'][0]['proposal']['item_ids'] == [7]
         assert apply(client, h, plan).status_code == 200
+
+
+@pytest.mark.parametrize('answer', [ParserOperationalError('token=secret-private'), {'status': float('nan')}])
+def test_failed_or_unbounded_reply_records_attempt_without_exposing_exception(served, answer):
+    client, provider = served
+    h = headers(client)
+    before = saved(client, h)
+    provider.answer = answer
+    body = preview(client, h).json()
+    assert body['calls_attempted'] == 1 and len(provider.payloads) == 1
+    assert body['model_calls'] == [] and not body['ready']
+    assert body['call_attempts'][0]['status'] == ('failed' if isinstance(answer, Exception) else 'reply_rejected')
+    assert 'secret-private' not in str(body)
+    assert saved(client, h) == before
+
+
+def test_two_applied_controls_undo_only_last_then_clear_is_reviewed(served):
+    client, provider = served
+    h = headers(client)
+    provider.answer = proposal(ALPHA)
+    first = apply(client, h, preview(client, h).json()).json()
+    provider.answer = proposal(GAMMA)
+    second = apply(client, h, preview(client, h).json()).json()
+    assert len(second['groups']) == 2
+    undo = client.post('/api/semantic/history/preview', headers=h, json={'user_id':1, 'action':'undo'}).json()
+    assert saved(client,h)['groups'] == second['groups']
+    restored = apply(client,h,undo).json()
+    assert restored['groups'] == first['groups'] and restored['feed'] == first['feed']
+    clear = client.post('/api/semantic/history/preview', headers=h, json={'user_id':1, 'action':'clear'}).json()
+    assert saved(client,h)['groups'] == first['groups']
+    assert apply(client,h,clear).json()['groups'] == []
+
+
+@pytest.mark.parametrize('change', ['caption', 'source_digest', 'inventory', 'nonce'])
+def test_clear_review_binds_full_source_and_nonce(served, change):
+    client, provider = served
+    h = headers(client)
+    provider.answer = proposal(ALPHA)
+    apply(client, h, preview(client, h).json())
+    plan = client.post('/api/semantic/history/preview', headers=h, json={'user_id':1, 'action':'clear'}).json()
+    assert plan['ready'] and plan['groups'] == []
+    demo = client.app.state.demo
+    state = demo.user_state(h['X-Session-ID'], 1)
+    if change == 'caption':
+        demo.topic_index['items'][20]['fields']['caption'] = 'Changed outside reviewed scope'
+    elif change == 'source_digest':
+        demo.topic_index['sha256'] = '0' * 64
+    elif change == 'inventory':
+        demo.items[20] = ['Changed outside reviewed scope']
+    else:
+        state['semantic_preview_nonce'] = 'new-review'
+    before = deepcopy(state)
+    assert apply(client, h, plan).status_code == 409
+    assert state == before
