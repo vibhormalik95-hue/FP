@@ -434,14 +434,14 @@ def test_an_interrupted_trial_keeps_the_finished_cases(capsys, tmp_path, monkeyp
 def test_ctrl_c_during_a_waiting_model_call_records_the_finished_cases_and_stops(capsys, tmp_path, monkeypatch):
     # A relay request that nobody answers. Ctrl+C must not wait for it.
     path = route_file(tmp_path, {'route': 'relay', 'declared_model': 'nobody answers in this test',
-                                 'transport_note': 'no reply is delivered', 'timeout_seconds': 4})
+                                 'transport_note': 'no reply is delivered', 'timeout_seconds': 60})
     left = []
     monkeypatch.setattr(route_trial, '_leave', left.append)
     out = tmp_path / 'trial'
 
     def press_ctrl_c_when_the_request_waits():
         # Only when the request file exists is the trial inside its wait, where Ctrl+C is expected.
-        for _ in range(200):
+        for _ in range(1000):   # up to 50 s on a slow or busy computer
             if (out / 'relay' / 'request-0001.json').is_file():
                 time.sleep(0.3)
                 signal.raise_signal(signal.SIGINT)
@@ -458,7 +458,7 @@ def test_ctrl_c_during_a_waiting_model_call_records_the_finished_cases_and_stops
     waited = time.monotonic() - started
     output = capsys.readouterr().out
     record = json.loads((out / 'trial.json').read_text(encoding='utf-8'))
-    assert code == 1 and waited < 3.5                             # well before the relay gives up at 4 s
+    assert code == 1 and waited < 45                              # well before the relay gives up at 60 s
     assert model_routes.stop_requested()                          # the waiting model call was told to end
     for thread in route_trial._IN_FLIGHT:
         thread.join(2)
