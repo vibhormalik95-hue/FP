@@ -1,5 +1,7 @@
 # Built interface and release checks
 
+> **Current guide.** For the complete verification sequence, see [install and run](install-and-run.md#9-final-verification-sequence).
+
 The app serves the built interface in `web/dist`. That folder is tracked in this repository, so a fresh clone can run the demonstration without Node.
 
 ## After a change to `web/src`
@@ -24,4 +26,4 @@ The check compares the staged files with the pinned build. `tests/test_personal_
 
 ## What these checks do not show
 
-A matching build and passing tests identify the files. They do not show model behaviour, browser behaviour or a working model connection. For those, see the [demonstration guide](demo.md).
+A matching build and passing tests identify the files. They do not show model behaviour, browser behaviour or a working model connection. For those, see the [guide to the language controls](demo.md).

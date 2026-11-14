@@ -1,6 +1,6 @@
 # Requirement and evidence worksheet
 
-> **Dated record, 11 November 2026.** The current page is [requirements and evidence](requirements-and-evidence.md).
+> **Dated record, 11 November 2026.** This page is not current guidance. The current page is [requirements and evidence](requirements-and-evidence.md).
 
 ## Category definition update, 11 November 2026
 

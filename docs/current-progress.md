@@ -1,6 +1,6 @@
 # Current progress and remaining work
 
-> **Dated record, 11 November 2026.** For the status on 13 November, including browser runs of all three controls, see [requirements and evidence](requirements-and-evidence.md).
+> **Dated record, 11 November 2026.** This page is not current guidance. For the current status see [requirements and evidence](requirements-and-evidence.md). To run the application see [install and run](install-and-run.md).
 
 ## Category definition update, 11 November 2026
 

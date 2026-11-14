@@ -1,5 +1,7 @@
 # Configuring a model for category creation
 
+> **Dated record, 10 November 2026.** It describes the adapter interface for category creation (`feedctrl/category_provider.py`). The model routes use that interface unchanged. Current guidance: [model routes](model-routes.md) and the [application reference](app.md).
+
 The app can use an explicitly configured model for new category definitions and membership decisions. This configuration support does not by itself connect a live provider. The original local Ollama default remains available only where local models are allowed. See [hosted configuration](hosted-only-configuration.md) for the current restrictions.
 
 ## Supply the adapter

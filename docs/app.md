@@ -1,76 +1,149 @@
-# Feed Control Lab app guide
+# Feed Control Lab: application reference
 
-Feed Control Lab is a React/FastAPI research app for changing a recommendation feed through explicit controls. It displays item metadata, not playable KuaiRec videos. The original category IDs stay unchanged; the app does not invent meanings for them.
+> **Current reference.** To run the application, see [install and run](install-and-run.md). To use the language controls, see the [guide](demo.md).
 
-The recent work adds manual category selection, model-proposed categories and indirect language requests alongside the original A–E comparison. [Current progress](current-progress.md) separates observed examples from untested behavior.
+Feed Control Lab is a research application (React and FastAPI) for changing a recommendation feed through explicit controls.
+It shows item metadata, not playable videos. It runs on one computer and binds to 127.0.0.1 only.
 
-**Current availability:** the default personal Claude launch is disabled; an explicitly selected runner has bounded headless evidence. Local models and the local recommender are not authorized for the current personal configuration. The local startup instructions later on this page are historical reproduction instructions. See [hosted configuration](hosted-only-configuration.md) and [demonstration guide](demo.md#the-signed-in-claude-code-cli).
+## The three views
 
-## The recent controls
+| View | Content |
+| --- | --- |
+| Original study (A to E) | The five conditions of the original proposal, on one fixed scorer. |
+| Compare A to E | The first ten items of each condition for the same user and the same inputs. It is a preview of the current inputs. It is not an experimental result. |
+| Language controls | Reviewed controls: a model proposes, the application checks, a person approves. The view opens first when a bundled scenario is served. |
 
-In **Reviewed topic feed**, the **Experimental semantic groups** panel provides the following paths when their required provider is configured:
+The status line at the top names the data (fixture or processed dataset), the scorer (trained model or deterministic diagnostic scorer) and the provider of the language controls.
 
-- **Manual: exact original category baseline.** Choose the existing category ID and the action yourself. This provides a no-LLM comparison.
-- **Review definition, then classify all supplied items.** Ask for a category that is not already represented by the existing labels. A validated primary with competing interpretations can be explicitly selected unchanged for definition review, or cancelled, without another model call. Nothing is selected by default. Review its proposed definition, approve classification, then inspect the membership decisions and separate evidence check before applying it. See [category clarification resolution](category-clarification-resolution.md) for the retained evidence and session safeguards.
-- **Propose a new category definition and membership.** This combines the proposal into one call. It is a separate path, not the same procedure as definition review followed by classification and evidence checking.
-- **Indirect intent.** Describe the change without having to name a category. The configured model interprets the action and proposes related items from the supplied text. Review the proposed meaning and members before applying it.
+## The original study (A to E)
 
-A group covers the displayed candidate items, not an unseen catalogue. A new group does not alter the original dataset category mapping or create a new video. Review must consider whether each quoted passage actually supports membership. Exact quotes alone do not prove the model understood the request.
+The original proposal names three interfaces: explanations, a free-text control, and an editable preference profile. The five conditions hold them as follows.
 
-If the model cannot resolve the request, the app can show its competing interpretations. These are unverified suggestions, not selected preferences. The user can rewrite the request or explicitly confirm a concrete, observable target. Confirming a target changes who supplies the interpretation; it does not demonstrate that the model understood the original indirect wording.
+| Condition | Interface of the proposal | What the application does |
+| --- | --- | --- |
+| A, item feedback | The reference without language | Plus on an item card adds 0.25 to that item after score normalization. Minus removes only that item. |
+| B, explanations | Explanations | The order of A, with one to three statements for each item. Each statement is a verified fact about the item, its categories and the history. A cached model selection is used where one exists for the exact fact set. Other cards show "Verified template · no LLM". B has exactly the rankings of A. |
+| C, free text | Free-text control | A parser reads one category instruction, for example `Show me more category_1` or `Mute category_0`. A fixed policy applies it to the scores. In this protocol "less" means a hard mute. The latest instruction replaces the earlier one. |
+| D, editable profile | Editable profile | The editor starts with a factual summary of the history. You write a profile of up to 200 words. A parser reads the category preferences. A save replaces the whole profile. You can remove one parsed preference. |
+| E, all channels | All three | C and D with explanations. A command for a category replaces the profile weight of that category. It does not add to it. |
 
-A proposal does not change the feed until it is reviewed and applied. Clear and undo also require review of the displayed change. Session, source-version and expiry checks prevent applying an obsolete proposal. The dated [walkthrough](../deliverables/2026-11-05-final-demo/WALKTHROUGH.md) records specific examples; it is not evidence that automatic Claude integration works today.
+How the conditions relate to interpretation and to filtering:
 
-The separate [fictional item draft panel](synthetic-item-drafts.md) creates metadata only. The latest source connects it to the configured hosted provider and shared call allowance. One real Claude Code Lunaria run completed the lifecycle through the application’s Python methods, without HTTP or browser interaction. The UI itself remains unverified live; see [current progress](current-progress.md). Without a configured adapter or permission to use a local model, generation remains disabled.
+- **Interpretation.** In C, D and E a parser turns text into a category command. The parser is a rule parser or a local Llama model through Ollama. The language model does not rank items.
+- **Deterministic filtering.** A fixed policy applies the command to the scores of the frozen scorer. A boost adds a weight. A mute removes the items of the category. The list is not filled again after a mute.
+- **Explanations.** They change the display only. They change no ranking.
 
-## The original A–E comparison
+These conditions keep the meaning of the frozen Experiment 1 ([protocol](evaluation-protocol.md)). Item feedback affects only A and B. Categories are opaque dataset identifiers; the application does not invent names for them.
+A model error leaves the controls unchanged. The application does not replace a failed model result by a rule result.
 
-These controls retain the earlier experiment's meaning. They are separate from the new semantic-group workflow.
+## Language controls
 
-1. Select a pseudonymous dataset user. Controls are separate for each user within the browser session.
-2. Choose A, B, C, D or E. The scorer is fixed across conditions. A applies item-only feedback. B preserves A's order and adds verified signal explanations. C applies one category instruction. D applies the saved profile. E combines C and D with explanations. Item feedback affects only A and B.
-3. Enter an explicit category instruction such as `Show me more category_1` or `Mute category_0`. Click Apply instruction or press Ctrl+Enter / Cmd+Enter in its text area; Enter alone adds a new line. The latest instruction replaces the previous one but keeps unrelated profile preferences. In this earlier protocol, “less” means hard mute. Clarification leaves the existing state unchanged. Check the displayed operation because ambiguous language is not always interpreted correctly.
-4. The editor starts with a factual summary of training/request history. That history is not automatically treated as a current preference. Write a profile of up to 200 words, such as `Show me more category_1. Mute category_0.` Saving parses and replaces the whole profile. The raw text is kept for the session/user, and individual parsed preferences can be removed. Name opaque category IDs explicitly.
-5. In E, a command for a category replaces that category's profile weight rather than adding it twice. Reset clears category controls, profile and item feedback for the selected user.
-6. The item-card plus/minus buttons provide item-only feedback in A/B. Plus adds 0.25 after score normalization; minus excludes only that item, not other items in its category.
-7. Compare A–E to inspect item IDs, exposure counts and list fill. This is a preview of the current session, not a new benchmark result. The app checks A/B equality directly. It does not infer item feedback from a category request.
+Every language control follows one workflow. The four methods differ only in how the proposal is made.
 
-Hard mutes can shorten or empty the list. Excluded items are not put back to fill ten positions. Multi-category items can make exposure counts sum to more than the list length.
+| Step | What happens | Where |
+| --- | --- | --- |
+| 1. Request | The person writes a request or chooses a category. The evidence scope is the first 6 or the first 10 items of the starting list. No other item is used. | `web/src/SemanticPanel.jsx` |
+| 2. Model output | The provider gets an instruction with input data and a JSON schema. It returns one JSON object. The raw reply is kept with hashes of the request and of the schema. | `feedctrl/model_routes.py`, `feedctrl/demo_providers.py` |
+| 3. Application checks | Structure and bounds of the reply; item identifiers exist; each quotation is an exact part of the text of its own item; each category or tag name exists with exactly the supplied value; the quoted part of the request is an exact part of the request; the selection is not too broad. A reply that fails gives an error, and nothing is proposed. | `feedctrl/indirect_grounding.py`, `feedctrl/vocabulary_grounding.py`, `feedctrl/staged_induction.py`, `feedctrl/evidence_audit.py` |
+| 4. Review | The page shows the model output, the application checks and the decision in three blocks, a row for every item in the scope, and the first ten items now and after approval. The applied feed does not change. | `web/src/ReviewBoard.jsx`, `web/src/ReviewTable.jsx` |
+| 5. Sealed group | Each control becomes one sealed record (see below). The server keeps the plan. | `feedctrl/semantic_review.py` |
+| 6. Policy | On Apply, the server validates the plan again against the current source and applies exactly the approved set. | `rank_groups` in `feedctrl/semantic_review.py` |
+| 7. Undo | The undo is previewed, then approved. The server keeps up to ten earlier states. | `feedctrl/semantic_review.py` |
 
-“Show signals” changes only the display. B/E cards use cached LLM selections of verified facts when the exact item/history fact set matches `results/explanations.json`. Other cards display “Verified template · no LLM”. Templates do not count as LLM results. Feedback and boost signals describe explicit controls, not causal explanations of the neural model.
+### The four methods
 
-## Session and API behavior
+| Method in the page | How the members are chosen | Model calls | Code |
+| --- | --- | --- | --- |
+| Existing category (manual, no model) | The exact existing category selects the members. | 0 | `feedctrl/semantic_review.py` |
+| My request, matched to existing categories and tags (model) | The model sees the request and the existing category and tag names with their item counts. It returns up to four controls, each with a direction, an exact part of the request and a list of names. The application selects the items that carry the names. | 1 | `feedctrl/vocabulary_grounding.py`, `feedctrl/vocabulary_routes.py` |
+| My request, matched to item descriptions (model) | Call 1 reads the direction, the strength and the subject part of the request. Call 2 sees the item data of the scope and returns item identifiers, each with an exact quotation. | 2 | `interpret_action` in `feedctrl/semantic_review.py`, `feedctrl/indirect_grounding.py` |
+| A new category from my description (model, in stages) | Call 1 proposes a definition, and the person reviews it. Call 2 classifies every item. Call 3 assesses the evidence without seeing the classifications. A member needs agreement of both. A disagreement stays unknown. | 3 | `feedctrl/staged_routes.py`, `feedctrl/staged_induction.py`, `feedctrl/evidence_audit.py`, `feedctrl/source_constraints.py` |
 
-`POST /api/session` creates a random token, sent in `X-Session-ID` for feed reads and changes. State is separated by token and user, expires after 12 idle hours, and is limited to 1,024 sessions. Reloading creates a new session. Restarting the server clears all sessions. There is no persistence or synchronization across server workers.
+The page also offers two earlier methods. One makes a new category in one model call. The other matches a request to descriptions through a local Ollama model, where the server allows local models.
 
-The API checks category, user and item IDs, instruction lengths, profile words/weights and list length. It exposes only training/request-history information. Held-out items and labels are not returned or used for rankings. Backend errors leave preferences unchanged. The original local model client accepts only loopback connections.
+### When the application proposes nothing
 
-## Historical local setup
+- **Clarification.** The reply names competing meanings or leaves a negation open. Or a control would select more than half of the scope. Or one name is in two controls with different directions. Or the request negates a command: that check is a conservative English wording pattern, and it runs before any model call.
+- **No match.** No existing name, or no description, supports the request.
+- **Unsupported.** The request asks for something that these controls cannot express: a quota, a time, a condition, an order or an exception. The method with categories and tags has this result.
+- **Error.** The call failed, or the reply was rejected. The message says what to change.
 
-This section describes the earlier local research app, not the current explicit-runner hosted configuration. Run it only with separate authorization for local execution and the required inputs. It is a single-process localhost app, not a hosted service with durable accounts or authentication.
+In each case the applied feed and the applied controls stay as they are.
 
-Install the project in `.venv` using the [Windows and Colab guide](windows-and-colab.md). With Node.js 22.12 or newer, run `npm ci` and `npm run build` in `web/`. The lockfile fixes JavaScript dependency resolution.
+### The policy
 
-From the project folder in Windows PowerShell, run `.\.venv\Scripts\python.exe -m uvicorn feedctrl.api:app --host 127.0.0.1 --port 8000`. No PowerShell execution-policy change is needed. The optional `.\scripts\run_app.ps1` launcher requires scripts to be permitted already. On Linux, use `bash scripts/run_app.sh`. The app opens at <http://127.0.0.1:8000>.
+- Each user has one normalized score vector.
+- An approved "show more" or "show less" adds or subtracts 0.10, 0.25 or 0.40 for the approved members.
+- An approved removal takes the members out of the feed. Removal wins over a rank change.
+- The item identifier breaks ties.
 
-The supplied Colab notebook is for experiments; the earlier demonstration ran locally on Windows. FastAPI's interactive API reference is at `/docs`. For frontend development, `npm run dev` in `web/` uses Vite's API proxy with uvicorn on port 8000. The built app uses same-origin requests and needs no CORS exceptions.
+The policy applies an approved set exactly. It does not judge whether the set is right.
 
-### Historical data and model setup
+### What a review stores
 
-The defaults are `data/processed.json` and `results/models/seed_42`. Set `FEEDCTRL_DATA` and `FEEDCTRL_MODEL` before starting uvicorn to use different outputs. Missing data activates labeled deterministic fixture data. A missing model activates a labeled diagnostic scorer. Neither is an empirical LLM result. An existing model directory that fails to load produces an error instead of switching scorers.
+A sealed group holds:
 
-The status strip reports data mode, scorer and interpretation backend separately. `metadata.kind=synthetic_fixture` identifies fixture data. Real data can also be shown with the diagnostic scorer, with both facts visible.
+- the name of the control and the original request;
+- the action (operation, strength, and the part of the request that names the subject);
+- the selected item identifiers and the evidence for each one (item, field, quotation or name);
+- the identifiers of the evidence scope;
+- SHA-256 hashes of the source data, the catalogue of the scope, the request and the action, and for a model method also of the prompt and the schema;
+- the provider identity: the kind of route, the model name as requested, and a hash of the route settings;
+- for a new category: the definition, every classification, the separate assessment and the raw model replies;
+- one SHA-256 value over the whole record.
 
-The original default parser is the rule comparator. Ollama sends structured requests to the local server using `llama3.1:8b`, unless `FEEDCTRL_OLLAMA_MODEL` overrides it. It requires a separately installed model but no API key. Network, model and schema errors remain visible and preserve the previous controls; the app does not substitute a rule result after an LLM error.
+Apply needs the server-held plan of the current revision, at most 300 seconds old. A stale or replaced plan is refused. If the source data, the request or the action no longer match their hashes, the group is refused and a new review is necessary.
+The provider identity is a declaration by the route. The application records it. It cannot attest model weights or an account.
 
-## Recorded checks and reproduction
+### Fictional items and the earlier topic steering
 
-The command `.venv/bin/python -m pytest tests/test_api.py` (Windows: `.venv/Scripts/python.exe -m pytest tests/test_api.py`) covers session isolation, A/B equality, control boundaries, empty hard-mute results, profile parsing, clarification, visible errors, reset, malformed inputs and held-out-label independence. It is a software check, not a fresh model evaluation.
+- [Fictional item drafts](synthetic-item-drafts.md) are metadata that a model writes. They go to a separate feed with score 0. They never enter the catalogue, the evidence scope of a language control or the conditions A to E.
+- "Earlier literal topic steering (local model only)" is the reviewed topic workflow of 4 November. It matches literal topic phrases in the source text and needs a local Ollama model for language input. The 4 November study used it ([protocol and results](../deliverables/2026-11-04-prospective-evaluation/PROTOCOL-AND-RESULTS.md)).
 
-The separate full archive retains a Linux browser run with 17 checks using processed data and the saved seed-42 model. Its captures and `results/audit_revision/verification/browser-acceptance.json` are absent from this compact checkout. Cached explanation labels in those records were not freshly generated.
+## Providers
 
-For a separately authorized browser check, set `FEEDCTRL_VERIFICATION_DIR` to a new folder and run `node tests/browser_acceptance.cjs` with Python and Playwright installed as described in that script. Its unavailable-Ollama check uses loopback port 9. A 20 October Windows fixture run passed 16 applicable checks, including visible failure with preserved state. The real-data cached-explanation check did not apply. This did not establish fresh model inference.
+The server gets its provider at start. A request from the page cannot supply a provider address, a credential or a provider choice.
 
-The full archive retains its historical release verifier and receipts. This compact checkout lacks `scripts/verify_release.py` and the inputs it expects.
+| Provider | Meaning |
+| --- | --- |
+| none (`manual`) | Only the manual method is offered. |
+| `scripted` | Replies that a person wrote for the bundled requests. Not a model. |
+| a [model route](model-routes.md) | A command-line program, a hosted API, a model server on this computer, or the file relay. |
+| `personal-cli` | The reviewed Claude Code CLI connection on Windows. See the [guide](demo.md#the-signed-in-claude-code-cli). |
 
-Implementation references: [React createRoot](https://react.dev/reference/react-dom/client/createRoot), [FastAPI StaticFiles](https://fastapi.tiangolo.com/tutorial/static-files/), [FastAPI testing](https://fastapi.tiangolo.com/tutorial/testing/).
+## Endpoints
+
+All endpoints are under `/api/`. `POST /api/session` returns a token. The page sends it in the header `X-Session-ID`.
+
+| Group | Endpoints |
+| --- | --- |
+| Session and data | `POST session`, `GET status`, `GET users`, `GET categories` |
+| Original study | `GET feed`, `GET compare`, `POST control`, `PUT profile`, `POST profile/text`, `POST feedback`, `POST reset`, `POST topic/preview` |
+| Language controls: state | `GET semantic/groups`, `POST semantic/apply`, `POST semantic/history/preview` |
+| Language controls: proposals | `POST semantic/preview` (existing category; request matched to descriptions), `POST semantic/vocabulary/terms`, `POST semantic/vocabulary/preview`, `POST semantic/definition/preview`, `POST semantic/definition/resolve`, `POST semantic/definition/classify`, `POST semantic/induction/preview` |
+| Fictional items | `GET synthetic/items`, `POST synthetic/preview`, `POST synthetic/admit`, `POST synthetic/remove`, `POST synthetic/restore/preview`, `POST synthetic/clear` |
+| Earlier topic steering | `GET steering`, `POST steering/preview`, `POST steering/apply`, `POST steering/remove`, `POST steering/history/preview` |
+
+FastAPI serves an interactive reference of these endpoints at `/docs` on the running server.
+
+## Sessions and data
+
+- State is separate for each session token and each user. It ends after 12 idle hours. A reload of the page starts a new session. A restart of the server clears all sessions. Nothing is stored on disk.
+- The server holds at most 1,024 sessions.
+- The API checks identifiers, text lengths, profile words and weights. It returns only training and request-history information. Held-out items and labels are not returned and are not used for rankings.
+- Text from the catalogue and from a model is data. The page shows it as text and does not run it.
+
+## Data and scorer
+
+- A bundled scenario (`tags`, `category`, `hunger`) has invented items, one user with an empty history and the deterministic diagnostic scorer. The page marks it as fixture data.
+- With the processed KuaiRec subset and a trained checkpoint, the page shows "PROCESSED DATASET" and "trained model". Those two inputs are in a separate research archive. They are not in this repository.
+- A model folder that exists and fails to load gives an error. The application does not change the scorer silently.
+
+The setup of the original experiments with local data, a checkpoint and a local Llama model is recorded in two dated pages: [Windows and Colab setup](windows-and-colab.md) and [local Llama runtime](LLM_RUNTIME.md).
+
+## Limits
+
+- The application is a single-process research tool for one computer. It has no accounts and no persistence.
+- A language control covers the items of the evidence scope only. It does not reach an unseen catalogue.
+- The checks confirm structure, identifiers, exact quotations and exact names. They do not confirm meaning. The review by a person stays necessary.
+- The bundled scenarios show that the controls work as described. They are not an accuracy result and not a measure of recommendation quality.

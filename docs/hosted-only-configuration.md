@@ -1,5 +1,7 @@
 # Hosted-only configuration and current limits
 
+> **Dated record, 9 to 11 November 2026.** It describes the guarded OpenAI Responses application of that date. To connect a model to the current application, see [model routes](model-routes.md).
+
 The hosted-only code was added on 9 November 2026. The 9 November implementation checks were offline. A later explicit-runner Lunaria check supplied bounded evidence from direct calls to the application’s Python methods; see [current progress](current-progress.md). It does not establish access to Astra, Sol 6.1 or Terra 6.1. The automatic personal Claude route also remains disabled; see [demonstration guide](demo.md#the-signed-in-claude-code-cli).
 
 ## Creating the hosted app

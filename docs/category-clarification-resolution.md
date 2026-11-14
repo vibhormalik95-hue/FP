@@ -1,5 +1,7 @@
 # Explicit category clarification resolution
 
+> **Dated record, 11 November 2026.** It records how the choice between competing category meanings was added. The step is part of the current staged method: see the [guide to the language controls](demo.md#a-new-category-from-my-description-model-in-stages).
+
 This is a future in-session workflow correction, tested with authored offline responses. It does not replay, import, repair, reseal or resume a previously ended model run, and it does not establish semantic accuracy.
 
 ## Supported path
