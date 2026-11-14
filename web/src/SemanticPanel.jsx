@@ -1,38 +1,4 @@
 import React, {useEffect, useRef, useState} from 'react';
-import {createPortal} from 'react-dom';
-
-// Display only. One row per supplied item, so the whole reviewed scope can be
-// read at once: what the item says, what was proposed for it and on which words.
-// The detailed record stays in the panel; approval still happens there.
-function ReviewTable({pending, current}) {
-  const groups = pending.groups, undo = groups.length < (current?.groups.length ?? 0);
-  const text = Object.fromEntries((pending.scope_items || []).map(r => [r.item_id, r.source_text]));
-  const rows = [];
-  for (const g of groups) {
-    const proposal = g.proposal, envelope = proposal.induction?.envelope, audit = envelope?.evidence_audit;
-    const primary = Object.fromEntries((audit?.primary_envelope.field_evidence || envelope?.field_evidence || []).map(r => [r.item_id, r]));
-    const final = Object.fromEntries((envelope?.field_evidence || []).map(r => [r.item_id, r]));
-    const assessed = Object.fromEntries((audit?.assessment.assessments || []).map(r => [r.item_id, r]));
-    const quoted = Object.fromEntries((proposal.evidence || []).map(r => [r.item_id, r]));
-    for (const id of g.scope_ids) {
-      const member = proposal.item_ids.includes(id);
-      rows.push({key: `${g.label}-${id}`, id, group: g.label, member, operation: proposal.action.operation,
-        first: primary[id] ? `${primary[id].verdict}${primary[id].evidence_quote ? ` · “${primary[id].evidence_quote}”` : ''}` : member ? `selected${quoted[id]?.quote ? ` · “${quoted[id].quote}”` : ''}` : 'not selected',
-        second: assessed[id] ? `${assessed[id].assessment}${assessed[id].quote ? ` · “${assessed[id].quote}”` : ''}` : null,
-        reason: final[id]?.reason || null});
-    }
-  }
-  const staged = rows.some(r => r.second !== null);
-  return <section className="review-table" aria-label="Review of every supplied item">
-    <p className="eyebrow review-flag">PREVIEW · NOTHING IS APPLIED YET</p>
-    <h3>{groups.length ? groups.map(g => `${g.label}: ${g.proposal.action.operation}`).join(' + ') : 'Remove every reviewed group'}</h3>
-    <p className="help">Eligible items now: <b>{current?.feed.available_items ?? '–'}</b>. After approval: <b>{pending.feed.available_items}</b>. {undo ? 'This restores an earlier reviewed state.' : 'The feed below stays as it is until you approve in the panel.'}</p>
-    {rows.length > 0 && <div className="comparison-scroll"><table><thead><tr><th>Item</th><th>Supplied description</th><th>{staged ? 'Classification under the definition' : 'Proposal'}</th>{staged && <th>Separate evidence assessment</th>}<th>Result if approved</th></tr></thead>
-      <tbody>{rows.map(r => <tr key={r.key} className={r.member ? 'review-member' : ''}><th>{r.id}</th><td>{text[r.id] ?? 'No description supplied'}</td><td>{r.first}</td>{staged && <td>{r.second}</td>}
-        <td><b>{r.member ? (r.operation === 'exclude' ? 'Removed from the feed' : r.operation === 'boost' ? 'Ranked higher' : 'Ranked lower') : 'Unchanged'}</b>{r.reason && !r.member ? <span className="review-reason"> {r.reason}</span> : null}</td></tr>)}</tbody></table></div>}
-    <p className="help">A quotation shows that the words exist in the description. It does not show that the decision is right. Read each row before you approve.</p>
-  </section>;
-}
 
 // Display only: match the complete citation, never borrow another item's field.
 function definitionEvidence(evidence, context) {
@@ -50,7 +16,7 @@ function definitionEvidence(evidence, context) {
   });
 }
 
-export default function SemanticPanel({api,user,resetKey,onFeed}) {
+export default function SemanticPanel({api,user,resetKey,onFeed,scenarioRequests,onReview}) {
   const [open,setOpen]=useState(false),[saved,setSaved]=useState(null),[pending,setPending]=useState(null);
   const [text,setText]=useState(''),[label,setLabel]=useState('My semantic group'),[count,setCount]=useState(10);
   const [backend,setBackend]=useState('ollama'),[category,setCategory]=useState('category_1');
@@ -74,6 +40,7 @@ export default function SemanticPanel({api,user,resetKey,onFeed}) {
   useEffect(()=>{if(saved?.local_models_allowed===false&&backend==='ollama'){setBackend(saved.external_adapter_available?'configured_model':'manual_category');setPending(null);}},[saved,backend]);
   useEffect(()=>{++generation.current;activeRequest.current=null;setWorking(false);setDefinition(null);setEvidenceReviewed(false);setClarification(null);setResolution(null);setResolutionChoice('');},[backend,text,label,count,operation,strength,mode,actionSource,category]);
   useEffect(()=>{setTargetConfirmed(false);setPending(null);},[backend,text,target,count,operation,strength,mode,explicitTarget]);
+  useEffect(()=>{if(onReview)onReview(pending?{pending,current:saved}:null);},[pending,saved]);
   async function run(work,keepClarification=false){
     if(activeRequest.current)return;
     const request=Symbol(),id=generation.current;activeRequest.current=request;setWorking(true);setMessage('');
@@ -135,6 +102,7 @@ export default function SemanticPanel({api,user,resetKey,onFeed}) {
       {backend!=='manual_category'?<><label className="field-label" htmlFor="semantic-text">{['induction','staged'].includes(backend)?'Category discovery objective':'One current instruction'}</label>
         <textarea id="semantic-text" rows={3} maxLength={2000} disabled={disabled} value={text} onChange={e=>{setText(e.target.value);setPending(null);}}
           placeholder="Describe what you want more, less or none of; indirect meaning is allowed."/>
+        {scenarioRequests?.[backend]&&<button type="button" className="secondary" disabled={disabled} onClick={()=>{setText(scenarioRequests[backend]);if(scenarioRequests.label&&backend==='configured_model')setLabel(scenarioRequests.label);setPending(null);}}>Insert the bundled scenario request</button>}
         {backend==='staged'?<p className="help">First review a model-proposed definition. After approval, one call classifies all supplied items and a separate call assesses the evidence without seeing those decisions. Disagreements become unknown. Three stages at most. The selected adapter enforces its configured timeout and total attempt budget. This may use the same model and does not verify semantic truth: both passes can agree on a wrong set. Review every final membership before applying. You choose direction and strength below.</p>:backend==='induction'?<p className="help">One configured model call proposes a label, definition and match/not_match/unknown decision for every supplied item. You choose the control below. Evidence and inventory budgets may block a request; no silent truncation. Review is required; no new videos are created.</p>:<>
         <p className="help">Two model stages at most: action interpretation and evidence selection. The local adapter uses 90-second calls plus identity checks. A separately configured provider uses its operator-locked timeout and shared call budget. Ambiguity or invalid evidence applies nothing. No rule fallback.</p>
         <label><input type="checkbox" disabled={disabled} checked={explicitTarget} onChange={e=>setExplicitTarget(e.target.checked)}/> I will explicitly state the target meaning and action.</label>
@@ -173,7 +141,7 @@ export default function SemanticPanel({api,user,resetKey,onFeed}) {
           <p className="help">Objective: {resolution.objective}</p>
           <p className="help">Model rationale: {clarification.candidate.rationale}</p>
           {definitionEvidence(clarification.candidate.evidence,resolution?.evidence_context)}
-          <p className="help">{resolution.provenance.model_id}; digest {resolution.provenance.model_revision}. Assessed scope: {resolution.scope_ids.join(', ')}.</p>
+          <p className="help">{resolution.provenance.backend} / {resolution.provenance.model_id}; digest {resolution.provenance.model_revision}. Assessed scope: {resolution.scope_ids.join(', ')}.</p>
         </div>}
         {clarification.alternatives.length>0&&<><p className="help">Competing interpretations:</p>
           <ul>{clarification.alternatives.map((a,n)=><li key={n}>{a}</li>)}</ul></>}
@@ -197,12 +165,11 @@ export default function SemanticPanel({api,user,resetKey,onFeed}) {
         <p className="help">Objective: {definition.definition.objective}</p>
         <p className="help">Model rationale: {definition.definition.proposal.rationale}</p>
         {definitionEvidence(definition.definition.proposal.evidence,definition.evidence_context)}
-        <p className="help">{definition.definition.provenance.model_id}; digest {definition.definition.provenance.model_revision}. Assessed scope: {definition.scope_ids.join(', ')}. No membership or feed change is approved yet.</p>
+        <p className="help">{definition.definition.provenance.backend} / {definition.definition.provenance.model_id}; digest {definition.definition.provenance.model_revision}. Assessed scope: {definition.scope_ids.join(', ')}. No membership or feed change is approved yet.</p>
         <p className="help">Reject a definition with unsupported properties, credentials or ratings, even if the quotation exists. Change the objective to start again. Approval expires after five minutes.</p>
         <label><input type="checkbox" checked={evidenceReviewed} disabled={disabled} onChange={e=>setEvidenceReviewed(e.target.checked)}/> I reviewed whether the source evidence supports the entire definition.</label>
         <button className="primary" disabled={disabled||!evidenceReviewed} onClick={classify}>Approve definition and classify supplied items</button>
       </div>}
-      {pending&&document.getElementById('review-root')&&createPortal(<ReviewTable pending={pending} current={saved}/>,document.getElementById('review-root'))}
       {pending&&<div className="saved-profile"><h4>Review the meaning and evidence yourself</h4>
         {pending.groups.map(g=><div key={g.label} className="steering-review">
           <strong>{g.label}: {g.proposal.action.operation} ({g.proposal.action.strength})</strong>

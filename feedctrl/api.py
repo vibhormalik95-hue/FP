@@ -216,7 +216,8 @@ class DemoState:
         fields = ((self.topic_index or {}).get("items", {}).get(item_id) or {}).get("fields", {})
         for key in ("caption", "manual_cover_text"):
             if isinstance(fields.get(key), str) and fields[key].strip():
-                return fields[key].strip()[:400]
+                text = fields[key].strip()
+                return text if len(text) <= 400 else text[:399] + "…"
         return None
 
     @staticmethod
@@ -341,12 +342,22 @@ def create_app(data_path=None, model_path=None, fixture=False, semantic_path=Non
             identity = getattr(factory, "model_identity", None)
             if isinstance(identity, dict) and all(
                     isinstance(identity.get(key), str) and identity[key] for key in ("backend", "model")):
+                live = identity.get("live_model", "declared_by_adapter")
                 return {"backend": identity["backend"][:120], "model": identity["model"][:150],
-                        "live_model": identity.get("live_model", "declared_by_adapter")}
+                        "live_model": live if live is False or isinstance(live, str) else "declared_by_adapter"}
         if semantic_infer_factory is not None or category_infer_factory is not None:
             return {"backend": "configured", "model": "not declared before first use",
                     "live_model": "declared_by_adapter"}
         return None
+
+    def scenario_requests():
+        # Optional exact request texts supplied by the launcher for its bundled
+        # scenario, so the operator can insert them without retyping. Display only.
+        value = getattr(app.state, "scenario_requests", None)
+        if not isinstance(value, dict):
+            return None
+        return {key: text for key, text in value.items()
+                if isinstance(key, str) and isinstance(text, str) and 0 < len(text) <= 2000} or None
 
     @app.middleware("http")
     async def response_headers(request, call_next):
@@ -366,6 +377,7 @@ def create_app(data_path=None, model_path=None, fixture=False, semantic_path=Non
                 "default_parser": "rule", "ollama_model": os.getenv("FEEDCTRL_OLLAMA_MODEL", DEFAULT_MODEL),
                 "local_models_allowed": allow_local_models,
                 "provider": configured_provider(),
+                "scenario_requests": scenario_requests(),
                 "ollama_status": ("Not checked; selecting Ollama makes a real request. Failures remain visible."
                                   if allow_local_models else "Disabled by hosted-only application policy."),
                 "research_note": "Synthetic category controls measure offline behavior; this demo does not establish human agency or satisfaction.",

@@ -43,7 +43,9 @@ negation, metaphor or alternatives are unresolved return ambiguous with no
 evidence. If nothing supports the intent return no_match with no evidence.
 Do not treat a weak relationship as sufficient. Explain the inferred relationship
 in reason. List competing interpretations in alternatives; a proposal must have
-none. Output exactly the JSON schema. This is a review proposal, not execution.'''
+none. Output exactly the JSON schema. This is a review proposal, not execution.
+Length limits: reason 2000 characters; at most 6 alternatives of 300 characters each.
+A longer value is rejected.'''
 
 
 def _digest(value):

@@ -112,24 +112,63 @@ def _utc():
 
 
 def _write_new(path, data):
-    """Create a file that must not already exist; never overwrite a record."""
+    """Create a complete file that must not already exist; never overwrite a record."""
     temporary = path.with_name(path.name + '.partial')
     with open(temporary, 'xb') as handle:
         handle.write(data)
         handle.flush()
         os.fsync(handle.fileno())
-    os.link(temporary, path)  # fails if the destination exists
+    try:
+        os.link(temporary, path)  # fails if the destination exists
+    except FileExistsError:
+        temporary.unlink()
+        raise
+    except OSError:
+        # No hard links on this file system: fall back to exclusive creation.
+        with open(path, 'xb') as handle:
+            handle.write(data)
     temporary.unlink()
 
 
-def relay_provider(spool, *, declared_model, transport_note, max_calls, timeout=600, poll=0.25):
+def _await_reply(path, started, timeout, poll, settle, limit=1_000_000):
+    """Return the reply bytes once the file is present, non-empty and settled.
+
+    An editor or a slow copy can create the name before the content is complete.
+    The file is read only after its size has stayed the same, and above zero,
+    for ``settle`` seconds. This is not a repair: the bytes are used exactly as
+    they settle. Writing under another name and renaming avoids the wait risk.
+    """
+    size, changed = None, time.monotonic()
+    while True:
+        now = time.monotonic()
+        if now - started > timeout:
+            raise TimeoutError('No relayed reply arrived in time')
+        try:
+            current = path.stat().st_size
+        except FileNotFoundError:
+            current = None
+        if current != size:
+            size, changed = current, now
+        if size is not None:
+            if size > limit:
+                raise ValueError('Relayed reply exceeds the response budget')
+            if size > 0 and now - changed >= settle:
+                return path.read_bytes()
+        time.sleep(poll)
+
+
+def relay_provider(spool, *, declared_model, transport_note, max_calls, timeout=600, poll=0.25, settle=1.0):
     """Return ``(infer, identity, receipts)`` for an operator-carried exchange.
 
     For call ``n`` the app writes ``request-000n.json`` into ``spool`` and waits
     for ``response-000n.json``. The reply file must contain exactly one JSON
-    object. It is decoded strictly (duplicate keys and non-finite numbers are
-    rejected) and validated against the request schema. There is no repair, no
-    retry and no fallback; a late, malformed or invalid reply fails the call.
+    object in UTF-8 (a byte-order mark is accepted). It is decoded strictly
+    (duplicate keys and non-finite numbers are rejected) and validated against
+    the request schema. There is no repair, no retry and no fallback; a late,
+    malformed or invalid reply fails the call, and so does a reply file that
+    exists before its request. A Markdown fence or any text around the object is
+    a malformed reply. ``scripts/relay_tools.py`` shows a request as the exact
+    text for a model and delivers an answer file by an atomic rename.
     """
     spool = Path(spool)
     if not spool.is_dir() or any(spool.iterdir()):
@@ -142,6 +181,8 @@ def relay_provider(spool, *, declared_model, transport_note, max_calls, timeout=
         raise ValueError('Invalid call allowance')
     if type(timeout) not in (int, float) or not 0 < timeout <= 1800:
         raise ValueError('Invalid relay timeout')
+    if type(settle) not in (int, float) or not 0 <= settle <= 30:
+        raise ValueError('Invalid settle time')
     config = {'backend': RELAY_BACKEND, 'model': declared_model, 'transport_note': transport_note,
               'max_calls': max_calls, 'timeout_seconds': timeout,
               'reply_rule': 'one bare JSON object; strict decode; schema validated; no repair or retry'}
@@ -173,18 +214,14 @@ def relay_provider(spool, *, declared_model, transport_note, max_calls, timeout=
         started = time.monotonic()
         reply_path = spool / f'response-{ordinal:04d}.json'
         try:
+            if reply_path.exists():
+                raise ValueError('A reply file existed before its request was written')
             _write_new(spool / f'request-{ordinal:04d}.json',
                        json.dumps(request, ensure_ascii=False, indent=2).encode('utf-8'))
-            while not reply_path.exists():
-                if time.monotonic() - started > timeout:
-                    raise TimeoutError('No relayed reply arrived in time')
-                time.sleep(poll)
-            raw = reply_path.read_bytes()
+            raw = _await_reply(reply_path, started, timeout, poll, settle)
             receipt['response_sha256'] = hashlib.sha256(raw).hexdigest()
             receipt['response_bytes'] = len(raw)
-            if len(raw) > 1_000_000:
-                raise ValueError('Relayed reply exceeds the response budget')
-            result = _response_snapshot(_decode(raw.decode('utf-8')))
+            result = _response_snapshot(_decode(raw.decode('utf-8-sig')))
             if not isinstance(result, dict):
                 raise ValueError('Relayed reply must be one JSON object')
             Draft202012Validator(schema).validate(result)

@@ -288,7 +288,7 @@ def install_semantic_routes(app, demo, *, infer_factory=None, category_infer_fac
         state["semantic_pending"] = {"id": plan_id, "created": time.monotonic(),
             "revision": state["semantic_revision"], "groups": deepcopy(groups), "history_action": history_action}
         scope = sorted({item for group in groups for item in group["scope_ids"]})
-        return {"ready": True, "applied": False, "plan_id": plan_id,
+        return {"ready": True, "applied": False, "plan_id": plan_id, "history_action": history_action,
             "groups": deepcopy(groups), "proposal": proposal, "feed": preview_feed,
             # Display only: what each item in the reviewed scope says. Not sealed, not approved.
             "scope_items": [{"item_id": item, "source_text": demo.source_text(item)} for item in scope],

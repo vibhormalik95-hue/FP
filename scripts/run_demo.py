@@ -15,7 +15,7 @@ Providers
     scripted      Hand-written replies for the bundled requests. Not a model.
     relay         An operator carries each request to a model and saves the reply.
     personal-cli  The signed-in Claude Code CLI on Windows, through the reviewed
-                  configuration that the guarded validation driver already checks.
+                  configuration that the validation driver already checks.
 
 The server binds to 127.0.0.1 only. Local models and the trained recommender stay
 disabled; the bundled scenarios use eight invented descriptions and a labelled
@@ -27,6 +27,8 @@ import argparse
 import importlib.util
 import json
 from pathlib import Path
+import re
+import socket
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -35,9 +37,13 @@ SCENARIOS = {
     'category': INPUTS / '01-category-discovery',
     'hunger': INPUTS / '02-hunger-continuation',
 }
+# The reviewed driver names the indirect-request scenario "indirect".
+DRIVER_SCENARIO = {'category': 'category', 'indirect': 'hunger'}
 # Calls needed by one complete pass: definition + membership + evidence
 # assessment for a new category; action + grounding for an indirect request.
+# A failed stage ends its flow, so a spare call would not be used.
 CALLS = {'category': 3, 'hunger': 2}
+PERSONAL_PORT = 8765  # the origin the reviewed driver declares for the personal app
 
 
 def scenario_paths(name):
@@ -48,8 +54,35 @@ def scenario_paths(name):
     return data, sidecar
 
 
+def scenario_requests(name):
+    """The exact bundled request text, offered in the page so it is not retyped."""
+    body = json.loads((SCENARIOS[name] / 'app-preview.json').read_text(encoding='utf-8'))
+    if name == 'category':
+        return {'staged': body['objective']}
+    return {'configured_model': body['text'], 'label': body['label']}
+
+
+def require_built_interface():
+    """Fail before any provider work if the page or a file it loads is missing."""
+    index = ROOT / 'web' / 'dist' / 'index.html'
+    if not index.is_file():
+        raise SystemExit('The built interface is missing: run "npm ci" and "npm run build" in web/')
+    for asset in re.findall(r'(?:src|href)="/(assets/[^"]+)"', index.read_text(encoding='utf-8')):
+        if not (ROOT / 'web' / 'dist' / asset).is_file():
+            raise SystemExit(f'The built interface is incomplete: web/dist/{asset} is missing. '
+                             'Run "npm ci" and "npm run build" in web/')
+
+
+def require_free_port(port):
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as probe:
+        try:
+            probe.bind(('127.0.0.1', port))
+        except OSError as exc:
+            raise SystemExit(f'Port {port} on 127.0.0.1 is in use; stop the other server first') from exc
+
+
 def build_app(args):
-    """Return ``(app, port, summary)`` for the selected provider."""
+    """Return ``(app, port, summary, finish)`` for the selected provider."""
     sys.path.insert(0, str(ROOT))
     if args.provider == 'personal-cli':
         return build_personal_cli_app(args)
@@ -57,9 +90,11 @@ def build_app(args):
     from feedctrl.api import create_app
     from feedctrl import demo_providers
 
-    data, sidecar = scenario_paths(args.scenario)
+    scenario = args.scenario or 'category'
+    port = args.port or PERSONAL_PORT
+    data, sidecar = scenario_paths(scenario)
     factories = {}
-    summary = {'scenario': args.scenario, 'provider': args.provider}
+    summary = {'scenario': scenario, 'provider': args.provider}
     if args.provider == 'scripted':
         sys.path.insert(0, str(ROOT / 'scripts'))
         import demo_scripted_replies
@@ -72,7 +107,7 @@ def build_app(args):
         spool.mkdir(parents=True, exist_ok=True)
         infer, identity, receipts = demo_providers.relay_provider(
             spool, declared_model=args.declared_model, transport_note=args.transport_note,
-            max_calls=args.max_calls or CALLS[args.scenario], timeout=args.relay_timeout)
+            max_calls=args.max_calls or CALLS[scenario], timeout=args.relay_timeout)
         summary['relay_dir'] = str(spool.resolve())
     else:
         infer = identity = receipts = None
@@ -83,7 +118,8 @@ def build_app(args):
     app = create_app(data_path=data, semantic_path=sidecar, fixture=False,
                      allow_local_models=False, allow_local_recommender=False, **factories)
     app.state.provider_receipts = receipts
-    return app, args.port, summary
+    app.state.scenario_requests = scenario_requests(scenario)
+    return app, port, summary, lambda: None
 
 
 def build_personal_cli_app(args):
@@ -93,10 +129,14 @@ def build_personal_cli_app(args):
     explicit assertions, the pinned source and inputs, the executable hash and
     the call allowance. This function adds only an HTTP listener on the origin
     that the driver already declares, so the same run can be reviewed in a
-    browser. The driver's consumed marker prevents a configuration being reused.
+    browser. Reviews, Apply and Undo happen in the page; the report written
+    here holds the provider facts (exact inputs, receipts, attempts) and says so.
+    A configuration file is marked as used and is refused a second time.
     """
     if not args.reviewed_config or not args.report:
         raise SystemExit('personal-cli needs --reviewed-config and --report')
+    if args.port not in (None, PERSONAL_PORT):
+        raise SystemExit(f'personal-cli always serves on port {PERSONAL_PORT}, the origin the reviewed driver declares')
     driver_path = ROOT / 'tools' / 'hosted_validation_current' / 'driver.py'
     spec = importlib.util.spec_from_file_location('reviewed_driver', driver_path)
     driver = importlib.util.module_from_spec(spec)
@@ -107,16 +147,26 @@ def build_personal_cli_app(args):
     driver.validate(config, ROOT)
     driver.require(config.get('input_manifest_sha256') == driver.INPUT_MANIFEST_SHA256,
                    'Reviewed input pin required')
+    scenario = DRIVER_SCENARIO[config['scenario']]
+    if args.scenario not in (None, scenario):
+        raise SystemExit(f'--scenario {args.scenario} does not match the reviewed configuration ({scenario})')
     bundle = driver.load_inputs(INPUTS, config['scenario'])
     driver.require(not report_path.exists(), 'Report already exists; no rerun or overwrite')
+    # Everything that can fail for a local reason is checked before the
+    # configuration is marked as used.
+    import uvicorn  # noqa: F401
+    require_free_port(PERSONAL_PORT)
     marker = Path(str(config_path.resolve()) + '.consumed')
     with marker.open('x', encoding='utf-8') as handle:
         handle.write(driver.digest(config_path))
 
     from feedctrl.windows_job_runner import run_windows_job
     report = driver.new_report(config['scenario'], bundle)
+    served_note = 'Not recorded here: the run was served to a browser. See the browser receipt.'
     report.update(config_sha256=driver.digest(config_path), identity_basis=config['identity_basis'],
-                  evidence_kind='served application; reviews made in the browser by the operator')
+                  status='served_to_browser', steps=served_note, operator_decisions=served_note,
+                  mechanics={'recorded_here': False, 'note': served_note},
+                  evidence_kind='served application; provider facts only; reviews, Apply and Undo are in the browser receipt')
     holder = {}
 
     def checkpoint():
@@ -125,22 +175,39 @@ def build_personal_cli_app(args):
             report['attempted'] = holder['budget'].attempted
         report_path.write_text(json.dumps(driver.redact(report, config), indent=2), encoding='utf-8')
 
-    app, budget = driver.build(config, ROOT, bundle, run_windows_job, report, checkpoint)
-    holder.update(app=app, budget=budget)
+    built, budget = driver.build(config, ROOT, bundle, run_windows_job, report, checkpoint)
+    built.state.scenario_requests = scenario_requests(scenario)
+    holder.update(app=built, budget=budget)
     checkpoint()
-    summary = {'scenario': config['scenario'], 'provider': 'personal-cli',
+
+    async def app(scope, receive, send):
+        # Save the provider facts after every API call, so the last receipt on
+        # disk is final even if the server is stopped abruptly.
+        try:
+            await built(scope, receive, send)
+        finally:
+            if scope.get('type') == 'http' and scope.get('path', '').startswith('/api/semantic'):
+                checkpoint()
+
+    app.state = built.state
+    summary = {'scenario': scenario, 'provider': 'personal-cli',
                'model': config['model'], 'max_calls': budget.max_calls,
                'report': str(report_path.resolve()),
                'note': 'Enter the operator token from the reviewed configuration to unlock the page.'}
-    return app, 8765, summary
+
+    def finish():
+        report['status'] = 'server_stopped'
+        checkpoint()
+
+    return app, PERSONAL_PORT, summary, finish
 
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__.split('\n\n')[0])
-    parser.add_argument('--scenario', choices=sorted(SCENARIOS), default='category')
+    parser.add_argument('--scenario', choices=sorted(SCENARIOS))
     parser.add_argument('--provider', choices=('manual', 'scripted', 'relay', 'personal-cli'),
                         default='manual')
-    parser.add_argument('--port', type=int, default=8765)
+    parser.add_argument('--port', type=int)
     parser.add_argument('--relay-dir')
     parser.add_argument('--declared-model')
     parser.add_argument('--transport-note')
@@ -149,16 +216,18 @@ def main(argv=None):
     parser.add_argument('--reviewed-config')
     parser.add_argument('--report')
     args = parser.parse_args(argv)
-    if not 1024 <= args.port <= 65535:
+    if args.port is not None and not 1024 <= args.port <= 65535:
         raise SystemExit('Choose a port between 1024 and 65535')
-    if not (ROOT / 'web' / 'dist' / 'index.html').is_file():
-        raise SystemExit('The built interface is missing: run "npm ci" and "npm run build" in web/')
+    require_built_interface()
 
-    app, port, summary = build_app(args)
+    app, port, summary, finish = build_app(args)
     import uvicorn
     print(json.dumps({'serving': f'http://127.0.0.1:{port}', **summary}, indent=2, default=str), flush=True)
-    uvicorn.run(app, host='127.0.0.1', port=port, proxy_headers=False, server_header=False,
-                log_level='warning')
+    try:
+        uvicorn.run(app, host='127.0.0.1', port=port, proxy_headers=False, server_header=False,
+                    log_level='warning')
+    finally:
+        finish()
 
 
 if __name__ == '__main__':

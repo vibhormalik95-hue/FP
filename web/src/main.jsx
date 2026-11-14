@@ -4,6 +4,7 @@ import './style.css';
 import SteeringPanel from './SteeringPanel';
 import SemanticPanel from './SemanticPanel';
 import SyntheticDraftPanel from './SyntheticDraftPanel';
+import ReviewTable from './ReviewTable';
 import { createApiClient } from './personalApi';
 
 const conditions = {
@@ -23,6 +24,7 @@ function App({client, personal, onLock}) {
   const [topicOperation, setTopicOperation] = useState('boost'), [topicStrength, setTopicStrength] = useState('standard');
   const [topicResult, setTopicResult] = useState(null);
   const [reviewedFeed, setReviewedFeed] = useState(null), [steeringReset, setSteeringReset] = useState(0);
+  const [semanticReview, setSemanticReview] = useState(null);
   const [busy, setBusy] = useState(true), [error, setError] = useState(''), [notice, setNotice] = useState('');
   const [showSignals, setShowSignals] = useState(true), [view, setView] = useState('feed');
   const token = useRef(null), requestId = useRef(0);
@@ -90,7 +92,7 @@ function App({client, personal, onLock}) {
           <section className="panel"><div className="section-heading"><span className="step">03</span><h2>Your editable profile</h2></div><form onSubmit={e => {e.preventDefault(); act(() => api('profile/text', {user_id:user, text:profileText, backend}), r => r.applied ? `Profile saved via ${r.source}.` : 'Profile was ambiguous. State explicit category preferences and try again.');}}><label className="field-label" htmlFor="profile">History context + your current preferences</label><textarea id="profile" maxLength={2000} rows={4} value={profileText} onChange={e => setProfileText(e.target.value)} placeholder={`More ${cats[0] || 'category_0'}. Mute ${cats[1] || 'category_1'}.`}/><div className="word-count">{profileWords}/200 words · Used by D and E</div><button className="secondary" disabled={busy || !profileText.trim() || profileWords > 200 || user === null}>Save profile</button></form><div className="saved-profile"><span className="field-label">Parsed current preferences</span>{Object.keys(profile).length ? Object.entries(profile).map(([c,v]) => <div className="preference" key={c}><span><i style={{background:color(c)}}/>{c}</span><b>{v < 0 ? 'Muted' : `+${v.toFixed(2)}`}</b><button aria-label={`Remove ${c} preference`} disabled={busy} onClick={() => {const next={...profile}; delete next[c]; act(() => api('profile', {user_id:user,profile:next}, 'PUT'), `Removed ${c} from profile.`, true);}}>×</button></div>) : <p className="help">No saved category preferences.</p>}</div></section>
           </>}
           <div hidden={view !== 'steering'}><SteeringPanel allowLocalModels={status?.local_models_allowed!==false} api={api} user={user} resetKey={steeringReset} onFeed={setReviewedFeed} onApplied={() => setView('steering')}/></div>
-          <div hidden={view !== 'steering'}><SemanticPanel api={api} user={user} resetKey={steeringReset} onFeed={setReviewedFeed}/></div>
+          <div hidden={view !== 'steering'}><SemanticPanel api={api} user={user} resetKey={steeringReset} onFeed={setReviewedFeed} scenarioRequests={status?.scenario_requests} onReview={setSemanticReview}/></div>
             <div hidden={view !== 'steering'}><SyntheticDraftPanel api={api} user={user} resetKey={steeringReset}/></div>
           <details hidden={view === 'steering'}><summary>Earlier single-topic diagnostic</summary>
           <section className="panel" aria-label="Exploratory semantic topic control">
@@ -130,7 +132,7 @@ function App({client, personal, onLock}) {
         </aside>
         <section className="results" aria-busy={busy}>
           <div className="results-header"><div><p className="eyebrow">{view === 'steering' ? 'REVIEWED CATALOGUE STEERING' : view !== 'compare' ? `CONDITION ${condition} · LIVE LOCAL PREVIEW` : 'WITHIN-SESSION COMPARISON'}</p><h2>{view === 'steering' ? 'Your reviewed topic feed' : view === 'feed' ? 'Your recommendation list' : 'One input. Five conditions.'}</h2></div>{view !== 'compare' && <label className="signal-toggle"><input type="checkbox" checked={showSignals} onChange={e => setShowSignals(e.target.checked)}/> Show signals</label>}</div>
-          <div id="review-root" hidden={view !== 'steering'}/>
+          {view === 'steering' && semanticReview && <ReviewTable pending={semanticReview.pending} current={semanticReview.current}/>}
           <div className="metrics"><div><b>{shownFeed?.items.length ?? ' - '}<small>/10</small></b><span>list fill</span></div><div><b>{Object.keys(shownFeed?.category_exposure || {}).length}</b><span>categories shown</span></div><div><b>{view === 'steering' ? reviewedFeed?.commands_count ?? 0 : feed?.feedback_count ?? 0}</b><span>{view === 'steering' ? 'topic controls' : 'item preferences'}</span></div></div>
           {view !== 'steering' && feed?.command?.category && <div className="active-instruction">Latest instruction: <strong>{feed.command.operation} {feed.command.category}</strong><span>{feed.command.source}</span></div>}
           {busy && !shownFeed && <div className="empty-state" role="status">Preparing your research session…</div>}

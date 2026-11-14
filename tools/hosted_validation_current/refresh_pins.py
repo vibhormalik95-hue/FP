@@ -72,9 +72,10 @@ def main():
 
     provenance_path = HERE / 'PROFILE-PROVENANCE.json'
     provenance = json.loads(provenance_path.read_text(encoding='utf-8'))
+    if previous_profile != profile:  # a repeat run for the same profile keeps the earlier history
+        provenance.update(previous_profile_id=previous_profile, previous_first_request_sha256=previous_first)
     provenance.update({
-        'profile_id': profile, 'previous_profile_id': previous_profile,
-        'previous_first_request_sha256': previous_first,
+        'profile_id': profile,
         'current_first_request_sha256': sha(first_path), 'current_manifest_sha256': manifest_sha,
         'membership_prompt_utf8_sha256': hashlib.sha256(MEMBERSHIP_PROMPT.encode('utf-8')).hexdigest(),
         'sole_model_input_delta': change,

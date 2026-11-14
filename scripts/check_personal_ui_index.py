@@ -6,8 +6,8 @@ import sys
 
 EXPECTED = {
     "web/dist/assets/index-Bl6ksYFD.css": "ee23eb7ab5d142b2835d299eef9e4e1e32166110a4173f7ae27cc11d484ddbed",
-    "web/dist/assets/index-HsKaljnv.js": "317a84396d47392e3cd2897948b0b8d7ce5b033e1ca674f557d987789f3e0281",
-    "web/dist/index.html": "95641ed340283bceb4e459a339b02107b878cc6b33fdfb659b83ce63b153aebf"
+    "web/dist/assets/index-Izpcvhfv.js": "015fbd3cdc05dae2b5c974078816ec364224154812e1a328e3c1c2bd7ad4e928",
+    "web/dist/index.html": "9eda4fec6905d77f2ee6dcc0b576e349f8b8ffa3452b58feb590b225f3707447"
 }
 
 

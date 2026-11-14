@@ -24,6 +24,11 @@
  *
  * The script reports which provider the server declared. It never labels a run
  * as live inference by itself: that depends on the provider line in the receipt.
+ * Exit code 0 means every flow completed; 2 means a flow stopped early (for
+ * example a declined review or a rejected reply); 1 means a check failed.
+ *
+ * Needs the "playwright" package and its Chromium browser:
+ *   npm install --no-save playwright && npx playwright install chromium
  */
 const fs = require('fs');
 const path = require('path');
@@ -60,6 +65,7 @@ if (!scenario) throw new Error('Unknown scenario ' + SCENARIO);
 if (!['auto', 'wait'].includes(REVIEW)) throw new Error('--review must be auto or wait');
 
 fs.mkdirSync(OUT, { recursive: true });
+if (fs.readdirSync(OUT).length) throw new Error('--out must be a new or empty folder: an old decision file must never approve a new review');
 const receipt = {
   kind: 'browser run of the served application',
   started_utc: new Date().toISOString(), base: BASE, scenario: SCENARIO, flows: FLOWS, review_mode: REVIEW,
@@ -94,11 +100,13 @@ function check(name, condition, detail) {
     // Keep provider facts only: hashes, timing and declared identity, never reply text.
     for (const key of ['model_calls', 'evidence_audit_model_calls']) {
       for (const call of (body && Array.isArray(body[key]) ? body[key] : [])) {
+        const requestHash = call.producer_payload_sha256 || call.request_sha256 || null;
+        const responseHash = call.raw_response_sha256 || call.response_sha256 || null;
+        if (receipt.model_calls.some(seen => seen.request_sha256 === requestHash && seen.response_sha256 === responseHash)) continue;
         receipt.model_calls.push({
           route: url.slice(BASE.length), list: key, stage: call.stage || null, status: call.status || null,
           elapsed_seconds: typeof call.elapsed_seconds === 'number' ? Number(call.elapsed_seconds.toFixed(3)) : null,
-          request_sha256: call.producer_payload_sha256 || call.request_sha256 || null,
-          response_sha256: call.raw_response_sha256 || call.response_sha256 || null,
+          request_sha256: requestHash, response_sha256: responseHash,
           declared_provider: call.model_provenance || null, observed_utc: utc(),
         });
       }
@@ -123,6 +131,14 @@ function check(name, condition, detail) {
   const status = () => panel.locator('p[role="status"]');
   const reviewHeading = () => page.getByRole('heading', { name: 'Review the meaning and evidence yourself' });
   const reviewBlock = () => panel.locator('div.saved-profile', { has: reviewHeading() });
+
+  // Use the page's own button for the bundled request when it is offered, and
+  // confirm that the text in the box is the exact scenario request.
+  async function insertRequest(expected) {
+    const button = panel.getByRole('button', { name: 'Insert the bundled scenario request' });
+    if (await button.count()) await button.click(); else await panel.locator('#semantic-text').fill(expected);
+    check('the request text is the exact scenario request', await panel.locator('#semantic-text').inputValue() === expected);
+  }
 
   async function gate(name, region) {
     const text = await region.innerText();
@@ -167,11 +183,18 @@ function check(name, condition, detail) {
     fs.writeFileSync(path.join(OUT, `${flow}-final-review.txt`), reviewText);
     check(`${flow}: review names the items that would be removed`, record.selected_ids.length > 0, { selected_ids: record.selected_ids });
     const table = page.locator('section[aria-label="Review of every supplied item"]');
-    const tableRows = await table.locator('tbody tr').count();
-    const removedRows = await table.locator('tbody tr.review-member').count();
-    check(`${flow}: review table lists every supplied item and marks the approved ones`,
-      tableRows === baseline.feed.items.length && removedRows === record.selected_ids.length && /NOTHING IS APPLIED YET/.test(await table.innerText()),
-      { rows: tableRows, marked: removedRows });
+    const listed = (await table.locator('tbody tr').evaluateAll(rows => rows.map(row => ({
+      id: Number(row.dataset.item), marked: row.classList.contains('review-member'),
+      description: row.querySelectorAll('td')[0].innerText.trim(), result: row.querySelector('td:last-child b').innerText.trim() }))));
+    const marked = listed.filter(row => row.marked).map(row => row.id).sort();
+    const expectedText = Object.fromEntries(baseline.feed.items.map(item => [item.item_id, item.source_text]));
+    check(`${flow}: review table lists every supplied item with its own description and marks exactly the approved ones`,
+      listed.length === baseline.feed.items.length && new Set(listed.map(row => row.id)).size === listed.length
+        && JSON.stringify(marked) === JSON.stringify([...record.selected_ids].sort())
+        && listed.every(row => row.description === expectedText[row.id])
+        && listed.every(row => row.marked === (row.result !== 'Unchanged'))
+        && /NOTHING IS APPLIED YET/.test(await table.innerText()),
+      { rows: listed.length, marked });
     fs.writeFileSync(path.join(OUT, `${flow}-review-table.txt`), await table.innerText());
     if (!await gate(`${flow}-apply`, pending)) { record.outcome = 'declined before apply; nothing applied'; return; }
 
@@ -225,7 +248,7 @@ function check(name, condition, detail) {
       const callsBefore = receipt.model_calls.length;
       await panel.getByRole('button', { name: 'Review semantic proposal' }).click();
       check('manual: review appears', await outcome({ review: reviewHeading() }, 30000) === 'review');
-      check('manual: no model call was made', receipt.model_calls.length === callsBefore, { model_calls: receipt.model_calls.length - callsBefore });
+      check('manual: the server reported no model call for this review', receipt.model_calls.length === callsBefore, { model_calls: receipt.model_calls.length - callsBefore });
       await shot('manual-review');
       await applyAndUndo('manual', baseline, record);
       record.model_calls = 0;
@@ -234,7 +257,7 @@ function check(name, condition, detail) {
     async category() {
       const { baseline, record } = await startFlow('category');
       await panel.locator('#semantic-backend').selectOption('staged');
-      await panel.locator('#semantic-text').fill(scenario.objective);
+      await insertRequest(scenario.objective);
       await panel.locator('#semantic-operation').selectOption('exclude');
       await shot('category-objective');
       await panel.getByRole('button', { name: 'Propose a definition for review' }).click();
@@ -277,7 +300,7 @@ function check(name, condition, detail) {
       const { baseline, record } = await startFlow('indirect');
       await panel.locator('#semantic-backend').selectOption('configured_model');
       await panel.locator('#semantic-label').fill(scenario.label);
-      await panel.locator('#semantic-text').fill(scenario.request);
+      await insertRequest(scenario.request);
       await shot('indirect-request');
       await panel.getByRole('button', { name: 'Review semantic proposal' }).click();
       const result = await outcome({ review: reviewHeading() }, STAGE_TIMEOUT);
@@ -294,7 +317,9 @@ function check(name, condition, detail) {
   try {
     await page.goto(BASE + '/', { waitUntil: 'networkidle' });
     if (await page.locator('#personal-token').count()) {
-      check('operator token screen is shown before any data', TOKEN.length > 0, { token_supplied: TOKEN.length > 0 });
+      const refused = await context.request.get(BASE + '/api/status');
+      check('the API refuses a request that has no operator token', refused.status() === 403, { status: refused.status() });
+      check('an operator token was supplied to this script', TOKEN.length > 0);
       await page.locator('#personal-token').fill(TOKEN);
       await page.getByRole('button', { name: 'Unlock' }).click();
     }
@@ -304,6 +329,10 @@ function check(name, condition, detail) {
     receipt.status_strip_text = (await page.locator('.status-strip').innerText()).replace(/\s+/g, ' ');
     save();
     check('session established', Boolean(session));
+    const provider = receipt.status.provider;
+    check('automatic review is used only when no model is connected',
+      REVIEW === 'wait' || provider === null || provider.live_model === false,
+      { review_mode: REVIEW, provider: provider ? provider.backend : null });
     await page.getByRole('button', { name: 'Reviewed topic feed' }).click();
     await page.locator('summary', { hasText: 'Experimental semantic groups' }).click();
     await panel.waitFor({ state: 'visible' });
@@ -316,7 +345,9 @@ function check(name, condition, detail) {
       save();
     }
     check('no script error was raised by the page', pageErrors.length === 0, pageErrors.slice(0, 3));
-    receipt.outcome = Object.values(receipt.flows_result).every(flow => flow.outcome.startsWith('completed')) ? 'all flows completed' : 'stopped before completion; see flows_result';
+    const complete = Object.values(receipt.flows_result).every(flow => flow.outcome.startsWith('completed'));
+    receipt.outcome = complete ? 'all flows completed' : 'stopped before completion; see flows_result';
+    if (!complete) process.exitCode = 2;
   } catch (error) {
     receipt.outcome = 'failed: ' + error.message;
     try { await shot('failure'); } catch (_) { /* page may be gone */ }

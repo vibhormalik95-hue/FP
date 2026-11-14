@@ -46,7 +46,8 @@ def install_staged_routes(app,demo,state_for,review,*,evidence_context,category_
 
     def current(pending,state,session_id,user_id,*,clarification=False,in_flight=False):
         # The five-minute limit bounds the reviewer's decision: an approval must
-        # arrive within REVIEW_WINDOW_SECONDS of the definition being issued.
+        # arrive within REVIEW_WINDOW_SECONDS of this review being issued. Choosing
+        # the unchanged primary meaning issues a new review with a new window.
         # After an approval is accepted, provider latency is governed by the
         # provider's own timeout. In-flight revalidation therefore skips only the
         # age check; session, user, revision, nonce, sealed record, source and

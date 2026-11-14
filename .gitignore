@@ -3,7 +3,6 @@ __pycache__/
 .pytest_cache/
 *.egg-info/
 web/node_modules/
-web/dist/
 data/raw/
 *.log
 !/docs/ai-reference-e2-evidence/audit/inference-worker-terminal.log
