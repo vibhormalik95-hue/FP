@@ -1,14 +1,14 @@
-# Operator review notes: new-category run 3 (final application code)
+# Operator review notes: new-category run 3 (revision 40315aa)
 
 Reviewer: AI operator (Claude, the Cowork lead session). Not the student. Not a human review.
 Source fingerprint served: f5df9878da22bf5a8d1b3b7aaf6ab4bcbf1a53528d73333d71163f38f75b52a6 (revision 40315aa).
-Purpose of this run: the same request as run 2, on the final application code, with a receipt that records the source fingerprint. Run 2 completed; this is not a retry after a failure.
+Purpose of this run: the same request as run 2, on revision 40315aa, with a receipt that records the source fingerprint. Run 2 completed; this is not a retry after a failure.
 
 ## Manual control (01:39Z)
 Read the review: category K1, exclude, items 41001 and 41004 (the two K1 items), 8 to 6. Approved.
 Read the undo review: all eight items, 8 eligible. Approved.
 
-## Model reply 1, read before delivery (01:47Z)
+## Model reply 1, read at delivery (01:47Z)
 Label: "Repair of a faulty object that is kept or remains in use". 653 characters. No digit.
 Three competing meanings: narrower (stated later use), broader (repair or replacement), different (a new object made).
 
@@ -26,7 +26,7 @@ capability does not count. Silence stays unknown.
 No rating, credential or other unstated property. Literal witness requirements: none.
 Decision: approve the definition for classification.
 
-## Model replies 2 and 3, read before delivery (01:53Z and 01:56Z)
+## Model replies 2 and 3, read at delivery (01:53Z and 01:56Z)
 Classification: match 41001, 41002, 41003; not_match 41004, 41005, 41006; unknown 41007, 41008.
 Separate assessment: supported 41001, 41002, 41003; contradicted 41004; not_stated 41005 to 41008.
 
@@ -43,3 +43,7 @@ Effect to apply: exclude exactly 41001, 41002, 41003. Eligible 8 to 5. Decision:
 
 ## Undo review (01:57Z)
 Read the undo review: it proposes all eight items, 8 eligible, which is the state before Apply. Approved.
+
+## Corrections to these notes (02:58Z)
+The title and the purpose line said "final application code". One code change came later (8e628cf, the fingerprint function), so they now name the revision.
+The headings said that the replies were read "before delivery". The receipts leave 9 to 18 s between the end of each sub-agent and the delivery, and one command printed and delivered each reply. "Read at delivery" is the accurate wording: the reply was delivered without a decision about its content, and it was read before the review decision.

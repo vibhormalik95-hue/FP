@@ -1,8 +1,8 @@
-# Operator review notes: indirect request, run 2 (final application code)
+# Operator review notes: indirect request, run 2 (revision 40315aa)
 
 Reviewer: AI operator (Claude, the Cowork lead session). Not the student. Not a human review.
 Source fingerprint served: f5df9878da22bf5a8d1b3b7aaf6ab4bcbf1a53528d73333d71163f38f75b52a6 (revision 40315aa).
-Purpose of this run: the same request as run 1, on the final application code, with a receipt that records the source fingerprint. Run 1 completed; this is not a retry after a failure.
+Purpose of this run: the same request as run 1, on revision 40315aa, with a receipt that records the source fingerprint. Run 1 completed; this is not a retry after a failure.
 
 Request (unchanged): "I'm not hungry, remove all the stuff that makes me hungry."
 The request names no existing category (Evening, Afternoon, Repair) and no item.
@@ -14,7 +14,8 @@ This gate was open for 154 s. The operator session was interrupted during the ga
 interruption the operator read the last two rows and the panel text again, and then decided.
 Read the undo review: all eight items, 8 eligible. Approved.
 
-## Model replies, read before delivery (02:01Z and 02:02Z)
+## Model replies, read at delivery (02:01Z and 02:02Z)
+One command printed each reply and delivered it. Each reply was delivered without a decision about its content.
 Reply 1: no clarification; control exclude/none; subject span, verbatim from the request: "stuff that makes me hungry".
 Reply 2: status propose; three evidence rows (81001, 81003, 81006); no alternatives.
 

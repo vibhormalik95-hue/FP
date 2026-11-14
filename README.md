@@ -26,13 +26,13 @@ Two further additions by the student are separate from these controls: a model c
 
 ## Current status
 
-[Requirements and evidence](docs/requirements-and-evidence.md) maps each request from the supervisor to the code and to what was observed, including the results that were negative. In short, on 13 November 2026:
+[Requirements and evidence](docs/requirements-and-evidence.md) maps each request from the supervisor to the code and to what was observed, including the results that were negative. In short, on 13 November 2026 (the date in Vancouver; the run receipts give UTC times on 14 November):
 
 - all three controls completed in a real browser on the served application: preview without change, Apply of exactly the approved items, and Undo to the identical starting feed;
 - the two language controls used real model output through an operator relay, and an AI operator made the review decisions. No human review of those runs exists yet;
 - the automatic connection to the Claude Code CLI has not yet completed the whole new-category flow.
 
-Each language control completed two times on a small invented scenario. One earlier new-category attempt was rejected by the app and its record is kept. These runs show that the controls work. They are not an accuracy result.
+Each language control completed two times on a small invented scenario. One earlier new-category attempt was rejected by the app and its record is kept. These runs show each control running from end to end on these scenarios. They are not an accuracy result.
 
 ## Run the demonstration
 

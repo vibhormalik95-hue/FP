@@ -7,7 +7,7 @@
     "requested_family": "fable",
     "requested_effort": "max",
     "attested": false,
-    "how": "a sub-agent of the Claude Cowork session reads one request file and writes one answer file; the session reported two tool uses for each call"
+    "how": "a sub-agent of the Claude Cowork session reads one request file and writes one answer file; the session reported two tool uses for each call; a sub-agent is not a bare model call"
   },
   "transport": "operator-relay-file-queue; each answer file was delivered unchanged (checked with cmp)",
   "reviewer": "AI operator: the lead agent of the same session. Not the student. Not a human review.",
@@ -22,6 +22,7 @@
     "accuracy on unseen requests",
     "recommendation quality",
     "user benefit",
+    "that the model sub-agents were blind to the purpose of the scenarios (a sub-agent starts with the session context, which holds the project instructions)",
     "the automatic Claude Code CLI path for the complete new-category flow",
     "a human review"
   ],
