@@ -72,3 +72,6 @@
 .controls .panel p,.controls .panel strong,.controls .panel li{font-size:12px;line-height:1.6}
 .controls .panel .help{font-size:11px;line-height:1.7}
 .controls .panel article{margin-top:12px}
+
+/* Language method choices remain readable without relying on colour. */
+.methods{border:1px solid #c9cec4;padding:12px;margin:16px 0;min-width:0}.methods legend{font-weight:600}.methods .method{display:flex;align-items:flex-start;gap:8px;margin:10px 0;line-height:1.5;font-size:14px}.methods input{flex:0 0 auto;width:auto;margin-top:4px}.methods:disabled{opacity:.7}button:disabled{cursor:not-allowed}.review-board{scroll-margin-top:20px}.review-board :focus-visible{outline:3px solid #315d71;outline-offset:3px}.comparison-scroll{overflow-x:auto}.narrow-only{display:none}@media(max-width:700px){.narrow-only{display:block}.wide-only{display:none}.review-table th,.review-table td{font-size:13px}}

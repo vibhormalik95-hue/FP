@@ -334,7 +334,7 @@ export function outcomeView(outcome, words = sourceWords(false)) {
       : status === 'clarify' ? ['The proposal was too broad or not consistent. Name a narrower subject, or split the request.', 'Or use another method.']
       : ['Send the request again, or write it with other words.', 'Or use another method.'];
   } else if (kind === 'model_report') {
-    view.replyReason = outcome.clarification?.model_reason || (status === 'clarify' ? null : outcome.reason) || null;
+    view.replyReason = outcome.reply_reason || outcome.clarification?.model_reason || (status === 'clarify' ? null : outcome.reason) || null;
     view.showReason = status === 'clarify';   // for no match and unsupported the reason is the reply's own text and stays in the first block
     view.second = ['The application accepted this result because the reply selects nothing. It did not check the reason.'];
     if (status === 'no_match') {

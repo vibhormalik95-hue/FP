@@ -92,7 +92,7 @@ const receipt = {
   kind: 'browser run of the served application',
   started_utc: new Date().toISOString(), base: BASE, scenario: SCENARIO, flows: FLOWS, review_mode: REVIEW,
   reviewer: args.reviewer || (REVIEW === 'auto' ? 'none: review boxes ticked by the script' : 'not stated'),
-  source_fingerprint: null, status: null, checks: [], review_decisions: [], flows_result: {}, provider_calls: [], screenshots: [], finished_utc: null, outcome: 'started',
+  source_fingerprint: null, status: null, checks: [], review_decisions: [], flows_result: {}, provider_calls: [], provider_attempts: [], screenshots: [], finished_utc: null, outcome: 'started',
 };
 const save = () => fs.writeFileSync(path.join(OUT, 'browser-receipt.json'), JSON.stringify(receipt, null, 2));
 const utc = () => new Date().toISOString();
@@ -133,6 +133,7 @@ function check(name, condition, detail) {
     let body = null;
     try { body = await response.json(); } catch (_) { return; }
     if (url.endsWith('/api/session') && body && body.session_id) session = body.session_id;
+    if (Array.isArray(body?.call_attempts)) receipt.provider_attempts.push({route:url.slice(BASE.length), attempts:body.call_attempts, outcome_source:body.outcome_source, observed_utc:utc()});
     // Keep provider facts only: hashes, timing and declared identity, never reply text.
     for (const key of ['model_calls', 'evidence_audit_model_calls']) {
       for (const call of (body && Array.isArray(body[key]) ? body[key] : [])) {
@@ -173,7 +174,7 @@ function check(name, condition, detail) {
   const status = () => panel.locator('p[role="status"]');
   const variant = async () => (await board.count()) ? board.getAttribute('data-variant') : null;
   const approve = () => board.getByRole('button', { name: 'Approve this exact item set and apply' });
-  const blocks = ['Model output (not verified)', 'Application checks', 'Your decision'];
+  const blocks = ['Application checks', 'Your decision'];
 
   // Press a control and return the server's own JSON answer to the call that it starts.
   async function submit(press, route, timeout) {
@@ -285,11 +286,24 @@ function check(name, condition, detail) {
       check(`${flow}: the evidence table lists every supplied item once for "${control.label}", with its own description, and marks exactly the approved ones`,
         Boolean(body) && body.fresh && body.rows.length === baseline.feed.items.length && new Set(body.rows.map(row => row.id)).size === body.rows.length
           && same(marked, control.item_ids) && body.rows.every(row => row.marked === row.member)
-          && body.rows.every(row => row.description === (expectedText[row.id] || 'No description supplied'))
-          && body.rows.every(row => row.member ? /^(selected|match)/.test(row.evidence) : !/^selected/.test(row.evidence)),
+          && body.rows.every(row => row.description === (expectedText[row.id] || 'No description in the item data'))
+          && body.rows.every(row => row.member ? /^(selected|match)/i.test(row.evidence) : !/^selected/i.test(row.evidence)),
         { rows: body ? body.rows.length : 0, marked });
     }
+    if (review.vocabulary) for (const selected of review.vocabulary.controls) {
+      const expectedIds = [...new Set(selected.terms.flatMap(term => term.item_ids))].sort((a,b)=>a-b);
+      const approved = controls.find(control => control.label === selected.label);
+      check(`${flow}: membership equals the union of chosen term members`, Boolean(approved) && same(approved.item_ids, expectedIds), {label:selected.label, expectedIds, actual:approved?.item_ids});
+    }
     const expected = expectedFeed(baseline, controls);
+    if (expected.complete) {
+      const expectedOrder = Object.keys(expected.scores).map(Number).sort((a,b)=>expected.scores[b]-expected.scores[a] || a-b);
+      check(`${flow}: preview order and eligible count match independently calculated effects`, same(review.feed.items.map(item=>item.item_id), expectedOrder) && review.feed.available_items === expected.kept.length);
+      if (flow === 'mixed') {
+        const beforeOrder=baseline.feed.items.map(item=>item.item_id);
+        check('mixed: at least one boosted item moves higher', controls.filter(c=>c.operation==='boost').flatMap(c=>c.item_ids).some(id=>expectedOrder.indexOf(id)>=0 && expectedOrder.indexOf(id)<beforeOrder.indexOf(id)));
+      }
+    }
     const resultOf = id => { const row = groups.flatMap(group => group.rows).find(candidate => candidate.id === id); return row ? row.result : null; };
     check(`${flow}: the table states the result for each item that the approved controls remove`,
       expected.removed.every(id => resultOf(id) === 'Removed from the feed'), { removed: expected.removed });
@@ -335,7 +349,7 @@ function check(name, condition, detail) {
       { eligible: undoPreview.feed.available_items });
     await show(`${flow}: undo review (step 1 of 2); nothing changed yet`, approve(), 3000);
     if (!await gate(`${flow}-undo`, board)) { record.outcome = 'undo declined; control still applied'; return; }
-    await submit(() => approve().click(), '/api/semantic/apply', 30000);
+    await submit(() => board.getByRole('button', {name:'Approve the undo',exact:true}).click(), '/api/semantic/apply', 30000);
     await page.waitForFunction(() => { const node = document.querySelector('section[aria-label="Review board"] [aria-label="What changed"]'); return node && node.dataset.kind === 'undo'; }, null, { timeout: 30000 });
     const restored = await serverState();
     record.eligible_after_undo = restored.feed.available_items;
@@ -365,7 +379,7 @@ function check(name, condition, detail) {
   // The description route: call 1 reads the action, call 2 selects items with quotations.
   async function describedFlow(flow) {
     const { baseline, record } = await startFlow(flow);
-    await panel.locator('#semantic-backend').selectOption('configured_model');
+    await panel.locator('#semantic-backend input[value="configured_model"]').check();
     const request = await insertRequest('configured_model');
     await shot(`${flow}-request`);
     await show(`${flow}: request entered; it names no category`, panel.locator('#semantic-text'), 4000);
@@ -375,7 +389,7 @@ function check(name, condition, detail) {
     if (!answer.body || answer.body.ready !== true) return stopped(flow, record, answer);
     const [control] = newControls(answer.body, baseline);
     record.interpreted_action = `${control.operation}/${control.strength}`;
-    check(`${flow}: original request is shown unchanged in the model output block`, (await board.locator('section[aria-label="Model output (not verified)"]').innerText()).includes(request));
+    check(`${flow}: original request is shown unchanged in the model output block`, (await board.locator('section[data-block="reply"]').innerText()).includes(request));
     await shot(`${flow}-review`);
     await applyAndUndo(flow, baseline, record, answer.body);
   }
@@ -383,7 +397,7 @@ function check(name, condition, detail) {
   const flows = {
     async manual() {
       const { baseline, record } = await startFlow('manual');
-      await panel.locator('#semantic-backend').selectOption('manual_category');
+      await panel.locator('#semantic-backend input[value="manual_category"]').check();
       const category = panel.locator('#semantic-category');
       if (await category.evaluate(node => node.tagName) === 'SELECT') await category.selectOption(scenario.manualCategory); else await category.fill(scenario.manualCategory);
       await panel.locator('#semantic-operation').selectOption('exclude');
@@ -393,7 +407,7 @@ function check(name, condition, detail) {
       const answer = await submit(() => panel.getByRole('button', { name: 'Show the proposed change' }).click(), '/api/semantic/preview', 30000);
       check('manual: review appears', answer.body && answer.body.ready === true && await variant() === 'review', { http: answer.http });
       check('manual: the server reported no model call for this review', receipt.provider_calls.length === callsBefore && (answer.body.model_calls || []).length === 0, { model_calls: receipt.provider_calls.length - callsBefore });
-      check('manual: the model output block says that no model was used', /No model was used\./.test(await board.locator('section[aria-label="Model output (not verified)"]').innerText()));
+      check('manual: the model output block says that no model was used', /No model was used\./.test(await board.locator('section[data-block="reply"]').innerText()));
       await shot('manual-review');
       await applyAndUndo('manual', baseline, record, answer.body);
       record.provider_calls = 0;
@@ -401,7 +415,7 @@ function check(name, condition, detail) {
 
     async category() {
       const { baseline, record } = await startFlow('category');
-      await panel.locator('#semantic-backend').selectOption('staged');
+      await panel.locator('#semantic-backend input[value="staged"]').check();
       await insertRequest('staged');
       await panel.locator('#semantic-operation').selectOption('exclude');
       await shot('category-objective');
@@ -417,7 +431,7 @@ function check(name, condition, detail) {
         fs.writeFileSync(path.join(OUT, 'category-resolution.txt'), await resolution.innerText());
         await show('category: the model returned competing meanings; waiting for the reviewer', resolution, 6000);
         if (!await gate('category-resolution', resolution)) { record.outcome = 'declined at competing meanings; nothing applied'; return; }
-        await resolution.getByRole('radio').check();
+        await resolution.getByRole('checkbox').check();
         answer = await submit(() => resolution.getByRole('button', { name: 'Continue to definition review' }).click(), '/api/semantic/definition/resolve', 30000);
       }
       if (await variant() !== 'definition') return stopped('category', record, answer);
@@ -448,7 +462,7 @@ function check(name, condition, detail) {
 
     async vocabulary() {
       const { baseline, record } = await startFlow('vocabulary');
-      await panel.locator('#semantic-backend').selectOption('vocabulary');
+      await panel.locator('#semantic-backend input[value="vocabulary"]').check();
       const listed = panel.locator('[aria-label="Existing categories and tags in the scope"]');
       await page.waitForFunction(() => /Categories:/.test(document.querySelector('[aria-label="Existing categories and tags in the scope"]')?.innerText || ''), null, { timeout: 30000 });
       const terms = await (await context.request.post(`${BASE}/api/semantic/vocabulary/terms`, { headers: headers(), data: { user_id: USER, candidate_ids: baseline.feed.baseline_items.slice(0, 10) } })).json();
@@ -470,7 +484,7 @@ function check(name, condition, detail) {
       check('vocabulary: every check that the server made is shown as passed in the application checks block',
         vocabulary.checks.length > 0 && vocabulary.checks.every(item => item.passed === true && checksText.includes(item.check))
           && await board.locator('section[aria-label="Application checks"] li[data-passed="false"]').count() === 0, { checks: vocabulary.checks.length });
-      const output = await board.locator('section[aria-label="Model output (not verified)"]').innerText();
+      const output = await board.locator('section[data-block="reply"]').innerText();
       check('vocabulary: the model output block shows the span of the request and each chosen name',
         vocabulary.controls.every(control => output.includes(control.intent_span) && control.terms.every(term => output.includes(`"${term.value}"`))), record.chosen_terms);
       check('vocabulary: the chosen names are categories or tags, and the request text is not changed',
@@ -486,7 +500,7 @@ function check(name, condition, detail) {
 
     async mixed() {
       const { baseline, record } = await startFlow('mixed');
-      await panel.locator('#semantic-backend').selectOption('vocabulary');
+      await panel.locator('#semantic-backend input[value="vocabulary"]').check();
       await insertRequest('vocabulary:mixed');
       await shot('mixed-request');
       await show('mixed: one request with two preferences', panel.locator('#semantic-text'), 4000);
@@ -494,6 +508,7 @@ function check(name, condition, detail) {
       record.provider_calls = callsIn(answer.body);
       if (!answer.body || answer.body.ready !== true) return stopped('mixed', record, answer);
       const controls = newControls(answer.body, baseline);
+      check('mixed: the bundled request produces both distinct controls', controls.length === 2 && controls.some(c => c.operation === 'boost') && controls.some(c => c.operation === 'exclude'));
       record.controls_in_one_review = controls.length;
       record.authored_expectation = 'two controls in one review';
       record.matches_authored_expectation = controls.length === 2;
@@ -507,7 +522,7 @@ function check(name, condition, detail) {
 
     async outcomes() {
       const { baseline, record } = await startFlow('outcomes');
-      await panel.locator('#semantic-backend').selectOption('vocabulary');
+      await panel.locator('#semantic-backend input[value="vocabulary"]').check();
       record.cases = [];
       for (const [name, expected] of Object.entries(OUTCOME_CASES)) {
         const key = 'vocabulary:' + name;
@@ -516,12 +531,13 @@ function check(name, condition, detail) {
         const answer = await submit(() => panel.getByRole('button', { name: 'Interpret my request' }).click(), '/api/semantic/vocabulary/preview', STAGE_TIMEOUT);
         const body = answer.body || {};
         const observed = body.ready === true ? 'ready' : body.status || 'HTTP ' + answer.http;
+        if (receipt.status.provider?.live_model === false) check(`outcomes: authored ${name} has its exact expected status`, observed === expected, {observed, expected});
         // A model can answer in another class than the authored reply. That is recorded, not failed.
         const entry = { case: name, request, authored_expectation: expected, observed, matches_authored_expectation: observed === expected,
           model_calls_reported: Array.isArray(body.model_calls) ? body.model_calls.length : null, reason: typeof body.reason === 'string' ? body.reason.slice(0, 300) : null };
         record.cases.push(entry);
         save();
-        if (name === 'negated') check('outcomes: the negated command is stopped by the application without a model call', body.ready !== true && entry.model_calls_reported === 0, { observed });
+        if (name === 'negated') check('outcomes: the negated command is stopped by the application without a model call', body.ready !== true && body.outcome_source === 'application_check' && body.calls_attempted === 0 && entry.model_calls_reported === 0, { observed });
         if (body.ready === true) {
           // The model proposed a change where the authored reply does not. The script never applies it.
           await shot(`outcomes-${name}-unexpected-proposal`);
@@ -533,7 +549,7 @@ function check(name, condition, detail) {
           check(`outcomes: ${name}: the page shows a result without a change (${observed}) and offers no Apply`,
             (answer.http !== 200 ? await variant() === 'failure' : await shown.getAttribute('data-status') === observed)
               && /NOTHING WAS APPLIED/.test(text) && /Nothing was applied\./.test(text) && await approve().count() === 0 && body.plan_id === undefined, { observed, expected });
-          entry.alternatives_shown = await board.locator('[aria-label="Alternatives named by the model"] li').count();
+          entry.alternatives_shown = await board.locator('[aria-label="Alternatives named in the reply"] li').count();
           await shot(`outcomes-${name}`);
           await show(`outcomes: ${name}: ${observed}; nothing applied`, board, 5000);
         }

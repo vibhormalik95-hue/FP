@@ -36,10 +36,10 @@ const browserTimers = {
   every: (work, wait) => { if (typeof window === 'undefined') return () => {}; const id = window.setInterval(work, wait); return () => window.clearInterval(id); },
 };
 
-export default function SemanticPanel({api,user,resetKey,onFeed,onActive,onUnavailable,scenarioRequests,categories,defaultOpen,portal,reviewHost,provider,dataNote,timers=browserTimers}) {
+export default function SemanticPanel({api,user,resetKey,onFeed,onActive,onUnavailable,scenarioRequests,categories=[],defaultOpen,portal,reviewHost,provider,dataNote,timers=browserTimers}) {
   const [open,setOpen]=useState(Boolean(defaultOpen)),[saved,setSaved]=useState(null),[pending,setPending]=useState(null);
   const [text,setText]=useState(''),[typedLabel,setTypedLabel]=useState(null),[count,setCount]=useState(10);
-  const [backend,setBackend]=useState('manual_category'),[category,setCategory]=useState('category_1');
+  const [backend,setBackend]=useState('manual_category'),[category,setCategory]=useState('');
   const [operation,setOperation]=useState('boost'),[strength,setStrength]=useState('standard'),[mode,setMode]=useState('merge');
   const [actionSource,setActionSource]=useState('ollama');
   const [definition,setDefinition]=useState(null),[evidenceReviewed,setEvidenceReviewed]=useState(false);
@@ -61,7 +61,7 @@ export default function SemanticPanel({api,user,resetKey,onFeed,onActive,onUnava
   // `generation` cancels a review that is in flight when an input changes. The first load of the
   // applied controls has its own counter, so that a default value set during the load does not discard it.
   const generation=useRef(0),activeRequest=useRef(null),termsRequest=useRef(0),loadRequest=useRef(0);
-  const reviewOpen=useRef(false),mounted=useRef(false);
+  const reviewOpen=useRef(false),mounted=useRef(false),adoptionNotice=useRef(null);
   reviewOpen.current=Boolean(pending||definition||resolution);
   const authored=provider?.live_model===false,words=sourceWords(authored);
   const choices=scopeChoices(saved?saved.feed.baseline_items.length:10);
@@ -87,10 +87,10 @@ export default function SemanticPanel({api,user,resetKey,onFeed,onActive,onUnava
   const inputKey=JSON.stringify([backend,text,label,count,operation,strength,mode,actionSource,category,target,explicitTarget]);
   useEffect(()=>{if(!mounted.current){mounted.current=true;return;}
     ++generation.current;activeRequest.current=null;setWorking(false);const had=reviewOpen.current;clearReview();setFailure(null);setRecordFresh(false);setStoppedStage(null);
-    setMessage(had?'You changed the request. The review was discarded. Nothing was applied.':'');},[inputKey]);
+    setMessage(adoptionNotice.current||(had?'You changed the request. The review was discarded. Nothing was applied.':''));adoptionNotice.current=null;},[inputKey]);
   useEffect(()=>{setTargetConfirmed(false);},[backend,text,target,count,operation,strength,mode,explicitTarget]);
   useEffect(()=>{setOutcome(null);},[backend]);
-  useEffect(()=>{if(Array.isArray(categories)&&categories.length&&!categories.includes(category))setCategory(categories[0]);},[categories,category]);
+  useEffect(()=>{if(category&&!categories.includes(category))setCategory('');},[categories,category]);
   // The existing categories and tags of the evidence scope. No model call.
   useEffect(()=>{const id=++termsRequest.current;setTerms(null);setTermsError('');
     if(!open||user===null||!scopeKey)return;
@@ -135,7 +135,7 @@ export default function SemanticPanel({api,user,resetKey,onFeed,onActive,onUnava
   function expiredNow(stage,reason){clearReview();setOutcome({page:'expired',status:'expired',reason,method:backend,request_text:modelMethod?text:undefined});setStoppedStage(stage);
     setMessage('The review has expired. Nothing was applied.');shown();}
   const isExpiry=e=>/expired|superseded|No matching/i.test(e?.message||'')&&!e?.kind;
-  function review(){run(async id=>{clearReview();setOutcome(null);const r=saved||await load(id);if(!r)return;
+  function review(){if(backend==='manual_category'&&!categories.includes(category))return;run(async id=>{clearReview();setOutcome(null);const r=saved||await load(id);if(!r)return;
     const candidate_ids=r.feed.baseline_items.slice(0,scope);
     const common={user_id:user,mode,operation,strength:operation==='exclude'?'none':strength,candidate_ids};
     const p=backend==='staged'?await api('semantic/definition/preview',{...common,objective:text}):
@@ -187,6 +187,7 @@ export default function SemanticPanel({api,user,resetKey,onFeed,onActive,onUnava
     setMessage(late?'The expired review is closed. Nothing was applied.':'Review discarded. Nothing was applied.');}
   // A meaning that the reply named becomes part of the person's own request. Nothing is sent until the person submits it.
   function adoptAlternative(value){if(typeof value!=='string'||!value.trim())return;
+    adoptionNotice.current='The meaning is in your request. Nothing was sent. Review it before submitting.';
     if(backend==='vocabulary'){setText(adoptText(text,value));setMessage('The meaning is added to your request in the panel. Nothing was sent. Submit it when you are ready.');}
     else{setExplicitTarget(true);setTarget(value);setMessage('The meaning is now your stated target in the panel. Confirm it and choose the action. Nothing was sent.');}}
   function insertExample(option){setText(option.text);if(scenarioRequests?.label&&backend==='configured_model')setLabel(scenarioRequests.label);}
@@ -253,9 +254,10 @@ export default function SemanticPanel({api,user,resetKey,onFeed,onActive,onUnava
       </div>}
       {backend==='manual_category'?<>
         <label className="field-label" htmlFor="semantic-category">Existing category</label>
-        {Array.isArray(categories)&&categories.length?<select id="semantic-category" disabled={disabled} value={category} onChange={e=>setCategory(e.target.value)}>
-          {categories.map(c=><option key={c} value={c}>{c}</option>)}</select>
-          :<input id="semantic-category" disabled={disabled} value={category} onChange={e=>setCategory(e.target.value)}/>}
+        <select id="semantic-category" disabled={disabled||!categories.length} value={categories.includes(category)?category:''} onChange={e=>setCategory(e.target.value)}>
+          <option value="">Choose an existing category</option>
+          {categories.map(c=><option key={c} value={c}>{c}</option>)}
+        </select>
       </>:<>
         <label className="field-label" htmlFor="semantic-text">{category_method?'Describe the category that you want':'Your request'}</label>
         <textarea id="semantic-text" rows={3} maxLength={2000} disabled={disabled} value={text} onChange={e=>setText(e.target.value)}
@@ -289,7 +291,7 @@ export default function SemanticPanel({api,user,resetKey,onFeed,onActive,onUnava
       <select id="semantic-mode" disabled={disabled} value={mode} onChange={e=>setMode(e.target.value)}>
         <option value="merge">Add to the applied controls</option><option value="replace">Replace every applied control</option></select>
       <p className="help">"Add" keeps the applied controls. A control with the same name is replaced.</p>
-      <button className="primary" disabled={disabled||!saved||(!category_method&&backend!=='vocabulary'&&!label.trim())||(modelMethod&&!text.trim())||(explicitTarget&&(!target.trim()||!confirmedNow))} onClick={review}>
+      <button className="primary" disabled={disabled||!saved||(!modelMethod&&!categories.includes(category))||(!category_method&&backend!=='vocabulary'&&!label.trim())||(modelMethod&&!text.trim())||(explicitTarget&&(!target.trim()||!confirmedNow))} onClick={review}>
         {working?waitText:backend==='staged'?'Propose a definition for review':backend==='manual_category'?'Show the proposed change':'Interpret my request'}</button>
       {working&&busyCall&&<button type="button" className="secondary" onClick={stopWaiting}>Stop waiting</button>}
       {working&&busyCall&&<p className="help">{authored?'The server reads a hand-written reply.':'A call can take minutes. "Stop waiting" does not stop the call on the server. It only discards the result on this page.'}</p>}

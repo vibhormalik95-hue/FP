@@ -1,7 +1,7 @@
 // Tests of the display logic with authored data. No browser and no model.
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {actionWords, changeRecord, exampleOptions, feedDiff, labelsByItem, localChecks, netEffects, outcomeCopy, planRows,
+import {actionWords, changeRecord, exampleOptions, feedDiff, labelsByItem, localChecks, netEffects, outcomeView, planRows,
   resultWords, routeOf, splitGroups, stageStates, STAGES, termWords} from '../src/reviewModel.js';
 
 const model = {backend: 'authored', model: 'none', digest: 'd'.repeat(64)};
@@ -38,10 +38,10 @@ test('action and term wording is plain and complete', () => {
 test('net effect: removal wins, opposite rank changes cancel', () => {
   const net = netEffects([group('up', boost, [1, 2]), group('out', exclude, [2]), group('down', {operation: 'reduce', strength: 'standard'}, [1])]);
   assert.equal(resultWords(net[2]), 'Removed from the feed');
-  assert.equal(resultWords(net[1]), 'Unchanged');
+  assert.equal(resultWords(net[1]), 'Unchanged (the score changes cancel)');
   assert.equal(resultWords(net[3]), 'Unchanged');
-  assert.equal(resultWords(netEffects([group('up', boost, [4])])[4]), 'Ranked higher');
-  assert.equal(resultWords(netEffects([group('down', {operation: 'reduce', strength: 'light'}, [4])])[4]), 'Ranked lower');
+  assert.equal(resultWords(netEffects([group('up', boost, [4])])[4]), 'Score +0.25');
+  assert.equal(resultWords(netEffects([group('down', {operation: 'reduce', strength: 'light'}, [4])])[4]), 'Score -0.10');
 });
 
 test('a plan is split into new, kept and removed controls by the sealed revision', () => {
@@ -82,18 +82,19 @@ test('description, manual and staged routes keep their own evidence wording', ()
     field_evidence: [{item_id: 1, verdict: 'match', evidence_quote: 'q1', reason: 'because'}, {item_id: 2, verdict: 'unknown', evidence_quote: '', reason: 'withheld'}],
     evidence_audit: {primary_envelope: {field_evidence: [{item_id: 1, verdict: 'match', evidence_quote: 'q1'}, {item_id: 2, verdict: 'match', evidence_quote: 'q2'}]},
       assessment: {assessments: [{item_id: 1, assessment: 'supported', quote: 'q1'}, {item_id: 2, assessment: 'not_stated', quote: ''}]}, withheld: [{item_id: 2}]}}}}, [1, 2]);
-  const rows = planRows({groups: [described, manual, staged], scope_items: []}, {groups: [manual]}, {});
-  assert.equal(rows[0].rows[0].evidence, 'selected · "eats a meal" (caption)');
+  const sorted = planRows({groups: [described, manual, staged], scope_items: []}, {groups: [manual]}, {});
+  const rows = ['d','m','s'].map(label => sorted.find(b=>b.label===label));
+  assert.equal(rows[0].rows[0].evidence, 'selected · "eats a meal" (description)');
   assert.equal(rows[0].rows[1].evidence, 'not selected: no quotation was cited for this item');
   assert.equal(rows[1].isNew, false);
   assert.equal(rows[1].rows[1].evidence, 'selected: its category is K1');
   assert.equal(rows[1].rows[0].evidence, 'not selected: its category is not K1');
-  assert.equal(rows[2].rows[0].evidence, 'match · "q1"');
+  assert.equal(rows[2].rows[0].first, 'matches the definition · "q1"');
   assert.equal(rows[2].rows[0].second, 'supported · "q1"');
   // The first call said match, the separate assessment disagreed: the final verdict is unknown.
-  assert.equal(rows[2].rows[1].evidence, 'match · "q2"');
-  assert.equal(rows[2].rows[1].second, 'not_stated');
-  assert.equal(rows[2].rows[1].reason, 'withheld');
+  assert.equal(rows[2].rows[1].first, 'matches the definition · "q2"');
+  assert.equal(rows[2].rows[1].second, 'not stated');
+  assert.equal(rows[2].rows[1].final, 'Not selected: the two calls do not agree');
   assert.equal(rows[2].rows[1].member, false);
   assert.equal(rows[0].rows[0].labels, null);
 });
@@ -128,37 +129,26 @@ test('bundled examples follow the key convention of the server', () => {
   assert.deepEqual(exampleOptions(null, 'vocabulary'), []);
 });
 
-test('each result without a change has a plain heading and a next step', () => {
-  for (const status of ['clarify', 'no_match', 'unsupported', 'error', 'cancelled']) for (const method of ['vocabulary', 'configured_model', 'staged', 'manual_category']) {
-    const copy = outcomeCopy(status, method);
-    assert.ok(copy.heading.length > 10);
-    assert.ok(copy.next.length >= 1 && copy.next.every(line => line.length > 10));
+test('outcome provenance never confuses provider failures with pre-call checks', () => {
+  for (const source of ['application_check', 'provider_failure', 'reply_rejected', 'model_report']) {
+    const view = outcomeView({outcome_source: source, status: 'no_match', method: 'vocabulary', reason: 'Unverified reason'});
+    assert.ok(view.heading.length > 10);
+    assert.ok(view.next.length);
+    assert.equal(view.first.join(' ').includes('No model call was made'), source === 'application_check');
+    assert.equal(view.replyReason, source === 'model_report' ? 'Unverified reason' : null);
   }
-  assert.equal(outcomeCopy('no_match', 'vocabulary').heading, 'No existing category or tag matches the request');
-  assert.equal(outcomeCopy('unknown status', 'vocabulary').heading, 'The step stopped with an error');
-  // The advice about alternatives appears only when the reply named some; a stop by the application's own guard says so.
-  assert.equal(outcomeCopy('clarify', 'vocabulary').next.some(line => line.includes('alternatives')), false);
-  assert.equal(outcomeCopy('clarify', 'vocabulary', {alternatives: true}).next.some(line => line.includes('alternatives')), true);
-  assert.ok(outcomeCopy('clarify', 'vocabulary', {guard: true}).next[0].includes('positive instruction'));
+  assert.equal(outcomeView({status:'no_match',method:'vocabulary'}).heading, 'Nothing matches the request');
 });
 
-test('the stage line reflects the phase of the control', () => {
-  const states = input => stageStates(input).map(s => s.state).join(' ');
-  assert.deepEqual(stageStates().map(s => s.name), STAGES);
-  assert.equal(states({method: 'vocabulary', phase: 'idle'}), 'now todo todo todo todo todo');
-  assert.equal(states({method: 'vocabulary', phase: 'working', busyStage: 'Interpretation'}), 'done now todo todo todo todo');
-  assert.equal(states({method: 'staged', phase: 'working', busyStage: 'Evidence'}), 'done done now todo todo todo');
-  assert.equal(states({method: 'staged', phase: 'interpretation'}), 'done now todo todo todo todo');
-  assert.equal(states({method: 'vocabulary', phase: 'preview'}), 'done done done now todo todo');
-  assert.equal(states({method: 'vocabulary', phase: 'preview', historyAction: 'undo'}), 'done done done done done now');
-  assert.equal(states({method: 'vocabulary', phase: 'applied'}), 'done done done done done now');
-  assert.equal(states({method: 'vocabulary', phase: 'undone'}), 'now todo todo todo todo todo');
-  // The manual method has no interpretation by a model, in every phase.
-  for (const phase of ['idle', 'working', 'interpretation', 'preview', 'applied', 'undone'])
-    assert.equal(stageStates({method: 'manual_category', phase, busyStage: 'Evidence'})[1].state, 'skipped');
-  assert.equal(stageStates({method: 'manual_category', phase: 'interpretation', stopped: true})[2].state, 'now');
-  assert.equal(stageStates({method: 'vocabulary', phase: 'interpretation', stopped: true})[1].note, 'needs your input');
-  assert.equal(stageStates({method: 'vocabulary', phase: 'applied'})[5].note, 'available');
+test('stage states name the actual interrupted stage and restore undo state', () => {
+  const states = input => stageStates(input).map(s=>s.state).join(' ');
+  assert.deepEqual(stageStates().map(s=>s.name), STAGES);
+  assert.equal(states({method:'vocabulary',phase:'idle'}),'now todo todo todo todo todo');
+  assert.equal(states({method:'staged',phase:'working',stage:'Evidence'}),'done done now todo todo todo');
+  assert.equal(states({method:'vocabulary',phase:'preview',historyAction:'undo'}),'done done done done done now');
+  assert.equal(stageStates({method:'staged',phase:'stopped',stage:'Evidence'})[2].text,'now: stopped; nothing applied');
+  assert.equal(stageStates({method:'manual_category',phase:'working',stage:'Interpretation'})[1].state,'skipped');
+  assert.equal(stageStates({phase:'undone'})[5].state,'done');
 });
 
 test('local checks repeat only what the record lets the page recompute', () => {
@@ -185,7 +175,7 @@ test('local checks repeat only what the record lets the page recompute', () => {
     evidence_audit: {assessment: {assessments: [{item_id: 1}, {item_id: 2}]}, withheld: [{item_id: 2}, {item_id: 3, missing_literal_terms: ['20']}]}}}}, [1, 2]);
   const stagedChecks = localChecks(staged, {});
   assert.ok(stagedChecks.every(c => c.passed === true), JSON.stringify(stagedChecks));
-  assert.ok(stagedChecks.some(c => c.detail === 'items 2'));
+  assert.ok(stagedChecks.some(c => c.detail === 'item 2'));
 });
 
 test('the change record states what Apply and Undo did', () => {
