@@ -4,7 +4,9 @@ Updated 14 November 2026 (UTC). This page separates published implementation fro
 
 ## Published implementation
 
-Commit `acbf5895b05cf44c1a11676cbd71b83d2337ada7` publishes the reviewed interface and documentation update on `codex/comp9500-llm-upgrades-20261110`. The interface distinguishes authored fixture data from verified dataset provenance and reports category availability explicitly. The replacement frontend asset and its source are included; two obsolete assets were removed. Seven research-label tests passed in the publication checkout. This is an incremental source release, not a deployment or live-model acceptance result.
+The inspected source snapshot is commit `8a12661a36f0173e13c26964c4867e7bb52f2380` on `codex/comp9500-llm-upgrades-20261110`. It includes the integrated application, built interface, demo quick-start, file-relay and CLI operator, offline regression tests, and frozen-input byte checks. The source and interface are no longer separate unpublished candidates. Their inclusion does not establish successful Windows CLI inference or browser acceptance.
+
+The earlier interface release `acbf5895b05cf44c1a11676cbd71b83d2337ada7` distinguished authored fixture data from verified dataset provenance and reported category availability explicitly. Its seven passing research-label tests are a historical result, not a test count for the current snapshot.
 
 ## Evidence for the three control paths
 
@@ -16,13 +18,13 @@ Commit `acbf5895b05cf44c1a11676cbd71b83d2337ada7` publishes the reviewed interfa
 
 A separate isolated recording fixture now accepts explicitly supplied inference factories while leaving them disabled by default. Source review passed. Guarded checks confirmed that supplied adapters are visible, absent adapters remain unavailable, and invalid factory values are rejected. No inference was invoked in these checks. The fixture is preparation for a real demonstration, not the demonstration itself.
 
-The latest runtime changes are developed separately from the published interface snapshot. They must be integrated and checked together before claiming that the published application provides the final hosted workflow. No final video is included in this release.
+The runtime and built interface are now in the same published tree. End-to-end acceptance still needs results tied to the exact code and execution route used. No final video is tracked in this source snapshot.
 
 ## Remaining acceptance
 
 1. Complete the actual hosted new-category flow, including source-evidence review, Apply and exact Undo restoration.
 2. Verify the three required controls in the actual demonstration interface, retaining the requests, source items and observed results.
-3. Integrate the accepted runtime with the published interface and rerun the relevant tests and build checks.
+3. Verify the integrated runtime and interface together on the intended execution route, retaining the exact commit and test results.
 4. Record the verified application and provide the professor with the video and accurate requirement-to-evidence summary.
 
 A passing offline suite, configured adapter, or published commit does not substitute for these observations. Historical failed calls and their original outcomes remain in the dated evidence and repository history.

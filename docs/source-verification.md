@@ -37,6 +37,8 @@ The separate package-root `SOURCE-FILE-SHA256.txt` covers the source tree within
 
 Offline checks and builds do not establish hosted-model behavior or successful browser interaction. The automatic personal launch remains disabled.
 
-## Current cited-context interface
+## Published interface snapshot
 
-The integrated definition-context interface was rebuilt using existing dependencies matching package-lock.json, without installation. All 59 offline Node checks passed and Vite transformed 32 modules. The build contains index-C2wfZ-Ft.js and index-hBnJv3xo.css. The complete dist tree reproduces the context patch author's build exactly; scripts/check_personal_ui_index.py pins all three current asset paths and hashes. Its seven mocked-index checks pass within the current aggregate. No real Git index, browser or server was exercised. Earlier build and missing-dependency receipts remain historical evidence.
+At commit `8a12661a36f0173e13c26964c4867e7bb52f2380`, the tracked build contains `index-AaRV2x9H.js`, `index-Bl6ksYFD.css` and `web/dist/index.html`. `scripts/check_personal_ui_index.py` pins these three paths and their SHA-256 values. Check the staged bytes with that script before publishing a successor.
+
+The earlier cited-context build used `index-C2wfZ-Ft.js` and `index-hBnJv3xo.css`. Its recorded 59 offline Node checks, 32 transformed Vite modules and seven mocked-index checks describe that earlier build, not the current assets. Those checks did not exercise a real browser or server. Historical receipts remain unchanged.
