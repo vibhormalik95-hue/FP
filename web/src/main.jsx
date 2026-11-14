@@ -131,8 +131,8 @@ function App({client, personal, onLock}) {
   const dataNote = dataKind === 'scenario' ? `Data of this review: invented items of a bundled scenario. Scores: ${diagnostic ? 'the diagnostic scorer, a fixed formula' : 'the trained recommender'}.`
     : dataKind === 'fixture' ? 'Data of this review: the built-in fixture, not the research dataset.' : '';
   const viewIntro = view === 'steering'
-    ? (noProvider ? 'Language controls. This server has no model provider, so only the manual category control works here. You choose an existing category, review the change and approve it. A deterministic filter applies exactly the set that you approved, and you can undo each change.'
-      : `Language controls. ${authored ? 'A hand-written reply stands in for a model here.' : 'A model proposes a change from your words.'} The application checks the proposal, and you review it. A deterministic filter then applies exactly the set that you approved, in the same way as for a category that you choose by hand. A proposal does not change the feed, and you can undo each change.`)
+    ? (noProvider ? 'This server has no model provider, so only the manual category control works here. You choose an existing category, review the change and approve it. A deterministic filter applies exactly the set that you approved, and you can undo each change.'
+      : `${authored ? 'A hand-written reply stands in for a model here.' : 'A model proposes a change from your words.'} The application checks the proposal, and you review it. A deterministic filter then applies exactly the set that you approved, in the same way as for a category that you choose by hand. A proposal does not change the feed, and you can undo each change.`)
       + ' Use this view to see how the controls behave. It does not measure accuracy or satisfaction.'
     : view === 'compare'
     ? 'Compare A to E. The first ten items of each condition for the same user and the same inputs. This is a preview of the current inputs, not an experimental result.'

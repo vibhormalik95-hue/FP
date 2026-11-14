@@ -229,7 +229,7 @@ export default function SemanticPanel({api,user,resetKey,onFeed,onActive,onUnava
     :value==='induction'?name:`${name}${tail} (${!offered[value]&&noProvider?'needs a model provider':words.suffix})`;
   const waitText=busyCall?`${words.waiting}: ${elapsed} s`:'Working...';
   return <details open={open} onToggle={e=>setOpen(e.currentTarget.open)}>
-    <summary>Language controls: change the feed with a reviewed request</summary>
+    <summary>Change the feed with a reviewed request</summary>
     {open&&<section className="panel" aria-label="Language controls panel" aria-busy={working?'true':'false'}>
       <h3>One control, six stages</h3>
       <ol className="stage-line" aria-label="Stages of this control">{stages.map(s=><li key={s.name} data-state={s.state} aria-current={s.state==='now'?'step':undefined}>

@@ -143,7 +143,7 @@ function check(name, condition, detail) {
     if (locator) { try { await locator.first().evaluate(node => node.scrollIntoView({ block: 'start', behavior: 'instant' }), null, { timeout: 5000 }); } catch (_) { /* region not present */ } }
     await page.waitForTimeout(pause);
   }
-  let session = null;
+  let session = null, lastFocus = null;
   const pageErrors = [];
   page.on('pageerror', error => pageErrors.push(error.message));
   page.on('response', async response => {
@@ -223,6 +223,9 @@ function check(name, condition, detail) {
     try { body = await response.json(); } catch (_) { /* an error page without JSON */ }
     // The page shows the result in the same tick; wait until it no longer says that it works.
     await page.waitForFunction(() => { const button = document.querySelector('section[aria-label="Language controls panel"] button.primary'); return button && !/^(Waiting for the provider|Reading the authored reply|Working)/.test(button.innerText); }, null, { timeout: 30000 });
+    // Where the focus is right after the result, before the script scrolls or takes a screenshot.
+    try { await page.waitForFunction(() => document.activeElement && document.activeElement.id === 'review-heading', null, { timeout: 3000 }); } catch (_) { /* recorded below */ }
+    lastFocus = await focusState();
     return { http: response.status(), body };
   }
 
@@ -326,6 +329,8 @@ function check(name, condition, detail) {
     const controls = newControls(review, baseline);
     record.controls = controls;
     record.selected_ids = [...new Set(controls.flatMap(control => control.item_ids))].sort((a, b) => a - b);
+    // The script does not scroll here: the page itself must bring the result into view and move the focus to it.
+    check(`${flow}: the page moves the focus to the heading of the review and shows it in the window`, Boolean(lastFocus && lastFocus.heading && lastFocus.in_view), lastFocus);
     const preview = await serverState();
     check(`${flow}: the preview left the applied groups, the revision and the applied feed unchanged`, same(preview.feed, baseline.feed) && same(preview.groups, baseline.groups) && preview.revision === baseline.revision,
       { applied_groups: preview.groups.length, revision: preview.revision, eligible: preview.feed.available_items });
@@ -393,6 +398,7 @@ function check(name, condition, detail) {
     const applied = await approveAndRead(flow, 'Approve this exact item set and apply', 'apply');
     const appliedIds = applied.feed.items.map(item => item.item_id);
     record.eligible_after_apply = applied.feed.available_items;
+    check(`${flow}: after Apply the focus is on the heading "What changed", in the window`, await headingInView('What changed'));
     check(`${flow}: Apply removed exactly the items of the approved removal controls`,
       applied.feed.available_items === baseline.feed.available_items - expected.removed.length
         && expected.removed.every(id => !appliedIds.includes(id)) && (!expected.complete || same([...appliedIds].sort((a, b) => a - b), expected.kept)),
@@ -435,6 +441,12 @@ function check(name, condition, detail) {
     record.outcome = 'completed: preview unchanged, apply exact, undo restored';
   }
 
+  // The focused element: is it the heading of the review board, inside the window?
+  const focusState = () => page.evaluate(() => {
+    const node = document.activeElement, box = node.getBoundingClientRect();
+    return { heading: node.id === 'review-heading', text: (node.innerText || '').trim().slice(0, 120), in_view: box.top >= 0 && box.bottom <= window.innerHeight };
+  });
+  const headingInView = async text => { const state = await focusState(); return state.heading && state.in_view && (!text || state.text === text); };
   // Open the view "Language controls" when another view is shown.
   async function ensureLanguage() {
     const tab = page.getByRole('button', { name: 'Language controls', exact: true });
