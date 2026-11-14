@@ -21,6 +21,7 @@ from feedctrl.semantic_review import (InductionPreview,scoped_index,seal_group,M
 # Once started, two bounded calls and cleanup have one fixed in-flight deadline;
 # revision, nonce, source, inventory and sealed-record checks remain mandatory.
 _DEFINITION_REVIEW_TTL_SECONDS = 300
+REVIEW_WINDOW_SECONDS = _DEFINITION_REVIEW_TTL_SECONDS
 _CLASSIFICATION_INFLIGHT_SECONDS = 2 * 600 + 30
 
 

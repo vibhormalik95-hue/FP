@@ -88,7 +88,7 @@ Every number below is copied from the document that is named after it.
 
 The complete cases, model responses, ranking outputs and recommender checkpoints are in a separate research archive. They are not in this repository.
 
-The paper is in [`paper/`](paper/README.md). The current revision is `paper/research-paper-2026-11-14.pdf`. The paper of 19 October is a dated record in `deliverables/2026-10-19/`.
+The paper is in [`paper/`](paper/README.md). The current draft is `paper/research-paper-2026-11-14.pdf`; its final-run values are still unfilled and it is not submission-ready. The paper of 19 October is a dated record in `deliverables/2026-10-19/`.
 
 ## Experiment evidence and demonstration evidence
 
@@ -99,7 +99,7 @@ Keep three kinds of evidence apart.
 **Demonstration evidence** is a recorded run of the application on a small invented scenario. It shows that a control ran from request to Undo. It is not an accuracy result.
 
 - *13 November 2026, earlier revision `b9220b4`.* The manual control, a new category and an indirect request matched to descriptions each completed in a real browser. The model replies came through a file relay. An AI agent made the review decisions. No person reviewed those runs. Records: [docs/evidence/2026-11-13](docs/evidence/2026-11-13/README.md).
-- *Final build.* [[FINAL: date, revision and source fingerprint of the final-build runs; which methods completed with real model output through the file relay; who reviewed; link to docs/evidence/2026-11-14/README.md]]
+- *Final build.* Not yet recorded for the integrated final revision
 
 **Software tests** use hand-written replies, stand-in servers and stand-in programs. They check program behaviour. They are not model evidence.
 

@@ -37,7 +37,7 @@ Code: `feedctrl/semantic_review.py` (the manual category path, `rank_groups`, Ap
 | Experiment (frozen Experiment 1) | For boost requests, TCP@10 (the share of the first ten items in the target category) was 11.615% with item feedback and 79.222% under the category policy. For mute requests, TCER@10 (the share of the first ten still in the muted category) was 6.112% and zero. Llama parsed 79 of 100 requests exactly and the rule parser 81 of 100; the 85% target was missed. Boost lowered NDCG@10 from 0.03012 to 0.01637. |
 | Study of 4 November (used once, now exposed) | Manual reference against the language pipeline: the intended manual profile changed top-ten exposure by 5.3579 percentage points and the model-proposed profile by 2.9292 points. The pipeline matched the complete intended profile on 48 of 100 supported requests ([protocol and results](../deliverables/2026-11-04-prospective-evaluation/PROTOCOL-AND-RESULTS.md)). These are signed descriptive averages, not a success rate. |
 | Demonstration, 13 November, earlier revision `b9220b4`, AI operator, no model call | Excluding category `K1` left the preview unchanged, removed exactly its two items on Apply (8 to 6), and the two-step Undo restored the identical feed. The same was observed for category `Repair` in the second scenario. |
-| Demonstration, final build | [[FINAL: manual control on the final build: scenario, category, item counts before, after Apply and after Undo, reviewer, record path]] |
+| Demonstration, final build | Not yet recorded for the integrated final revision. |
 
 Limits: the experiment measures exposure to an assigned category. The zero comes from the hard filter by construction. The browser runs show that the control is enforced and can be reversed. Neither shows that recommendations are better.
 
@@ -51,7 +51,7 @@ Code: `feedctrl/staged_routes.py`, `staged_induction.py`, `evidence_audit.py`, `
 | --- | --- |
 | Demonstration with real model output, 13 November, earlier revision, relay, AI operator | Three completed runs. From an objective that names no concept, the model proposed "Defective or damaged object repaired, same object kept or remaining in use" (run 4). All eight items were classified and separately assessed. Three items became members (41001, 41002, 41003). The preview changed nothing; Apply removed exactly the three members (8 to 5); Undo restored the identical feed. The other two completed runs gave the same members from differently worded definitions. In those two runs, two disagreements between the two calls were withheld as unknown; run 4 had none. |
 | Kept negative results | The first attempt of 13 November was rejected: its definition was longer than a limit that the request did not state. On 11 November a call through the Claude Code CLI stopped at clarification, and nothing was classified ([summary](evidence/2026-11-11/HOSTED-TWO-SCENARIO-SUMMARY.md)). A frozen twelve-request study of 5 November with local models gave 0 of 4 supported new-category cases ([results and limits](../deliverables/2026-11-05-final-demo/RESULTS-AND-LIMITS.md)). |
-| Demonstration with real model output, final build | [[FINAL: new-category run on the final build: label, members, item counts, model route, reviewer, record path]] |
+| Demonstration with real model output, final build | Not yet recorded for the integrated final revision. |
 | Authored replies | The browser flow `category` completes on the scenario `category` (8 to 5 to 8). |
 
 Limits: one invented eight-item scenario, repeated. Three runs of one exposed example are not a reliability figure. Two model calls can agree and both be wrong.
@@ -68,7 +68,7 @@ The model sees the request and the existing category and tag names. It does not 
 
 | Kind | Evidence |
 | --- | --- |
-| Demonstration with real model output, final build | [[FINAL: category-and-tag run on the final build: request, chosen names, selected items, item counts, model route, reviewer, record path]] |
+| Demonstration with real model output, final build | Not yet recorded for the integrated final revision. |
 | Authored replies | The browser flow `vocabulary` completes on the scenario `tags`: "I'm not hungry, remove all the stuff that makes me hungry." becomes an exclusion through the category `Cooking` and the tag `street food` (10 to 6 to 10). |
 | Experiment | None. Experiments 1 and 2 used requests that name a category identifier. The study of 4 November used literal topic phrases. No frozen study measures a nonliteral match to categories and tags. |
 
@@ -79,7 +79,7 @@ The model sees the request and the existing category and tag names. It does not 
 | Demonstration with real model output, 13 November, earlier revision, relay, AI operator | Three completed runs. "I'm not hungry, remove all the stuff that makes me hungry." was read as an exclusion. The model selected the three items whose descriptions state that food is prepared to be eaten, with a quotation from each. The preview changed nothing; Apply removed exactly those three (8 to 5); Undo restored the identical feed. |
 | Earlier demonstration | On 11 November a two-call run through the Claude Code CLI selected the same three items. Apply and Undo were direct Python calls, not a browser ([summary](evidence/2026-11-11/HOSTED-TWO-SCENARIO-SUMMARY.md)). |
 | Kept negative results | In the frozen twelve-request study of 5 November, the indirect request had 0 of 4 supported cases; an invalid exclusion strength stopped those paths before item selection ([results and limits](../deliverables/2026-11-05-final-demo/RESULTS-AND-LIMITS.md)). Across 14 retained development calls of local models on indirect requests, none produced a set that could be approved ([record of 5 November](../deliverables/2026-11-05-semantic-review/README.md)). |
-| Demonstration with real model output, final build | [[FINAL: description run on the final build: request, selected items with quotations, item counts, model route, reviewer, record path]] |
+| Demonstration with real model output, final build | Not yet recorded for the integrated final revision. |
 | Authored replies | The browser flows `indirect` (scenario `hunger`, 8 to 5 to 8) and `description` (scenario `tags`, item 61004) complete. |
 
 Limits for 3a and 3b: the reading is the model's. It is not evidence about a person. The scenarios are small, invented and exposed. The 13 November runs show case 3b only: that scenario has no category or tag that names food.
@@ -110,8 +110,8 @@ These points are part of one workflow. They are not separate requests of the sup
 
 | Behaviour | Code | Evidence |
 | --- | --- | --- |
-| A mixed request: several preferences in one request, one review, one Apply | `feedctrl/vocabulary_grounding.py` | Authored replies: browser flow `mixed` on the scenario `tags` (two controls from one reply). Final build with real model output: [[FINAL: mixed request on the final build]] |
-| Requests that change nothing: ambiguous, negated command, unsupported, no match | `feedctrl/vocabulary_grounding.py`, `feedctrl/indirect_grounding.py` | Authored replies: browser flow `outcomes`; the feed and the applied controls stay unchanged in each case. The negated command is stopped before any model call. Final build with real model output: [[FINAL: observed result for each of the four requests on the final build]] |
+| A mixed request: several preferences in one request, one review, one Apply | `feedctrl/vocabulary_grounding.py` | Authored replies: browser flow `mixed` on the scenario `tags` (two controls from one reply). Final build with real model output: Not yet recorded for the integrated final revision. |
+| Requests that change nothing: ambiguous, negated command, unsupported, no match | `feedctrl/vocabulary_grounding.py`, `feedctrl/indirect_grounding.py` | Authored replies: browser flow `outcomes`; the feed and the applied controls stay unchanged in each case. The negated command is stopped before any model call. Final build with real model output: Not yet recorded for the integrated final revision. |
 | Review in three blocks, with evidence for selected and not selected items | `web/src/ReviewBoard.jsx`, `web/src/ReviewTable.jsx` | Software tests of the interface (`web/tests/`) and the browser check. |
 | A proposal changes nothing; Apply uses exactly the approved set; a two-step Undo restores the earlier feed | `feedctrl/semantic_review.py` | Asserted by the browser check in every flow, against the state of the server. |
 
@@ -121,8 +121,8 @@ The student offered these in the same meeting. They are not among the supervisor
 
 | Commitment | Code | Evidence | Limits |
 | --- | --- | --- | --- |
-| A fictional item with a generated description | `feedctrl/synthetic_drafts.py`, `web/src/SyntheticDraftPanel.jsx` | Demonstration, 10 November (22:46 UTC): one call through the Claude Code CLI drafted fictional metadata; it was admitted to a separate feed, removed and restored, through direct Python calls ([summary](evidence/2026-11-11/FABLE-LUNARIA-PUBLIC-SAFE-SUMMARY.json)). Authored replies: browser flow `fictional` on the scenario `tags` (draft, review, admit, remove). Final build with real model output: [[FINAL: fictional-item run on the final build]] | A fictional item is authored demonstration data. It is not a new playable item of the research dataset. The separate feed gives every item score 0. It gives no evidence about recommendation of new items. |
-| A comparison of a stronger model with the earlier local models | The model routes (`feedctrl/model_routes.py`) let the same requests run through different models. | Document statement, 5 November: in a standalone six-case batch, Claude matched 6 of 6 tasks and 36 of 36 item decisions; the local Llama and Qwen runs failed strict JSON validation ([packet](../deliverables/2026-11-05-final-demo/IMMEDIATE-PROFESSOR-PACKET.md)). [[FINAL: route trial records on the final build, if any, with model names]] | Different transports and settings. Six invented cases. A format failure is not a measured accuracy of zero. This is not a ranking of models. A like-for-like comparison has not been run; it would be a new experiment with its own protocol. |
+| A fictional item with a generated description | `feedctrl/synthetic_drafts.py`, `web/src/SyntheticDraftPanel.jsx` | Demonstration, 10 November (22:46 UTC): one call through the Claude Code CLI drafted fictional metadata; it was admitted to a separate feed, removed and restored, through direct Python calls ([summary](evidence/2026-11-11/FABLE-LUNARIA-PUBLIC-SAFE-SUMMARY.json)). Authored replies: browser flow `fictional` on the scenario `tags` (draft, review, admit, remove). Final build with real model output: Not yet recorded for the integrated final revision. | A fictional item is authored demonstration data. It is not a new playable item of the research dataset. The separate feed gives every item score 0. It gives no evidence about recommendation of new items. |
+| A comparison of a stronger model with the earlier local models | The model routes (`feedctrl/model_routes.py`) let the same requests run through different models. | Document statement, 5 November: in a standalone six-case batch, Claude matched 6 of 6 tasks and 36 of 36 item decisions; the local Llama and Qwen runs failed strict JSON validation ([packet](../deliverables/2026-11-05-final-demo/IMMEDIATE-PROFESSOR-PACKET.md)). No final-build route trials are established by the supplied evidence. | Different transports and settings. Six invented cases. A format failure is not a measured accuracy of zero. This is not a ranking of models. A like-for-like comparison has not been run; it would be a new experiment with its own protocol. |
 
 ## Model routes
 
@@ -130,7 +130,7 @@ The application reaches a model through a route that the person selects ([model 
 
 | Route | Evidence |
 | --- | --- |
-| File relay | Demonstration with real model output: the runs of 13 November, and [[FINAL: relay runs on the final build]]. |
+| File relay | Demonstration with real model output: the runs of 13 November, and Not yet recorded for the integrated final revision.. |
 | Command-line program (`cli`) | Stand-in program only. |
 | OpenAI-compatible endpoint, local or hosted | Stand-in server only. |
 | Anthropic API | Stand-in server only. |
@@ -172,13 +172,13 @@ Software checks with authored replies and stand-ins. They are not model evidence
 
 | Check | Command | Result |
 | --- | --- | --- |
-| Python tests | `python -m pytest -q -p no:cacheprovider` | [[FINAL: passed and skipped]] |
-| Guarded checks | `python tools/hosted_validation_current/run_guarded.py .` | [[FINAL: count and intercepted events]] |
-| Interface logic | `node --test "web/tests/*.mjs"` | [[FINAL: passed]] |
-| Browser, authored replies, scenarios `tags`, `category`, `hunger` | `node tests/browser/demo_flows.cjs --scenario NAME` | [[FINAL: assertions for each scenario]] |
-| Source fingerprint | `python scripts/run_demo.py --fingerprint` | [[FINAL: value]] |
+| Python tests | `python -m pytest -q -p no:cacheprovider` | Not yet run on the integrated final revision |
+| Guarded checks | `python tools/hosted_validation_current/run_guarded.py .` | Not yet run on the integrated final revision |
+| Interface logic | `node --test "web/tests/*.mjs"` | Not yet run on the integrated final revision |
+| Browser, authored replies, scenarios `tags`, `category`, `hunger` | `node tests/browser/demo_flows.cjs --scenario NAME` | Not yet run on the integrated final revision |
+| Source fingerprint | `python scripts/run_demo.py --fingerprint` | Not yet recorded for the integrated final revision. |
 
-Environment of the checks: Linux, Python 3.13, Node 22, headless Chromium. Nothing was run on Windows or macOS for this revision.
+The dated 13 November checks used Linux, Python 3.13, Node 22 and headless Chromium. No final integrated-build environment or results are established here.
 
 ## Defects that real runs found, corrected on 13 November
 
@@ -192,7 +192,7 @@ Environment of the checks: Linux, Python 3.13, Node 22, headless Chromium. Nothi
 ## What remains
 
 - **Real-machine checks.** A first real call through the routes `cli`, `openai-compatible` and `anthropic` on Windows or macOS. A run of the application and its checks on Windows and on macOS.
-- **Human review.** A review by a person of a run with real model output. [[FINAL: state whether a person reviewed any final-build run]]
+- **Human review.** A review by a person of a run with real model output. No final-build human review is established by the supplied evidence.
 - **A fresh evaluation.** Scenarios that were not used during development, with references fixed before any prediction. The scenarios of this repository are exposed development material.
 - **A like-for-like model comparison**, with its own protocol before the first run.
 - **Not measured by this work:** recommendation quality with the language controls, and benefit to users.

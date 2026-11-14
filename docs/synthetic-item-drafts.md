@@ -57,7 +57,7 @@ A malformed reply, a duplicate field, an unsupported field, invalid text, a URL 
 | 5 November 2026 | Document statement (the evidence archive is private) | A local model drafted metadata; preview, approval, the separate feed, removal, reviewed restoration and reset were observed through the browser and the API ([record](../deliverables/2026-11-05-final-demo/CLAIM-MATRIX.md)). |
 | 10 November 2026, 22:46 UTC | Demonstration with real model output | One call through the Claude Code CLI drafted metadata. Preview, admission, removal and restoration ran through the Python methods of the application, with no browser and no HTTP. Restoration replayed the removed record with no model call ([summary](evidence/2026-11-11/FABLE-LUNARIA-PUBLIC-SAFE-SUMMARY.json)). |
 | This revision | Authored replies | The browser flow `fictional` completes on the scenario `tags`: draft, review, admission to the separate feed, removal. |
-| Final build | Demonstration with real model output | [[FINAL: fictional-item run on the final build: model route, reviewer, record path; or state that none was recorded]] |
+| Final build | Demonstration with real model output | Not yet recorded for the integrated final revision. |
 
 ## Limits
 

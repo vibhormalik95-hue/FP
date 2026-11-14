@@ -426,7 +426,7 @@ def install_semantic_routes(app, demo, *, infer_factory=None, category_infer_fac
             # Display only: what each item in the reviewed scope says and carries. Not sealed, not
             # approved. ``categories`` is the catalogue category that the manual control reads;
             # ``labels`` are the category and tag values of the source metadata.
-            "scope_items": [{"item_id": item, "source_text": demo.source_text(item),
+            "scope_items": [{"item_id": item, "source_text": demo.source_text(item, full=True),
                              "categories": list(demo.items.get(item, [])),
                              "labels": vocabulary_grounding.item_labels(demo.topic_index["items"][item]["fields"])}
                             for item in scope],
