@@ -1,7 +1,9 @@
-"""Serve the Feed Control Lab on this computer for the three-control demonstration.
+"""Serve the Feed Control Lab on this computer for the language-control demonstration.
 
 Examples (run from the repository root):
 
+    python scripts/run_demo.py --scenario tags --provider scripted
+    python scripts/run_demo.py --scenario tags --provider route --route-file model-route.json
     python scripts/run_demo.py --scenario category --provider manual
     python scripts/run_demo.py --scenario category --provider scripted
     python scripts/run_demo.py --scenario hunger --provider relay \
@@ -22,8 +24,17 @@ Providers
                   Write the file with "python scripts/model_route.py setup".
                   See docs/model-routes.md.
 
+Scenarios
+    tags      Ten invented items with categories and tags: the manual control, a
+              request matched to existing categories and tags, a mixed request,
+              requests that must not change the feed, a request matched to item
+              descriptions, and a fictional-item draft.
+    category  Eight invented items: the manual control and a new category.
+    hunger    Eight invented items: the manual control and an indirect request
+              matched to item descriptions.
+
 The server binds to 127.0.0.1 only. Local models and the trained recommender stay
-disabled; the bundled scenarios use eight invented descriptions and a labelled
+disabled; the bundled scenarios use invented item descriptions and a labelled
 diagnostic scorer. Nothing here sends email, publishes or stores credentials.
 """
 from __future__ import annotations

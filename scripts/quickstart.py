@@ -3,31 +3,34 @@
     python scripts/quickstart.py check
         Print the source fingerprint and the versions that matter.
 
-    python scripts/quickstart.py rehearse --scenario category
+    python scripts/quickstart.py rehearse --scenario tags
         Serve the app with hand-written replies. No model. Use it to learn the screens.
-
-    python scripts/quickstart.py live --scenario category --operator cli
-        Serve the app with the relay provider, and answer each request with the
-        Claude Code CLI on this computer (see scripts/relay_claude_cli.py).
-
-    python scripts/quickstart.py live --scenario category --operator manual
-        Serve the app with the relay provider. You carry each request to a model
-        yourself. The commands to use are printed.
 
     python scripts/quickstart.py setup
     python scripts/quickstart.py doctor
-    python scripts/quickstart.py start --scenario category
+    python scripts/quickstart.py start --scenario tags
         Choose a model route (a program on this computer, a hosted API with your
         own key, a local model server, or the relay), confirm that it works, and
         serve the app with it. See docs/model-routes.md.
 
-Scenarios: "category" (manual control and a new category from natural language)
-and "hunger" (manual control and an indirect request). Open the printed address
-in a browser, choose "Reviewed topic feed", then open "Experimental semantic
-groups". Press Ctrl+C in this window to stop the server.
+    python scripts/quickstart.py live --scenario category --operator cli
+    python scripts/quickstart.py live --scenario category --operator manual
+        The earlier relay path. The app writes each request to a folder. With
+        "cli" the Claude Code CLI on this computer answers it (see
+        scripts/relay_claude_cli.py). With "manual" you carry each request to a
+        model yourself, and the commands to use are printed.
 
-Each live start uses a new relay folder under runs/. Nothing here sends email,
-publishes, or stores credentials.
+Scenarios
+    tags      existing categories and tags, a mixed request, requests that must
+              change nothing, a request matched to descriptions, a fictional item
+    category  a new category from natural language
+    hunger    an indirect request matched to item descriptions
+Each scenario also has the manual category control.
+
+Open the printed address in a browser. The page opens on "Language controls".
+Press Ctrl+C in this window to stop the server.
+
+Nothing here sends email, publishes, or stores credentials.
 """
 import argparse
 from pathlib import Path
@@ -189,7 +192,12 @@ def main(argv=None):
     steps.add_parser('check').set_defaults(run=check)
     for name, function in (('rehearse', rehearse), ('live', live)):
         step = steps.add_parser(name)
-        step.add_argument('--scenario', choices=sorted(CALLS), default='category')
+        if name == 'rehearse':
+            step.add_argument('--scenario', choices=sorted(CALLS), default='tags')
+        else:
+            # The relay operator waits for a fixed number of requests, so this
+            # older path serves the two scenarios with one complete flow each.
+            step.add_argument('--scenario', choices=('category', 'hunger'), default='category')
         step.add_argument('--port', type=int, default=8765)
         step.set_defaults(run=function)
         if name == 'live':

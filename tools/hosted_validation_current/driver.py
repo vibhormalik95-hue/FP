@@ -23,7 +23,7 @@ IDENTITY_BASIS = {
 
 CAPS = {'category': 3, 'indirect': 2}
 INPUT_MANIFEST_SHA256 = '5010b24f91507ff2b6bc56ccde248a1c010cbfca7f8b9f5431319d55f0479d3b'
-PROFILE_ID = 'current-merged-20261114'
+PROFILE_ID = 'current-routes-20261114'
 SCENARIO_DIRS = {'category':'01-category-discovery', 'indirect':'02-hunger-continuation'}
 GATES = ('runtime_authorized', 'data_authorized', 'subscription_and_usage_authorized',
          'executable_reviewed', 'managed_runtime_reviewed', 'process_containment_reviewed')

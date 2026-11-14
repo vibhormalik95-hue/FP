@@ -147,7 +147,7 @@ def test_ungrounded_llm_category_is_distinct_from_backend_outage(client, monkeyp
         json={'user_id':1,'text':'new item X i want to see the most','backend':'ollama'})
     assert result.status_code == 422
     assert 'unsupported category' in result.json()['detail']
-    assert 'Reviewed topic feed' in result.json()['detail']
+    assert 'Language controls' in result.json()['detail']
     assert feed(client,h) == before
 
 

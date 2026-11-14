@@ -156,7 +156,11 @@ def propose_indirect(request: str, action: dict, index: dict, infer: Callable,
     try:
         raw = infer(deepcopy(payload), deepcopy(schema))
     except Exception as exc:
-        return result('error', 'Inference failed: ' + type(exc).__name__)
+        # A route adapter writes a credential-free sentence that says what to do.
+        # Keep it for the reviewer; any other failure shows only its type.
+        from feedctrl.controls import ParserOperationalError
+        detail = str(exc)[:600] if isinstance(exc, ParserOperationalError) and str(exc).strip() else type(exc).__name__
+        return result('error', 'Inference failed: ' + detail)
     try:
         raw = _response_snapshot(raw)
         provenance['response_sha256'] = _digest(raw)
