@@ -1,4 +1,38 @@
 import React, {useEffect, useRef, useState} from 'react';
+import {createPortal} from 'react-dom';
+
+// Display only. One row per supplied item, so the whole reviewed scope can be
+// read at once: what the item says, what was proposed for it and on which words.
+// The detailed record stays in the panel; approval still happens there.
+function ReviewTable({pending, current}) {
+  const groups = pending.groups, undo = groups.length < (current?.groups.length ?? 0);
+  const text = Object.fromEntries((pending.scope_items || []).map(r => [r.item_id, r.source_text]));
+  const rows = [];
+  for (const g of groups) {
+    const proposal = g.proposal, envelope = proposal.induction?.envelope, audit = envelope?.evidence_audit;
+    const primary = Object.fromEntries((audit?.primary_envelope.field_evidence || envelope?.field_evidence || []).map(r => [r.item_id, r]));
+    const final = Object.fromEntries((envelope?.field_evidence || []).map(r => [r.item_id, r]));
+    const assessed = Object.fromEntries((audit?.assessment.assessments || []).map(r => [r.item_id, r]));
+    const quoted = Object.fromEntries((proposal.evidence || []).map(r => [r.item_id, r]));
+    for (const id of g.scope_ids) {
+      const member = proposal.item_ids.includes(id);
+      rows.push({key: `${g.label}-${id}`, id, group: g.label, member, operation: proposal.action.operation,
+        first: primary[id] ? `${primary[id].verdict}${primary[id].evidence_quote ? ` · “${primary[id].evidence_quote}”` : ''}` : member ? `selected${quoted[id]?.quote ? ` · “${quoted[id].quote}”` : ''}` : 'not selected',
+        second: assessed[id] ? `${assessed[id].assessment}${assessed[id].quote ? ` · “${assessed[id].quote}”` : ''}` : null,
+        reason: final[id]?.reason || null});
+    }
+  }
+  const staged = rows.some(r => r.second !== null);
+  return <section className="review-table" aria-label="Review of every supplied item">
+    <p className="eyebrow review-flag">PREVIEW · NOTHING IS APPLIED YET</p>
+    <h3>{groups.length ? groups.map(g => `${g.label}: ${g.proposal.action.operation}`).join(' + ') : 'Remove every reviewed group'}</h3>
+    <p className="help">Eligible items now: <b>{current?.feed.available_items ?? '–'}</b>. After approval: <b>{pending.feed.available_items}</b>. {undo ? 'This restores an earlier reviewed state.' : 'The feed below stays as it is until you approve in the panel.'}</p>
+    {rows.length > 0 && <div className="comparison-scroll"><table><thead><tr><th>Item</th><th>Supplied description</th><th>{staged ? 'Classification under the definition' : 'Proposal'}</th>{staged && <th>Separate evidence assessment</th>}<th>Result if approved</th></tr></thead>
+      <tbody>{rows.map(r => <tr key={r.key} className={r.member ? 'review-member' : ''}><th>{r.id}</th><td>{text[r.id] ?? 'No description supplied'}</td><td>{r.first}</td>{staged && <td>{r.second}</td>}
+        <td><b>{r.member ? (r.operation === 'exclude' ? 'Removed from the feed' : r.operation === 'boost' ? 'Ranked higher' : 'Ranked lower') : 'Unchanged'}</b>{r.reason && !r.member ? <span className="review-reason"> {r.reason}</span> : null}</td></tr>)}</tbody></table></div>}
+    <p className="help">A quotation shows that the words exist in the description. It does not show that the decision is right. Read each row before you approve.</p>
+  </section>;
+}
 
 // Display only: match the complete citation, never borrow another item's field.
 function definitionEvidence(evidence, context) {
@@ -168,6 +202,7 @@ export default function SemanticPanel({api,user,resetKey,onFeed}) {
         <label><input type="checkbox" checked={evidenceReviewed} disabled={disabled} onChange={e=>setEvidenceReviewed(e.target.checked)}/> I reviewed whether the source evidence supports the entire definition.</label>
         <button className="primary" disabled={disabled||!evidenceReviewed} onClick={classify}>Approve definition and classify supplied items</button>
       </div>}
+      {pending&&document.getElementById('review-root')&&createPortal(<ReviewTable pending={pending} current={saved}/>,document.getElementById('review-root'))}
       {pending&&<div className="saved-profile"><h4>Review the meaning and evidence yourself</h4>
         {pending.groups.map(g=><div key={g.label} className="steering-review">
           <strong>{g.label}: {g.proposal.action.operation} ({g.proposal.action.strength})</strong>

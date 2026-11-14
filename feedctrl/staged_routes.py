@@ -15,6 +15,8 @@ from feedctrl.controls import ParserOperationalError
 from feedctrl.semantic_controls import STRENGTH_WEIGHTS
 from feedctrl.semantic_review import InductionPreview,scoped_index,seal_group
 
+REVIEW_WINDOW_SECONDS=300
+
 class DefinitionApproval(BaseModel):
     model_config=ConfigDict(extra='forbid')
     user_id:int=Field(ge=0)
@@ -42,9 +44,16 @@ def install_staged_routes(app,demo,state_for,review,*,evidence_context,category_
         return _digest({k:pending[k] for k in ('id','created','revision','nonce','body','definition',
                                              'eligible_sha256','definition_model_calls','session_id')})
 
-    def current(pending,state,session_id,user_id,*,clarification=False):
+    def current(pending,state,session_id,user_id,*,clarification=False,in_flight=False):
+        # The five-minute limit bounds the reviewer's decision: an approval must
+        # arrive within REVIEW_WINDOW_SECONDS of the definition being issued.
+        # After an approval is accepted, provider latency is governed by the
+        # provider's own timeout. In-flight revalidation therefore skips only the
+        # age check; session, user, revision, nonce, sealed record, source and
+        # inventory must all still match, so a superseded result is withheld.
         if (not pending or pending.get('used') or pending['session_id']!=session_id
-                or pending['body']['user_id']!=user_id or time.monotonic()-pending['created']>300
+                or pending['body']['user_id']!=user_id
+                or (not in_flight and time.monotonic()-pending['created']>REVIEW_WINDOW_SECONDS)
                 or state['semantic_revision']!=pending['revision']
                 or state.get('semantic_preview_nonce')!=pending['nonce']):
             raise ValueError('Definition review expired, consumed or superseded')
@@ -149,7 +158,7 @@ def install_staged_routes(app,demo,state_for,review,*,evidence_context,category_
             if envelope['status']!='review':
                 return {'ready':False,'applied':False,**envelope,'model_calls':deepcopy(calls)}
             with demo.lock:
-                current(owned,state_for(x_session_id,body.user_id),x_session_id,body.user_id)
+                current(owned,state_for(x_session_id,body.user_id),x_session_id,body.user_id,in_flight=True)
             audit_infer,audit_model,audit_calls=category_provider.stage('evidence_audit',model['model_id'],expected=model)
             if audit_model!=model:raise ValueError('Model identity changed before evidence assessment')
             envelope=evidence_audit.audit_membership_envelope(envelope,request['objective'],scope,inventory,audit_infer,audit_model)
@@ -160,7 +169,7 @@ def install_staged_routes(app,demo,state_for,review,*,evidence_context,category_
                 state=state_for(x_session_id,body.user_id)
                 # Validate again with a separate unused copy: a consumed token cannot
                 # start another call, while its in-flight result can still be checked.
-                scope,inventory=current(owned,state,x_session_id,body.user_id)
+                scope,inventory=current(owned,state,x_session_id,body.user_id,in_flight=True)
                 staged.revalidate_membership_envelope(envelope,request['objective'],scope,inventory)
                 control=ii.category_as_control(envelope,request['objective'],scope,inventory,
                     request['operation'],request['strength'],model)

@@ -201,6 +201,7 @@ class DemoState:
             signals = [f"Source text matches {c['topic']}: {c['operation']} ({c['strength']})."
                        for c, group in zip(commands, groups) if item["item_id"] in group]
             item.update(rank=position, categories=self.items[item["item_id"]],
+                        source_text=self.source_text(item["item_id"]),
                         base_score=float(score_map[item["item_id"]]),
                         explanation=signals or ["No saved subject phrase matches this item's supplied text."],
                         explanation_source="source_text_policy")
@@ -209,6 +210,14 @@ class DemoState:
                 "model_mode": "trained model" if self.model else "deterministic diagnostic scorer",
                 "category_exposure": dict(Counter(c for item in result["items"] for c in item["categories"])),
                 "commands_count": len(commands), "baseline_items": neutral["items"], **result}
+
+    def source_text(self, item_id):
+        """The supplied description of one item, for display beside its ID."""
+        fields = ((self.topic_index or {}).get("items", {}).get(item_id) or {}).get("fields", {})
+        for key in ("caption", "manual_cover_text"):
+            if isinstance(fields.get(key), str) and fields[key].strip():
+                return fields[key].strip()[:400]
+        return None
 
     @staticmethod
     def steering_snapshot(state):
@@ -324,6 +333,21 @@ def create_app(data_path=None, model_path=None, fixture=False, semantic_path=Non
         if backend == "ollama" and not allow_local_models:
             raise HTTPException(403, "Local models are disabled in this application; no inference was attempted")
 
+    def configured_provider():
+        # What the operator configured at startup, as declared by the adapter.
+        # Shown so that an authored or relayed reply is never mistaken for an
+        # automatic model call. A declaration is not an attestation.
+        for factory in (semantic_infer_factory, category_infer_factory):
+            identity = getattr(factory, "model_identity", None)
+            if isinstance(identity, dict) and all(
+                    isinstance(identity.get(key), str) and identity[key] for key in ("backend", "model")):
+                return {"backend": identity["backend"][:120], "model": identity["model"][:150],
+                        "live_model": identity.get("live_model", "declared_by_adapter")}
+        if semantic_infer_factory is not None or category_infer_factory is not None:
+            return {"backend": "configured", "model": "not declared before first use",
+                    "live_model": "declared_by_adapter"}
+        return None
+
     @app.middleware("http")
     async def response_headers(request, call_next):
         response = await call_next(request)
@@ -341,6 +365,7 @@ def create_app(data_path=None, model_path=None, fixture=False, semantic_path=Non
                 "users": len(demo.users), "items": len(demo.items), "categories": len(demo.categories),
                 "default_parser": "rule", "ollama_model": os.getenv("FEEDCTRL_OLLAMA_MODEL", DEFAULT_MODEL),
                 "local_models_allowed": allow_local_models,
+                "provider": configured_provider(),
                 "ollama_status": ("Not checked; selecting Ollama makes a real request. Failures remain visible."
                                   if allow_local_models else "Disabled by hosted-only application policy."),
                 "research_note": "Synthetic category controls measure offline behavior; this demo does not establish human agency or satisfaction.",
