@@ -1,6 +1,6 @@
 # Full talk notes for the existing BCIT deck
 
-Use [the current 30-page BCIT review deck](../2026-10-19/COMP9500-Presentation-2026-10-19.pdf). Pages 1 to 24 form a target 22-minute talk; pages 25 to 30 are backup. These notes are preparation, not a student rehearsal record. The shorter professor-meeting walkthrough is in [professor-meeting script](PROFESSOR-DEMO-SCRIPT.md).
+Use [the current 30-page BCIT review deck](../2026-10-19/COMP9500-Presentation-2026-10-19.pdf). Pages 1 to 24 form a target 22-minute talk; pages 25 to 30 are backup. These notes are preparation, not a student rehearsal record. The shorter professor-meeting walkthrough is in professor-meeting script (not in this repository).
 
 | Slide | Clock | Speaker cue |
 |---|---|---|
