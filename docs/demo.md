@@ -251,7 +251,7 @@ python scripts/run_demo.py --provider personal-cli --reviewed-config my-config.j
 - The page asks for the operator token of the configuration. The server uses port 8765 on 127.0.0.1 only.
 - A configuration file is marked as used and is refused a second time. The first request must equal the pinned scenario request exactly.
 - The report holds the facts of the provider: the exact inputs, the call receipts and the number of attempts.
-- The configuration templates in `tools/hosted_validation_current/` are incomplete on purpose, and every statement in them is false. After a change to a prompt or to application source, run `python tools/hosted_validation_current/refresh_pins.py NEW-PROFILE-ID "what changed"` and review the result.
+- The configuration templates in `tools/hosted_validation_current/` are incomplete on purpose, and every statement in them is false. These dated inputs and their driver are frozen evidence. A later prompt or source revision needs a separate reviewed successor profile; do not overwrite this directory.
 
 The operator must confirm four conditions that the code cannot confirm:
 

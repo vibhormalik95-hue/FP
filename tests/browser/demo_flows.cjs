@@ -108,7 +108,7 @@ function check(name, condition, detail) {
 }
 
 (async () => {
-  const browser = await chromium.launch();
+  const browser = await chromium.launch(args['browser-executable'] ? {executablePath: args['browser-executable']} : {});
   const size = { width: 1440, height: VIDEO ? 1080 : 1100 };
   const context = await browser.newContext({ viewport: size, deviceScaleFactor: 1,
     ...(VIDEO ? { recordVideo: { dir: path.join(OUT, 'video'), size } } : {}) });

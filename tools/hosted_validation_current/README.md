@@ -35,7 +35,6 @@ Do not overwrite frozen inputs or reuse a consumed run.
 
 ## Historical profile: 11 November 2026
 
-> **Dated record, 11 November 2026, with two corrections.** The text below describes the profile `current-definition-context-20261111`. The profile identifier and the pins of the present source are the values in `driver.py` and `PROFILE-PROVENANCE.json`; `refresh_pins.py` rewrites them after each reviewed source change. The driver now allows 16,384 output tokens and 300 seconds for one call. How to use this connection: [guide to the language controls](../../docs/demo.md#the-signed-in-claude-code-cli).
 
 **Offline readiness only. No fresh hosted batch is authorized.** Both configuration templates are incomplete and all six execution gates remain false. No approved configuration, authorization receipt or consumed marker is supplied. Do not reuse any previous configuration/receipt/consumed marker, import a previous response, or resume an ended run. A new authorized run requires separate review of the exact new driver, source, input pins, current runtime/containment, cost estimate and permissions. Existing spend thresholds, bounded calls, Fable 5.2/max, no retry/fallback and containment requirements remain unchanged.
 
