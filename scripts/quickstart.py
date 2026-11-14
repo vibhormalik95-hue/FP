@@ -162,10 +162,20 @@ def check(_):
 
 def rehearse(args):
     require_free_port(args.port)
-    server = run_demo('--scenario', args.scenario, '--provider', 'scripted', '--port', str(args.port))
+    sys.path.insert(0, str(ROOT / 'scripts'))
+    import run_demo as launcher
+    # The fixture scenario for the original conditions has no language controls
+    # and therefore no replies of any kind: it is served with no provider.
+    fixture = args.scenario in launcher.FIXTURE_SCENARIOS
+    server = run_demo('--scenario', args.scenario, '--provider', 'manual' if fixture else 'scripted',
+                      '--port', str(args.port))
     try:
         wait_until_served(args.port, server)
-        print(f'Rehearsal with hand-written replies (no model). Open http://127.0.0.1:{args.port}', flush=True)
+        if fixture:
+            print(f'The original conditions A to E on the built-in fixture (no model). '
+                  f'Open http://127.0.0.1:{args.port}', flush=True)
+        else:
+            print(f'Rehearsal with hand-written replies (no model). Open http://127.0.0.1:{args.port}', flush=True)
         serve_until_stopped(server)
     finally:
         stop_server(server)
@@ -286,7 +296,8 @@ def main(argv=None):
     for name, function in (('rehearse', rehearse), ('live', live)):
         step = steps.add_parser(name)
         if name == 'rehearse':
-            step.add_argument('--scenario', choices=scenarios, default='tags' if 'tags' in scenarios else 'category')
+            step.add_argument('--scenario', choices=sorted([*scenarios, *launcher.FIXTURE_SCENARIOS]),
+                              default='tags' if 'tags' in scenarios else 'category')
         else:
             # The relay operator waits for a fixed number of requests, so this
             # older path serves the two scenarios with one complete flow each.
