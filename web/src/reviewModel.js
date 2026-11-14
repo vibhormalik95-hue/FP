@@ -344,7 +344,7 @@ export function outcomeView(outcome, words = sourceWords(false)) {
   } else if (kind === 'provider_failure') {
     if (words.authored) {
       view.heading = 'No authored reply exists for this request';
-      view.first = ['This server has no model. It holds hand-written replies for the bundled examples with the complete bundled scope.', 'It has no reply for this request. Nothing was interpreted.'];
+      view.first = ['The server looked up an authored reply for this request. None exists. Nothing was interpreted.', 'The message of the server is under "Application checks".'];
       view.next = ['Choose a bundled example: "Insert the bundled scenario request" or the list of examples.', 'Use the method and the evidence scope of that example.', 'To use your own words, start the server with a model route (docs/model-routes.md).'];
     } else {
       view.heading = 'The call to the provider failed';

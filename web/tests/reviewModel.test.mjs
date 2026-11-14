@@ -214,7 +214,7 @@ test('the outcome source decides the words; an empty call list never means "no c
   for (const method of ['vocabulary', 'configured_model', 'staged']) {
     const refused = outcomeView({status: 'error', outcome_source: 'provider_failure', calls_attempted: 1, method, reason: 'r'}, authored);
     assert.equal(refused.heading, 'No authored reply exists for this request');
-    assert.ok(refused.first.join(' ').includes('This server has no model.'));
+    assert.ok(refused.first.join(' ').includes('None exists. Nothing was interpreted.'));
   }
   const rejected = outcomeView({status: 'error', outcome_source: 'reply_rejected', calls_attempted: 2, method: 'configured_model', reason: 'r'}, model);
   assert.equal(rejected.heading, 'The application rejected the reply');

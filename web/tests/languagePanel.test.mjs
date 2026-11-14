@@ -283,7 +283,7 @@ test('with authored replies a typed request gets one plain refusal for every met
     const {ui} = fixture({[route]: refusal}, {provider});
     await request(ui, method, 'Hide everything about trains.');
     const board = ui.text(ui.region('Review board'));
-    for (const value of ['No authored reply exists for this request', 'This server has no model.', 'Nothing was applied.']) assert.ok(board.includes(value), `${method}: ${value}`);
+    for (const value of ['No authored reply exists for this request', 'None exists. Nothing was interpreted.', 'Message of the server: The server holds no authored reply for this request.', 'Nothing was applied.']) assert.ok(board.includes(value), `${method}: ${value}`);
     assert.equal(ui.nodes().some(n => n.type === 'button' && /Use this as|Add this meaning/.test(ui.text(n))), false);
   }
 });
