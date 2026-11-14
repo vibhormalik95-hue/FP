@@ -254,7 +254,18 @@ function check(name, condition, detail) {
       if (Date.now() - started > GATE_TIMEOUT) { receipt.review_decisions.push({ gate: name, decision: null, note: 'no decision before the review window closed', utc: utc() }); save(); return false; }
       await page.waitForTimeout(500);
     }
-    const answer = fs.readFileSync(decision, 'utf8').trim();
+    // The file can exist before its text is complete, and another program can still hold it. The text
+    // counts when two reads, 300 ms apart, give the same text. An empty or unreadable file counts as an
+    // empty decision only after five seconds.
+    const read = () => { try { return fs.readFileSync(decision, 'utf8'); } catch (error) { return null; } };
+    let written = read();
+    for (const settle = Date.now(); ;) {
+      await page.waitForTimeout(300);
+      const again = read();
+      if (again === written && ((written || '').trim() || Date.now() - settle > 5000)) break;
+      written = again;
+    }
+    const answer = (written || '').trim();
     // A decision is the reviewer's act. It is recorded apart from the script's own checks.
     receipt.review_decisions.push({ gate: name, decision: answer.slice(0, 200), seconds_to_decide: Number(((Date.now() - started) / 1000).toFixed(1)), utc: utc() });
     save();
