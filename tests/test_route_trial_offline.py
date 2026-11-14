@@ -448,6 +448,10 @@ def test_ctrl_c_during_a_waiting_model_call_records_the_finished_cases_and_stops
                 return
             time.sleep(0.05)
 
+    # The trial runs as its own program, where Ctrl+C reaches Python's own handler.
+    # An earlier test in this process can leave the handler of a server behind;
+    # that handler would take the signal and the trial would never see it.
+    previous = signal.signal(signal.SIGINT, signal.default_int_handler)
     started = time.monotonic()
     threading.Thread(target=press_ctrl_c_when_the_request_waits, daemon=True).start()
     try:
@@ -455,6 +459,8 @@ def test_ctrl_c_during_a_waiting_model_call_records_the_finished_cases_and_stops
                                  '--cases', 'vocabulary:negated,vocabulary:no_match'])
     except KeyboardInterrupt:
         pytest.fail('the interrupt escaped the trial')
+    finally:
+        signal.signal(signal.SIGINT, previous)
     waited = time.monotonic() - started
     output = capsys.readouterr().out
     record = json.loads((out / 'trial.json').read_text(encoding='utf-8'))
