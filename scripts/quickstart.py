@@ -59,14 +59,36 @@ def utc_stamp():
     return time.strftime('%Y%m%d-%H%M%SZ', time.gmtime())
 
 
-def require_free_port(port):
-    """Stop with one clear line when another server uses the port."""
+def port_in_use(port):
+    """True when a server listens on the port, or when the system refuses it.
+
+    After a server stops, Linux and macOS hold its port for up to a minute.
+    Nothing listens then, and a new server can take the port at once, because
+    it binds with SO_REUSEADDR. The probe does the same on those systems. A
+    plain bind would report a server that stopped a moment ago as a running
+    one. Windows needs no such option, and there the option would hide a
+    running server. The connection attempt comes first: it also finds a
+    server that listens on every address of the computer.
+    """
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as attempt:
+        attempt.settimeout(1)
+        if attempt.connect_ex(('127.0.0.1', port)) == 0:
+            return True
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as probe:
+        if not WINDOWS:
+            probe.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
         try:
             probe.bind(('127.0.0.1', port))
         except OSError:
-            raise SystemExit(f'Port {port} on 127.0.0.1 is in use. Stop the other server, '
-                             'or choose another port with --port.') from None
+            return True
+    return False
+
+
+def require_free_port(port):
+    """Stop with one clear line when another server uses the port."""
+    if port_in_use(port):
+        raise SystemExit(f'Port {port} on 127.0.0.1 is in use. Stop the other server, '
+                         'or choose another port with --port.')
 
 
 WINDOWS = sys.platform == 'win32'

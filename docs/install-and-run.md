@@ -142,7 +142,7 @@ See [route trial](route-trial.md).
 Run these checks from the source folder. They use no model.
 
 1. **The files.** `python scripts/quickstart.py check` prints the source fingerprint. For the final revision the value is `ab1a9d846b33bf0e7e3840b91b69f65747386daec2cf5d38fc621d455c8fcefd`.
-2. **The Python tests.** `python -m pytest -q -p no:cacheprovider`. Expected on the final revision: 1656 passed and 1 skipped with PyTorch; 1652 passed and 2 skipped in a fresh environment without PyTorch.
+2. **The Python tests.** `python -m pytest -q -p no:cacheprovider`. Expected on the final revision: 1659 passed and 1 skipped with PyTorch; 1655 passed and 2 skipped in a fresh environment without PyTorch.
 3. **The guarded checks of the reviewed CLI profile.** `python tools/hosted_validation_current/run_guarded.py .` The output must end with `OK` and `GUARD intercepted events: []`.
 4. **The interface tests.** They need Node.js.
 

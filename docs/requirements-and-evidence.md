@@ -175,7 +175,7 @@ Software checks with authored replies and stand-ins. They are not model evidence
 
 | Check | Command | Result |
 | --- | --- | --- |
-| Python tests | `python -m pytest -q -p no:cacheprovider` | 1656 passed, 1 skipped (with PyTorch); 1652 passed and 2 skipped without PyTorch |
+| Python tests | `python -m pytest -q -p no:cacheprovider` | 1659 passed, 1 skipped (with PyTorch); 1655 passed and 2 skipped without PyTorch |
 | Guarded checks | `python tools/hosted_validation_current/run_guarded.py .` | 178 tests passed; no intercepted event |
 | Interface logic | `node --test "web/tests/*.mjs"` | 114 passed |
 | Browser, authored replies, scenarios `tags`, `category`, `hunger` | `node tests/browser/demo_flows.cjs --scenario NAME` | authored replies: `tags` 209, `category` 104, `hunger` 96 checks, all passed. Real model output through the relay: `tags` 175, `category` 67, `hunger` 66 checks, all passed |

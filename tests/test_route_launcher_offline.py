@@ -502,3 +502,52 @@ def test_f05_a_stop_signal_to_the_launcher_alone_also_stops_the_server():
         if launcher.poll() is None:
             launcher.kill()
             launcher.wait()
+
+
+def test_the_port_check_finds_a_server_that_listens():
+    import socket
+    with socket.socket() as busy:
+        busy.bind(('127.0.0.1', 0))
+        busy.listen(1)
+        port = busy.getsockname()[1]
+        assert quickstart.port_in_use(port) is True
+        with pytest.raises(SystemExit) as stopped:
+            quickstart.require_free_port(port)
+    assert f'Port {port} on 127.0.0.1 is in use' in str(stopped.value) and '--port' in str(stopped.value)
+
+
+def test_the_port_check_accepts_a_port_that_nothing_uses():
+    import socket
+    with socket.socket() as probe:
+        probe.bind(('127.0.0.1', 0))
+        port = probe.getsockname()[1]
+    assert quickstart.port_in_use(port) is False
+    quickstart.require_free_port(port)
+
+
+@pytest.mark.skipif(sys.platform == 'win32', reason='Windows releases the port of a stopped server at once')
+def test_the_port_check_accepts_the_port_of_a_server_that_stopped_a_moment_ago():
+    """Linux and macOS hold the port of a stopped server for up to a minute.
+
+    A plain bind fails in that time, and nothing listens. A new server can take
+    the port at once, so the check must not report it as in use.
+    """
+    import socket
+    with socket.socket() as listener:
+        listener.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+        listener.bind(('127.0.0.1', 0))
+        listener.listen(1)
+        port = listener.getsockname()[1]
+        with socket.create_connection(('127.0.0.1', port), timeout=5) as client:
+            served, _ = listener.accept()
+            served.close()                       # the server closes first, as a server does when it stops
+            assert client.recv(1) == b''
+    with socket.socket() as plain:
+        try:
+            plain.bind(('127.0.0.1', port))
+        except OSError:
+            pass
+        else:
+            pytest.skip('this system released the port at once')
+    assert quickstart.port_in_use(port) is False
+    quickstart.require_free_port(port)
