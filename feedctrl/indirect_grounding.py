@@ -9,6 +9,7 @@ from copy import deepcopy
 import hashlib
 import json
 import re
+import reprlib
 import unicodedata
 from typing import Callable
 
@@ -46,6 +47,11 @@ in reason. List competing interpretations in alternatives; a proposal must have
 none. Output exactly the JSON schema. This is a review proposal, not execution.
 Length limits: reason 2000 characters; at most 6 alternatives of 300 characters each.
 A longer value is rejected.'''
+# What the prompt asks and no application check can test: whether a cited item
+# expresses the intent, whether a relationship is strong enough, and whether a
+# negation, scope or metaphor is resolved. For these the model alone decides,
+# and the reviewer judges the result. The application checks the item IDs, the
+# exact quotations, the bounds and the half-of-scope rule.
 
 
 # The wording guard. It is one English pattern, not a parser of meaning. It finds
@@ -89,6 +95,29 @@ def page_sentence(exc):
     if getattr(exc, 'page_safe', False) is not True:
         return None
     return clean_page_text(exc) or None
+
+
+def unparsed_reply(raw, limit=2000):
+    """A bounded printable rendering of a reply that is not bounded JSON.
+
+    The reply is model or provider output, never an application result. It is
+    kept so that a rejected reply stays visible to the reviewer; ``reprlib``
+    bounds the depth and the length before any text is built.
+    """
+    shown = reprlib.Repr()
+    shown.maxlevel, shown.maxstring, shown.maxother = 4, 300, 300
+    shown.maxdict = shown.maxlist = shown.maxtuple = shown.maxset = 20
+    try:
+        text = shown.repr(raw)
+    except Exception:  # an object whose own representation fails
+        text = type(raw).__name__
+    return clean_page_text(text, limit)
+
+
+def rejected_call(payload, schema, raw):
+    """The call record of a reply that is not bounded JSON (see ``unparsed_reply``)."""
+    return {'request_sha256': _digest(payload), 'schema_sha256': _digest(schema), 'response_sha256': None,
+            'raw_response': None, 'raw_text': unparsed_reply(raw), 'reply_rejected': True}
 
 
 def failure_sentence(exc):

@@ -125,7 +125,7 @@ def test_the_indirect_request_selects_by_labels_and_is_applied_and_undone(served
     plan = match(client, headers, 'vocabulary')
     assert plan['ready'] and plan['applied'] is False and calls(app) == 1
     (control,) = plan['vocabulary']['controls']
-    assert control['label'] == 'Exclude: Cooking + street food' and control['operation'] == 'exclude'
+    assert control['label'] == 'Remove: category "Cooking", tag "street food"' and control['operation'] == 'exclude'
     assert control['intent_span'] == 'all the stuff that makes me hungry'
     assert [(t['kind'], t['value'], t['item_ids']) for t in control['terms']] == [
         ('category', 'Cooking', [61001, 61002, 61009]), ('tag', 'street food', [61003])]
@@ -150,7 +150,7 @@ def test_the_indirect_request_selects_by_labels_and_is_applied_and_undone(served
 def test_the_literal_request_names_an_existing_category(served):
     client, headers, _ = served
     plan = match(client, headers, 'vocabulary:literal')
-    assert plan['ready'] and [g['label'] for g in plan['groups']] == ['Exclude: Repair']
+    assert plan['ready'] and [g['label'] for g in plan['groups']] == ['Remove: category "Repair"']
     assert plan['groups'][0]['proposal']['item_ids'] == [61004, 61005]
     assert plan['groups'][0]['proposal']['action']['intent_span'] == 'the Repair category'
     # The manual category control selects the same members with no model.
@@ -168,16 +168,20 @@ def test_the_mixed_request_gives_two_groups_and_both_effects(served):
     assert plan['ready'] and calls(app) == 1
     assert [(c['label'], c['operation'], c['strength'], c['intent_span'], c['item_ids'])
             for c in plan['vocabulary']['controls']] == [
-        ('Increase: Repair', 'boost', 'standard', 'more repair videos', [61004, 61005]),
-        ('Exclude: Cooking + street food', 'exclude', 'none', 'anything about food', [61001, 61002, 61003, 61009])]
-    assert [row['item_id'] for row in plan['vocabulary']['not_selected']] == [61006, 61007, 61008, 61010]
+        ('Show more: category "Music"', 'boost', 'standard', 'more music videos', [61007, 61008]),
+        ('Remove: category "Cooking", tag "street food"', 'exclude', 'none', 'anything about food', [61001, 61002, 61003, 61009])]
+    assert [row['item_id'] for row in plan['vocabulary']['not_selected']] == [61004, 61005, 61006, 61010]
     assert saved(client, headers) == before
+    rank = lambda items: {item['item_id']: item['rank'] for item in items}
     feed = apply(client, headers, plan)['feed']
     shown = {item['item_id']: item for item in feed['items']}
     assert sorted(shown) == [61004, 61005, 61006, 61007, 61008, 61010]
-    assert [item['item_id'] for item in feed['items']][:2] == [61004, 61005]  # the two increased items lead
-    assert all(abs(shown[item]['score'] - shown[item]['base_score'] - 0.25) < 1e-9 for item in (61004, 61005))
-    assert all(abs(shown[item]['score'] - shown[item]['base_score']) < 1e-9 for item in (61006, 61007, 61008, 61010))
+    # The increase is visible: both music items change position in the first ten (vocab F3, ui M9).
+    start, after = rank(before['feed']['items']), rank(feed['items'])
+    assert (start[61007], start[61008]) == (4, 5) and (after[61007], after[61008]) == (2, 4)
+    assert [item['item_id'] for item in feed['items']] == [61004, 61007, 61005, 61008, 61006, 61010]
+    assert all(abs(shown[item]['score'] - shown[item]['base_score'] - 0.25) < 1e-9 for item in (61007, 61008))
+    assert all(abs(shown[item]['score'] - shown[item]['base_score']) < 1e-9 for item in (61004, 61005, 61006, 61010))
     assert undo(client, headers)['feed'] == before['feed']
 
 
@@ -194,7 +198,11 @@ def test_requests_that_cannot_be_applied_change_nothing(served, key, status, pro
         assert len(body['clarification']['alternatives']) == 3
         assert body['clarification']['model_reason'].startswith('Authored rehearsal reply')
     if key == 'vocabulary:negated':
-        assert body['reason'] == 'Command negation requires an explicit reviewed interpretation'
+        assert body['reason'].startswith('The request matches the negated-command pattern')
+        assert body['outcome_source'] == 'application_check'
+    else:
+        assert body['outcome_source'] == 'model_report' and body['reply_reason'].startswith('Authored rehearsal reply')
+    assert body['calls_attempted'] == provider_calls
     if status in ('unsupported', 'no_match'):
         assert body['reason'].startswith('Authored rehearsal reply')
     assert saved(client, headers) == before
@@ -206,10 +214,12 @@ def test_a_request_or_a_scope_without_an_authored_reply_is_refused(served):
     client, headers, _ = served
     other = client.post('/api/semantic/vocabulary/preview', headers=headers, json={
         'user_id': 1, 'text': 'Hide the Repair category, please.', 'candidate_ids': IDS}).json()
-    assert other['ready'] is False and other['status'] == 'error' and 'authored replies only' in other['reason']
+    # One page-safe sentence that says what to do; a call was begun and no usable reply came back.
+    assert other['ready'] is False and other['status'] == 'error' and other['reason'].startswith('This server has no model.')
+    assert other['outcome_source'] == 'provider_failure' and other['calls_attempted'] == 1
     narrow = client.post('/api/semantic/vocabulary/preview', headers=headers, json={
         'user_id': 1, 'text': requests()['vocabulary:literal'], 'candidate_ids': IDS[:6]}).json()
-    assert narrow['ready'] is False and narrow['status'] == 'error'
+    assert narrow['ready'] is False and narrow['status'] == 'error' and 'complete bundled scope' in narrow['reason']
 
 
 def test_the_description_request_uses_the_separate_route_and_finds_what_labels_do_not(served):
@@ -236,7 +246,7 @@ def test_a_label_match_and_a_description_match_can_be_active_together(served):
     plan = client.post('/api/semantic/preview', headers=headers, json={
         'user_id': 1, 'text': requests()['configured_model'], 'label': requests()['label'],
         'candidate_ids': IDS, 'backend': 'configured_model', 'action_source': 'model', 'mode': 'merge'}).json()
-    assert [g['label'] for g in plan['groups']] == ['Exclude: Cooking + street food', 'Reviewed description request']
+    assert [g['label'] for g in plan['groups']] == ['Remove: category "Cooking", tag "street food"', 'Reviewed description request']
     assert apply(client, headers, plan)['feed']['available_items'] == 5
     assert undo(client, headers)['feed']['available_items'] == 6
     assert undo(client, headers)['feed'] == before['feed']
@@ -293,7 +303,8 @@ def test_the_fictional_brief_is_drafted_reviewed_admitted_and_removed(served):
     assert removed['items'] == [] and calls(app) == 1
     other = client.post('/api/synthetic/preview', headers=headers, json={
         'user_id': 1, 'brief': 'Another fictional brief.', 'synthetic_acknowledged': True}).json()
-    assert other['ready'] is False and 'authored replies only' in other['reason']
+    assert other['ready'] is False and other['reason'].startswith('This server has no model.')
+    assert other['outcome_source'] == 'provider_failure' and other['calls_attempted'] == 1
 
 
 def test_the_manual_provider_offers_the_terms_and_no_match(tmp_path):
@@ -341,7 +352,7 @@ def test_a_relayed_reply_to_the_vocabulary_request_is_checked_against_its_schema
             time.sleep(0.05)
         request = json.loads(request_path.read_text(encoding='utf-8'))
         assert request['system'] == vocabulary_grounding.PROMPT and request['schema'] == vocabulary_grounding.SCHEMA
-        assert set(request['payload']) == {'request', 'vocabulary'}
+        assert set(request['payload']) == {'request', 'scope_item_count', 'vocabulary'}
         assert 'Episode' not in json.dumps(request['payload'])  # no description leaves the application
         reply = demo_scripted_replies.lookup(request['payload'], request['schema'])
         partial = spool / 'answer.partial'
@@ -349,7 +360,7 @@ def test_a_relayed_reply_to_the_vocabulary_request_is_checked_against_its_schema
         os.replace(partial, spool / 'response-0001.json')
         worker.join(20)
         body = result['body']
-        assert body['ready'] and [g['label'] for g in body['groups']] == ['Increase: Repair', 'Exclude: Cooking + street food']
+        assert body['ready'] and [g['label'] for g in body['groups']] == ['Show more: category "Music"', 'Remove: category "Cooking", tag "street food"']
         assert body['model_provenance']['backend'] == 'operator-relay-file-queue'
         receipt = json.loads((spool / 'receipt-0001.json').read_text(encoding='utf-8'))
         assert receipt['outcome'] == 'parsed_transport_only'

@@ -294,7 +294,7 @@ def test_a_proposal_without_a_control_matches_nothing():
     reply([], negation_resolved=1), reply([], negation_resolved='true'),
     reply([], alternatives='one'), reply([], alternatives=['x'] * 7), reply([], alternatives=['']),
     reply([], alternatives=['x' * 301]), reply([], alternatives=[3]), reply([], alternatives=['line\nbreak']),
-    reply([], alternatives=['zero\u200bwidth']), reply([], alternatives=['lone\ud800surrogate']),
+    reply([], alternatives=['zero\u200bwidth']), reply([], alternatives=['bidi\u202eturn']),
     reply('none'), reply([control([])] * 5), reply(['text']),
     reply([{'control': 'exclude/none', 'intent_span': 'alpha things', 'terms': []}]),
     reply([{**control([]), 'operation': 'exclude'}]),
@@ -311,7 +311,8 @@ def test_a_reply_without_the_declared_fields_and_bounds_is_rejected(raw):
     assert result['checks'][-1]['detail']
 
 
-@pytest.mark.parametrize('raw', [{'status': float('nan')}, {'status': {1, 2}}, {1: 'x'}])
+@pytest.mark.parametrize('raw', [{'status': float('nan')}, {'status': {1, 2}}, {1: 'x'},
+                                 reply([], alternatives=['lone\ud800surrogate'])])
 def test_a_reply_that_is_not_bounded_json_is_rejected(raw):
     result, _ = run(raw)
     assert result['status'] == 'error' and result['reason'] == 'Response is not bounded finite JSON'

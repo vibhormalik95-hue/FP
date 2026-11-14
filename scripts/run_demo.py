@@ -189,9 +189,14 @@ def build_fixture_app(args, scenario):
                          f'{FIXTURE_SCENARIOS[scenario]} Start it with --provider manual.')
     import os
     from feedctrl.api import create_app
-    # The fixture has no caption data. A sidecar path in the environment belongs to another data set.
-    os.environ.pop('FEEDCTRL_CAPTION_SIDECAR', None)
-    app = create_app(fixture=True, allow_local_models=False, allow_local_recommender=False)
+    # The fixture has no caption data. A sidecar path in the environment belongs
+    # to another data set, so it is ignored while the application is built.
+    saved = os.environ.pop('FEEDCTRL_CAPTION_SIDECAR', None)
+    try:
+        app = create_app(fixture=True, allow_local_models=False, allow_local_recommender=False)
+    finally:
+        if saved is not None:
+            os.environ['FEEDCTRL_CAPTION_SIDECAR'] = saved
     app.state.provider_receipts = None
     app.state.scenario_requests = {}
     app.state.scenario_name = scenario
@@ -202,10 +207,11 @@ def build_fixture_app(args, scenario):
 def build_app(args):
     """Return ``(app, port, summary, finish)`` for the selected provider."""
     sys.path.insert(0, str(ROOT))
-    if args.provider == 'personal-cli':
-        return build_personal_cli_app(args)
+    # First: the fixture scenario refuses every provider but manual, also personal-cli.
     if args.scenario in FIXTURE_SCENARIOS:
         return build_fixture_app(args, args.scenario)
+    if args.provider == 'personal-cli':
+        return build_personal_cli_app(args)
 
     from feedctrl.api import create_app
     from feedctrl import demo_providers

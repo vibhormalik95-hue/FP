@@ -15,7 +15,7 @@ from pydantic import BaseModel, ConfigDict, Field, StrictInt, field_validator
 
 from feedctrl.controls import ParserOperationalError
 from feedctrl.indirect_grounding import (APPLICATION_CHECK, PROVIDER_FAILURE, REPLY_REJECTED, _digest,
-                                         _response_snapshot, clean_page_text, failure_sentence)
+                                         _response_snapshot, clean_page_text, failure_sentence, rejected_call)
 from feedctrl.label_validation import is_printable_label
 from feedctrl.semantic_review import (LIMIT_CHECK, MAX_GROUPS, ProviderFailure, TooManyControls, limit_reason,
                                       scoped_index, seal_group)
@@ -54,13 +54,28 @@ def term_key(term):
 
 
 def same_control(group, control):
-    """True when an applied group is a category and tag control with this action and these terms."""
+    """True when an applied group is a category and tag control with this operation and these terms.
+
+    Such a group is the earlier instruction for the same thing, so the new
+    control replaces it in merge mode (its strength can differ: the latest
+    reviewed strength wins). A control of another method, another operation
+    or another term set is never replaced, whatever its name is.
+    """
     proposal = group['proposal']
     return (proposal.get('grounding') == 'vocabulary'
-            and (proposal['action']['operation'], proposal['action']['strength'])
-            == (control['action']['operation'], control['action']['strength'])
+            and proposal['action']['operation'] == control['action']['operation']
             and {term_key(term) for term in proposal.get('vocabulary_terms', [])}
             == {term_key(term) for term in control['terms']})
+
+
+def scope_effect(label, members, outside, scope_size):
+    """Display data: a control changes only the items of its evidence scope."""
+    message = f'This control selects {len(members)} of the {scope_size} items in the scope.'
+    if outside:
+        message += (f' {len(outside)} more items with the same terms are outside the scope. '
+                    'They do not change.')
+    return {'label': label, 'in_scope_item_ids': list(members), 'outside_scope_item_ids': list(outside),
+            'message': message}
 
 
 def control_label(control, taken):
@@ -167,7 +182,9 @@ def install_vocabulary_routes(app, demo, state_for, review, *, configured_infer,
                     bounded = _response_snapshot(raw)
                 except (TypeError, ValueError, RecursionError):
                     # The grounding step rejects this reply itself and says why.
+                    # The reply stays visible to the reviewer as bounded text.
                     attempt['status'] = 'reply_rejected'
+                    calls.append(rejected_call(payload, schema, raw))
                     return raw
                 attempt['status'] = 'returned'
                 calls.append({'request_sha256': _digest(payload), 'schema_sha256': _digest(schema),
@@ -183,8 +200,9 @@ def install_vocabulary_routes(app, demo, state_for, review, *, configured_infer,
                 return not_ready(proposal['status'], proposal['reason'], proposal['outcome_source'],
                                  proposal.get('clarification'))
             # In merge mode a new control replaces an applied control only when
-            # that one has the same action over the same terms. Every other
-            # applied control stays, whatever its name is.
+            # that one has the same operation over the same terms (see
+            # ``same_control``). Every other applied control stays, whatever its
+            # name is; a generated name that is in use gets a number.
             kept = [] if body.mode == 'replace' else [
                 group for group in existing
                 if not any(same_control(group, control) for control in proposal['controls'])]
@@ -209,8 +227,8 @@ def install_vocabulary_routes(app, demo, state_for, review, *, configured_infer,
                 controls.append({'label': groups[-1]['label'], **control['action'], 'relation': control['relation'],
                                  'terms': deepcopy(control['terms']), 'item_ids': list(control['item_ids']),
                                  'outside_scope_item_ids': outside})
-                scope_effects.append({'label': groups[-1]['label'], 'in_scope_item_ids': list(control['item_ids']),
-                                      'outside_scope_item_ids': outside})
+                scope_effects.append(scope_effect(groups[-1]['label'], control['item_ids'], outside,
+                                                  len(index['items'])))
             selected = {item for control in controls for item in control['item_ids']}
             # Evidence for exclusion: what each item outside every control carries.
             vocabulary.update(controls=controls, not_selected=[

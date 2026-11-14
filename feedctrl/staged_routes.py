@@ -13,7 +13,7 @@ from feedctrl import evidence_audit
 from feedctrl.indirect_grounding import _digest
 from feedctrl.controls import ParserOperationalError
 from feedctrl.semantic_controls import STRENGTH_WEIGHTS
-from feedctrl.indirect_grounding import APPLICATION_CHECK,MODEL_REPORT,PROVIDER_FAILURE,REPLY_REJECTED,failure_sentence
+from feedctrl.indirect_grounding import APPLICATION_CHECK,MODEL_REPORT,REPLY_REJECTED,clean_page_text
 from feedctrl.semantic_review import (InductionPreview,scoped_index,seal_group,MAX_GROUPS,LIMIT_CHECK,TooManyControls,
     limit_reason,page_calls,stage_outcome,watch_provider)
 
@@ -42,6 +42,24 @@ class DefinitionResolution(BaseModel):
     user_id:int=Field(ge=0)
     plan_id:str=Field(min_length=1,max_length=100)
     choice:Literal['review_primary','cancel']
+
+
+NAME_CHECK='The proposed name is not the name of a category or an applied control in the scope'
+
+
+def duplicate_name(calls):
+    """``(reason, checks)`` for a proposed name that already exists in the scope.
+
+    The name is the reply's own text. It is shown in quotation marks, bounded
+    and without control characters; the sentence around it is the application's.
+    """
+    raw=next((c['raw_response'] for c in reversed(calls) if isinstance(c,dict)
+              and isinstance(c.get('raw_response'),dict)),{})
+    label=clean_page_text(raw.get('label',''),80) if isinstance(raw.get('label'),str) else ''
+    named=f'The proposed name "{label}"' if label else 'The proposed name'
+    return (f'{named} is already the name of a category or an applied control in the scope. Nothing was '
+            'applied. Describe the category in other words, or remove the applied control with that name.',
+            [{'check':NAME_CHECK,'passed':False,'detail':label}])
 
 
 def install_staged_routes(app,demo,state_for,review,*,evidence_context,category_provider=None):
@@ -111,11 +129,15 @@ def install_staged_routes(app,demo,state_for,review,*,evidence_context,category_
             definition=staged.propose_definition(body.objective,scope,inventory,watch_provider(infer,raised),model)
             resolvable=definition['status']=='clarify' and bool(definition.get('clarification',{}).get('candidate'))
             if definition['status']!='definition_review' and not resolvable:
-                # A duplicate name is an application check on the reply. Every other
-                # status here is the reply's own report (no match, competing meanings).
-                source=REPLY_REJECTED if definition['status']=='duplicate' else MODEL_REPORT
-                return {**not_ready(definition['status'],definition.get('reason'),source),
-                        **{k:v for k,v in deepcopy(definition).items() if k!='status'}}
+                if definition['status']=='duplicate':
+                    # A name collision is its own outcome with a plain sentence: the
+                    # reply came back and the name check of the application stopped it.
+                    reason,checks=duplicate_name(calls)
+                    return {**{k:v for k,v in deepcopy(definition).items() if k not in ('status','reason')},
+                            **not_ready('duplicate',reason,REPLY_REJECTED,checks=checks)}
+                # Every other status here is the reply's own report (no match, competing meanings).
+                return {**{k:v for k,v in deepcopy(definition).items() if k not in ('status','reason')},
+                        **not_ready(definition['status'],definition.get('reason'),MODEL_REPORT)}
             with demo.lock:
                 state=state_for(x_session_id,body.user_id)
                 pending={'id':secrets.token_urlsafe(24),'created':time.monotonic(),'revision':revision,
@@ -193,6 +215,14 @@ def install_staged_routes(app,demo,state_for,review,*,evidence_context,category_
             if not pending or pending['id']!=body.plan_id: raise HTTPException(409,'No matching definition review')
             try: scope,inventory=current(pending,state,x_session_id,body.user_id)
             except ValueError as exc: raise HTTPException(409,str(exc)) from exc
+            applied=len(state['semantic_groups'])
+            if pending['body']['mode']!='replace' and applied+1>MAX_GROUPS:
+                # Known before any call, so no call is spent. A removal of a control
+                # changes the revision, so a new definition review is then needed.
+                return {'ready':False,'applied':False,'status':'limit','reason':limit_reason(applied,1),
+                    'model_calls':[],'evidence_audit_model_calls':[],'calls_attempted':0,
+                    'outcome_source':APPLICATION_CHECK,'failed_stage':'membership','definition_consumed':False,
+                    'checks':[{'check':LIMIT_CHECK,'passed':False,'detail':f'{applied} stay applied; this request adds 1'}]}
             owned=deepcopy(pending);pending['used']=True
 
         def not_ready(status,reason,source,**extra):
