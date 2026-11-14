@@ -15,13 +15,13 @@
   "workdir": null,
   "operator_token": null,
   "reviewer_reference": null,
-  "driver_sha256": "5830495263747115d631cf75df14eb57afc32f76894f4fac1a8176460c616823",
+  "driver_sha256": "d62b2c7882a9caea0298f8941f644df962e6dea73d423e1f42b8908db496a810",
   "source_sha256": {
     "feedctrl/__init__.py": "eaabd38e85dd5a5f07362331ac61fb03de4b808055144d328d12e9f8fe5fce39",
     "feedctrl/api.py": "7cdeaa7b66aa907e48e13413547bec404b099ea0d323731dd06e74f2566f8e8b",
     "feedctrl/category_induction_producer.py": "23080f1999ae69a09772673d7010016c5ad0493aaae98f1f4eda1387a2d13ad9",
     "feedctrl/category_provider.py": "e07cc07a9d38c369001485f6db1221e4c7ee43afc70635ae1a00e3b8bfb89df2",
-    "feedctrl/claude_personal.py": "5971daefba03dd88fbf3b6b9b107fcb05371210cd660914d9022553e78af3113",
+    "feedctrl/claude_personal.py": "ee444fccebe34b491b011ec40755bde6ca04dda2c9595b7b282e8c77a16d8c17",
     "feedctrl/claude_personal_app.py": "f5ceaabadbf91fa2ea5f8dc5fbeb3f0b6fafa5f2d7246e5e1dec0f90de213447",
     "feedctrl/controls.py": "1488f03b7e36f79d964b40ef6d9eb343f8b2c33374eb2766714cd2ae028f2c57",
     "feedctrl/data.py": "890bceb61ca57abd44399604c025e977d7ac7a52bb80bc894ca17c6b41b7645a",
@@ -43,7 +43,7 @@
     "feedctrl/semantic_induction.py": "69bcbd0aab2b76ec1d88cdd176d230fcf881ede54945afcf509546e026e187ab",
     "feedctrl/semantic_review.py": "e85b3e094d20ec0c4be3e5df461605f5c5017340f0049413f8eb37aa39eb59ac",
     "feedctrl/semantic_workflow.py": "a94a938bc375da8ffa975835fa24321296d5e30d557cc4f1afecc335e92145a4",
-    "feedctrl/source_constraints.py": "e3e16c8c291633bd64426ce57dcb65cf2b47d6c5dbe24e127804f23655f3150a",
+    "feedctrl/source_constraints.py": "22cff3a8d36af93edd34a1cf5bf0225458d862307365ed6cc88997fedbbfadfc",
     "feedctrl/staged_induction.py": "06674281291cdec6abced5f0a5b8991a2e9e0dc18e3ac9ca6489aa55f1b7ca01",
     "feedctrl/staged_routes.py": "de3b6c32fadee895ea9c6e019e188605f5a6410da42304df16e2f8116a517f87",
     "feedctrl/synthetic_drafts.py": "e6d0aae1df121dc0c3937c66eef5ffe7d23273c1ddd714c1117f2071f1bd3d8b",
@@ -87,5 +87,5 @@
     ]
   },
   "input_manifest_sha256": "5010b24f91507ff2b6bc56ccde248a1c010cbfca7f8b9f5431319d55f0479d3b",
-  "profile_id": "current-stated-limits-20261113"
+  "profile_id": "current-merged-20261114"
 }

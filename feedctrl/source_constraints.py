@@ -9,6 +9,16 @@ _LIST_INTRO = re.compile(r'\ball\s+(' + '|'.join(_LIST_COUNTS) + r')\s+(?:of|con
 _LIST_MARKER = re.compile(
     r'(?P<label>\((?P<number>[1-9][0-9]*)\))\s+'
     r'(?=(?:a|an|the|that|each|every|its|it)\s+[a-z])')
+_SATISFY_REFERENCE = re.compile(
+    r'(?:^|(?<=[.!?]))\s*(?:it\s+(?:must|can|cannot|should|may|will)\s+satisfy|'
+    r'it\s+satisfies|a\s+stated\s+purpose\s+or\s+capability\s+after\s+the\s+fix\s+'
+    r'does\s+not\s+by\s+itself\s+satisfy)\s+condition\s+'
+    r'(?P<label>\((?P<number>[1-9][0-9]*)\))\s*(?:[.!?](?=\s|$)|$)')
+_REFERENCE_TEXT_CUE = re.compile(
+    r'\b(?:say|says|said|mention|mentions|mentioned|contain|contains|containing|'
+    r'include|includes|included|write|writes|written|spell|spells|literal|literally|'
+    r'phrase|string|word|words|character|characters|quote|quoted|inscription|'
+    r'read|reads|display|displays|show|shows|print|prints|verbatim|transcribe)\b|\bas\s+text\b')
 
 def _normalized(text):
     return unicodedata.normalize('NFKC',text).casefold()
@@ -44,6 +54,15 @@ def _top_level_positions(text):
         apostrophe = (char in ("'", '’') and 0 < offset < len(text) - 1
                       and text[offset - 1].isalnum() and text[offset + 1].isalnum())
         if apostrophe:
+            continue
+        # Inside an already-open bracketed region, a matching single quote
+        # immediately followed by a comma or that region's closing bracket is
+        # a bounded quoted element. Keep its contents for literal extraction.
+        # Other potentially possessive/closing apostrophes remain ambiguous.
+        if (char in ("'", '’') and quote == char and brackets
+                and offset > 0 and text[offset - 1].isalnum()
+                and offset + 1 < len(text) and text[offset + 1] in (',', brackets[-1])):
+            quote = None
             continue
         # A trailing apostrophe after a word can be a possessive or a closing
         # single quote. Do not guess and expose later quoted list syntax.
@@ -81,6 +100,7 @@ def _without_structural_enumeration(text):
     if top_level is None:
         return text
     labels = []
+    recognized_lists = []
     intros = [match for match in _LIST_INTRO.finditer(text) if top_level[match.start()]
               and (match.start() == 0 or text[match.start() - 1] not in "'’")]
     separators = [match.start() for match in re.finditer(';', text) if top_level[match.start()]]
@@ -108,6 +128,18 @@ def _without_structural_enumeration(text):
                 start += continuation.end()
         else:
             labels.extend(candidate)
+            recognized_lists.append(candidate)
+    # A narrow, explicit condition-satisfaction clause after one complete
+    # numbered list denotes that list's condition rather than a numeric fact.
+    # Never bind across multiple introductions, quotes, brackets or inputs.
+    if len(intros) == 1 and len(recognized_lists) == 1:
+        candidate = recognized_lists[0]
+        for reference in _SATISFY_REFERENCE.finditer(text, candidate[-1][1]):
+            # Any explicit mention/quotation cue after the list makes binding
+            # ambiguous, even across punctuation, abbreviations or decimals.
+            if (top_level[reference.start()] and not _REFERENCE_TEXT_CUE.search(text, candidate[-1][1])
+                    and reference.group('number') in {str(i) for i in range(1, len(candidate) + 1)}):
+                labels.append(reference.span('label'))
     for start, end in reversed(sorted(set(labels))):
         text = text[:start] + ' ' * (end - start) + text[end:]
     return text

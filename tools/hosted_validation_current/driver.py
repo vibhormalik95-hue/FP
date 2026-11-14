@@ -23,12 +23,12 @@ IDENTITY_BASIS = {
 
 CAPS = {'category': 3, 'indirect': 2}
 INPUT_MANIFEST_SHA256 = '5010b24f91507ff2b6bc56ccde248a1c010cbfca7f8b9f5431319d55f0479d3b'
-PROFILE_ID = 'current-stated-limits-20261113'
+PROFILE_ID = 'current-merged-20261114'
 SCENARIO_DIRS = {'category':'01-category-discovery', 'indirect':'02-hunger-continuation'}
 GATES = ('runtime_authorized', 'data_authorized', 'subscription_and_usage_authorized',
          'executable_reviewed', 'managed_runtime_reviewed', 'process_containment_reviewed')
-BOUNDS = {'max_output_tokens': 4096, 'max_request_bytes': 20000,
-          'max_response_bytes': 1000000, 'timeout': 90}
+BOUNDS = {'max_output_tokens': 16384, 'max_request_bytes': 20000,
+          'max_response_bytes': 1000000, 'timeout': 300}
 
 def digest(path):
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
