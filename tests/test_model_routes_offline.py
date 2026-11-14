@@ -362,6 +362,12 @@ def test_another_adapter_needs_one_registration_and_no_change_elsewhere():
 
 def answers(*values):
     queue = list(values)
+    return lambda prompt='': queue.pop(0)
+
+
+def answers_then_silence(*values):
+    """The answers, then an empty answer to every later question: a script that feeds no more input."""
+    queue = list(values)
     return lambda prompt='': queue.pop(0) if queue else ''
 
 
@@ -683,7 +689,7 @@ def test_f12_the_wizard_asks_again_and_never_repeats_a_pasted_key():
                                         'llama3.1:8b'), lines.append, {}, lambda config, key=None: [])
     assert config['allow_insecure_http'] is True and model_routes.validate_config(config)['base_url'].startswith('http://192')
     with pytest.raises(SystemExit) as stopped:
-        model_route.wizard(answers('3', '1'), lines.append, {}, lambda config, key=None: [])
+        model_route.wizard(answers_then_silence('3', '1'), lines.append, {}, lambda config, key=None: [])
     assert 'No usable answer' in stopped.value.code
 
 

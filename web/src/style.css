@@ -110,3 +110,7 @@ thead th,.review-table thead th{color:#4d5a44;font-weight:600}
 .checks li[data-passed=false]{color:#7d3520;font-weight:600}
 .feed-note{color:#7a5214}.review-mark{color:#7a5214}
 @media(max-width:760px){h1{font-size:44px;letter-spacing:-2px}.condition{font-size:11px}}
+
+/* From the published work branch: the review board keeps a margin when the page scrolls to it, and a focus ring with more contrast on its pale background. */
+.review-board{scroll-margin-top:20px}
+.review-board :focus-visible{outline:3px solid #315d71;outline-offset:3px}

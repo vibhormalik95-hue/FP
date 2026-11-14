@@ -513,3 +513,45 @@ test('the server names the items of a control outside the scope (m1, scope_effec
   const checked = ui.text(ui.region('Application checks'));
   for (const value of ['This control selects 2 of the 4 items in the scope.', '2 items with a chosen name are outside the evidence scope and do not change: 7, 9.']) assert.ok(checked.includes(value), value);
 });
+
+// ----------------------------------------------------------------- checks of the published work branch
+// These four tests are as the published branch wrote them (commit 7875551). They pass on this page unchanged.
+
+const options = ui => ui.nodes(ui.find(n => n.props.id === 'semantic-backend')).filter(n => n.type === 'input' && !n.props.disabled).map(n => n.props.value);
+
+test('authored replies stay distinct from model output and lock their bundled scope', async()=>{
+  const {ui}=fixture({'semantic/vocabulary/preview':ready([hungry],[3,4])},{provider:{live_model:false}});
+  await request(ui);
+  assert.ok(ui.text(ui.region('Authored reply (written by hand, not a model)')).includes('An authored reply shows the screens only'));
+  assert.ok(ui.text().includes('AUTHORED REPLIES, NO MODEL'));
+  assert.equal(ui.find(n=>n.props.id==='semantic-count').props.disabled,true);
+  assert.equal(options(ui).includes('induction'),false);
+});
+
+test('a failed provider attempt with no returned model_calls does not claim no call',async()=>{
+  const {ui}=fixture({'semantic/vocabulary/preview':{ready:false,status:'error',reason:'Provider timed out',outcome_source:'provider_failure',calls_attempted:1,model_calls:[]}});
+  await request(ui);
+  const text=ui.text(ui.region('Review board'));
+  assert.ok(text.includes('The call to the provider failed'));
+  assert.ok(text.includes('1 model call started'));
+  assert.equal(text.includes('No model call was made'),false);
+});
+
+test('manual invalid selection cannot call API even if handler is invoked',async()=>{
+  const {ui,calls}=fixture({}, {categories:['K1','K2']});
+  await ui.open();
+  ui.button('Show the proposed change').props.onClick();await ui.settle();
+  ui.choose('semantic-category','invented');
+  ui.button('Show the proposed change').props.onClick();await ui.settle();
+  assert.equal(calls.filter(c=>c.path==='semantic/preview').length,0);
+  assert.equal(ui.button('Show the proposed change').props.disabled,true);
+});
+
+test('expired review disables approval without applying anything',async()=>{
+  let expire;const timers={now:()=>1000,later:work=>{expire=work;return ()=>{};},every:()=>()=>{}};
+  const {ui,calls}=fixture({'semantic/vocabulary/preview':ready([hungry],[3,4])},{timers});
+  await request(ui);expire();ui.render();
+  assert.ok(ui.text().includes('expired'));
+  assert.equal(ui.nodes().some(n=>n.type==='button'&&ui.text(n)==='Approve this exact item set and apply'),false);
+  assert.equal(calls.filter(c=>c.path==='semantic/apply').length,0);
+});
