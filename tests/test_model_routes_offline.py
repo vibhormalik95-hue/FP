@@ -809,3 +809,13 @@ def test_w2_the_program_environment_keeps_the_windows_names_that_the_cli_needs()
             'SYSTEMROOT'} <= set(route_cli.ENV_ALLOW)
     assert not {'ANTHROPIC_API_KEY', 'OPENAI_API_KEY', 'CLAUDE_CODE_OAUTH_TOKEN', 'ANTHROPIC_AUTH_TOKEN'} & set(route_cli.ENV_ALLOW)
     assert 'pass_environment' in route_cli._SIGN_IN_ADVICE
+
+
+@pytest.mark.parametrize('text, words', [('{"status": "propose", "label": "x", "n": 1e999}', 'not finite'),
+                                         ('{"status": "propose", "label": "x", "d": ' + '[' * 70 + ']' * 70 + '}',
+                                          'nested deeper than 64 levels')])
+def test_mutation_the_reply_passes_the_fixed_size_depth_and_number_limits(text, words):
+    open_schema = {**SCHEMA, 'additionalProperties': True}
+    with pytest.raises(RouteError) as caught:
+        model_routes.parse_reply(text, open_schema)
+    assert caught.value.category == 'reply_not_json' and words in caught.value.message
