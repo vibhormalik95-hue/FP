@@ -51,7 +51,7 @@ The cases of scenario `tags`:
 | --- | --- | --- | --- |
 | `vocabulary` | categories and tags | 1 | "I'm not hungry, remove all the stuff that makes me hungry." |
 | `vocabulary:literal` | categories and tags | 1 | "Hide the Repair category." |
-| `vocabulary:mixed` | categories and tags | 1 | "Show me more repair videos, and remove anything about food." |
+| `vocabulary:mixed` | categories and tags | 1 | "Show me more music videos, and remove anything about food." |
 | `vocabulary:ambiguous` | categories and tags | 1 | "I have had enough of the heavy stuff." |
 | `vocabulary:unsupported` | categories and tags | 1 | "Show me at most two cooking videos per day." |
 | `vocabulary:negated` | categories and tags | 1 | "Do not hide the cooking videos." |
@@ -100,14 +100,14 @@ configured_model        item descriptions     2      review       same outcome, 
 synthetic               fictional item draft  1      draft ready  same outcome                      0.0
 ```
 
-**Calls.** The number of model calls that the case made. The case `vocabulary:negated` makes no call: the application itself answers a request that negates a command.
+**Calls.** The number of model calls that the case made. The case `vocabulary:negated` makes no call: the request matches the negated-command pattern (a negated hide, exclude, remove, reduce or boost), and the application stops it with its own check before any call.
 
 **Outcome.** The class that the application gave to the reply.
 
 | Outcome | Meaning |
 | --- | --- |
 | `review` | The reply passed the application's checks. In the page a person would now review the proposed change. |
-| `clarify` | The application asks the person to state the request more exactly. The model found competing meanings, or the application's own rules found a negated command, a contradiction or a scope that is too broad. |
+| `clarify` | The application asks the person to state the request more exactly. The model found competing meanings, or the application's own rules found a request that matches the negated-command pattern, a contradiction or a scope that is too broad. |
 | `no match` | The model found no existing category, tag or item for the request. |
 | `unsupported` | The request asks for an operation that these controls do not have, for example a quota or a time condition. |
 | `definition for review` | A new category: the model proposed a definition, and a person would now review it. |

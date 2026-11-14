@@ -29,17 +29,17 @@ The view **Language controls** has four methods. Each one follows the same stage
 For every method:
 
 - a proposal does not change the feed;
-- the review shows the model output, the application checks and your decision in three separate blocks;
+- the review shows what came back, the application checks and your decision in three separate blocks (with the hand-written replies of a rehearsal, the first block is "Authored reply (written by hand, not a model)");
 - a table shows each item in the scope and why it is selected or not selected;
 - Apply uses exactly the reviewed set, and a two-step Undo restores the earlier feed.
 
 The application also shows these things:
 
 - **Mixed requests.** One request can hold several preferences, for example more of one subject and none of another. The review shows each control, and one approval applies them together.
-- **Requests that change nothing.** An ambiguous request, a negated command, a request that the controls cannot express, and a request with no match each give a plain result. Nothing is applied.
+- **Requests that change nothing.** An ambiguous request, a negated command, a request that the controls cannot express, and a request with no match each give a plain result. Nothing is applied. A negated hide, exclude, remove, reduce or boost (for example "Do not hide ...") matches the negated-command pattern. The application stops it before any model call.
 - **A fictional item.** A model writes a title and a description for an item that does not exist. The item goes to a separate feed. It never enters the dataset.
 - **Model routes.** The application can reach a model through a command-line program, a hosted API with your own key, a model server on your computer, or by hand. See [model routes](docs/model-routes.md).
-- **The original study.** The views "Original study (A to E)" and "Compare A to E" hold the five conditions of the original proposal. They are item feedback, explanations, a free-text category instruction, an editable profile, and all channels.
+- **The original study.** The views "Original study (A to E)" and "Compare A to E" hold the five conditions of the original proposal. They are item feedback, explanations, a free-text category instruction, an editable profile, and all channels. The rule parser of C, D and E reads category IDs of the form `category_N` only. On the bundled scenarios, which have named categories, the instruction and the profile are disabled, and the page says why. The scenario `conditions` serves the built-in fixture, where they work.
 
 The supervisor asked for three of these things in a meeting. The student supplied the transcript of that meeting on 4 November 2026. The three things are the manual category control with measured performance, a new category from natural language, and requests that do not use the literal category words.
 [Requirements and evidence](docs/requirements-and-evidence.md) maps each request to code and to evidence.
@@ -57,6 +57,7 @@ You need Python 3.11 or newer. [Install and run](docs/install-and-run.md) gives 
 Two more commands help:
 
 - `python scripts/quickstart.py rehearse --scenario tags` serves the page with hand-written replies. No model is used. Use it to learn the screens.
+- `python scripts/quickstart.py rehearse --scenario conditions` serves the original conditions A to E on the built-in fixture (36 items, categories `category_0` to `category_5`, three users). It uses no model and has no language controls.
 - `python scripts/quickstart.py try --scenario tags` runs the bundled requests through your route without the browser. See [route trial](docs/route-trial.md).
 
 The routes for a command-line program, a hosted API and a local model server were tested with stand-in programs and stand-in servers only.
@@ -79,12 +80,13 @@ Every number below is copied from the document that is named after it.
 - Induced control success was 20.145% for Llama, 3.854% for rules and 3.815% for item feedback.
 - Negative: NDCG@10 was 0.02580 for Llama and 0.03184 for item feedback. Conditional-control success was zero (`deliverables/2026-10-27-feedback/RESULTS-AND-LIMITATIONS.md`).
 - The reference labels came from two AI annotators. They do not measure independent human accuracy.
+- The two annotators are AI roles. They carry first names in the frozen file paths (`annotations/khushi/`, `annotations/tanishq/`), and no person of those names made the labels.
 
 **Synthetic-language study of 4 November (used once, now exposed).** Protocol and results: `deliverables/2026-11-04-prospective-evaluation/PROTOCOL-AND-RESULTS.md`.
 
 - The pipeline matched the complete intended profile on 48 of 100 supported requests. It clarified correctly on 19 of 20 diagnostic requests.
 - The 120 cases gave 49 ready proposals, 61 clarifications, five grounding errors and five parser or schema rejections.
-- Manual reference against the language pipeline: the intended manual profile changed top-ten exposure by 5.3579 percentage points, and the model-proposed profile by 2.9292 points. These are signed descriptive averages. They are not a success rate.
+- The intended profile (the model-written reference, applied without a model) against the language pipeline: the intended profile changed top-ten exposure by 5.3579 percentage points, and the model-proposed profile by 2.9292 points. These are signed descriptive averages. They are not a success rate. An AI author wrote the intended profiles, and another AI role reviewed them. They are not human annotations.
 
 The complete cases, model responses, ranking outputs and recommender checkpoints are in a separate research archive. They are not in this repository.
 
