@@ -4,7 +4,6 @@ Examples (run from the repository root):
 
     python scripts/run_demo.py --scenario category --provider manual
     python scripts/run_demo.py --scenario category --provider scripted
-    python scripts/run_demo.py --scenario tags --provider scripted
     python scripts/run_demo.py --scenario hunger --provider relay \
         --relay-dir runs/relay-01 --declared-model claude-fable-5-2 \
         --transport-note "replies pasted by hand from a Claude chat"
