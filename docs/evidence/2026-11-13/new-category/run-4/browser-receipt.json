@@ -1,0 +1,675 @@
+{
+  "kind": "browser run of the served application",
+  "started_utc": "2026-11-14T03:13:00.755Z",
+  "base": "http://127.0.0.1:8778",
+  "scenario": "category",
+  "flows": [
+    "manual",
+    "category"
+  ],
+  "review_mode": "wait",
+  "reviewer": "AI operator: Claude, the Cowork lead session. Not the student.",
+  "source_fingerprint": "63cf01537d86f2afc54178c419f971ab726714ce900b1e3e6a16b8c958db33ac",
+  "status": {
+    "data_mode": "fixture",
+    "source": "synthetic://friday-new-category-proposal-20261110",
+    "model_mode": "deterministic diagnostic scorer",
+    "users": 1,
+    "items": 8,
+    "categories": 4,
+    "default_parser": "rule",
+    "ollama_model": "llama3.1:8b",
+    "local_models_allowed": false,
+    "provider": {
+      "backend": "operator-relay-file-queue",
+      "model": "claude-fable-5-2 (session-configured; not attested)",
+      "live_model": "operator_declared"
+    },
+    "scenario_requests": {
+      "staged": "Propose one useful new category from these eight descriptions. Decide the shared concept yourself from the stated facts, rather than taking an existing category code as its meaning. Give a precise definition supported by the descriptions; do not merely rename an existing category or invent missing facts."
+    },
+    "source_fingerprint": "63cf01537d86f2afc54178c419f971ab726714ce900b1e3e6a16b8c958db33ac",
+    "ollama_status": "Disabled by hosted-only application policy.",
+    "research_note": "Synthetic category controls measure offline behavior; this demo does not establish human agency or satisfaction.",
+    "category_note": "Opaque dataset category IDs; no invented topic names.",
+    "semantic_topic": "Official caption sidecar loaded; exploratory preview only",
+    "asset_note": "Metadata cards only; no original video assets are distributed."
+  },
+  "checks": [
+    {
+      "name": "session established",
+      "passed": true,
+      "detail": null,
+      "utc": "2026-11-14T03:13:02.277Z"
+    },
+    {
+      "name": "automatic review is used only when no model is connected",
+      "passed": true,
+      "detail": {
+        "review_mode": "wait",
+        "provider": "operator-relay-file-queue"
+      },
+      "utc": "2026-11-14T03:13:02.277Z"
+    },
+    {
+      "name": "manual: starts with no applied semantic group",
+      "passed": true,
+      "detail": {
+        "eligible": 8
+      },
+      "utc": "2026-11-14T03:13:07.285Z"
+    },
+    {
+      "name": "manual: review appears",
+      "passed": true,
+      "detail": null,
+      "utc": "2026-11-14T03:13:10.342Z"
+    },
+    {
+      "name": "manual: the server reported no model call for this review",
+      "passed": true,
+      "detail": {
+        "model_calls": 0
+      },
+      "utc": "2026-11-14T03:13:10.343Z"
+    },
+    {
+      "name": "manual: preview left the applied feed unchanged",
+      "passed": true,
+      "detail": {
+        "applied_groups": 0,
+        "revision": 0,
+        "eligible": 8
+      },
+      "utc": "2026-11-14T03:13:10.669Z"
+    },
+    {
+      "name": "manual: page still shows the starting items during preview",
+      "passed": true,
+      "detail": {
+        "shown": [
+          41006,
+          41007,
+          41008,
+          41001,
+          41002,
+          41003,
+          41004,
+          41005
+        ]
+      },
+      "utc": "2026-11-14T03:13:10.677Z"
+    },
+    {
+      "name": "manual: review names the items that would be removed",
+      "passed": true,
+      "detail": {
+        "selected_ids": [
+          41001,
+          41004
+        ]
+      },
+      "utc": "2026-11-14T03:13:10.684Z"
+    },
+    {
+      "name": "manual: review table lists every supplied item with its own description and marks exactly the approved ones",
+      "passed": true,
+      "detail": {
+        "rows": 8,
+        "marked": [
+          41001,
+          41004
+        ]
+      },
+      "utc": "2026-11-14T03:13:10.701Z"
+    },
+    {
+      "name": "manual: Apply removed exactly the approved items",
+      "passed": true,
+      "detail": {
+        "eligible_before": 8,
+        "eligible_after": 6,
+        "removed": [
+          41001,
+          41004
+        ]
+      },
+      "utc": "2026-11-14T03:13:29.679Z"
+    },
+    {
+      "name": "manual: page shows the reduced feed",
+      "passed": true,
+      "detail": {
+        "shown": [
+          41006,
+          41007,
+          41008,
+          41002,
+          41003,
+          41005
+        ]
+      },
+      "utc": "2026-11-14T03:13:29.694Z"
+    },
+    {
+      "name": "manual: undo review alone changed nothing",
+      "passed": true,
+      "detail": {
+        "eligible": 6
+      },
+      "utc": "2026-11-14T03:13:35.083Z"
+    },
+    {
+      "name": "manual: Undo restored the exact starting feed",
+      "passed": true,
+      "detail": {
+        "eligible": 8,
+        "identical_to_start": true,
+        "revision": 2
+      },
+      "utc": "2026-11-14T03:13:46.101Z"
+    },
+    {
+      "name": "manual: page shows the starting items again",
+      "passed": true,
+      "detail": {
+        "shown": [
+          41006,
+          41007,
+          41008,
+          41001,
+          41002,
+          41003,
+          41004,
+          41005
+        ]
+      },
+      "utc": "2026-11-14T03:13:46.116Z"
+    },
+    {
+      "name": "category: starts with no applied semantic group",
+      "passed": true,
+      "detail": {
+        "eligible": 8
+      },
+      "utc": "2026-11-14T03:13:51.834Z"
+    },
+    {
+      "name": "the request text is the exact scenario request",
+      "passed": true,
+      "detail": null,
+      "utc": "2026-11-14T03:13:51.907Z"
+    },
+    {
+      "name": "category: definition proposal changed nothing",
+      "passed": true,
+      "detail": {
+        "label": "Defective or damaged object repaired, same object kept or remaining in use"
+      },
+      "utc": "2026-11-14T03:25:03.224Z"
+    },
+    {
+      "name": "category: every supplied item has one membership decision on screen",
+      "passed": true,
+      "detail": {
+        "shown": 8,
+        "supplied": 8
+      },
+      "utc": "2026-11-14T03:35:25.119Z"
+    },
+    {
+      "name": "category: every supplied item has one evidence assessment on screen",
+      "passed": true,
+      "detail": {
+        "shown": 8
+      },
+      "utc": "2026-11-14T03:35:25.120Z"
+    },
+    {
+      "name": "category: preview left the applied feed unchanged",
+      "passed": true,
+      "detail": {
+        "applied_groups": 0,
+        "revision": 2,
+        "eligible": 8
+      },
+      "utc": "2026-11-14T03:35:25.790Z"
+    },
+    {
+      "name": "category: page still shows the starting items during preview",
+      "passed": true,
+      "detail": {
+        "shown": [
+          41006,
+          41007,
+          41008,
+          41001,
+          41002,
+          41003,
+          41004,
+          41005
+        ]
+      },
+      "utc": "2026-11-14T03:35:25.829Z"
+    },
+    {
+      "name": "category: review names the items that would be removed",
+      "passed": true,
+      "detail": {
+        "selected_ids": [
+          41001,
+          41002,
+          41003
+        ]
+      },
+      "utc": "2026-11-14T03:35:25.836Z"
+    },
+    {
+      "name": "category: review table lists every supplied item with its own description and marks exactly the approved ones",
+      "passed": true,
+      "detail": {
+        "rows": 8,
+        "marked": [
+          41001,
+          41002,
+          41003
+        ]
+      },
+      "utc": "2026-11-14T03:35:25.850Z"
+    },
+    {
+      "name": "category: Apply removed exactly the approved items",
+      "passed": true,
+      "detail": {
+        "eligible_before": 8,
+        "eligible_after": 5,
+        "removed": [
+          41001,
+          41002,
+          41003
+        ]
+      },
+      "utc": "2026-11-14T03:35:45.085Z"
+    },
+    {
+      "name": "category: page shows the reduced feed",
+      "passed": true,
+      "detail": {
+        "shown": [
+          41006,
+          41007,
+          41008,
+          41004,
+          41005
+        ]
+      },
+      "utc": "2026-11-14T03:35:45.091Z"
+    },
+    {
+      "name": "category: undo review alone changed nothing",
+      "passed": true,
+      "detail": {
+        "eligible": 5
+      },
+      "utc": "2026-11-14T03:35:50.448Z"
+    },
+    {
+      "name": "category: Undo restored the exact starting feed",
+      "passed": true,
+      "detail": {
+        "eligible": 8,
+        "identical_to_start": true,
+        "revision": 4
+      },
+      "utc": "2026-11-14T03:36:03.330Z"
+    },
+    {
+      "name": "category: page shows the starting items again",
+      "passed": true,
+      "detail": {
+        "shown": [
+          41006,
+          41007,
+          41008,
+          41001,
+          41002,
+          41003,
+          41004,
+          41005
+        ]
+      },
+      "utc": "2026-11-14T03:36:03.379Z"
+    },
+    {
+      "name": "no script error was raised by the page",
+      "passed": true,
+      "detail": [],
+      "utc": "2026-11-14T03:36:08.683Z"
+    }
+  ],
+  "review_decisions": [
+    {
+      "gate": "manual-apply",
+      "decision": "APPROVE",
+      "seconds_to_decide": 7.5,
+      "utc": "2026-11-14T03:13:29.581Z"
+    },
+    {
+      "gate": "manual-undo",
+      "decision": "APPROVE",
+      "seconds_to_decide": 7.5,
+      "utc": "2026-11-14T03:13:45.947Z"
+    },
+    {
+      "gate": "category-resolution",
+      "decision": "APPROVE",
+      "seconds_to_decide": 11,
+      "utc": "2026-11-14T03:25:03.064Z"
+    },
+    {
+      "gate": "category-definition",
+      "decision": "APPROVE",
+      "seconds_to_decide": 14.5,
+      "utc": "2026-11-14T03:25:29.319Z"
+    },
+    {
+      "gate": "category-apply",
+      "decision": "APPROVE",
+      "seconds_to_decide": 7.5,
+      "utc": "2026-11-14T03:35:44.938Z"
+    },
+    {
+      "gate": "category-undo",
+      "decision": "APPROVE",
+      "seconds_to_decide": 9.5,
+      "utc": "2026-11-14T03:36:03.245Z"
+    }
+  ],
+  "flows_result": {
+    "manual": {
+      "started_utc": "2026-11-14T03:13:07.271Z",
+      "eligible_before": 8,
+      "shown_before": [
+        41006,
+        41007,
+        41008,
+        41001,
+        41002,
+        41003,
+        41004,
+        41005
+      ],
+      "outcome": "completed: preview unchanged, apply exact, undo restored",
+      "selected_ids": [
+        41001,
+        41004
+      ],
+      "review_text_sha256": "2b4b44c7a5fb07379d5c614d1bed288dad2eccb50dd32bb915c4ab2e10c2acb5",
+      "eligible_after_apply": 6,
+      "shown_after_apply": [
+        41006,
+        41007,
+        41008,
+        41002,
+        41003,
+        41005
+      ],
+      "eligible_after_undo": 8,
+      "provider_calls": 0,
+      "finished_utc": "2026-11-14T03:13:51.819Z"
+    },
+    "category": {
+      "started_utc": "2026-11-14T03:13:51.829Z",
+      "eligible_before": 8,
+      "shown_before": [
+        41006,
+        41007,
+        41008,
+        41001,
+        41002,
+        41003,
+        41004,
+        41005
+      ],
+      "outcome": "completed: preview unchanged, apply exact, undo restored",
+      "competing_meanings_shown": true,
+      "definition_label": "Defective or damaged object repaired, same object kept or remaining in use",
+      "dispositions": [
+        {
+          "item_id": 41001,
+          "verdict": "match"
+        },
+        {
+          "item_id": 41002,
+          "verdict": "match"
+        },
+        {
+          "item_id": 41003,
+          "verdict": "match"
+        },
+        {
+          "item_id": 41004,
+          "verdict": "not_match"
+        },
+        {
+          "item_id": 41005,
+          "verdict": "unknown"
+        },
+        {
+          "item_id": 41006,
+          "verdict": "unknown"
+        },
+        {
+          "item_id": 41007,
+          "verdict": "unknown"
+        },
+        {
+          "item_id": 41008,
+          "verdict": "unknown"
+        }
+      ],
+      "evidence_assessments": [
+        {
+          "item_id": 41001,
+          "assessment": "supported"
+        },
+        {
+          "item_id": 41002,
+          "assessment": "supported"
+        },
+        {
+          "item_id": 41003,
+          "assessment": "supported"
+        },
+        {
+          "item_id": 41004,
+          "assessment": "contradicted"
+        },
+        {
+          "item_id": 41005,
+          "assessment": "not_stated"
+        },
+        {
+          "item_id": 41006,
+          "assessment": "not_stated"
+        },
+        {
+          "item_id": 41007,
+          "assessment": "not_stated"
+        },
+        {
+          "item_id": 41008,
+          "assessment": "not_stated"
+        }
+      ],
+      "selected_ids": [
+        41001,
+        41002,
+        41003
+      ],
+      "review_text_sha256": "9f3614e68dfe45aac6ef28def70273fd9e389a827b006f23d6b6e30a171efce5",
+      "eligible_after_apply": 5,
+      "shown_after_apply": [
+        41006,
+        41007,
+        41008,
+        41004,
+        41005
+      ],
+      "eligible_after_undo": 8,
+      "provider_calls": 3,
+      "finished_utc": "2026-11-14T03:36:08.682Z"
+    }
+  },
+  "provider_calls": [
+    {
+      "route": "/api/semantic/definition/preview",
+      "list": "model_calls",
+      "stage": "definition",
+      "status": "returned_json",
+      "elapsed_seconds": 648.921,
+      "request_sha256": "4fba6f7356c357967543da9023dcc65af01ebf1c240f98f922b27166e421e38f",
+      "response_sha256": "1cdae167f716feaef073b950673f6410b8d81eb2da7c6f23dfa9de588f7c562d",
+      "declared_provider": {
+        "backend": "operator-relay-file-queue",
+        "model_id": "claude-fable-5-2 (session-configured; not attested)",
+        "model_revision": "fa23baf75f8112c57d5c280c36d6042914f751ec7602e3c12c5267c185cd7bc1"
+      },
+      "observed_utc": "2026-11-14T03:24:45.502Z"
+    },
+    {
+      "route": "/api/semantic/definition/classify",
+      "list": "model_calls",
+      "stage": "membership",
+      "status": "returned_json",
+      "elapsed_seconds": 352.641,
+      "request_sha256": "d7e82f7ec5427619e0170236eb204cda1235fc13799fad103220e289786e2dd5",
+      "response_sha256": "ce96753d19337e0555ecb90b35b4e4496a581d99afbc4cb16e4a2039772939fd",
+      "declared_provider": {
+        "backend": "operator-relay-file-queue",
+        "model_id": "claude-fable-5-2 (session-configured; not attested)",
+        "model_revision": "fa23baf75f8112c57d5c280c36d6042914f751ec7602e3c12c5267c185cd7bc1"
+      },
+      "observed_utc": "2026-11-14T03:35:24.879Z"
+    },
+    {
+      "route": "/api/semantic/definition/classify",
+      "list": "evidence_audit_model_calls",
+      "stage": "evidence_audit",
+      "status": "returned_json",
+      "elapsed_seconds": 242.723,
+      "request_sha256": "2c3838d5afe1239fa21311a0ac1b65397ba72f6c09af60e4058ae65e18ff9521",
+      "response_sha256": "7fc5322b311d42032c37821388a4140f175368cec9f18db62d1ec84248cc71fa",
+      "declared_provider": {
+        "backend": "operator-relay-file-queue",
+        "model_id": "claude-fable-5-2 (session-configured; not attested)",
+        "model_revision": "fa23baf75f8112c57d5c280c36d6042914f751ec7602e3c12c5267c185cd7bc1"
+      },
+      "observed_utc": "2026-11-14T03:35:24.879Z"
+    }
+  ],
+  "screenshots": [
+    "01-start.png",
+    "02-manual-review.png",
+    "03-gate-manual-apply.png",
+    "04-manual-applied.png",
+    "05-gate-manual-undo.png",
+    "06-manual-restored.png",
+    "07-category-objective.png",
+    "08-gate-category-resolution.png",
+    "09-gate-category-definition.png",
+    "10-category-membership-review.png",
+    "11-gate-category-apply.png",
+    "12-category-applied.png",
+    "13-gate-category-undo.png",
+    "14-category-restored.png"
+  ],
+  "finished_utc": "2026-11-14T03:36:08.683Z",
+  "outcome": "all flows completed",
+  "video": {
+    "file": "video/category.webm",
+    "steps": [
+      {
+        "seconds": 2.2,
+        "step": "start: the status strip names the data and the provider"
+      },
+      {
+        "seconds": 6.5,
+        "step": "manual: existing category and action chosen by hand"
+      },
+      {
+        "seconds": 9.8,
+        "step": "manual: review table of every supplied item (preview, nothing applied)"
+      },
+      {
+        "seconds": 15.8,
+        "step": "manual: the feed is unchanged during the preview"
+      },
+      {
+        "seconds": 18.9,
+        "step": "manual: review block with the approve button; waiting for the reviewer"
+      },
+      {
+        "seconds": 29,
+        "step": "manual: applied; the feed shows the reduced item set"
+      },
+      {
+        "seconds": 34.2,
+        "step": "manual: undo review (step 1 of 2); nothing changed yet"
+      },
+      {
+        "seconds": 45.8,
+        "step": "manual: undo approved (step 2 of 2); the starting feed is restored"
+      },
+      {
+        "seconds": 51.5,
+        "step": "category: natural-language objective entered"
+      },
+      {
+        "seconds": 55.6,
+        "step": "category: waiting for the model (definition)"
+      },
+      {
+        "seconds": 704.6,
+        "step": "category: the model returned competing meanings; waiting for the reviewer"
+      },
+      {
+        "seconds": 722.3,
+        "step": "category: definition review (label and definition); waiting for the reviewer"
+      },
+      {
+        "seconds": 730.3,
+        "step": "category: definition review (approve box and button)"
+      },
+      {
+        "seconds": 748.6,
+        "step": "category: definition approved; waiting for the model (classification, then separate evidence assessment)"
+      },
+      {
+        "seconds": 1344.9,
+        "step": "category: review table of every supplied item (preview, nothing applied)"
+      },
+      {
+        "seconds": 1350.9,
+        "step": "category: the feed is unchanged during the preview"
+      },
+      {
+        "seconds": 1354,
+        "step": "category: review block with the approve button; waiting for the reviewer"
+      },
+      {
+        "seconds": 1364.3,
+        "step": "category: applied; the feed shows the reduced item set"
+      },
+      {
+        "seconds": 1369.5,
+        "step": "category: undo review (step 1 of 2); nothing changed yet"
+      },
+      {
+        "seconds": 1382.7,
+        "step": "category: undo approved (step 2 of 2); the starting feed is restored"
+      }
+    ]
+  },
+  "status_strip_text": "FIXTURE DATA deterministic diagnostic scorer Rule parser · diagnostic only 8 items · 1 users PROVIDER · operator-relay-file-queue · claude-fable-5-2 (session-configured; not attested)"
+}

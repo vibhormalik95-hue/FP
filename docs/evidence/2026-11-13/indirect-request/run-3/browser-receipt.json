@@ -1,0 +1,535 @@
+{
+  "kind": "browser run of the served application",
+  "started_utc": "2026-11-14T03:13:00.744Z",
+  "base": "http://127.0.0.1:8779",
+  "scenario": "hunger",
+  "flows": [
+    "manual",
+    "indirect"
+  ],
+  "review_mode": "wait",
+  "reviewer": "AI operator: Claude, the Cowork lead session. Not the student.",
+  "source_fingerprint": "63cf01537d86f2afc54178c419f971ab726714ce900b1e3e6a16b8c958db33ac",
+  "status": {
+    "data_mode": "fixture",
+    "source": "synthetic://friday-historical-hunger-continuation-20261110",
+    "model_mode": "deterministic diagnostic scorer",
+    "users": 1,
+    "items": 8,
+    "categories": 3,
+    "default_parser": "rule",
+    "ollama_model": "llama3.1:8b",
+    "local_models_allowed": false,
+    "provider": {
+      "backend": "operator-relay-file-queue",
+      "model": "claude-fable-5-2 (session-configured; not attested)",
+      "live_model": "operator_declared"
+    },
+    "scenario_requests": {
+      "configured_model": "I'm not hungry, remove all the stuff that makes me hungry.",
+      "label": "Reviewed indirect request"
+    },
+    "source_fingerprint": "63cf01537d86f2afc54178c419f971ab726714ce900b1e3e6a16b8c958db33ac",
+    "ollama_status": "Disabled by hosted-only application policy.",
+    "research_note": "Synthetic category controls measure offline behavior; this demo does not establish human agency or satisfaction.",
+    "category_note": "Opaque dataset category IDs; no invented topic names.",
+    "semantic_topic": "Official caption sidecar loaded; exploratory preview only",
+    "asset_note": "Metadata cards only; no original video assets are distributed."
+  },
+  "checks": [
+    {
+      "name": "session established",
+      "passed": true,
+      "detail": null,
+      "utc": "2026-11-14T03:13:02.125Z"
+    },
+    {
+      "name": "automatic review is used only when no model is connected",
+      "passed": true,
+      "detail": {
+        "review_mode": "wait",
+        "provider": "operator-relay-file-queue"
+      },
+      "utc": "2026-11-14T03:13:02.130Z"
+    },
+    {
+      "name": "manual: starts with no applied semantic group",
+      "passed": true,
+      "detail": {
+        "eligible": 8
+      },
+      "utc": "2026-11-14T03:13:07.132Z"
+    },
+    {
+      "name": "manual: review appears",
+      "passed": true,
+      "detail": null,
+      "utc": "2026-11-14T03:13:10.068Z"
+    },
+    {
+      "name": "manual: the server reported no model call for this review",
+      "passed": true,
+      "detail": {
+        "model_calls": 0
+      },
+      "utc": "2026-11-14T03:13:10.073Z"
+    },
+    {
+      "name": "manual: preview left the applied feed unchanged",
+      "passed": true,
+      "detail": {
+        "applied_groups": 0,
+        "revision": 0,
+        "eligible": 8
+      },
+      "utc": "2026-11-14T03:13:10.424Z"
+    },
+    {
+      "name": "manual: page still shows the starting items during preview",
+      "passed": true,
+      "detail": {
+        "shown": [
+          81001,
+          81002,
+          81003,
+          81004,
+          81005,
+          81006,
+          81007,
+          81008
+        ]
+      },
+      "utc": "2026-11-14T03:13:10.484Z"
+    },
+    {
+      "name": "manual: review names the items that would be removed",
+      "passed": true,
+      "detail": {
+        "selected_ids": [
+          81002,
+          81004
+        ]
+      },
+      "utc": "2026-11-14T03:13:10.489Z"
+    },
+    {
+      "name": "manual: review table lists every supplied item with its own description and marks exactly the approved ones",
+      "passed": true,
+      "detail": {
+        "rows": 8,
+        "marked": [
+          81002,
+          81004
+        ]
+      },
+      "utc": "2026-11-14T03:13:10.501Z"
+    },
+    {
+      "name": "manual: Apply removed exactly the approved items",
+      "passed": true,
+      "detail": {
+        "eligible_before": 8,
+        "eligible_after": 6,
+        "removed": [
+          81002,
+          81004
+        ]
+      },
+      "utc": "2026-11-14T03:13:29.377Z"
+    },
+    {
+      "name": "manual: page shows the reduced feed",
+      "passed": true,
+      "detail": {
+        "shown": [
+          81001,
+          81003,
+          81005,
+          81006,
+          81007,
+          81008
+        ]
+      },
+      "utc": "2026-11-14T03:13:29.383Z"
+    },
+    {
+      "name": "manual: undo review alone changed nothing",
+      "passed": true,
+      "detail": {
+        "eligible": 6
+      },
+      "utc": "2026-11-14T03:13:34.683Z"
+    },
+    {
+      "name": "manual: Undo restored the exact starting feed",
+      "passed": true,
+      "detail": {
+        "eligible": 8,
+        "identical_to_start": true,
+        "revision": 2
+      },
+      "utc": "2026-11-14T03:13:46.021Z"
+    },
+    {
+      "name": "manual: page shows the starting items again",
+      "passed": true,
+      "detail": {
+        "shown": [
+          81001,
+          81002,
+          81003,
+          81004,
+          81005,
+          81006,
+          81007,
+          81008
+        ]
+      },
+      "utc": "2026-11-14T03:13:46.046Z"
+    },
+    {
+      "name": "indirect: starts with no applied semantic group",
+      "passed": true,
+      "detail": {
+        "eligible": 8
+      },
+      "utc": "2026-11-14T03:13:51.695Z"
+    },
+    {
+      "name": "the request text is the exact scenario request",
+      "passed": true,
+      "detail": null,
+      "utc": "2026-11-14T03:13:51.801Z"
+    },
+    {
+      "name": "indirect: original request is shown unchanged",
+      "passed": true,
+      "detail": null,
+      "utc": "2026-11-14T03:31:22.257Z"
+    },
+    {
+      "name": "indirect: preview left the applied feed unchanged",
+      "passed": true,
+      "detail": {
+        "applied_groups": 0,
+        "revision": 2,
+        "eligible": 8
+      },
+      "utc": "2026-11-14T03:31:22.554Z"
+    },
+    {
+      "name": "indirect: page still shows the starting items during preview",
+      "passed": true,
+      "detail": {
+        "shown": [
+          81001,
+          81002,
+          81003,
+          81004,
+          81005,
+          81006,
+          81007,
+          81008
+        ]
+      },
+      "utc": "2026-11-14T03:31:22.574Z"
+    },
+    {
+      "name": "indirect: review names the items that would be removed",
+      "passed": true,
+      "detail": {
+        "selected_ids": [
+          81001,
+          81003,
+          81006
+        ]
+      },
+      "utc": "2026-11-14T03:31:22.581Z"
+    },
+    {
+      "name": "indirect: review table lists every supplied item with its own description and marks exactly the approved ones",
+      "passed": true,
+      "detail": {
+        "rows": 8,
+        "marked": [
+          81001,
+          81003,
+          81006
+        ]
+      },
+      "utc": "2026-11-14T03:31:22.591Z"
+    },
+    {
+      "name": "indirect: Apply removed exactly the approved items",
+      "passed": true,
+      "detail": {
+        "eligible_before": 8,
+        "eligible_after": 5,
+        "removed": [
+          81001,
+          81003,
+          81006
+        ]
+      },
+      "utc": "2026-11-14T03:31:47.047Z"
+    },
+    {
+      "name": "indirect: page shows the reduced feed",
+      "passed": true,
+      "detail": {
+        "shown": [
+          81002,
+          81004,
+          81005,
+          81007,
+          81008
+        ]
+      },
+      "utc": "2026-11-14T03:31:47.091Z"
+    },
+    {
+      "name": "indirect: undo review alone changed nothing",
+      "passed": true,
+      "detail": {
+        "eligible": 5
+      },
+      "utc": "2026-11-14T03:31:52.424Z"
+    },
+    {
+      "name": "indirect: Undo restored the exact starting feed",
+      "passed": true,
+      "detail": {
+        "eligible": 8,
+        "identical_to_start": true,
+        "revision": 4
+      },
+      "utc": "2026-11-14T03:31:56.230Z"
+    },
+    {
+      "name": "indirect: page shows the starting items again",
+      "passed": true,
+      "detail": {
+        "shown": [
+          81001,
+          81002,
+          81003,
+          81004,
+          81005,
+          81006,
+          81007,
+          81008
+        ]
+      },
+      "utc": "2026-11-14T03:31:56.289Z"
+    },
+    {
+      "name": "no script error was raised by the page",
+      "passed": true,
+      "detail": [],
+      "utc": "2026-11-14T03:32:01.565Z"
+    }
+  ],
+  "review_decisions": [
+    {
+      "gate": "manual-apply",
+      "decision": "APPROVE",
+      "seconds_to_decide": 7.5,
+      "utc": "2026-11-14T03:13:29.289Z"
+    },
+    {
+      "gate": "manual-undo",
+      "decision": "APPROVE",
+      "seconds_to_decide": 8,
+      "utc": "2026-11-14T03:13:45.921Z"
+    },
+    {
+      "gate": "indirect-apply",
+      "decision": "APPROVE",
+      "seconds_to_decide": 13,
+      "utc": "2026-11-14T03:31:46.934Z"
+    },
+    {
+      "gate": "indirect-undo",
+      "decision": "APPROVE",
+      "seconds_to_decide": 0.5,
+      "utc": "2026-11-14T03:31:56.156Z"
+    }
+  ],
+  "flows_result": {
+    "manual": {
+      "started_utc": "2026-11-14T03:13:07.125Z",
+      "eligible_before": 8,
+      "shown_before": [
+        81001,
+        81002,
+        81003,
+        81004,
+        81005,
+        81006,
+        81007,
+        81008
+      ],
+      "outcome": "completed: preview unchanged, apply exact, undo restored",
+      "selected_ids": [
+        81002,
+        81004
+      ],
+      "review_text_sha256": "f6ea57e854cb2b4b4714b154223fdf3ecdee4217c80a9312c2ed59cba8e93453",
+      "eligible_after_apply": 6,
+      "shown_after_apply": [
+        81001,
+        81003,
+        81005,
+        81006,
+        81007,
+        81008
+      ],
+      "eligible_after_undo": 8,
+      "provider_calls": 0,
+      "finished_utc": "2026-11-14T03:13:51.683Z"
+    },
+    "indirect": {
+      "started_utc": "2026-11-14T03:13:51.691Z",
+      "eligible_before": 8,
+      "shown_before": [
+        81001,
+        81002,
+        81003,
+        81004,
+        81005,
+        81006,
+        81007,
+        81008
+      ],
+      "outcome": "completed: preview unchanged, apply exact, undo restored",
+      "interpreted_action": "exclude/none",
+      "selected_ids": [
+        81001,
+        81003,
+        81006
+      ],
+      "review_text_sha256": "33c7d5a7f22a4048cda745319a935fd5a966ce50bd243b66d68b37c7fa6e82ce",
+      "eligible_after_apply": 5,
+      "shown_after_apply": [
+        81002,
+        81004,
+        81005,
+        81007,
+        81008
+      ],
+      "eligible_after_undo": 8,
+      "provider_calls": 2,
+      "finished_utc": "2026-11-14T03:32:01.564Z"
+    }
+  },
+  "provider_calls": [
+    {
+      "route": "/api/semantic/preview",
+      "list": "model_calls",
+      "stage": null,
+      "status": null,
+      "elapsed_seconds": null,
+      "request_sha256": "fe001f76fa356b23a4ca5b8220d4e07dfdbb2f7222f1a2e7f0401cbe39f0047e",
+      "response_sha256": "25e14f0844daa9bcbea9bb670185aa650da037284bd961aadd81d7a021bc0c73",
+      "declared_provider": null,
+      "observed_utc": "2026-11-14T03:31:22.145Z"
+    },
+    {
+      "route": "/api/semantic/preview",
+      "list": "model_calls",
+      "stage": null,
+      "status": null,
+      "elapsed_seconds": null,
+      "request_sha256": "a501a07786ba68c5a1ad5f075e95023f8a3a951e4a0dc37e6e442eada088d9c8",
+      "response_sha256": "9fd291b520725298a9a2a4d211e6d035da9fee4471bfef6432bf424876940efc",
+      "declared_provider": null,
+      "observed_utc": "2026-11-14T03:31:22.146Z"
+    }
+  ],
+  "screenshots": [
+    "01-start.png",
+    "02-manual-review.png",
+    "03-gate-manual-apply.png",
+    "04-manual-applied.png",
+    "05-gate-manual-undo.png",
+    "06-manual-restored.png",
+    "07-indirect-request.png",
+    "08-indirect-review.png",
+    "09-gate-indirect-apply.png",
+    "10-indirect-applied.png",
+    "11-gate-indirect-undo.png",
+    "12-indirect-restored.png"
+  ],
+  "finished_utc": "2026-11-14T03:32:01.566Z",
+  "outcome": "all flows completed",
+  "video": {
+    "file": "video/hunger.webm",
+    "steps": [
+      {
+        "seconds": 2,
+        "step": "start: the status strip names the data and the provider"
+      },
+      {
+        "seconds": 6.2,
+        "step": "manual: existing category and action chosen by hand"
+      },
+      {
+        "seconds": 9.5,
+        "step": "manual: review table of every supplied item (preview, nothing applied)"
+      },
+      {
+        "seconds": 15.6,
+        "step": "manual: the feed is unchanged during the preview"
+      },
+      {
+        "seconds": 18.6,
+        "step": "manual: review block with the approve button; waiting for the reviewer"
+      },
+      {
+        "seconds": 28.6,
+        "step": "manual: applied; the feed shows the reduced item set"
+      },
+      {
+        "seconds": 33.7,
+        "step": "manual: undo review (step 1 of 2); nothing changed yet"
+      },
+      {
+        "seconds": 45.7,
+        "step": "manual: undo approved (step 2 of 2); the starting feed is restored"
+      },
+      {
+        "seconds": 51.4,
+        "step": "indirect: request entered; it names no category"
+      },
+      {
+        "seconds": 55.6,
+        "step": "indirect: waiting for the model (action, then items)"
+      },
+      {
+        "seconds": 1101.6,
+        "step": "indirect: review table of every supplied item (preview, nothing applied)"
+      },
+      {
+        "seconds": 1107.6,
+        "step": "indirect: the feed is unchanged during the preview"
+      },
+      {
+        "seconds": 1110.6,
+        "step": "indirect: review block with the approve button; waiting for the reviewer"
+      },
+      {
+        "seconds": 1126.3,
+        "step": "indirect: applied; the feed shows the reduced item set"
+      },
+      {
+        "seconds": 1131.4,
+        "step": "indirect: undo review (step 1 of 2); nothing changed yet"
+      },
+      {
+        "seconds": 1135.5,
+        "step": "indirect: undo approved (step 2 of 2); the starting feed is restored"
+      }
+    ]
+  },
+  "status_strip_text": "FIXTURE DATA deterministic diagnostic scorer Rule parser · diagnostic only 8 items · 1 users PROVIDER · operator-relay-file-queue · claude-fable-5-2 (session-configured; not attested)"
+}

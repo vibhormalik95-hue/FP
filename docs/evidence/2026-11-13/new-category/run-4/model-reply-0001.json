@@ -1,0 +1,31 @@
+{
+  "status": "propose",
+  "label": "Defective or damaged object repaired, same object kept or remaining in use",
+  "definition": "An item matches when its own text states each of these facts about one object. The text states that the object has a defect or damage. The text states that a repair action acting on that defect or damage is carried out on the same object. The text states that the same object is kept or remains in use. A stated purpose or capability of later use does not by itself establish that the object is kept or remains in use. Text stating that one of these facts is false, for example that the object is discarded, makes the item a non-member. In every other case membership stays unknown.",
+  "rationale": "The captions of items 41001, 41002 and 41003 each state the same kinds of facts about one object. Item 41001 describes a bookmark as 'bent', states that it 'is straightened with pliers' and states 'The existing piece is kept'. Item 41002 describes a satchel as 'torn', states that it 'is mended with a needle and spare thread' and states 'The same bag is kept'. Item 41003 describes a jug as 'leaking', states that it 'is sealed' and states 'The same jug remains in use'. Each caption therefore states a defect or damage, a repair action acting on it, and that the same object is kept or remains in use, which are the conditions of the definition. The definition does not require stated later use, because item 41002 gives carrying books again only as a purpose or capability ('so it can carry books again'), while items 41001 and 41003 state use ('used again', 'returned to watering plants'). The definition also does not require a stated result of the repair action; it requires that the action is stated. The concept comes from these stated facts and is not an existing category code: the three cited items sit in three different existing categories (K1, K2 and K3), and each of those categories has a second member that is not cited as support. Item 41004 states a different handling of a broken object ('is put in recycling and a newly purchased organizer is unpacked in its place'); it is not cited as support, and its membership is left to the classification stage. Other meanings that the descriptions could support are listed as alternatives; this meaning is proposed because each of its conditions has an explicit statement in all three cited captions. No item is classified here.",
+  "alternatives": [
+    "Narrower meaning: the text must also state that the repaired object is used again or returned to use. Under this meaning a stated purpose or capability, as in text saying that an object is mended so it can carry books again, does not establish that condition, so membership can differ from the proposed definition.",
+    "Broader meaning: any stated handling of a defective or damaged object, including text stating that the object is put in recycling and a newly purchased object is unpacked in its place. This meaning groups repair and replacement together, while the proposed definition requires that the same object is kept or remains in use.",
+    "Different shared concept: the text states that a new object is made from material, as where paper offcuts are folded into a new tray or a raw wooden blank is shaped into a new knob. This concept concerns making a new object and not an existing object that is kept, so it is a separate category with different supporting text."
+  ],
+  "evidence": [
+    {
+      "item_id": 41001,
+      "field": "caption",
+      "quote": "A bent metal bookmark is straightened with pliers and used again. The existing piece is kept.",
+      "reason": "The caption describes a bookmark as 'bent', which is the stated defect or damage of the object. It states that this bookmark 'is straightened with pliers', which is a repair action acting on that defect and carried out on the same object. It states 'The existing piece is kept'; the piece described in the caption is the bookmark, so this is the kept alternative of the condition that the same object is kept or remains in use. The caption also states that the bookmark is 'used again'; the definition does not require that."
+    },
+    {
+      "item_id": 41002,
+      "field": "caption",
+      "quote": "A torn canvas satchel is mended with a needle and spare thread so it can carry books again. The same bag is kept.",
+      "reason": "The caption describes a satchel as 'torn', which is the stated defect or damage of the object. It states that this satchel 'is mended with a needle and spare thread', which is a repair action acting on that damage and carried out on the same object. It states 'The same bag is kept'; the bag described in the caption is the satchel, so this is the kept alternative of the condition that the same object is kept or remains in use. The words 'so it can carry books again' state a purpose or capability of the mending. They do not establish that this use takes place, and the definition does not require stated later use."
+    },
+    {
+      "item_id": 41003,
+      "field": "caption",
+      "quote": "A leaking clay jug is sealed and returned to watering plants. The same jug remains in use.",
+      "reason": "The caption describes a jug as 'leaking', which is the stated defect or damage of the object. It states that this jug 'is sealed', which is a repair action acting on that defect and carried out on the same object; the definition does not require a stated result of that action. It states 'The same jug remains in use', which is the remains-in-use alternative of the condition that the same object is kept or remains in use. The caption also states that the jug is 'returned to watering plants'; the definition does not require that."
+    }
+  ]
+}

@@ -1,0 +1,60 @@
+{
+  "assessments": [
+    {
+      "item_id": 41001,
+      "assessment": "supported",
+      "field": "caption",
+      "quote": "A bent metal bookmark is straightened with pliers and used again. The existing piece is kept.",
+      "reason": "The caption states all three facts about one bookmark. Damage: the bookmark is 'bent'. Repair on that damage: it 'is straightened with pliers'. Kept or in use: it is 'used again' and 'The existing piece is kept.' The keep statement is explicit and is not only a purpose. No text negates a condition. The topic_tag is an opaque code and states no fact."
+    },
+    {
+      "item_id": 41002,
+      "assessment": "supported",
+      "field": "caption",
+      "quote": "A torn canvas satchel is mended with a needle and spare thread so it can carry books again. The same bag is kept.",
+      "reason": "The caption states all three facts about one satchel. Damage: the satchel is 'torn'. Repair on that damage: it 'is mended with a needle and spare thread'. Kept: 'The same bag is kept.' The phrase 'so it can carry books again' is only a stated purpose and is not used as the keep evidence. The explicit keep sentence supplies that fact. No text negates a condition. The topic_tag is an opaque code and states no fact."
+    },
+    {
+      "item_id": 41003,
+      "assessment": "supported",
+      "field": "caption",
+      "quote": "A leaking clay jug is sealed and returned to watering plants. The same jug remains in use.",
+      "reason": "The caption states all three facts about one jug. Defect: the jug is 'leaking'. Repair on that defect: it 'is sealed'. Kept or in use: it is 'returned to watering plants' and 'The same jug remains in use.' The in-use statement is explicit. No text negates a condition. The topic_tag is an opaque code and states no fact."
+    },
+    {
+      "item_id": 41004,
+      "assessment": "contradicted",
+      "field": "caption",
+      "quote": "A broken desk organizer is put in recycling and a newly purchased organizer is unpacked in its place.",
+      "reason": "The caption states a defect ('broken') but explicitly states that the same object is not kept. The organizer 'is put in recycling' and 'a newly purchased organizer is unpacked in its place'. That is a discard and a replacement, which the definition names as a non-member case. The caption also states no repair action on the broken organizer. Required fact three is stated false, so the whole definition is contradicted. The topic_tag is an opaque code and states no fact."
+    },
+    {
+      "item_id": 41005,
+      "assessment": "not_stated",
+      "field": "",
+      "quote": "",
+      "reason": "The caption states no defect or damage for any object. Offcuts are leftover material and the text does not call them damaged. Folding them into 'a new tray' makes a new object. It is not a stated repair of a defect on the same object. The caption has no keep or in-use statement. The negation 'No glue or powered equipment is used' is about tools only. No required fact is stated true and none is explicitly stated false, so membership is unknown. Reuse of material is a different, easier property. The topic_tag states no fact."
+    },
+    {
+      "item_id": 41006,
+      "assessment": "not_stated",
+      "field": "",
+      "quote": "",
+      "reason": "The caption states no defect or damage. The word 'raw' describes unworked material, not a fault. Shaping a blank 'into a new knob' is manufacture of a new object. It is not a stated repair of a defect on the same object. The caption has no keep or in-use statement. No required fact is stated true and none is explicitly stated false, so membership is unknown. The topic_tag states no fact."
+    },
+    {
+      "item_id": 41007,
+      "assessment": "not_stated",
+      "field": "caption",
+      "quote": "No completed activity or finished object is described.",
+      "reason": "The caption shows only a page of knot diagrams. It states no object with a defect, no repair action and no keep or in-use fact. The quoted sentence states that no completed activity is described. That is missing information. It is not a statement that an object was left unrepaired or discarded. Diagrams are not evidence of a completed repair. Membership is unknown. The topic_tag states no fact."
+    },
+    {
+      "item_id": 41008,
+      "assessment": "not_stated",
+      "field": "caption",
+      "quote": "The subject is not described.",
+      "reason": "The caption gives only a background and a duration. The quoted sentence states that the subject is not described. No object, defect, repair action or keep fact is stated. No required fact is stated false. Membership is unknown. The topic_tag states no fact."
+    }
+  ]
+}

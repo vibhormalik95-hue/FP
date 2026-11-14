@@ -20,7 +20,7 @@ The repository contains a research demonstrator named Feed Control Lab (React an
 
 A proposal never changes the feed. Apply uses exactly the reviewed set. A two-step Undo restores the earlier state.
 
-![Review of every supplied item before a new category is applied](docs/evidence/2026-11-13/new-category/run-3/2-membership-review.png)
+![Review of every supplied item before a new category is applied](docs/evidence/2026-11-13/new-category/run-4/2-membership-review.png)
 
 Two further additions by the student are separate from these controls: a model can write metadata for a fictional item, which goes to a separate feed, and a small comparison of a stronger model with local models exists.
 
@@ -32,7 +32,7 @@ Two further additions by the student are separate from these controls: a model c
 - the two language controls used real model output through an operator relay, and an AI operator made the review decisions. No human review of those runs exists yet;
 - the automatic connection to the Claude Code CLI has not yet completed the whole new-category flow.
 
-Each language control completed two times on a small invented scenario. One earlier new-category attempt was rejected by the app and its record is kept. These runs show each control running from end to end on these scenarios. They are not an accuracy result.
+Each language control completed three times on a small invented scenario. The last runs used the final application code. One earlier new-category attempt was rejected by the app and its record is kept. These runs show each control running from end to end on these scenarios. They are not an accuracy result.
 
 ## Run the demonstration
 
@@ -48,17 +48,18 @@ python -m pip install -e ".[test]"
 Start one scenario at a time from the repository root. Stop it with Ctrl+C.
 
 ```
-python scripts/run_demo.py --scenario category --provider manual
-python scripts/run_demo.py --scenario category --provider scripted
-python scripts/run_demo.py --scenario hunger --provider scripted
+python scripts/quickstart.py check
+python scripts/quickstart.py rehearse --scenario category
+python scripts/quickstart.py live --scenario category --operator cli
+python scripts/quickstart.py live --scenario hunger --operator cli
 ```
 
 Open <http://127.0.0.1:8765>, choose **Reviewed topic feed**, then open **Experimental semantic groups**.
 
-- `--provider manual` uses no model.
-- `--provider scripted` uses hand-written rehearsal replies. It is not a model. The page shows "AUTHORED REPLIES · NO MODEL".
-- `--provider relay` lets an operator carry each request to a model.
-- `--provider personal-cli` uses a signed-in Claude Code CLI on Windows and needs a reviewed configuration file.
+- `rehearse` uses hand-written rehearsal replies. It is not a model. The page shows "AUTHORED REPLIES · NO MODEL".
+- `live --operator cli` uses the relay provider, and the Claude Code CLI on your computer answers each request. You review every proposal in the page.
+- `live --operator manual` uses the relay provider, and you carry each request to a model yourself.
+- A reviewed connection to the Claude Code CLI on Windows (`--provider personal-cli`) also exists. It needs a reviewed configuration file.
 
 The [demonstration guide](docs/demo.md) describes each provider, the review steps and the browser check.
 

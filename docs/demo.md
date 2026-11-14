@@ -28,9 +28,27 @@ python -m pip install -e ".[test]"
 
 The built interface is in `web/dist`. PyTorch is not needed for the demonstration. Add it with `python -m pip install -e ".[test,recommender]"` when you want the trained recommender and the original experiments.
 
+## Quick start
+
+One command for each step. The commands are the same on Windows, Linux and macOS. Run them from the repository root, with the virtual environment active.
+
+```
+python scripts/quickstart.py check
+python scripts/quickstart.py rehearse --scenario category
+python scripts/quickstart.py live --scenario category --operator cli
+python scripts/quickstart.py live --scenario hunger --operator cli
+```
+
+- `check` prints the source fingerprint and the installed versions.
+- `rehearse` serves the app with hand-written replies. No model is used. Do each flow once before you use a model.
+- `live --operator cli` serves the app with the relay provider and answers each request with the Claude Code CLI on your computer. See "An automatic operator" below.
+- `live --operator manual` serves the app with the relay provider and prints the commands for a manual relay.
+
+The scenario `category` holds the manual control and the new category. The scenario `hunger` holds the manual control and the indirect request. Open <http://127.0.0.1:8765>, choose **Reviewed topic feed**, then open **Experimental semantic groups**. Stop the server with Ctrl+C.
+
 ## Start a scenario
 
-Run one server at a time from the repository root. Stop it with Ctrl+C.
+The quick start runs the launcher that this section describes. Run one server at a time from the repository root. Stop it with Ctrl+C.
 
 ```
 python scripts/run_demo.py --scenario category --provider manual
@@ -82,10 +100,28 @@ python scripts/relay_tools.py show runs/relay-01 N runs/request-N.txt
 Give the whole text of `runs/request-N.txt` to the model in a new conversation. Save the reply as `runs/answer-N.json`. The reply must be one JSON object with nothing around it: no Markdown fence and no sentence before or after. Then:
 
 ```
+python scripts/relay_tools.py check runs/relay-01 N runs/answer-N.json
 python scripts/relay_tools.py deliver runs/relay-01 N runs/answer-N.json
 ```
 
+`check` says whether the app would accept the file. `deliver` makes the same checks and refuses a file that the app would reject. A refusal does not spend the call: copy the model's reply again, without the text around the JSON object. If the model's reply itself is not a valid answer, deliver it with `--force`; the app then rejects it, and that is the true result of the call.
+
 The app decodes the reply strictly and checks it against the schema. It does not repair a reply and it does not ask again. A new category needs three requests. An indirect request needs two.
+
+### An automatic operator for the Claude Code CLI
+
+`scripts/relay_claude_cli.py` does the work of the operator by program. For each request it runs the Claude Code CLI on your computer one time in print mode, with the request text on standard input, and delivers the reply unchanged.
+
+```
+python scripts/relay_claude_cli.py runs/relay-01 --calls 3
+```
+
+- It makes one CLI call for each request and never a second one. It never edits a reply.
+- If a call fails, or the reply is not an acceptable answer, it stops and leaves the request open. You can then answer that request by hand with `relay_tools.py`.
+- It checks that the CLI reports only the requested model (default `claude-fable-5-2`). Use `--model`, `--effort` and `--claude PATH` to change the defaults.
+- It writes `cli-call-000N.json` for each call: times, exit code, flags, hashes, the reported token usage and model names. It stores no request text there.
+
+This operator is not the reviewed connection of the next section. It has no reviewed configuration, no check of the executable and no process containment. You are responsible for the CLI, for the account that it is signed in to, and for the usage. It was tested with a stand-in program for the CLI. It was not run with the real CLI before this page was written.
 
 State the transport honestly when you show a relay run. The page shows the declared model name; the relay cannot confirm it.
 

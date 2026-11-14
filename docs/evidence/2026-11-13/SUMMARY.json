@@ -10,14 +10,15 @@
     "how": "a sub-agent of the Claude Cowork session reads one request file and writes one answer file; the session reported two tool uses for each call; a sub-agent is not a bare model call"
   },
   "transport": "operator-relay-file-queue; each answer file was delivered unchanged (checked with cmp)",
+  "note_on_delivery_times": "New-category run 4 and indirect run 3 ran at the same time. The two indirect replies were ready after 22 s and 140 s and were delivered after the new-category replies, so their relay receipts show 649 s and 397 s.",
   "reviewer": "AI operator: the lead agent of the same session. Not the student. Not a human review.",
   "data": "eight invented item descriptions per scenario; labelled diagnostic scorer; no trained recommender",
   "receipt_formats": "Receipts made before revision 40315aa hold assertions and review decisions in one list named checks, name the call records model_calls, and do not record the source. Receipts made from 40315aa hold checks, review_decisions and provider_calls separately and record source_fingerprint. This summary counts assertions and decisions separately for both formats.",
   "source_fingerprints": {
     "40315aa": "f5df9878da22bf5a8d1b3b7aaf6ab4bcbf1a53528d73333d71163f38f75b52a6",
     "8e628cf": "7ca56c807e4fbf909490bb3fd4edafd57d85e82d2a9ca1cf77476ac20c7668da",
-    "e4711a4": "63cf01537d86f2afc54178c419f971ab726714ce900b1e3e6a16b8c958db33ac",
-    "note": "Revision 8e628cf changes only the function that computes the fingerprint (and its test). That function prints the 40315aa value for the tree of 40315aa. Revision e4711a4 merges the higher limits of the Claude Code CLI connection and the correction of the literal-term scanner. The model runs were made on 40315aa and were not repeated after these changes."
+    "e4711a4 and later": "63cf01537d86f2afc54178c419f971ab726714ce900b1e3e6a16b8c958db33ac",
+    "note": "Revision 8e628cf changes only the function that computes the fingerprint (and its test). That function prints the 40315aa value for the tree of 40315aa. Revision e4711a4 merges the higher limits of the Claude Code CLI connection and the correction of the literal-term scanner. New-category run 4 and indirect run 3 were made after that merge, on checkout 936d0f4, which has the application code of e4711a4."
   },
   "not_established": [
     "accuracy on unseen requests",
@@ -728,6 +729,344 @@
         {
           "tokens": 70044,
           "milliseconds": 46945
+        }
+      ]
+    },
+    {
+      "record": "new-category/run-4",
+      "source_revision": "936d0f4",
+      "source_fingerprint_in_receipt": "63cf01537d86f2afc54178c419f971ab726714ce900b1e3e6a16b8c958db33ac",
+      "scenario": "category",
+      "flows_in_this_browser_session": [
+        "manual",
+        "category"
+      ],
+      "started_utc": "2026-11-14T03:13:00.755Z",
+      "finished_utc": "2026-11-14T03:36:08.683Z",
+      "outcome": "all flows completed",
+      "assertions_passed": 29,
+      "assertions_total": 29,
+      "review_mode": "wait",
+      "reviewer": "AI operator: Claude, the Cowork lead session. Not the student.",
+      "review_decisions": [
+        {
+          "gate": "manual-apply",
+          "decision": "APPROVE",
+          "seconds_to_decide": 7.5
+        },
+        {
+          "gate": "manual-undo",
+          "decision": "APPROVE",
+          "seconds_to_decide": 7.5
+        },
+        {
+          "gate": "category-resolution",
+          "decision": "APPROVE",
+          "seconds_to_decide": 11
+        },
+        {
+          "gate": "category-definition",
+          "decision": "APPROVE",
+          "seconds_to_decide": 14.5
+        },
+        {
+          "gate": "category-apply",
+          "decision": "APPROVE",
+          "seconds_to_decide": 7.5
+        },
+        {
+          "gate": "category-undo",
+          "decision": "APPROVE",
+          "seconds_to_decide": 9.5
+        }
+      ],
+      "declared_provider": {
+        "backend": "operator-relay-file-queue",
+        "model": "claude-fable-5-2 (session-configured; not attested)",
+        "live_model": "operator_declared"
+      },
+      "flows": {
+        "manual": {
+          "outcome": "completed: preview unchanged, apply exact, undo restored",
+          "eligible_before_apply_undo": [
+            8,
+            6,
+            8
+          ],
+          "approved_ids": [
+            41001,
+            41004
+          ]
+        },
+        "category": {
+          "outcome": "completed: preview unchanged, apply exact, undo restored",
+          "eligible_before_apply_undo": [
+            8,
+            5,
+            8
+          ],
+          "approved_ids": [
+            41001,
+            41002,
+            41003
+          ],
+          "definition_label": "Defective or damaged object repaired, same object kept or remaining in use",
+          "definition_characters": 582,
+          "competing_meanings_returned": 3,
+          "classification_by_model": [
+            {
+              "item_id": 41001,
+              "verdict": "match"
+            },
+            {
+              "item_id": 41002,
+              "verdict": "match"
+            },
+            {
+              "item_id": 41003,
+              "verdict": "match"
+            },
+            {
+              "item_id": 41004,
+              "verdict": "not_match"
+            },
+            {
+              "item_id": 41005,
+              "verdict": "unknown"
+            },
+            {
+              "item_id": 41006,
+              "verdict": "unknown"
+            },
+            {
+              "item_id": 41007,
+              "verdict": "unknown"
+            },
+            {
+              "item_id": 41008,
+              "verdict": "unknown"
+            }
+          ],
+          "separate_evidence_assessment_by_model": [
+            {
+              "item_id": 41001,
+              "assessment": "supported"
+            },
+            {
+              "item_id": 41002,
+              "assessment": "supported"
+            },
+            {
+              "item_id": 41003,
+              "assessment": "supported"
+            },
+            {
+              "item_id": 41004,
+              "assessment": "contradicted"
+            },
+            {
+              "item_id": 41005,
+              "assessment": "not_stated"
+            },
+            {
+              "item_id": 41006,
+              "assessment": "not_stated"
+            },
+            {
+              "item_id": 41007,
+              "assessment": "not_stated"
+            },
+            {
+              "item_id": 41008,
+              "assessment": "not_stated"
+            }
+          ],
+          "disposition_shown_for_review": [
+            {
+              "item_id": 41001,
+              "verdict": "match"
+            },
+            {
+              "item_id": 41002,
+              "verdict": "match"
+            },
+            {
+              "item_id": 41003,
+              "verdict": "match"
+            },
+            {
+              "item_id": 41004,
+              "verdict": "not_match"
+            },
+            {
+              "item_id": 41005,
+              "verdict": "unknown"
+            },
+            {
+              "item_id": 41006,
+              "verdict": "unknown"
+            },
+            {
+              "item_id": 41007,
+              "verdict": "unknown"
+            },
+            {
+              "item_id": 41008,
+              "verdict": "unknown"
+            }
+          ],
+          "withheld_as_unknown_after_disagreement": []
+        }
+      },
+      "model_calls": [
+        {
+          "ordinal": 1,
+          "request_sha256": "b2be22686d7c8ad54cb159c28c8427b60fca714cf71cc4ac284a86b3cfa9a0b1",
+          "response_sha256": "6fb2858f1048f8ec1c2854f3e13eb7d3519c9615ba81fcc53ca3b1f9f4df8551",
+          "response_bytes": 5729,
+          "started_utc": "2026-11-14T03:13:56+00:00",
+          "finished_utc": "2026-11-14T03:24:45+00:00",
+          "seconds_until_delivered": 648.914,
+          "transport_outcome": "parsed_transport_only"
+        },
+        {
+          "ordinal": 2,
+          "request_sha256": "c392fc37df0845396bf6d95a5a2d4d66e6347e17c7e6063e0e52477d566c4080",
+          "response_sha256": "254af7db93f9e36833ab1004ab380ed2ac91220ceb3b1378933d1ec32ce3ce48",
+          "response_bytes": 4193,
+          "started_utc": "2026-11-14T03:25:29+00:00",
+          "finished_utc": "2026-11-14T03:31:22+00:00",
+          "seconds_until_delivered": 352.604,
+          "transport_outcome": "parsed_transport_only"
+        },
+        {
+          "ordinal": 3,
+          "request_sha256": "5d65b2e879d23305303097f88cfa7c12691d91742390a1401ee97f74cf9db67d",
+          "response_sha256": "6c2476c256d840f7db27126abb154536cd0a2d252391fefa7e4494ac0c177535",
+          "response_bytes": 4701,
+          "started_utc": "2026-11-14T03:31:22+00:00",
+          "finished_utc": "2026-11-14T03:35:24+00:00",
+          "seconds_until_delivered": 242.719,
+          "transport_outcome": "parsed_transport_only"
+        }
+      ],
+      "subagent_usage_reported_by_session": [
+        {
+          "tokens": 130715,
+          "milliseconds": 629712
+        },
+        {
+          "tokens": 97596,
+          "milliseconds": 334163
+        },
+        {
+          "tokens": 76669,
+          "milliseconds": 108566
+        }
+      ]
+    },
+    {
+      "record": "indirect-request/run-3",
+      "source_revision": "936d0f4",
+      "source_fingerprint_in_receipt": "63cf01537d86f2afc54178c419f971ab726714ce900b1e3e6a16b8c958db33ac",
+      "scenario": "hunger",
+      "flows_in_this_browser_session": [
+        "manual",
+        "indirect"
+      ],
+      "started_utc": "2026-11-14T03:13:00.744Z",
+      "finished_utc": "2026-11-14T03:32:01.566Z",
+      "outcome": "all flows completed",
+      "assertions_passed": 27,
+      "assertions_total": 27,
+      "review_mode": "wait",
+      "reviewer": "AI operator: Claude, the Cowork lead session. Not the student.",
+      "review_decisions": [
+        {
+          "gate": "manual-apply",
+          "decision": "APPROVE",
+          "seconds_to_decide": 7.5
+        },
+        {
+          "gate": "manual-undo",
+          "decision": "APPROVE",
+          "seconds_to_decide": 8
+        },
+        {
+          "gate": "indirect-apply",
+          "decision": "APPROVE",
+          "seconds_to_decide": 13
+        },
+        {
+          "gate": "indirect-undo",
+          "decision": "APPROVE",
+          "seconds_to_decide": 0.5
+        }
+      ],
+      "declared_provider": {
+        "backend": "operator-relay-file-queue",
+        "model": "claude-fable-5-2 (session-configured; not attested)",
+        "live_model": "operator_declared"
+      },
+      "flows": {
+        "manual": {
+          "outcome": "completed: preview unchanged, apply exact, undo restored",
+          "eligible_before_apply_undo": [
+            8,
+            6,
+            8
+          ],
+          "approved_ids": [
+            81002,
+            81004
+          ]
+        },
+        "indirect": {
+          "outcome": "completed: preview unchanged, apply exact, undo restored",
+          "eligible_before_apply_undo": [
+            8,
+            5,
+            8
+          ],
+          "approved_ids": [
+            81001,
+            81003,
+            81006
+          ],
+          "interpreted_action": "exclude/none",
+          "intent_span": "stuff that makes me hungry"
+        }
+      },
+      "model_calls": [
+        {
+          "ordinal": 1,
+          "request_sha256": "1b265aaa984b4f66043a16f4f2464a1a75684441a53811a22239ef8a501c00a2",
+          "response_sha256": "ff72cff67594b8405ea5a3b05a266d7e0d9f5705fb074242e73d50feb62c9834",
+          "response_bytes": 111,
+          "started_utc": "2026-11-14T03:13:56+00:00",
+          "finished_utc": "2026-11-14T03:24:45+00:00",
+          "seconds_until_delivered": 648.901,
+          "transport_outcome": "parsed_transport_only"
+        },
+        {
+          "ordinal": 2,
+          "request_sha256": "cbee7861dca168d23182639ab716ec2cc45975415fdf98163b1907bf120de3a5",
+          "response_sha256": "2e7420d5188edd162038982ae530f63c89844adf6c50c7f1be1e26ad51ae78fd",
+          "response_bytes": 2121,
+          "started_utc": "2026-11-14T03:24:45+00:00",
+          "finished_utc": "2026-11-14T03:31:22+00:00",
+          "seconds_until_delivered": 396.638,
+          "transport_outcome": "parsed_transport_only"
+        }
+      ],
+      "subagent_usage_reported_by_session": [
+        {
+          "tokens": 65817,
+          "milliseconds": 22379
+        },
+        {
+          "tokens": 80604,
+          "milliseconds": 139689
         }
       ]
     }
