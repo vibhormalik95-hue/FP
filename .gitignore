@@ -22,3 +22,6 @@ Thumbs.db
 .env.local
 .env.*.local
 outgoing/
+
+# Keep local demo and relay records out of commits.
+/runs/

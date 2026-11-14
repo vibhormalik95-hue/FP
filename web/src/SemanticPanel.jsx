@@ -16,7 +16,7 @@ function definitionEvidence(evidence, context) {
   });
 }
 
-export default function SemanticPanel({api,user,resetKey,onFeed}) {
+export default function SemanticPanel({api,user,resetKey,onFeed,scenarioRequests,onReview}) {
   const [open,setOpen]=useState(false),[saved,setSaved]=useState(null),[pending,setPending]=useState(null);
   const [text,setText]=useState(''),[label,setLabel]=useState('My semantic group'),[count,setCount]=useState(10);
   const [backend,setBackend]=useState('ollama'),[category,setCategory]=useState('category_1');
@@ -40,6 +40,7 @@ export default function SemanticPanel({api,user,resetKey,onFeed}) {
   useEffect(()=>{if(saved?.local_models_allowed===false&&backend==='ollama'){setBackend(saved.external_adapter_available?'configured_model':'manual_category');setPending(null);}},[saved,backend]);
   useEffect(()=>{++generation.current;activeRequest.current=null;setWorking(false);setDefinition(null);setEvidenceReviewed(false);setClarification(null);setResolution(null);setResolutionChoice('');},[backend,text,label,count,operation,strength,mode,actionSource,category]);
   useEffect(()=>{setTargetConfirmed(false);setPending(null);},[backend,text,target,count,operation,strength,mode,explicitTarget]);
+  useEffect(()=>{if(onReview)onReview(pending?{pending,current:saved}:null);},[pending,saved]);
   async function run(work,keepClarification=false){
     if(activeRequest.current)return;
     const request=Symbol(),id=generation.current;activeRequest.current=request;setWorking(true);setMessage('');
@@ -101,6 +102,7 @@ export default function SemanticPanel({api,user,resetKey,onFeed}) {
       {backend!=='manual_category'?<><label className="field-label" htmlFor="semantic-text">{['induction','staged'].includes(backend)?'Category discovery objective':'One current instruction'}</label>
         <textarea id="semantic-text" rows={3} maxLength={2000} disabled={disabled} value={text} onChange={e=>{setText(e.target.value);setPending(null);}}
           placeholder="Describe what you want more, less or none of; indirect meaning is allowed."/>
+        {scenarioRequests?.[backend]&&<button type="button" className="secondary" disabled={disabled} onClick={()=>{setText(scenarioRequests[backend]);if(scenarioRequests.label&&backend==='configured_model')setLabel(scenarioRequests.label);setPending(null);}}>Insert the bundled scenario request</button>}
         {backend==='staged'?<p className="help">First review a model-proposed definition. After approval, one call classifies all supplied items and a separate call assesses the evidence without seeing those decisions. Disagreements become unknown. Three stages at most. The selected adapter enforces its configured timeout and total attempt budget. This may use the same model and does not verify semantic truth: both passes can agree on a wrong set. Review every final membership before applying. You choose direction and strength below.</p>:backend==='induction'?<p className="help">One configured model call proposes a label, definition and match/not_match/unknown decision for every supplied item. You choose the control below. Evidence and inventory budgets may block a request; no silent truncation. Review is required; no new videos are created.</p>:<>
         <p className="help">Two model stages at most: action interpretation and evidence selection. The local adapter uses 90-second calls plus identity checks. A separately configured provider uses its operator-locked timeout and shared call budget. Ambiguity or invalid evidence applies nothing. No rule fallback.</p>
         <label><input type="checkbox" disabled={disabled} checked={explicitTarget} onChange={e=>setExplicitTarget(e.target.checked)}/> I will explicitly state the target meaning and action.</label>
@@ -139,7 +141,7 @@ export default function SemanticPanel({api,user,resetKey,onFeed}) {
           <p className="help">Objective: {resolution.objective}</p>
           <p className="help">Model rationale: {clarification.candidate.rationale}</p>
           {definitionEvidence(clarification.candidate.evidence,resolution?.evidence_context)}
-          <p className="help">{resolution.provenance.model_id}; digest {resolution.provenance.model_revision}. Assessed scope: {resolution.scope_ids.join(', ')}.</p>
+          <p className="help">{resolution.provenance.backend} / {resolution.provenance.model_id}; digest {resolution.provenance.model_revision}. Assessed scope: {resolution.scope_ids.join(', ')}.</p>
         </div>}
         {clarification.alternatives.length>0&&<><p className="help">Competing interpretations:</p>
           <ul>{clarification.alternatives.map((a,n)=><li key={n}>{a}</li>)}</ul></>}
@@ -163,7 +165,7 @@ export default function SemanticPanel({api,user,resetKey,onFeed}) {
         <p className="help">Objective: {definition.definition.objective}</p>
         <p className="help">Model rationale: {definition.definition.proposal.rationale}</p>
         {definitionEvidence(definition.definition.proposal.evidence,definition.evidence_context)}
-        <p className="help">{definition.definition.provenance.model_id}; digest {definition.definition.provenance.model_revision}. Assessed scope: {definition.scope_ids.join(', ')}. No membership or feed change is approved yet.</p>
+        <p className="help">{definition.definition.provenance.backend} / {definition.definition.provenance.model_id}; digest {definition.definition.provenance.model_revision}. Assessed scope: {definition.scope_ids.join(', ')}. No membership or feed change is approved yet.</p>
         <p className="help">Reject a definition with unsupported properties, credentials or ratings, even if the quotation exists. Change the objective to start again. Approval expires after five minutes.</p>
         <label><input type="checkbox" checked={evidenceReviewed} disabled={disabled} onChange={e=>setEvidenceReviewed(e.target.checked)}/> I reviewed whether the source evidence supports the entire definition.</label>
         <button className="primary" disabled={disabled||!evidenceReviewed} onClick={classify}>Approve definition and classify supplied items</button>
