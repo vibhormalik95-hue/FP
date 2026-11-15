@@ -139,10 +139,10 @@ The application reaches a model through a route that the person selects ([model 
 | --- | --- |
 | File relay | Demonstration with real model output: the runs of 13 November; 14 November 2026 (UTC), revision `b7c5a91`: three relay runs (13 model calls; started with `--provider relay`), records in `docs/evidence/2026-11-14/real-model-relay/`; and the integrated revision `ff92666`: three relay runs again (13 model calls), records in `docs/evidence/2026-11-14-integrated/real-model-relay/`. |
 | Command-line program (`cli`) | Stand-in program only. |
-| OpenAI-compatible endpoint, local or hosted | Stand-in server only. |
+| OpenAI-compatible endpoint, local or hosted | Earlier stand-in checks; on 15 November, one real Windows Ollama request completed the fictional-item lifecycle through direct application calls. A separate OpenAI connectivity request returned a quota error, so no hosted-API lifecycle ran. See [15 November provider checks](evidence/2026-11-15-provider-checks/README.md). |
 | Anthropic API | Stand-in server only. |
 
-Native Windows and macOS verification of the last three routes remains open. A separate [15 November Windows result](fictional-lifecycle-2026-11-15.json) records one Fable 5.2 call and the fictional-item lifecycle through a task-local transport and a modified personal adapter on base `ca614c3`. It did not test these general routes, category discovery or the later publication candidate.
+Full Windows and macOS verification of the last three routes remains open. A separate [15 November Fable result](fictional-lifecycle-2026-11-15.json) used a task-local transport and a modified personal adapter on base `ca614c3`. The [Ollama check](evidence/2026-11-15-provider-checks/README.md) used the OpenAI-compatible route and direct application calls on Windows. Both checks covered one fictional-item lifecycle. Neither covered the browser, new-category or indirect-intent flow.
 The route identity is stored in every review. The frozen experiments keep their own model configuration; a change of route does not change them.
 
 ## The original proposal
@@ -210,7 +210,7 @@ These are software checks. They are not model evidence.
 
 ## What remains
 
-- **Real-machine checks.** A first real call through the routes `cli`, `openai-compatible` and `anthropic` on Windows or macOS. A run of the application and its checks on Windows and on macOS.
+- **Real-machine checks.** Complete the language-control flows through the general `cli` and real HTTP model routes, including the browser and cleanup checks. The Windows Ollama check covers one fictional-item lifecycle only. Real hosted OpenAI-compatible and Anthropic lifecycle checks, and native macOS checks, remain open.
 - **Human review.** A review by a person of a run with real model output. No person has reviewed a run of 14 November. An AI operator made all 19 review decisions of the three real-model runs on revision `b7c5a91`, and all 19 on the integrated revision.
 - **A fresh evaluation.** Scenarios that were not used during development, with references fixed before any prediction. The scenarios of this repository are exposed development material.
 - **A like-for-like model comparison**, with its own protocol before the first run.
