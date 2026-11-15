@@ -76,10 +76,10 @@ const panelMessage = ui => ui.text(ui.find(n => n.props.role === 'status' && n.p
 
 test('model methods are offered only where the server allows them; with no provider they stay visible, disabled, with the reason (M12)', async () => {
   const {ui} = fixture(); await ui.open();
-  assert.deepEqual(methods(ui), [['manual_category', false], ['vocabulary', false], ['configured_model', false], ['staged', false], ['induction', false]]);
+  assert.deepEqual(methods(ui), [['manual_category', false], ['vocabulary', false], ['combined', false], ['configured_model', false], ['staged', false], ['induction', false]]);
   assert.equal(ui.find(n => n.props.id === 'semantic-backend').props['data-value'], 'manual_category');
   const none = fixture({'semantic/groups': state([], ITEMS, {external_adapter_available: false, category_adapter_available: false})}); await none.ui.open();
-  assert.deepEqual(methods(none.ui), [['manual_category', false], ['vocabulary', true], ['configured_model', true], ['staged', true]]);
+  assert.deepEqual(methods(none.ui), [['manual_category', false], ['vocabulary', true], ['combined', true], ['configured_model', true], ['staged', true]]);
   const text = none.ui.text(none.ui.region('Language controls panel'));
   for (const value of ['(needs a model provider)', 'This server was started without a model provider.', 'python scripts/quickstart.py']) assert.ok(text.includes(value), value);
   const local = fixture({'semantic/groups': state([], ITEMS, {external_adapter_available: false, category_adapter_available: false, local_models_allowed: true, configured_model: 'local-model'})}); await local.ui.open();
@@ -554,4 +554,24 @@ test('expired review disables approval without applying anything',async()=>{
   assert.ok(ui.text().includes('expired'));
   assert.equal(ui.nodes().some(n=>n.type==='button'&&ui.text(n)==='Approve this exact item set and apply'),false);
   assert.equal(calls.filter(c=>c.path==='semantic/apply').length,0);
+});
+
+
+
+test('combined metadata method sends one mixed request and retains one atomic review', async () => {
+  const one = structuredClone(hungry), two = structuredClone(travel);
+  for (const group of [one,two]) { group.proposal.grounding='combined'; delete group.proposal.vocabulary_terms; }
+  one.proposal.evidence=[{item_id:1,field:'caption',quote:'sandwich'},{item_id:2,field:'topic_tag',quote:'food'}];
+  const plan={ready:true,applied:false,plan_id:'mixed',history_action:'none',groups:[one,two],proposal:null,
+    feed:feed([3,4]),scope_items:ITEMS.map(id=>({item_id:id,source_text:'source '+id})),
+    evidence_context:[],checks:[],plan_notes:[],calls_attempted:1,model_calls:[],grounding:'combined'};
+  const {calls,ui}=fixture({'semantic/combined/preview':plan});
+  await request(ui,'combined','Show more travel and remove food.');
+  assert.deepEqual(calls.find(c=>c.path==='semantic/combined/preview').body,
+    {user_id:1,text:'Show more travel and remove food.',candidate_ids:ITEMS,mode:'merge'});
+  assert.equal(calls.filter(c=>c.path==='semantic/combined/preview').length,1);
+  assert.equal(calls.filter(c=>c.path==='semantic/apply').length,0);
+  assert.equal(variant(ui),'review');
+  assert.ok(ui.text(ui.region('Review board')).includes('sandwich'));
+  assert.ok(ui.text(ui.region('Review board')).includes('Increase: Travel'));
 });

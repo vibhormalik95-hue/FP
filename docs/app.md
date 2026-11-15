@@ -39,25 +39,26 @@ A model error leaves the controls unchanged. The application does not replace a 
 
 ## Language controls
 
-Every language control follows one workflow. The four methods differ only in how the proposal is made.
+Every language control follows one workflow. The five methods differ in how the proposal is made.
 
 | Step | What happens | Where |
 | --- | --- | --- |
 | 1. Request | The person writes a request or chooses a category. The evidence scope is the first 6 or the first 10 items of the starting list. No other item is used. | `web/src/SemanticPanel.jsx` |
-| 2. Model output | The provider gets an instruction with input data and a JSON schema. It returns one JSON object. The raw reply is kept with hashes of the request and of the schema. | `feedctrl/model_routes.py`, `feedctrl/demo_providers.py` |
+| 2. Model output | The provider gets an instruction with input data and a JSON schema. It returns one JSON object. The structured reply and hashes can be recorded by the selected route. The reviewed personal transport does not retain the raw CLI stream. | `feedctrl/model_routes.py`, `feedctrl/demo_providers.py` |
 | 3. Application checks | Structure and bounds of the reply; item identifiers exist; each quotation is an exact part of the text of its own item; each category or tag name exists with exactly the supplied value; the quoted part of the request is an exact part of the request; the selection is not too broad. A reply that fails gives an error, and nothing is proposed. | `feedctrl/indirect_grounding.py`, `feedctrl/vocabulary_grounding.py`, `feedctrl/staged_induction.py`, `feedctrl/evidence_audit.py` |
 | 4. Review | The page shows what came back (the model output, an authored reply, or your own selection), the application checks and the decision in three blocks, a row for every item in the scope, and the first ten items now and after approval. The applied feed does not change. | `web/src/ReviewBoard.jsx`, `web/src/ReviewTable.jsx` |
 | 5. Sealed group | Each control becomes one sealed record (see below). The server keeps the plan. | `feedctrl/semantic_review.py` |
 | 6. Policy | On Apply, the server validates the plan again against the current source and applies exactly the approved set. | `rank_groups` in `feedctrl/semantic_review.py` |
 | 7. Undo | The undo is previewed, then approved. The server keeps up to ten earlier states. | `feedctrl/semantic_review.py` |
 
-### The four methods
+### The five methods
 
 | Method in the page | How the members are chosen | Model calls | Code |
 | --- | --- | --- | --- |
 | Existing category (manual, no model) | The exact existing category selects the members. | 0 | `feedctrl/semantic_review.py` |
 | My request, matched to existing categories and tags (model) | The model sees the request and the existing category and tag names with their item counts. It returns up to four controls, each with a direction, an exact part of the request and a list of names. The application selects the items that carry the names. | 1 | `feedctrl/vocabulary_grounding.py`, `feedctrl/vocabulary_routes.py` |
 | My request, matched to item descriptions (model) | Call 1 reads the direction, the strength and the subject part of the request. Call 2 sees the item data of the scope and returns item identifiers, each with an exact quotation. | 2 | `interpret_action` in `feedctrl/semantic_review.py`, `feedctrl/indirect_grounding.py` |
+| My mixed request, matched to descriptions, categories and tags (model) | One call proposes up to four controls using the supplied captions, cover text and existing labels. The application checks the cited fields, scope and non-overlap before review. | 1 | `feedctrl/combined_grounding.py`, `feedctrl/combined_routes.py` |
 | A new category from my description, in stages (model) | Call 1 proposes a definition, and the person reviews it or rejects it. Call 2 classifies every item. Call 3 assesses the evidence without seeing the classifications. A member needs agreement of both. An item on which they disagree gets no decision and is not selected. | 3 | `feedctrl/staged_routes.py`, `feedctrl/staged_induction.py`, `feedctrl/evidence_audit.py`, `feedctrl/source_constraints.py` |
 
 The page also offers two earlier methods. "A new category in one call (earlier method)" makes a new category in one model call. "My request, matched to item descriptions (local model NAME)" uses a local Ollama model, where the server allows local models.
@@ -138,7 +139,7 @@ The server gets its provider at start. A request from the page cannot supply a p
 | none (`manual`) | Only the manual method works. The page lists the model methods as disabled, with the commands that start a provider. The scenario `conditions` accepts this provider only. |
 | `scripted` | Replies that a person wrote for the bundled requests. Not a model. |
 | a [model route](model-routes.md) | A command-line program, a hosted API, a model server on this computer, or the file relay. |
-| `personal-cli` | The reviewed Claude Code CLI connection on Windows. See the [guide](demo.md#the-signed-in-claude-code-cli). |
+| `personal-cli` | The historical Windows driver uses a frozen profile. A separate [explicit personal binding](../diagnostic/README.md) supports the current combined route through an operator-supplied caller. |
 
 ## Endpoints
 
@@ -149,7 +150,7 @@ All endpoints are under `/api/`. `POST /api/session` returns a token. The page s
 | Session and data | `POST session`, `GET status`, `GET users`, `GET categories` |
 | Original study | `GET feed`, `GET compare`, `POST control`, `PUT profile`, `POST profile/text`, `POST feedback`, `POST reset`, `POST topic/preview` |
 | Language controls: state | `GET semantic/groups`, `POST semantic/apply`, `POST semantic/history/preview` |
-| Language controls: proposals | `POST semantic/preview` (existing category; request matched to descriptions), `POST semantic/vocabulary/terms`, `POST semantic/vocabulary/preview`, `POST semantic/definition/preview`, `POST semantic/definition/resolve`, `POST semantic/definition/classify`, `POST semantic/definition/discard`, `POST semantic/induction/preview` |
+| Language controls: proposals | `POST semantic/preview` (existing category; request matched to descriptions), `POST semantic/combined/preview`, `POST semantic/vocabulary/terms`, `POST semantic/vocabulary/preview`, `POST semantic/definition/preview`, `POST semantic/definition/resolve`, `POST semantic/definition/classify`, `POST semantic/definition/discard`, `POST semantic/induction/preview` |
 | Fictional items | `GET synthetic/items`, `POST synthetic/preview`, `POST synthetic/admit`, `POST synthetic/remove`, `POST synthetic/restore/preview`, `POST synthetic/clear` |
 | Earlier topic steering | `GET steering`, `POST steering/preview`, `POST steering/apply`, `POST steering/remove`, `POST steering/history/preview` |
 

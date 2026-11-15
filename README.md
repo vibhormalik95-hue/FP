@@ -17,13 +17,14 @@ The repository holds a research application named Feed Control Lab (React and Fa
 
 ## What the application shows
 
-The view **Language controls** has four methods. Each one follows the same stages: request, interpretation, evidence, preview, Apply, Undo.
+The view **Language controls** has five methods. Each one follows the same stages: request, interpretation, evidence, preview, Apply, Undo.
 
 | Method | What happens | Model calls |
 | --- | --- | --- |
 | Existing category | You choose an existing category and an action. This is the reference for the language controls. | 0 |
 | A request matched to existing categories and tags | You write a request. It does not need a category name. The model chooses existing category and tag names. The application checks each name and selects the items that carry it. | 1 |
 | A request matched to item descriptions | The model reads the direction from the request. It then selects items and cites a quotation from each description. | 2 |
+| A mixed request matched to descriptions, categories and tags | One model reply proposes up to four controls using the supplied captions, cover text and existing labels. The application checks the cited evidence and the combined plan. | 1 |
 | A new category from a description | The model proposes a definition, and you review it. The model then classifies every item. A separate call assesses the evidence without seeing the classifications. | 3 |
 
 For every method:
@@ -39,7 +40,7 @@ For every method:
 
 The application also shows these things:
 
-- **Mixed requests.** One request can hold several preferences, for example more of one subject and none of another. The review shows each control, and one approval applies them together.
+- **Mixed requests.** One request can hold several preferences, for example more of one subject and none of another. Choose either existing labels alone or descriptions and existing labels together. The review shows each control, and one approval applies the accepted plan together.
 - **Requests that change nothing.** An ambiguous request, a negated command, a request that the controls cannot express, and a request with no match each give a plain result. Nothing is applied. A negated hide, exclude, remove, reduce or boost (for example "Do not hide ..."), or a negated "show ... more" or "show ... less", matches the negated-command pattern. The application stops it before any model call.
 - **A fictional item.** A model writes a title and a description for an item that does not exist. The item goes to a separate feed. It never enters the dataset.
 - **Model routes.** The application can reach a model through a command-line program, a hosted API with your own key, a model server on your computer, or by hand. See [model routes](docs/model-routes.md).
@@ -67,6 +68,8 @@ Three more commands help:
 The general CLI, hosted API and local-server routes have stand-in test records from Linux; native Windows and macOS verification remains open. A separate [Windows fictional-item run on 15 November](docs/fictional-lifecycle-2026-11-15.json) used Fable 5.2 through a task-local transport and a modified personal adapter. It completed draft, admit, remove, restore and reset. That run did not test the general quickstart route, category discovery or the later publication candidate.
 
 On 15 November, two further Windows checks used Fable 5.2 through the separate personal Claude Code adapter: [a description-based indirect request](docs/evidence/2026-11-15-windows-indirect/README.md) changed a 36-item feed to 34 and back, and [a mixed request over existing categories and tags](docs/evidence/2026-11-15-windows-vocabulary/README.md) changed a ten-item feed to six and back. An AI operator reviewed both. These were direct application calls with task-local launchers, not browser runs, new-category discovery or a portable quickstart test.
+
+A separate [combined descriptions-and-labels check](docs/evidence/2026-11-15-windows-combined/README.md) completed Preview, Apply and Undo with one logical Claude Code invocation reporting Fable 5.2 and AI review on a fictional Windows fixture. It used a task-local launcher and direct application routes; it was not a browser or general quickstart test.
 
 ## Experiments and results
 

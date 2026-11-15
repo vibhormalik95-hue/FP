@@ -164,7 +164,7 @@ Each trial writes into its own folder. The trial refuses a folder that is not em
 | `route-calls/` | With an HTTP or command-line route: the exact request body and the raw reply of each call, written by the route. No header and no key. |
 | `relay/` | With the relay route: the request, reply and receipt files. |
 
-No file holds a credential. The route layer removes a key from every text, and the trial passes its own records through the same filter one more time.
+The route and trial redact the configured key from recorded text. Inspect request and response records before sharing them; they can contain submitted data or other private text.
 
 ## How this tool was tested
 

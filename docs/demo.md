@@ -173,10 +173,10 @@ The page also offers two earlier methods where the server allows them: **A new c
 
 ## A mixed request
 
-One request can hold several preferences. Use the method with categories and tags.
+One request can hold several preferences. The existing categories-and-tags method selects items by their labels. The separate **My mixed request, matched to descriptions, categories and tags** method sends the supplied captions, cover text and existing labels in one call, then checks each selected item and its cited evidence. Review every proposed control before Apply.
 
 Example in the scenario `tags`: "Show me more music videos, and remove anything about food." With the hand-written replies, the review shows two controls from one reply. `Show more: category "Music"` covers the items 61007 and 61008 (score +0.25). `Remove: category "Cooking", tag "street food"` covers the items 61001, 61002, 61003 and 61009. After Apply, item 61007 moves from position 4 to 2, item 61008 moves from position 5 to 4, and the feed goes from 10 eligible items to 6.
-The table has one group of rows for each control. An item in several controls shows one net result. Removal takes priority over a rank change. One approval applies both controls together, and one Undo reverses both.
+The table has one group of rows for each control. In the existing-label method, an item in several controls shows one net result and removal takes priority. The combined descriptions-and-labels method rejects overlapping member sets. One approval applies the accepted controls together, and one Undo reverses them.
 
 Two controls that give opposite instructions to the same items get a request for clarification.
 
@@ -286,7 +286,7 @@ python scripts/run_demo.py --provider personal-cli --reviewed-config my-config.j
 - A configuration file is marked as used and is refused a second time. The first request must equal the pinned scenario request exactly.
 - The report holds the facts of the provider: the exact inputs, the call receipts and the number of attempts.
 - The configuration templates in `tools/hosted_validation_current/` are incomplete on purpose, and every statement in them is false. These dated inputs and their driver are frozen evidence. A later prompt or source revision needs a separate reviewed successor profile; do not overwrite this directory.
-- With the source of this revision this provider does not start a scenario: the pinned first request and the source hashes of the frozen profile belong to the source of 11 November 2026, and this repository holds no successor profile. To use a command-line program now, use the model route `cli` of `python scripts/quickstart.py setup` ([guide](model-routes.md)).
+- With the source of this revision this provider does not start a scenario: the pinned first request and the source hashes of the frozen profile belong to the source of 11 November 2026, and this repository holds no successor profile. For the general quickstart CLI route, use `python scripts/quickstart.py setup` ([guide](model-routes.md)). The separate [personal Windows binding](../diagnostic/README.md) requires explicit setup, reviewed inputs and a separately authorized caller; it is not a replacement profile for this frozen driver.
 
 The operator must confirm four conditions that the code cannot confirm:
 

@@ -535,6 +535,8 @@ def install_semantic_routes(app, demo, *, infer_factory=None, category_infer_fac
         # raised. ``failed`` holds the exception that a provider call raised, so
         # that a provider failure is never taken for an application check.
         attempts, failed, stage = [], [], ["interpretation"]
+        preview_scope = None
+        guarded_infer = None
         with demo.lock:
             state = state_for(x_session_id, body.user_id)
             revision = state["semantic_revision"]
@@ -542,10 +544,26 @@ def install_semantic_routes(app, demo, *, infer_factory=None, category_infer_fac
             state["semantic_preview_nonce"] = nonce
             state["semantic_pending"] = None
             existing = deepcopy(state["semantic_groups"])
+            guarded_infer = getattr(infer_factory, 'preview_scope_infer', None) if body.backend == 'configured_model' else None
+            if guarded_infer is not None:
+                def preview_is_current():
+                    current = state_for(x_session_id, body.user_id)
+                    return (current['semantic_revision'] == revision
+                            and current.get('semantic_preview_nonce') == nonce)
+                try:
+                    preview_scope = guarded_infer.open_preview_scope(
+                        state_lock=demo.lock, validate=preview_is_current,
+                        identity=(x_session_id, body.user_id, nonce))
+                except ValueError as exc:
+                    raise HTTPException(409, 'Preview scope unavailable') from exc
             try:
                 index = scoped_index(demo.topic_index, body.candidate_ids)
             except ValueError as exc:
+                if preview_scope is not None: preview_scope.close()
                 raise HTTPException(422, str(exc)) from exc
+            except BaseException:
+                if preview_scope is not None: preview_scope.close()
+                raise
 
         def not_ready(status, reason, source, **extra):
             value = {"ready": False, "applied": False, "status": status, "reason": reason,
@@ -615,6 +633,10 @@ def install_semantic_routes(app, demo, *, infer_factory=None, category_infer_fac
                 if body.backend == "configured_model":
                     # Operator-selected transport, never request-supplied URLs or keys.
                     infer, provenance = configured_infer()
+                    if getattr(infer, 'requires_preview_scope', False) is True:
+                        if preview_scope is None or infer is not guarded_infer:
+                            raise ValueError('Configured preview scope unavailable')
+                        infer = preview_scope
                 else:
                     infer, provenance = make_local_ollama_infer(os.getenv("FEEDCTRL_STEERING_MODEL", "qwen2.5-coder:7b-instruct"), timeout=90)
                 def tracked_infer(payload, schema):
@@ -729,6 +751,9 @@ def install_semantic_routes(app, demo, *, infer_factory=None, category_infer_fac
                 # A provider raised an unexpected type: a failed call, not a crash of the application.
                 return not_ready("error", failure_sentence(exc), PROVIDER_FAILURE)
             raise
+        finally:
+            if preview_scope is not None:
+                preview_scope.close()
 
     @app.post("/api/semantic/induction/preview")
     def induction_preview(body: InductionPreview, x_session_id: str | None = Header(default=None)):
@@ -859,3 +884,9 @@ def install_semantic_routes(app, demo, *, infer_factory=None, category_infer_fac
     from feedctrl.vocabulary_routes import install_vocabulary_routes
     install_vocabulary_routes(app, demo, state_for, review, configured_infer=configured_infer,
                               provider_available=infer_factory is not None)
+
+    from feedctrl.combined_routes import install_combined_routes
+    install_combined_routes(app, demo, state_for, review, configured_infer=configured_infer,
+                            provider_available=infer_factory is not None,
+                            scope_guard=getattr(infer_factory, 'configured_flow_guard', None),
+                            scope_identity=getattr(infer_factory, 'model_identity', None))

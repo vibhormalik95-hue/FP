@@ -12,6 +12,7 @@
 | [Route trial](route-trial.md) | Run the bundled requests through a route without the browser. |
 | [Application reference](app.md) | The views, the conditions A to E, the language-control workflow, endpoints, and what a review stores. |
 | [Requirements and evidence](requirements-and-evidence.md) | Each request of the supervisor, the student's own commitments and the clauses of the proposal, mapped to code and to evidence. |
+| [Delivery index, 15 November](DELIVERY-INDEX-2026-11-15.md) | A short map of the paper, practical guides, requirements and dated integration records. |
 | [Fictional item drafts](synthetic-item-drafts.md) | Metadata that a model writes for an item that does not exist, in a separate list. |
 | [The built interface](source-verification.md) | How to rebuild `web/dist` after a change to the interface source. |
 | [Literal source requirements](numbered-source-constraints.md) | Method note: how the staged category method treats digits and quoted terms in a definition. |
@@ -34,6 +35,10 @@ These documents are fixed. They are not edited after the study that they belong 
 | [evidence/2026-11-13/](evidence/2026-11-13/README.md) | Browser runs of three controls on earlier revisions (`26a0b16` to `936d0f4`), with real model output through the file relay. |
 | [evidence/2026-11-14/](evidence/2026-11-14/README.md) | Run records of 14 November for revision `b7c5a91` (the package line before the merge): real model output through the file relay, authored replies, route checks with stand-ins. The folder also holds `OPERA-MANUAL-CONTROLS.md`, a record of the published work branch; the checksum list of the folder does not cover that file. |
 | [evidence/2026-11-14-integrated/](evidence/2026-11-14-integrated/README.md) | Run records of 14 November for the integrated revision `ff92666`: the same three kinds of run on the merged source. The guide of the folder lists two earlier passes. |
+| [Provider checks, 15 November](evidence/2026-11-15-provider-checks/README.md) | Windows Ollama fictional-item lifecycle and an OpenAI quota-blocked connectivity attempt. |
+| [Windows indirect request, 15 November](evidence/2026-11-15-windows-indirect/README.md) | Description-grounded direct application Preview, Apply and Undo. |
+| [Windows existing labels, 15 November](evidence/2026-11-15-windows-vocabulary/README.md) | Existing-category and tag controls through direct application calls. |
+| [Windows combined request, 15 November](evidence/2026-11-15-windows-combined/README.md) | One mixed request grounded in descriptions and labels, with direct application Preview, Apply and Undo. |
 
 The study of 4 November and the dated records of October and November are in [`deliverables/`](../deliverables/). The paper is in [`paper/`](../paper/README.md).
 

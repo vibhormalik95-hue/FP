@@ -4,6 +4,8 @@
 
 This page gives the setup commands for Windows PowerShell and macOS zsh. The recorded checks below ran on Linux at revision `ff92666`, with authored replies or stand-ins. Native Windows and macOS verification of these setup commands remains open. The separate [Windows fictional-item result](fictional-lifecycle-2026-11-15.json) used a task-local transport, not this quickstart workflow.
 
+For the separately configured Windows personal CLI binding, follow its [setup and qualification guide](../diagnostic/README.md). It needs an explicit caller and reviewed local context; the quickstart commands below do not activate it. Its [combined fixture result](evidence/2026-11-15-windows-combined/README.md) used direct application calls.
+
 ## What you need
 
 - Python 3.11 or newer.

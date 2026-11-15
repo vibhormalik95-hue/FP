@@ -110,10 +110,14 @@ def shared_personal_factories(infer, provenance):
     def category_factory():
         return category_infer,deepcopy(category_identity)
     semantic_factory.model_identity=deepcopy(identity)
+    if getattr(infer, 'requires_preview_scope', False) is True:
+        semantic_factory.preview_scope_infer=infer
+    if getattr(infer, 'is_guarded_inference', False) is True:
+        semantic_factory.configured_flow_guard=infer
     return semantic_factory,category_factory
 
 
-def create_claude_personal_app(*, operator_token, allowed_origin, data_path=None, semantic_path=None, fixture=False, **transport):
+def create_claude_personal_app(*, operator_token, allowed_origin, data_path=None, semantic_path=None, fixture=False, infer_wrapper=None, **transport):
     """Create only after independent personal runtime, data, and usage review.
 
     This is not a launcher and does not configure a network listener. The caller
@@ -125,6 +129,10 @@ def create_claude_personal_app(*, operator_token, allowed_origin, data_path=None
         raise ValueError('A separately supplied personal operator token of at least 32 characters is required')
     _personal_origin(allowed_origin)
     infer, provenance, receipts=make_claude_personal_infer(**transport)
+    if infer_wrapper is not None:
+        if not callable(infer_wrapper):raise ValueError('Explicit inference wrapper must be callable')
+        infer=infer_wrapper(infer)
+        if not callable(infer):raise ValueError('Inference wrapper must return a callable')
     semantic_factory,category_factory=shared_personal_factories(infer,provenance)
     from feedctrl.api import create_app, ROOT
     app=create_app(data_path=data_path,semantic_path=semantic_path,fixture=fixture,

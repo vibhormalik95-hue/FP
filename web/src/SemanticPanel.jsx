@@ -14,6 +14,7 @@ const METHODS = [
   // [value, name without its source, needs a provider, text after the source]
   ['manual_category', 'Existing category (manual, no model)', false, ''],
   ['vocabulary', 'My request, matched to existing categories and tags', true, ''],
+  ['combined', 'My mixed request, matched to descriptions, categories and tags', true, ''],
   ['configured_model', 'My request, matched to item descriptions', true, ''],
   ['staged', 'A new category from my description', true, ', in stages'],
   ['ollama', 'My request, matched to item descriptions', true, ''],
@@ -22,6 +23,7 @@ const METHODS = [
 const METHOD_HELP = {
   manual_category: () => 'No model. You choose an existing category and an action. The application selects the items of that category in the evidence scope.',
   vocabulary: w => `One ${w.call}. ${w.The} gives the direction and strength of your request and chooses existing category and tag names. The application then selects the items that carry those names. One request can hold several preferences.`,
+  combined: w => `One ${w.call} proposes up to four preferences using captions, cover text, categories and tags together. Review every selected item and quotation; Apply and Undo change the whole plan together. Nothing is silently applied.`,
   configured_model: w => `Two ${w.call}s at most. The first gives the direction and strength of your request. The second selects items and cites a quotation from each one. An unclear request or an invalid quotation applies nothing. There is no rule-based fallback.`,
   ollama: () => 'Two model calls at most, on the local model, with 90 seconds for each call. Call 1 reads the direction and strength. Call 2 selects items and cites a quotation from each one. An unclear request or an invalid quotation applies nothing. There is no rule-based fallback.',
   staged: w => `Three ${w.call}s at most. The first proposes a definition, and you review it. The second classifies every item in the scope. The third assesses the evidence without the classifications. Where the two disagree, the item gets no decision and is not selected. ${w.authored ? '' : 'The calls can use the same model, and both can be wrong. '}You choose the direction and strength below.`,
@@ -81,7 +83,7 @@ export default function SemanticPanel({api,user,resetKey,onFeed,onActive,onUnava
       .finally(()=>{if(id===loadRequest.current)setWorking(false);});}
   },[user,resetKey,open]);
   // Which methods this server offers. With no provider at all the model methods stay visible, disabled, with the reason.
-  const offered=saved?{manual_category:true,vocabulary:Boolean(saved.external_adapter_available),configured_model:Boolean(saved.external_adapter_available),
+  const offered=saved?{manual_category:true,vocabulary:Boolean(saved.external_adapter_available),combined:Boolean(saved.external_adapter_available)&&!authored,configured_model:Boolean(saved.external_adapter_available),
     staged:Boolean(saved.category_adapter_available)||local,induction:(Boolean(saved.category_adapter_available)||local)&&!authored,ollama:local}:{manual_category:true};
   const noProvider=Boolean(saved)&&!saved.external_adapter_available&&!saved.category_adapter_available&&!local;
   // Leave a method that this server does not offer. Never switch to a model method by itself.
@@ -148,6 +150,7 @@ export default function SemanticPanel({api,user,resetKey,onFeed,onActive,onUnava
     const common={user_id:user,mode,operation,strength:operation==='exclude'?'none':strength,candidate_ids};
     const p=backend==='staged'?await api('semantic/definition/preview',{...common,objective:text}):
       backend==='induction'?await api('semantic/induction/preview',{...common,objective:text}):
+      backend==='combined'?await api('semantic/combined/preview',{user_id:user,text,candidate_ids,mode}):
       backend==='vocabulary'?await api('semantic/vocabulary/preview',{user_id:user,text,candidate_ids,mode}):
       await api('semantic/preview',{...common,text,label,backend,category,
         action_source:explicitTarget?'confirmed':backend==='configured_model'?'model':actionSource,
@@ -203,7 +206,7 @@ export default function SemanticPanel({api,user,resetKey,onFeed,onActive,onUnava
   const category_method=['induction','staged'].includes(backend);
   const manualAction=backend==='manual_category'||category_method||explicitTarget||(backend==='ollama'&&actionSource==='manual');
   const examples=exampleOptions(scenarioRequests,backend);
-  const external=!authored&&(backend==='vocabulary'||backend==='configured_model'||(category_method&&saved?.category_adapter_available));
+  const external=!authored&&(backend==='vocabulary'||backend==='combined'||backend==='configured_model'||(category_method&&saved?.category_adapter_available));
   const variant=resolution?'resolution':definition?'definition':pending?'review':outcome?'outcome':failure?null:record?'changed':null;
   // A result without a change stays on the board while the person rewrites the request; the stage line then shows the first stage again.
   const outcomeNow=outcome&&(outcome.method!==backend?false:!modelMethod||outcome.request_text===text||outcome.page==='expired');
@@ -241,7 +244,7 @@ export default function SemanticPanel({api,user,resetKey,onFeed,onActive,onUnava
       <h3>Request</h3>
       <fieldset id="semantic-backend" className="methods" data-value={backend} disabled={disabled} onChange={e=>{if(!METHODS.some(m=>m[0]===e.target?.value))return;setBackend(e.target.value);setExplicitTarget(false);setTypedLabel(null);}}>
         <legend className="field-label">Method</legend>
-        {METHODS.filter(m=>offered[m[0]]||(noProvider&&['vocabulary','configured_model','staged'].includes(m[0]))).map(m=><label key={m[0]} className="method">
+        {METHODS.filter(m=>offered[m[0]]||(noProvider&&['vocabulary','combined','configured_model','staged'].includes(m[0]))).map(m=><label key={m[0]} className="method">
           <input type="radio" name="semantic-method" value={m[0]} checked={backend===m[0]} disabled={!offered[m[0]]} onChange={()=>{}}/> {methodName(m)}</label>)}
       </fieldset>
       {noProvider&&<p className="help" data-role="no-provider">This server was started without a model provider. Only the manual category control is available. To use the language methods, start the server with a model route: <code>python scripts/quickstart.py setup</code>, then <code>python scripts/quickstart.py start</code>. To see the screens with hand-written replies: <code>python scripts/quickstart.py rehearse</code>.</p>}
@@ -295,13 +298,13 @@ export default function SemanticPanel({api,user,resetKey,onFeed,onActive,onUnava
         {operation!=='exclude'&&<><label className="field-label" htmlFor="semantic-strength">Strength of the change</label>
           <select id="semantic-strength" disabled={disabled} value={strength} onChange={e=>setStrength(e.target.value)}>
           <option value="light">Light 0.10</option><option value="standard">Standard 0.25</option><option value="strong">Strong 0.40</option></select></>}</>}
-      {!category_method&&backend!=='vocabulary'&&<><label className="field-label" htmlFor="semantic-label">Name of this control</label>
+      {!category_method&&!['vocabulary','combined'].includes(backend)&&<><label className="field-label" htmlFor="semantic-label">Name of this control</label>
         <input id="semantic-label" maxLength={80} disabled={disabled} value={label} onChange={e=>setLabel(e.target.value)}/></>}
       <label className="field-label" htmlFor="semantic-mode">How to combine with the applied controls</label>
       <select id="semantic-mode" disabled={disabled} value={mode} onChange={e=>setMode(e.target.value)}>
         <option value="merge">Add to the applied controls</option><option value="replace">Replace every applied control</option></select>
       <p className="help">"Add" keeps the applied controls. A control with the same name is replaced.</p>
-      <button className="primary" disabled={disabled||!saved||(!modelMethod&&!categories.includes(category))||(!category_method&&backend!=='vocabulary'&&!label.trim())||(modelMethod&&!text.trim())||(explicitTarget&&(!target.trim()||!confirmedNow))} onClick={review}>
+      <button className="primary" disabled={disabled||!saved||(!modelMethod&&!categories.includes(category))||(!category_method&&!['vocabulary','combined'].includes(backend)&&!label.trim())||(modelMethod&&!text.trim())||(explicitTarget&&(!target.trim()||!confirmedNow))} onClick={review}>
         {working?waitText:backend==='staged'?'Propose a definition for review':backend==='manual_category'?'Show the proposed change':'Interpret my request'}</button>
       {working&&busyCall&&<button type="button" className="secondary" onClick={stopWaiting}>Stop waiting</button>}
       {working&&busyCall&&<p className="help">{authored?'The server reads a hand-written reply.':'A call can take minutes. "Stop waiting" does not stop the call on the server. It only discards the result on this page.'}</p>}
@@ -320,3 +323,4 @@ export default function SemanticPanel({api,user,resetKey,onFeed,onActive,onUnava
     {open&&(portal&&reviewHost?portal(board,reviewHost):board)}
   </details>;
 }
+

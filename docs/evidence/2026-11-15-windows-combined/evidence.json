@@ -1,0 +1,418 @@
+{
+  "applied": [
+    {
+      "item_id": 61007,
+      "rank": 1,
+      "score": 0.8970588235294117
+    },
+    {
+      "item_id": 61005,
+      "rank": 2,
+      "score": 0.8823529411764705
+    },
+    {
+      "item_id": 61008,
+      "rank": 3,
+      "score": 0.7794117647058822
+    },
+    {
+      "item_id": 61006,
+      "rank": 4,
+      "score": 0.7647058823529411
+    },
+    {
+      "item_id": 61010,
+      "rank": 5,
+      "score": 0.29411764705882354
+    }
+  ],
+  "baseline": [
+    {
+      "item_id": 61004,
+      "rank": 1,
+      "score": 1.0
+    },
+    {
+      "item_id": 61005,
+      "rank": 2,
+      "score": 0.8823529411764705
+    },
+    {
+      "item_id": 61006,
+      "rank": 3,
+      "score": 0.7647058823529411
+    },
+    {
+      "item_id": 61007,
+      "rank": 4,
+      "score": 0.6470588235294117
+    },
+    {
+      "item_id": 61008,
+      "rank": 5,
+      "score": 0.5294117647058822
+    },
+    {
+      "item_id": 61009,
+      "rank": 6,
+      "score": 0.411764705882353
+    },
+    {
+      "item_id": 61010,
+      "rank": 7,
+      "score": 0.29411764705882354
+    },
+    {
+      "item_id": 61001,
+      "rank": 8,
+      "score": 0.23529411764705882
+    },
+    {
+      "item_id": 61002,
+      "rank": 9,
+      "score": 0.11764705882352941
+    },
+    {
+      "item_id": 61003,
+      "rank": 10,
+      "score": 0.0
+    }
+  ],
+  "cleanup": {
+    "check_io": "returned",
+    "close": "returned",
+    "finish_io": "true",
+    "last_cleanup_complete": true,
+    "last_job_members": 0,
+    "last_root_exit": 0,
+    "last_stdin_done": true,
+    "last_stdout_eof": true,
+    "terminate": "returned"
+  },
+  "comparisons": {
+    "before_equals_post_preview": true,
+    "preview_feed_equals_applied": true,
+    "preview_groups_equal_applied": true,
+    "restored_feed_equals_before": true,
+    "restored_groups_equal_before": true
+  },
+  "controls": [
+    {
+      "action": {
+        "intent_span": "remove all the stuff that makes me hungry",
+        "operation": "exclude",
+        "strength": "none"
+      },
+      "evidence": [
+        {
+          "field": "topic_tag",
+          "item_id": 61001,
+          "quote": "recipe, dinner"
+        },
+        {
+          "field": "topic_tag",
+          "item_id": 61002,
+          "quote": "baking, bread"
+        },
+        {
+          "field": "topic_tag",
+          "item_id": 61003,
+          "quote": "street food, night market"
+        },
+        {
+          "field": "caption",
+          "item_id": 61004,
+          "quote": "between bites of a sandwich"
+        },
+        {
+          "field": "topic_tag",
+          "item_id": 61009,
+          "quote": "recipe, salad"
+        }
+      ],
+      "item_ids": [
+        61001,
+        61002,
+        61003,
+        61004,
+        61009
+      ]
+    },
+    {
+      "action": {
+        "intent_span": "Show me more music videos",
+        "operation": "boost",
+        "strength": "standard"
+      },
+      "evidence": [
+        {
+          "field": "first_level_category_name",
+          "item_id": 61007,
+          "quote": "Music"
+        },
+        {
+          "field": "first_level_category_name",
+          "item_id": 61008,
+          "quote": "Music"
+        }
+      ],
+      "item_ids": [
+        61007,
+        61008
+      ]
+    }
+  ],
+  "date_utc": "2026-11-15",
+  "invocation": {
+    "actual_billing": "unverified",
+    "cli_status": {
+      "is_error": false,
+      "num_turns": 1,
+      "stop_reason": "end_turn",
+      "subtype": "success",
+      "type": "result"
+    },
+    "estimated_cost_usd": 0.27668159999999997,
+    "estimated_threshold_usd": 5,
+    "finished_utc": "2026-11-15T22:19:07.303627+00:00",
+    "logical_calls": 1,
+    "provider_internal_request_count": "unverified",
+    "reported_model": "claude-fable-5-2",
+    "reported_usage": {
+      "cache_creation_input_tokens": 5179,
+      "cache_read_input_tokens": 2008,
+      "input_tokens": 2,
+      "output_tokens": 4835
+    },
+    "requested_effort": "max",
+    "requested_model": "claude-fable-5-2",
+    "requested_output_tokens": 32768,
+    "started_utc": "2026-11-15T22:17:22.689879+00:00",
+    "threshold_is_billing_cap": false,
+    "timeout_seconds": 300,
+    "wall_seconds_rounded": 104.614
+  },
+  "limits": [
+    "No browser or HTTP/ASGI server was used.",
+    "The operator was an AI, not a human.",
+    "This is not an evaluation of a production recommender, category discovery or model accuracy.",
+    "Hidden managed context and complete intermediate event coverage were not established."
+  ],
+  "original_evidence": {
+    "independent_review": "Allowlisted extraction reviewed; original bytes verified by owner, not independently downloaded.",
+    "owner_verified_result_sha256": "7660b3f69a004c5513b5ca2a940d2553990ef418a7b1a9a2923f74c11bec2339",
+    "result_bytes": 81324,
+    "structured_receipt_sha256": "d0f58d65cf655dc4bc4ddb5f9b6fa513982f2219de09740b84e839811f796bb1"
+  },
+  "outer_session_exit_code": 0,
+  "post_preview": [
+    {
+      "item_id": 61004,
+      "rank": 1,
+      "score": 1.0
+    },
+    {
+      "item_id": 61005,
+      "rank": 2,
+      "score": 0.8823529411764705
+    },
+    {
+      "item_id": 61006,
+      "rank": 3,
+      "score": 0.7647058823529411
+    },
+    {
+      "item_id": 61007,
+      "rank": 4,
+      "score": 0.6470588235294117
+    },
+    {
+      "item_id": 61008,
+      "rank": 5,
+      "score": 0.5294117647058822
+    },
+    {
+      "item_id": 61009,
+      "rank": 6,
+      "score": 0.411764705882353
+    },
+    {
+      "item_id": 61010,
+      "rank": 7,
+      "score": 0.29411764705882354
+    },
+    {
+      "item_id": 61001,
+      "rank": 8,
+      "score": 0.23529411764705882
+    },
+    {
+      "item_id": 61002,
+      "rank": 9,
+      "score": 0.11764705882352941
+    },
+    {
+      "item_id": 61003,
+      "rank": 10,
+      "score": 0.0
+    }
+  ],
+  "preview": [
+    {
+      "item_id": 61007,
+      "rank": 1,
+      "score": 0.8970588235294117
+    },
+    {
+      "item_id": 61005,
+      "rank": 2,
+      "score": 0.8823529411764705
+    },
+    {
+      "item_id": 61008,
+      "rank": 3,
+      "score": 0.7794117647058822
+    },
+    {
+      "item_id": 61006,
+      "rank": 4,
+      "score": 0.7647058823529411
+    },
+    {
+      "item_id": 61010,
+      "rank": 5,
+      "score": 0.29411764705882354
+    }
+  ],
+  "record_type": "SANITIZED_DERIVED_EVIDENCE_NOT_RAW_RECEIPT_OR_REPLAY_INPUT",
+  "request": "I'm not hungry, remove all the stuff that makes me hungry. Show me more music videos.",
+  "restored": [
+    {
+      "item_id": 61004,
+      "rank": 1,
+      "score": 1.0
+    },
+    {
+      "item_id": 61005,
+      "rank": 2,
+      "score": 0.8823529411764705
+    },
+    {
+      "item_id": 61006,
+      "rank": 3,
+      "score": 0.7647058823529411
+    },
+    {
+      "item_id": 61007,
+      "rank": 4,
+      "score": 0.6470588235294117
+    },
+    {
+      "item_id": 61008,
+      "rank": 5,
+      "score": 0.5294117647058822
+    },
+    {
+      "item_id": 61009,
+      "rank": 6,
+      "score": 0.411764705882353
+    },
+    {
+      "item_id": 61010,
+      "rank": 7,
+      "score": 0.29411764705882354
+    },
+    {
+      "item_id": 61001,
+      "rank": 8,
+      "score": 0.23529411764705882
+    },
+    {
+      "item_id": 61002,
+      "rank": 9,
+      "score": 0.11764705882352941
+    },
+    {
+      "item_id": 61003,
+      "rank": 10,
+      "score": 0.0
+    }
+  ],
+  "review": {
+    "operator": "AI",
+    "preview_chunks": 7,
+    "preview_dto_sha256": "c5f66581205f53ffa5164ee8e485a7a3f982332e261b0f56e9d2f670ad0f4780",
+    "undo_chunks": 2,
+    "undo_dto_sha256": "2da0117913fdcf3dcd5c96259438e61e610f50e2e8b56c35e121ce5c054bfb00"
+  },
+  "scope": "ten fictional items; direct in-process application routes; deterministic diagnostic scorer",
+  "source": {
+    "base_commit": "8a33946147dafb2b4d57c95c4b155a9bd6435a01",
+    "capacity_patch_sha256": "bca9362f9cc1743abe25f686f6f5be84b9904441f0368288aec3e1adf2c516bc",
+    "composition_patch_sha256": "e36b9df130934869a59119fc3e0382bb3148f1c471cfec45e976cea64255a94c",
+    "launcher_sha256": "80a8371a3002553c6e2bc8f96325ea14f651d949a66cb3efadb8f2a9945bf494",
+    "run_source_manifest_sha256": "5cb6e7ef4422f82d6fb64be279755a07da3ce74abbecef359596d480fe90e03d",
+    "telemetry_delta_sha256": "85edf54496d47ee9403035bbf85c2fab870314c6a9875ac417644c11e246e0d1"
+  },
+  "transport": {
+    "intermediate_coverage": "unknown",
+    "ordered_observed_stops": [
+      "end_turn"
+    ],
+    "raw_cli_stream_retained": false,
+    "refusal_presence": "not_observed_in_recognized_projection",
+    "unknown_rate_info_seen": true
+  },
+  "undo_preview": [
+    {
+      "item_id": 61004,
+      "rank": 1,
+      "score": 1.0
+    },
+    {
+      "item_id": 61005,
+      "rank": 2,
+      "score": 0.8823529411764705
+    },
+    {
+      "item_id": 61006,
+      "rank": 3,
+      "score": 0.7647058823529411
+    },
+    {
+      "item_id": 61007,
+      "rank": 4,
+      "score": 0.6470588235294117
+    },
+    {
+      "item_id": 61008,
+      "rank": 5,
+      "score": 0.5294117647058822
+    },
+    {
+      "item_id": 61009,
+      "rank": 6,
+      "score": 0.411764705882353
+    },
+    {
+      "item_id": 61010,
+      "rank": 7,
+      "score": 0.29411764705882354
+    },
+    {
+      "item_id": 61001,
+      "rank": 8,
+      "score": 0.23529411764705882
+    },
+    {
+      "item_id": 61002,
+      "rank": 9,
+      "score": 0.11764705882352941
+    },
+    {
+      "item_id": 61003,
+      "rank": 10,
+      "score": 0.0
+    }
+  ]
+}

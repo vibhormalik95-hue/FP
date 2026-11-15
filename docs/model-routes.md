@@ -37,6 +37,8 @@ The parts of the code that apply only to Windows (the split of a command line, t
 Other servers with an OpenAI-compatible API, for example the llama.cpp server or vLLM, can work with the `openai-compatible` route.
 Their documentation was not read for this project, so they are not in the table.
 
+The separate [personal Windows CLI binding](../diagnostic/README.md) constructs the current app with explicit executable, work directory, reviewed context and a bounded caller. It is not the general `cli` quickstart route. A [combined fictional-fixture check](evidence/2026-11-15-windows-combined/README.md) used that binding and a task-local launcher with direct application calls and AI review; it does not establish browser or new-category acceptance.
+
 ## What a model must be able to do
 
 - **Follow a JSON schema.** The reply must be exactly one JSON object that matches the schema of the request. The application does not repair a reply and does not ask a second time.
