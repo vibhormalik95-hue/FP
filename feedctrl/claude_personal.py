@@ -120,7 +120,7 @@ def make_claude_personal_infer(*, executable, workdir, model, effort, run_budget
         subscription_and_usage_authorized=False, executable_reviewed=False,
         managed_runtime_reviewed=False, process_containment_reviewed=False, reviewed_cli_version=None,
         max_output_tokens=4096, max_request_bytes=20000, max_response_bytes=1000000,
-        timeout=90, process_runner=None):
+        timeout=90, process_runner=None, runtime_mode='safe_mode', reviewed_hooks_context_sha256=None):
     """Create a personal CLI callable with process launch disabled by default.
 
     A supplied runner is an operator selection, not evidence of containment.
@@ -131,6 +131,13 @@ def make_claude_personal_infer(*, executable, workdir, model, effort, run_budget
     The process-level attempt allowance is not durable across process restart. The
     CLI's estimated budget is per process, may overshoot, and is not a billing cap.
     """
+    if runtime_mode not in ('safe_mode', 'reviewed_hooks'):
+        raise ValueError('Explicit supported runtime mode required')
+    if runtime_mode == 'reviewed_hooks':
+        if not isinstance(reviewed_hooks_context_sha256, str) or not re.fullmatch(r'[0-9a-f]{64}', reviewed_hooks_context_sha256):
+            raise ValueError('Reviewed hook context fingerprint required')
+    elif reviewed_hooks_context_sha256 is not None:
+        raise ValueError('Hook context fingerprint requires reviewed hooks mode')
     if process_runner is not None and not callable(process_runner):
         raise ValueError('Process runner must be callable or None')
     if any(v is not True for v in (runtime_authorized, data_authorized,
@@ -167,10 +174,14 @@ def make_claude_personal_infer(*, executable, workdir, model, effort, run_budget
               'estimated_per_invocation_usd':estimated_per_invocation_usd,
               'max_output_tokens':max_output_tokens, 'max_request_bytes':max_request_bytes,
               'max_response_bytes':max_response_bytes, 'timeout_seconds':timeout,
-              'safe_mode':True, 'tools':[], 'no_session_persistence':True,
+              'safe_mode':runtime_mode == 'safe_mode', 'tools':[], 'no_session_persistence':True,
               'retry_settings_requested':{'api':0,'nonstreaming_timeout':0,'structured_attempts':1},
               'fallback_policy':'refusal switching disabled; managed fallback chain requires separate review',
               'cost_limit_kind':'per-process estimate; may overshoot; not a billing cap'}
+    if runtime_mode == 'reviewed_hooks':
+        config.update(runtime_mode='reviewed_hooks', reviewed_hooks_context_sha256=reviewed_hooks_context_sha256,
+                      hook_context_review='operator_asserted_not_attested',
+                      hook_execution='not_verified')
     digest = _hash(config)
     run_budget.bind(digest)
     provenance = {**config, 'digest':digest,
@@ -201,12 +212,15 @@ def make_claude_personal_infer(*, executable, workdir, model, effort, run_budget
                          'output_mode':output_mode})
         if len(request) > max_request_bytes:
             raise ValueError('Request exceeds authorized evidence budget; no truncation')
-        argv = [executable, '-p', '--safe-mode', '--tools', '', '--disallowedTools', 'mcp__*',
+        argv = [executable, '-p']
+        if runtime_mode == 'safe_mode':
+            argv.append('--safe-mode')
+        argv.extend(['--tools', '', '--disallowedTools', 'mcp__*',
                 '--no-chrome', '--no-session-persistence', '--permission-mode', 'dontAsk',
                 '--permission-prompts', 'none', '--max-turns', '1',
                 '--settings', '{"switchModelsOnFlag":false}', '--model', model,
                 '--effort', effort, '--max-budget-usd', str(estimated_per_invocation_usd),
-                '--output-format', 'json']
+                '--output-format', 'json'])
         if output_mode == 'schema_tool':
             argv.extend(['--json-schema', schema_bytes.decode('utf-8')])
         argv.extend(['--system-prompt', rendered_system])

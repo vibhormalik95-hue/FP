@@ -1,0 +1,79 @@
+{
+  "evidence_type": "single_in_process_fictional_fixture_lifecycle",
+  "observed_utc": "2026-11-15T01:50:38Z",
+  "source_basis": {
+    "base_commit": "ca614c3c78062df08c1e95e91036edde4d81e2e1",
+    "live_adapter_sha256": "a942724697fa370732e6ab1961ff6c904223d4b021927b6e4a6dbefd246c695a",
+    "task_local_transport_sha256": "b9ce4eeb5863ae32f04ef048777665855fec8e28d95cd581661fc4aa74668abc",
+    "stream_projector_sha256": "e527bf52da8d819a0963afa02159d6b5b95908e371bc305f487f966e3256f7b6",
+    "note": "The live run used a task-local transport and a modified adapter on this base. It did not run the later publication candidate."
+  },
+  "request": {
+    "creative_subject": "Lantern Orchard",
+    "scope": "One explicitly fictional miniature garden metadata draft; no real product or media.",
+    "requested_model": "claude-fable-5-2",
+    "requested_effort": "max",
+    "requested_output_tokens": 4096,
+    "logical_call_limit": 1,
+    "timeout_seconds": 300,
+    "estimated_threshold_usd": 5.0
+  },
+  "observed": {
+    "logical_calls": 1,
+    "cli_reported_model": "claude-fable-5-2",
+    "cli_subtype": "success",
+    "cli_is_error": false,
+    "cli_num_turns": 1,
+    "cli_stop_reason": "end_turn",
+    "cli_reported_input_tokens": 2,
+    "cli_reported_cache_creation_input_tokens": 4277,
+    "cli_reported_output_tokens": 1332,
+    "cli_reported_model_max_output_tokens": 128000,
+    "estimated_cost_usd": 0.121728,
+    "reviewer": "assistant",
+    "review": "approved after inspecting the returned fictional draft",
+    "synthetic_counts": {
+      "preview": 0,
+      "admitted": 1,
+      "removed": 0,
+      "restore_preview": 0,
+      "readmitted": 1,
+      "after_reset": 0
+    },
+    "restored_same_id_and_provenance": true,
+    "original_fixture_feed_unchanged": true,
+    "original_fixture_catalogue_unchanged": true,
+    "uses_trained_scorer": false,
+    "fixture_reset_verified": true
+  },
+  "projection": {
+    "ok": true,
+    "observed_system_frames": 15,
+    "observed_rate_limit_frames": 1,
+    "unknown_system_seen": true,
+    "unknown_rate_info_seen": true,
+    "unknown_rate_top_seen": false,
+    "optional_rate_info_seen": true,
+    "limit": "Unknown metadata was discarded; these flags do not establish what it meant."
+  },
+  "owned_process": {
+    "launch": "returned",
+    "runner_exit_code": 0,
+    "last_root_exit": 0,
+    "last_stdin_done": true,
+    "last_stdout_eof": true,
+    "terminate": "returned",
+    "last_cleanup_complete": true,
+    "finish_io": "true",
+    "close": "returned",
+    "last_job_members": 0,
+    "limit": "The member count is the last observed poll, not an independent global process inventory."
+  },
+  "limitations": [
+    "Direct in-process application evidence, not browser evidence or category-discovery acceptance.",
+    "Synthetic fixture and diagnostic scoring only; no trained-recommender or research outcome claim.",
+    "The reported model maximum output is not proof of the per-request limit actually enforced.",
+    "CLI cost is an estimate, not verified billing; underlying provider request count and effective effort are unverified.",
+    "The original sanitized task-local receipt has SHA-256 ea05a023090dcf310040802a9da299db122c0ac8a5eedee628775d7f3fb82565."
+  ]
+}
