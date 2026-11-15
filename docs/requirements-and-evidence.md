@@ -142,7 +142,7 @@ The application reaches a model through a route that the person selects ([model 
 | OpenAI-compatible endpoint, local or hosted | Stand-in server only. |
 | Anthropic API | Stand-in server only. |
 
-A first real call through the last three routes on Windows or macOS is still to do. No real provider, no real local model server and no real CLI was called for this revision.
+Native Windows and macOS verification of the last three routes remains open. A separate [15 November Windows result](fictional-lifecycle-2026-11-15.json) records one Fable 5.2 call and the fictional-item lifecycle through a task-local transport and a modified personal adapter on base `ca614c3`. It did not test these general routes, category discovery or the later publication candidate.
 The route identity is stored in every review. The frozen experiments keep their own model configuration; a change of route does not change them.
 
 ## The original proposal
@@ -175,9 +175,9 @@ Software checks with authored replies and stand-ins. They are not model evidence
 | Browser, authored replies, scenario `category` | `node tests/browser/demo_flows.cjs --scenario category --flows manual,category` | 29 of 29 assertions |
 | Browser, authored replies, scenario `hunger` | `node tests/browser/demo_flows.cjs --scenario hunger --flows manual,indirect` | 27 of 27 assertions |
 
-**This revision: the integrated revision, checked 14 November 2026 (UTC) on Linux.**
+**Recorded checks of `ff92666`, 14 November 2026 (UTC), Linux.**
 
-It is the merge of the published work branch (`c84e2cd`) and the package line (`6dd3486`), with the corrections that followed the merge. The runs were made at revision `ff92666`; the later commits add run records and documents, and the source fingerprint stays the same. These checks ran on Linux (Python 3.13, Node 22, headless Chromium). They do not establish Windows, macOS or real-provider acceptance.
+These runs tested the corrected merge of the published work branch (`c84e2cd`) and the package line (`6dd3486`) at `ff92666`, on Linux with Python 3.13, Node 22 and headless Chromium. The table keeps that run's results and fingerprint. Commit `836cdff6` later changed `feedctrl/claude_personal.py`, so the table does not certify the updated source. It also does not establish native Windows, macOS or direct-provider acceptance.
 
 | Check | Command | Result |
 | --- | --- | --- |

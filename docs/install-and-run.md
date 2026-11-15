@@ -2,9 +2,7 @@
 
 > **Current guide.** It replaces the install sections of earlier pages.
 
-This page takes you from the source folder to a running application, on Windows (PowerShell) and on macOS (zsh).
-Every command on this page was run on Linux, with hand-written replies or stand-in servers in place of a model.
-**No command on this page was run on Windows or macOS for this revision.** If a step fails there, the message that it prints is the thing to report.
+This page gives the setup commands for Windows PowerShell and macOS zsh. The recorded checks below ran on Linux at revision `ff92666`, with authored replies or stand-ins. Native Windows and macOS verification of these setup commands remains open. The separate [Windows fictional-item result](fictional-lifecycle-2026-11-15.json) used a task-local transport, not this quickstart workflow.
 
 ## What you need
 
@@ -141,8 +139,8 @@ See [route trial](route-trial.md).
 
 Run these checks from the source folder. They use no model.
 
-1. **The files.** `python scripts/quickstart.py check` prints the source fingerprint. For this revision (the integrated revision) the value is `22ba794e2091685fa879dcc43b68233dae1963fa4231c38dd73a36f13639068a`.
-2. **The Python tests.** `python -m pytest -q -p no:cacheprovider`. Expected on this revision: 1786 passed and 1 skipped with PyTorch; 1782 passed and 2 skipped in a fresh environment without PyTorch.
+1. **The files.** `python scripts/quickstart.py check` prints the checkout's source fingerprint. The recorded value for `ff92666` was `22ba794e2091685fa879dcc43b68233dae1963fa4231c38dd73a36f13639068a`. Commit `836cdff6` changed an application file, so this earlier value must not be used to identify that later source.
+2. **The Python tests.** `python -m pytest -q -p no:cacheprovider`. Recorded on `ff92666`: 1786 passed and 1 skipped with PyTorch; 1782 passed and 2 skipped in a fresh environment without PyTorch.
 3. **The guarded driver checks.** `python scripts/run_guarded_current_contract.py`. The last line must start with `PASS`. The script runs the guarded checks two times: on the frozen profile of 11 November 2026 in `tools/hosted_validation_current/`, and on a temporary copy with the current-contract test inputs. On the frozen profile 16 of the 180 checks have a failure, because the prompts changed after that date. That is expected, and the script says so. No reviewed profile exists for the current source.
 4. **The interface tests.** They need Node.js.
 
@@ -153,7 +151,7 @@ Run these checks from the source folder. They use no model.
    node --test "web/tests/*.mjs"
    ```
 
-   Expected on this revision: 132 passed.
+   Recorded on `ff92666`: 132 passed.
 5. **The browser check.** It drives the page in a real browser and compares the page with the state of the server. Install the browser once:
 
    ```
@@ -168,7 +166,7 @@ Run these checks from the source folder. They use no model.
    ```
 
    The last lines must be `OUTCOME all flows completed` and the path of the receipt. `--out` must name a new or empty folder.
-   Do the same for the scenarios `category`, `hunger` and `conditions`, each with its own rehearsal server and its own `--out` folder. Expected on this revision: with authored replies on Linux: `tags` 222 checks, `category` 106, `hunger` 98, `conditions` 12; all passed, exit code 0 each.
+   Do the same for the scenarios `category`, `hunger` and `conditions`, each with its own rehearsal server and its own `--out` folder. Recorded on `ff92666`: with authored replies on Linux: `tags` 222 checks, `category` 106, `hunger` 98, `conditions` 12; all passed, exit code 0 each.
    With a model in place of the rehearsal, add `--review wait --reviewer "your name"`. The script then stops at each review and waits for your decision. See [check a run in a real browser](demo.md#check-a-run-in-a-real-browser).
 
 The two commands that install the browser were not run for this page: the workspace that produced it already had Playwright and Chromium.

@@ -22,7 +22,7 @@ You select a route in one small file, `model-route.json`. The file never holds a
 | Route | How it talks to the model | Use it for | How this project tested it |
 | --- | --- | --- | --- |
 | `relay` | Request and reply files. A person carries each request to a chat application. | Any model that you can reach only by hand. | Real model output, with an operator in the transport: the run records of 13 November 2026 in `docs/evidence/2026-11-13/`. Those runs started the same relay code with `--provider relay`. The selection through a route file was tested without a model. On 14 November, three relay runs with real model output on revision `b7c5a91` are recorded in `docs/evidence/2026-11-14/real-model-relay/`, and three more on the integrated revision in `docs/evidence/2026-11-14-integrated/real-model-relay/`; all were started with `--provider relay`. |
-| `cli`, profile `claude-code` | Starts the Claude Code CLI one time for each request, in print mode. | A Claude Code CLI on Windows or macOS that is signed in to your own account. | Stand-in program only. The real CLI was not run. |
+| `cli`, profile `claude-code` | Starts the Claude Code CLI one time for each request, in print mode. | A Claude Code CLI on Windows or macOS that is signed in to your own account. | Stand-in program only for this general route. No native Windows or macOS acceptance is recorded for it. |
 | `cli`, profile `generic` | Starts any program that reads a prompt on standard input and writes the reply to standard output. | Other command-line tools, for example `ollama run MODEL --format json`. | Stand-in program only. |
 | `openai-compatible` | `POST {base_url}/chat/completions` | A model server on your computer (Ollama, LM Studio) or a hosted provider that offers this API, with your own key. | Stand-in server only. No real server and no real provider was called. |
 | `anthropic` | `POST https://api.anthropic.com/v1/messages` | The Anthropic API with your own key. | Stand-in server only. The real API was not called. |
@@ -31,7 +31,7 @@ A stand-in is a small program that answers in the documented format with replies
 The stand-in tests show that each route sends the documented request, reads the documented reply and names each failure.
 They do not show that a real provider or a real CLI accepts the request.
 
-**All tests of the model routes ran on Linux. No model route ran on Windows or macOS.** The published branch holds one record of the manual method in a browser on Windows, on two earlier revisions and without a model: [OPERA-MANUAL-CONTROLS.md](evidence/2026-11-14/OPERA-MANUAL-CONTROLS.md). A first real call through the `cli`, `openai-compatible` and `anthropic` routes on Windows and on macOS is still to do.
+The general routes in this table have Linux test records. Native Windows and macOS acceptance remains open. Separate Windows records cover the earlier [manual browser controls](evidence/2026-11-14/OPERA-MANUAL-CONTROLS.md) and a [15 November fictional-item lifecycle](fictional-lifecycle-2026-11-15.json) through a task-local transport and a modified personal adapter. Neither verifies the general `cli`, `openai-compatible` or `anthropic` route.
 The parts of the code that apply only to Windows (the split of a command line, the check of a `.cmd` or `.bat` program, the completion of a program path, the stop of a program and of the server) were checked with unit tests on Linux only.
 
 Other servers with an OpenAI-compatible API, for example the llama.cpp server or vLLM, can work with the `openai-compatible` route.

@@ -64,8 +64,7 @@ Three more commands help:
 - `python scripts/quickstart.py rehearse --scenario conditions` serves the original conditions A to E on the built-in fixture (36 items, categories `category_0` to `category_5`, three users). It uses no model and has no language controls.
 - `python scripts/quickstart.py try --scenario tags` runs the bundled requests through your route without the browser. See [route trial](docs/route-trial.md).
 
-The routes for a command-line program, a hosted API and a local model server were tested with stand-in programs and stand-in servers only.
-A first real call through those routes on Windows or macOS is still to do. Nothing in this repository was run on Windows or macOS for this revision.
+The general CLI, hosted API and local-server routes have stand-in test records from Linux; native Windows and macOS verification remains open. A separate [Windows fictional-item run on 15 November](docs/fictional-lifecycle-2026-11-15.json) used Fable 5.2 through a task-local transport and a modified personal adapter. It completed draft, admit, remove, restore and reset. That run did not test the general quickstart route, category discovery or the later publication candidate.
 
 ## Experiments and results
 
