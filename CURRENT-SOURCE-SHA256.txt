@@ -474,6 +474,7 @@ cb075e9bd2cda7332dff60549a86f03d2bf1d0a6b28e50e4becd17827c4e81e8  docs/evidence/
 3cdeae0d1b0c7789905ade2256bcc3514c29dbcae7f80d017b8c5b2822348626  docs/evidence/2026-11-14/route-checks/trial-openai-compatible-standin/trial.json
 2e9a2f1a1d06dcc87cb41643b67703737a0838c99272bb78818eea0f55a7b693  docs/evidence/2026-11-14/route-checks/trial-openai-compatible-standin/trial.md
 81b345f3678beec3933878392db773f11e3552daed03b54df05b1f74cfc0101f  docs/evidence/2026-11-15-provider-checks/README.md
+98a86eeb8776736fa06479a15a5bd178a8195846c8533e5b93c6dc1939c262e5  docs/evidence/2026-11-15-windows-indirect/README.md
 325b93802dcf34cc3791da4bb13a3c7c61ae3ee1e5550a29e797e8f177113e51  docs/execution-2026-10-14.md
 3e63a13e0fc67219bd882516e9f0c9173ad44843060ee40ab2271aaace94c092  docs/experiment2-annotation-rubric.md
 1115f977ea86b908b7db81efc7d8a68fc94c21b995d3cbe1704b59b5bf960c82  docs/experiment2-protocol.md
