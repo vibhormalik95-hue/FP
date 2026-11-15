@@ -4,8 +4,8 @@
   "user": "vs981",
   "platform": "Windows-11-10.0.26200-SP0",
   "python_executable": "C:\\Python314\\python.exe",
-  "project_root": "C:\\Users\\vs981\\Documents\\Codex\\2026-10-13\\task\\FP",
-  "archive_root": "C:\\Users\\vs981\\Downloads\\COMP9500-Research-Project-Recovered (2)\\cmp9500-recommender",
+  "project_root": "<USER_HOME>\\Documents\\Codex\\2026-10-13\\task\\FP",
+  "archive_root": "<USER_HOME>\\Downloads\\COMP9500-Research-Project-Recovered (2)\\cmp9500-recommender",
   "commands": [
     {
       "argv": [
@@ -117,14 +117,14 @@
       ],
       "started_utc": "2026-10-14T20:41:44.667860+00:00",
       "exit_code": 0,
-      "stdout": "[\n    {\n        \"Id\":  83572,\n        \"ProcessName\":  \"ollama\",\n        \"Path\":  \"C:\\\\Users\\\\vs981\\\\AppData\\\\Local\\\\Programs\\\\Ollama\\\\ollama.exe\"\n    },\n    {\n        \"Id\":  81124,\n        \"ProcessName\":  \"ollama app\",\n        \"Path\":  \"C:\\\\Users\\\\vs981\\\\AppData\\\\Local\\\\Programs\\\\Ollama\\\\ollama app.exe\"\n    }\n]\n",
+      "stdout": "[\n    {\n        \"Id\":  83572,\n        \"ProcessName\":  \"ollama\",\n        \"Path\":  \"<USER_HOME>\\\\AppData\\\\Local\\\\Programs\\\\Ollama\\\\ollama.exe\"\n    },\n    {\n        \"Id\":  81124,\n        \"ProcessName\":  \"ollama app\",\n        \"Path\":  \"<USER_HOME>\\\\AppData\\\\Local\\\\Programs\\\\Ollama\\\\ollama app.exe\"\n    }\n]\n",
       "stderr": ""
     },
     {
       "argv": [
         "C:\\Python314\\python.exe",
-        "C:\\Users\\vs981\\Documents\\Codex\\2026-10-13\\task\\FP\\scripts\\verify_frozen_e1.py",
-        "C:\\Users\\vs981\\Downloads\\COMP9500-Research-Project-Recovered (2)\\cmp9500-recommender"
+        "<USER_HOME>\\Documents\\Codex\\2026-10-13\\task\\FP\\scripts\\verify_frozen_e1.py",
+        "<USER_HOME>\\Downloads\\COMP9500-Research-Project-Recovered (2)\\cmp9500-recommender"
       ],
       "started_utc": "2026-10-14T20:41:45.325944+00:00",
       "exit_code": 0,

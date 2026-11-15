@@ -66,6 +66,8 @@ Three more commands help:
 
 The general CLI, hosted API and local-server routes have stand-in test records from Linux; native Windows and macOS verification remains open. A separate [Windows fictional-item run on 15 November](docs/fictional-lifecycle-2026-11-15.json) used Fable 5.2 through a task-local transport and a modified personal adapter. It completed draft, admit, remove, restore and reset. That run did not test the general quickstart route, category discovery or the later publication candidate.
 
+On 15 November, two further Windows checks used Fable 5.2 through the separate personal Claude Code adapter: [a description-based indirect request](docs/evidence/2026-11-15-windows-indirect/README.md) changed a 36-item feed to 34 and back, and [a mixed request over existing categories and tags](docs/evidence/2026-11-15-windows-vocabulary/README.md) changed a ten-item feed to six and back. An AI operator reviewed both. These were direct application calls with task-local launchers, not browser runs, new-category discovery or a portable quickstart test.
+
 ## Experiments and results
 
 Every number below is copied from the document that is named after it.

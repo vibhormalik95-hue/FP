@@ -4,6 +4,8 @@ The 14 October evaluation used 100 fresh synthetic requests and model-generated 
 
 This directory contains 29 scientific protocol, custody, inference, result and computational audit files. `INDEX.json` lists the byte length and SHA-256 of each file in this public subset. Earlier custody and inventory corrections remain with their original records; the unchanged full archive holds the complete execution and delivery history.
 
+Twelve public JSON files are privacy derivatives: each Windows home-directory prefix is replaced with `<USER_HOME>`, with every following suffix and all other bytes retained. [REDACTION-MANIFEST.json](REDACTION-MANIFEST.json) records the original and public hashes, sizes and replacement counts. `INDEX.json` identifies original and public-derivative bytes separately for the ten affected files in this indexed subset. The two additional derivatives are under `docs/evidence/2026-10-14/`. These copies are not unchanged frozen evidence or replay inputs. Embedded historical digests still refer to the original bytes; reproduction requires the unchanged original archive. Earlier public Git history retains the original prefixes.
+
 The public screening receipt includes all 300 candidate request texts across
 100 case IDs, including the selected wording. Public parser-failure receipts
 also include request text. Complete structured cases, both original model labels,

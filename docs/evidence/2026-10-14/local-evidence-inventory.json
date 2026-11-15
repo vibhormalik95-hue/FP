@@ -1,7 +1,7 @@
 {
   "verified_utc": "2026-10-14T18:29:33.682378+00:00",
   "status": "passed",
-  "zip": "C:\\Users\\vs981\\Documents\\COMP9500\\2026-10-14\\delivered\\COMP9500-Execution-and-Audit-Evidence-2026-10-14.zip",
+  "zip": "<USER_HOME>\\Documents\\COMP9500\\2026-10-14\\delivered\\COMP9500-Execution-and-Audit-Evidence-2026-10-14.zip",
   "bytes": 102743825,
   "sha256": "1f16dcaf2b849b19028e1a3cbfb72f299ace01b31c94a473ff529a0e581ac1d9",
   "payload_members_verified": 3266,
@@ -16,7 +16,7 @@
     "ranking_rows_json_bytes": 47968297,
     "complete_practice_directory_bytes": 301569909
   },
-  "original_input_location": "C:\\Users\\vs981\\Downloads\\COMP9500-Research-Project-Recovered (2)\\cmp9500-recommender",
+  "original_input_location": "<USER_HOME>\\Downloads\\COMP9500-Research-Project-Recovered (2)\\cmp9500-recommender",
   "model_weights_included": false,
   "formal_unseen_bank_created": false,
   "normal_github_per_file_limit_bytes": 104857600,

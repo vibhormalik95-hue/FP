@@ -16,15 +16,15 @@
   },
   "reviewed_source_files": [
     {
-      "path": "C:\\Users\\vs981\\Documents\\Codex\\2026-10-13\\task\\FP\\scripts\\ai_e2_full_freeze.py",
+      "path": "<USER_HOME>\\Documents\\Codex\\2026-10-13\\task\\FP\\scripts\\ai_e2_full_freeze.py",
       "sha256": "8dadb7eb1d8169954169396201c14e7de86be900dd3dda56f7bfb84991fb8b05"
     },
     {
-      "path": "C:\\Users\\vs981\\Documents\\Codex\\2026-10-13\\task\\FP\\scripts\\ai_e2_score.py",
+      "path": "<USER_HOME>\\Documents\\Codex\\2026-10-13\\task\\FP\\scripts\\ai_e2_score.py",
       "sha256": "bdba1b5f33b9960415af8ac9515690f62c1bbf8ee2c5a038a3db7fede7974c12"
     },
     {
-      "path": "C:\\Users\\vs981\\Documents\\Codex\\2026-10-13\\task\\FP\\scripts\\ai_e2_references.py",
+      "path": "<USER_HOME>\\Documents\\Codex\\2026-10-13\\task\\FP\\scripts\\ai_e2_references.py",
       "sha256": "4b3de3255df76f21339d8c6d6120b50e868be87841512b948adc3b375df5baa6"
     }
   ],

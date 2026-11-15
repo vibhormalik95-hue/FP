@@ -26,18 +26,18 @@
     "protocol_freeze_sha256": "1c0eb05eb54887bc52f23051b53a774dab0dde1f2f10c29ae4adc2ddcfe606d5",
     "reference_freeze_sha256": "bdb8b07446c46da579e63b3235eef7092973719ea486225209452ad355a513cb",
     "denied_probe_paths": {
-      "final_reference": "C:\\Users\\vs981\\Documents\\COMP9500\\ai-reference-e2-2026-10-14-v1-r2\\custody\\final-cases.json",
-      "first_AI_labels": "C:\\Users\\vs981\\Documents\\COMP9500\\ai-reference-e2-2026-10-14-v1-r2\\annotations\\tanishq\\labels.json",
-      "second_AI_labels": "C:\\Users\\vs981\\Documents\\COMP9500\\ai-reference-e2-2026-10-14-v1-r2\\annotations\\khushi\\labels.json",
-      "intent_plan": "C:\\Users\\vs981\\Documents\\COMP9500\\ai-reference-e2-2026-10-14-v1-r2\\custody\\intent-plan.json"
+      "final_reference": "<USER_HOME>\\Documents\\COMP9500\\ai-reference-e2-2026-10-14-v1-r2\\custody\\final-cases.json",
+      "first_AI_labels": "<USER_HOME>\\Documents\\COMP9500\\ai-reference-e2-2026-10-14-v1-r2\\annotations\\tanishq\\labels.json",
+      "second_AI_labels": "<USER_HOME>\\Documents\\COMP9500\\ai-reference-e2-2026-10-14-v1-r2\\annotations\\khushi\\labels.json",
+      "intent_plan": "<USER_HOME>\\Documents\\COMP9500\\ai-reference-e2-2026-10-14-v1-r2\\custody\\intent-plan.json"
     }
   },
   "guard": {
     "allowed_roots": [
-      "c:\\users\\vs981\\documents\\comp9500\\ai-reference-e2-2026-10-14-v1-r2\\inference\\worker-bundle",
+      "<USER_HOME>\\documents\\comp9500\\ai-reference-e2-2026-10-14-v1-r2\\inference\\worker-bundle",
       "c:\\python314",
       "c:\\windows",
-      "c:\\users\\vs981\\documents\\comp9500\\ai-reference-e2-2026-10-14-v1-r2\\inference"
+      "<USER_HOME>\\documents\\comp9500\\ai-reference-e2-2026-10-14-v1-r2\\inference"
     ],
     "mechanism": "CPython audit hook over trusted reference-free code; not an OS security sandbox"
   },

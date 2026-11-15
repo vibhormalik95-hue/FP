@@ -42,14 +42,14 @@
     "protocol/source/scripts/ai_e2_protocol_freeze.py": "2123b6768694c9215d97fc5a1191db7d5e02bf9ba5c8231b7cb8af208d94ddc8",
     "protocol/source/scripts/test_ai_e2_boundary.py": "c63447ba84bb92d237c98d89fc207da65c68c21bee580bb6b4ff42d5b64db924"
   },
-  "current_attempt": "C:\\Users\\vs981\\Documents\\COMP9500\\ai-reference-e2-2026-10-14-v1-r2",
+  "current_attempt": "<USER_HOME>\\Documents\\COMP9500\\ai-reference-e2-2026-10-14-v1-r2",
   "custody_attempt_version": 2,
   "frozen_utc": "2026-10-14T21:08:59.309241+00:00",
   "new_amendment_sha256": "9599f6e11712e96a280d1e308efad62be0f70d62290de0f8b1a77e8dce94c798",
   "no_model_inference_in_previous_attempt": true,
   "no_prior_labels_or_receipts_copied": true,
   "previous_abort_sha256": "24c8194a39d5c9c6abee8cd319914b48f2108103ae1b5fd527189ace2ab9b192",
-  "previous_attempt": "C:\\Users\\vs981\\Documents\\COMP9500\\ai-reference-e2-2026-10-14-v1",
+  "previous_attempt": "<USER_HOME>\\Documents\\COMP9500\\ai-reference-e2-2026-10-14-v1",
   "previous_originals_preserved_hashes_only_not_role_inputs": {
     "khushi_labels_sha256": "e50c7cbcee2a1f33f5d469aa46ade3a9c17ebb3be00e64c065b856d3f90e2a11",
     "khushi_receipt_sha256": "152d6c08adf6e826399ebec0ad8ceff4b48d69616c5393cd50693273f394003e",

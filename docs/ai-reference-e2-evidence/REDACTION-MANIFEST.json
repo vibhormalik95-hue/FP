@@ -1,0 +1,105 @@
+{
+  "base_commit": "e839a7c333400a1c8c62c3d539b948d3ef630793",
+  "files": {
+    "docs/ai-reference-e2-evidence/audit/independent-audit.json": {
+      "home_prefix_occurrences": 3416,
+      "original_bytes": 1068924,
+      "original_sha256": "1a47f3769b9eb3c1645305c4f071d278e837380a458cc215ed1c43b0b5c5de28",
+      "public_bytes": 1051844,
+      "public_sha256": "4b636286b7bcbafd3a248634238720ee6e10ed0f27668d8e683cff918e8c8491",
+      "transformation": "replace home-directory prefix with <USER_HOME>; retain following suffix and all other bytes"
+    },
+    "docs/ai-reference-e2-evidence/audit/local-terminal-receipt.json": {
+      "home_prefix_occurrences": 6,
+      "original_bytes": 9790,
+      "original_sha256": "f70fb576ac37a9d21a19498fb769ab9e7316f7275a57cdb072394831c8062687",
+      "public_bytes": 9752,
+      "public_sha256": "9af9b1229a4f54c470bfb7544d50cd08779184e066e67e3269ed4d7fd14020b3",
+      "transformation": "replace home-directory prefix with <USER_HOME>; retain following suffix and all other bytes"
+    },
+    "docs/ai-reference-e2-evidence/audit/pre-inference-source-review.json": {
+      "home_prefix_occurrences": 3,
+      "original_bytes": 4644,
+      "original_sha256": "5ee4ed3359dde0827f5b744b50bfd3fb36860076405afb454f0863f534b1602d",
+      "public_bytes": 4629,
+      "public_sha256": "cb2f0a57748793ac11cf26a7222db360bb92905451bd9949ccf68b927626e0fb",
+      "transformation": "replace home-directory prefix with <USER_HOME>; retain following suffix and all other bytes"
+    },
+    "docs/ai-reference-e2-evidence/audit/protocol-review-before-authoring.json": {
+      "home_prefix_occurrences": 8,
+      "original_bytes": 8529,
+      "original_sha256": "f43a62c54ed16e6465b1e8eb4728a1b3b7902000d95d59948d7f640491740975",
+      "public_bytes": 8489,
+      "public_sha256": "26e0b6255226d428af4980495a2d8729252f85eb1bb606ab2703a01250d12945",
+      "transformation": "replace home-directory prefix with <USER_HOME>; retain following suffix and all other bytes"
+    },
+    "docs/ai-reference-e2-evidence/custody/full-freeze.json": {
+      "home_prefix_occurrences": 102,
+      "original_bytes": 19701,
+      "original_sha256": "063d4dbd1a92dbcd62152449f7f8461f6deb483f61a1d335fef7906451e28750",
+      "public_bytes": 19191,
+      "public_sha256": "518051a90e6017d1efff90351a85a9adb9c854ba89bf4da20a71684a0f8466a6",
+      "transformation": "replace home-directory prefix with <USER_HOME>; retain following suffix and all other bytes"
+    },
+    "docs/ai-reference-e2-evidence/custody/initial-label-lock.json": {
+      "home_prefix_occurrences": 19,
+      "original_bytes": 4859,
+      "original_sha256": "8d58fe953ec009b77a279a73c38eefda14e7432d72cd9bbcc3da79393d4dcddc",
+      "public_bytes": 4764,
+      "public_sha256": "0e88dfda257d1c29387437fb6f76ab9db29b9d114b0e59c152e600a16658b844",
+      "transformation": "replace home-directory prefix with <USER_HOME>; retain following suffix and all other bytes"
+    },
+    "docs/ai-reference-e2-evidence/custody/reference-freeze.json": {
+      "home_prefix_occurrences": 17,
+      "original_bytes": 5370,
+      "original_sha256": "bdb8b07446c46da579e63b3235eef7092973719ea486225209452ad355a513cb",
+      "public_bytes": 5285,
+      "public_sha256": "431cef41030b185895f95290f2c89eb14d67bc3ad1afc2e5d08597a08b455c62",
+      "transformation": "replace home-directory prefix with <USER_HOME>; retain following suffix and all other bytes"
+    },
+    "docs/ai-reference-e2-evidence/inference/run-01/protocol-before-inference.json": {
+      "home_prefix_occurrences": 6,
+      "original_bytes": 11828,
+      "original_sha256": "d2434143b2dcb64860b4ecc0f6cc1083404f3ca4cff98b0ba4ef724a65ff201c",
+      "public_bytes": 11798,
+      "public_sha256": "664af7d0e9c84253d2fd81ae857e3e1b6d011e26f26cd806a42e6e06abb2576a",
+      "transformation": "replace home-directory prefix with <USER_HOME>; retain following suffix and all other bytes"
+    },
+    "docs/ai-reference-e2-evidence/protocol/custody-attempt-2-freeze.json": {
+      "home_prefix_occurrences": 2,
+      "original_bytes": 6140,
+      "original_sha256": "7ecdccfa08b2c81f86a35f6f05746a50dc1cb0276303db53fe00ca866a1f0558",
+      "public_bytes": 6130,
+      "public_sha256": "7daed93e3fab36af2e68040ee0caf134c8fa72c9fd508fc02ff2e37b3c287789",
+      "transformation": "replace home-directory prefix with <USER_HOME>; retain following suffix and all other bytes"
+    },
+    "docs/ai-reference-e2-evidence/protocol/protocol-freeze.json": {
+      "home_prefix_occurrences": 11,
+      "original_bytes": 5464,
+      "original_sha256": "1c0eb05eb54887bc52f23051b53a774dab0dde1f2f10c29ae4adc2ddcfe606d5",
+      "public_bytes": 5409,
+      "public_sha256": "87a2b93007ee0298e4613f0dccb34f37b360b10e3e2bb4572f4d1b66c561b2b0",
+      "transformation": "replace home-directory prefix with <USER_HOME>; retain following suffix and all other bytes"
+    },
+    "docs/evidence/2026-10-14/local-evidence-inventory.json": {
+      "home_prefix_occurrences": 2,
+      "original_bytes": 1274,
+      "original_sha256": "c757c592cf35b5f2384954b95f0e129f1e41a9ca14adea4043e0d9e404be048f",
+      "public_bytes": 1264,
+      "public_sha256": "14cffc6d7ef89169596a0655464b8fcf1e0f71dc51c6656e1a6d1ebc49067219",
+      "transformation": "replace home-directory prefix with <USER_HOME>; retain following suffix and all other bytes"
+    },
+    "docs/evidence/2026-10-14/practice-protocol-before-inference.json": {
+      "home_prefix_occurrences": 17,
+      "original_bytes": 14383,
+      "original_sha256": "3815c6ad7efbe982edeb5dbd1f266e75fd729b45ae90af81da658311eae3c46f",
+      "public_bytes": 14298,
+      "public_sha256": "cb9fa7bc25553c40eec0e454de7e76eb1b957e37e0f8f407d5dcdf68d8d622de",
+      "transformation": "replace home-directory prefix with <USER_HOME>; retain following suffix and all other bytes"
+    }
+  },
+  "historical_git_contains_original_prefixes": true,
+  "original_archive_required_for_replay": true,
+  "replacement": "<USER_HOME>",
+  "scope": "public privacy derivatives; not unchanged frozen evidence or replay inputs"
+}

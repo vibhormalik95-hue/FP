@@ -45,15 +45,15 @@
     "feedctrl/model.py": "d6a18cfd18acede85e5f8c81733e2c8359e53d5ddad4e8e2c808c1c6afd282c4"
   },
   "input_sha256": {
-    "C:\\Users\\vs981\\Documents\\Codex\\2026-10-13\\task\\FP\\deliverables\\COMP9500-Worked-Practice-100-2026-10-11.csv": "f7694c4235c2644db85631b09f7df3f2daf9cad765caf6426f532035a91b4e83",
-    "C:\\Users\\vs981\\Downloads\\COMP9500-Research-Project-Recovered (2)\\cmp9500-recommender\\results\\experiment2\\language-v2\\dev.jsonl": "e74caae24243958e79475c21378d61dfdad7076b554d05abaeef480c767516ef",
-    "C:\\Users\\vs981\\Downloads\\COMP9500-Research-Project-Recovered (2)\\cmp9500-recommender\\data\\processed.json": "96e63b901198e05c60034858fd6f437c2172dbfd71c257818673204cc81cb13c",
-    "C:\\Users\\vs981\\Downloads\\COMP9500-Research-Project-Recovered (2)\\cmp9500-recommender\\results\\models\\seed_42\\model.pt": "ca74de406a94d2fdcd587c7d93b376eb95accabd25dc282feee07704091cfea0",
-    "C:\\Users\\vs981\\Downloads\\COMP9500-Research-Project-Recovered (2)\\cmp9500-recommender\\results\\models\\seed_42\\metadata.json": "4ccf55d810be195f1a20e06307b27c24575d7234459075e00007e5197d58e92c",
-    "C:\\Users\\vs981\\Downloads\\COMP9500-Research-Project-Recovered (2)\\cmp9500-recommender\\results\\models\\seed_43\\model.pt": "90cc82592c4c9dc3a8bc1abacf9a42181b20617a3af587bd4aafb0b492c2d667",
-    "C:\\Users\\vs981\\Downloads\\COMP9500-Research-Project-Recovered (2)\\cmp9500-recommender\\results\\models\\seed_43\\metadata.json": "08823319f850e91f4c3120a3aa65cc12a9b272912bbb65a6de4601b01c45086b",
-    "C:\\Users\\vs981\\Downloads\\COMP9500-Research-Project-Recovered (2)\\cmp9500-recommender\\results\\models\\seed_44\\model.pt": "a7a141e7e9496db8d6b1f738682358cda76e19236af83d8edeb58070233bc3b9",
-    "C:\\Users\\vs981\\Downloads\\COMP9500-Research-Project-Recovered (2)\\cmp9500-recommender\\results\\models\\seed_44\\metadata.json": "f6a713bb248568d49bc4074ad131fc874eff9df31e84bee2ed1fcb936bf5529b"
+    "<USER_HOME>\\Documents\\Codex\\2026-10-13\\task\\FP\\deliverables\\COMP9500-Worked-Practice-100-2026-10-11.csv": "f7694c4235c2644db85631b09f7df3f2daf9cad765caf6426f532035a91b4e83",
+    "<USER_HOME>\\Downloads\\COMP9500-Research-Project-Recovered (2)\\cmp9500-recommender\\results\\experiment2\\language-v2\\dev.jsonl": "e74caae24243958e79475c21378d61dfdad7076b554d05abaeef480c767516ef",
+    "<USER_HOME>\\Downloads\\COMP9500-Research-Project-Recovered (2)\\cmp9500-recommender\\data\\processed.json": "96e63b901198e05c60034858fd6f437c2172dbfd71c257818673204cc81cb13c",
+    "<USER_HOME>\\Downloads\\COMP9500-Research-Project-Recovered (2)\\cmp9500-recommender\\results\\models\\seed_42\\model.pt": "ca74de406a94d2fdcd587c7d93b376eb95accabd25dc282feee07704091cfea0",
+    "<USER_HOME>\\Downloads\\COMP9500-Research-Project-Recovered (2)\\cmp9500-recommender\\results\\models\\seed_42\\metadata.json": "4ccf55d810be195f1a20e06307b27c24575d7234459075e00007e5197d58e92c",
+    "<USER_HOME>\\Downloads\\COMP9500-Research-Project-Recovered (2)\\cmp9500-recommender\\results\\models\\seed_43\\model.pt": "90cc82592c4c9dc3a8bc1abacf9a42181b20617a3af587bd4aafb0b492c2d667",
+    "<USER_HOME>\\Downloads\\COMP9500-Research-Project-Recovered (2)\\cmp9500-recommender\\results\\models\\seed_43\\metadata.json": "08823319f850e91f4c3120a3aa65cc12a9b272912bbb65a6de4601b01c45086b",
+    "<USER_HOME>\\Downloads\\COMP9500-Research-Project-Recovered (2)\\cmp9500-recommender\\results\\models\\seed_44\\model.pt": "a7a141e7e9496db8d6b1f738682358cda76e19236af83d8edeb58070233bc3b9",
+    "<USER_HOME>\\Downloads\\COMP9500-Research-Project-Recovered (2)\\cmp9500-recommender\\results\\models\\seed_44\\metadata.json": "f6a713bb248568d49bc4074ad131fc874eff9df31e84bee2ed1fcb936bf5529b"
   },
   "independent_protocol_review_sha256": "f43a62c54ed16e6465b1e8eb4728a1b3b7902000d95d59948d7f640491740975",
   "boundary_preflight_sha256": "d5a585e184b0514f05549789cadbcaf22c9ae17dfab24dc237f106528b44ee8b",
@@ -74,7 +74,7 @@
   "command": [
     "C:\\Python314\\python.exe",
     "scripts/ai_e2_protocol_freeze.py",
-    "C:\\Users\\vs981\\Documents\\COMP9500\\ai-reference-e2-2026-10-14-v1",
-    "C:\\Users\\vs981\\Downloads\\COMP9500-Research-Project-Recovered (2)\\cmp9500-recommender"
+    "<USER_HOME>\\Documents\\COMP9500\\ai-reference-e2-2026-10-14-v1",
+    "<USER_HOME>\\Downloads\\COMP9500-Research-Project-Recovered (2)\\cmp9500-recommender"
   ]
 }
