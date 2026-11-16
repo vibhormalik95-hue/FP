@@ -1,0 +1,9 @@
+# Windows general CLI new-category attempt, 16 November 2026
+
+A Windows general CLI attempt to propose a new category timed out at the first, definition stage. It did not produce a definition for review; classification, the independent evidence assessment, Apply and Undo were not reached. This is a separate negative result, not a failure of the earlier completed [14 November relay demonstration](../2026-11-14-integrated/README.md).
+
+The objective was "Find objects that have been repaired and kept in use." The isolated fictional fixture supplied eight items, with caption, tag, mixed, conflicting and missing evidence. It used a task-local caller and stage guard against application source based on commit `28b7eef4c1794e0131db8c22c9e5862d874877c0`; the fixture and caller are not published application source. A later live classification or evidence assessment is not established by this attempt.
+
+The retained private receipt records one logical CLI invocation. It began at 09:02:22 UTC and ended with a timeout at 09:07:23 UTC after 300.675 seconds. The requested model was `claude-fable-5-2`; no reported model or response was retained. The requested settings were Max effort, a 300-second timeout, 32,768 output tokens and a USD 5 estimated CLI threshold per call. Effective effort, token-limit enforcement, actual billing and provider-internal request count are unverified. No automatic retry was made.
+
+The private receipt SHA-256 is `fd765000db290e374adce178ecba281a9f559a5b4c8acf07f5caec9e3dabd310` (1,794 bytes). Its recorded input SHA-256 is `82b7929b29d77b62068122a09690f10a8d8c9f8e81601d9bb4e912c048b1c413`. The input contains the objective, the eight fictional IDs and caption/tag fields. The raw receipt and request are not included in this public note. The timeout alone does not identify its cause or establish model quality; child-process cleanup was not independently confirmed by the retained receipt.
