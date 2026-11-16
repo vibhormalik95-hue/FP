@@ -113,6 +113,7 @@ function addItemRow(title = '', description = '') {
 async function runPreview(label, fn) {
   try {
     preview = await busy(label, fn);
+    window.studioLastPreview = preview;   // read-only copy for automated tests and the demo recorder
     renderReview();
     if ($('auto-apply').checked && preview.applicable) await applyPreview(true);
   } catch (e) { showError(e.message); }
@@ -221,6 +222,7 @@ async function proposeDefinition() {
   try {
     definition = await busy('The model is writing a definition…', () => api('/api/category/define', {description: $('category-text').value}));
   } catch (e) { return showError(e.message); }
+  window.studioLastDefinition = definition;
   $('definition-box').hidden = false;
   $('def-label').value = definition.label; $('def-definition').value = definition.definition;
   const ev = definition.evidence.map(e => `<li>${esc(e.title || e.item_id)}: <i>“${esc(e.quote)}”</i> <span class="muted">(${esc(e.field)}, ${e.quote_verified ? 'quote found' : 'quote NOT found'})</span></li>`).join('');
