@@ -39,6 +39,7 @@ These documents are fixed. They are not edited after the study that they belong 
 | [Windows indirect request, 15 November](evidence/2026-11-15-windows-indirect/README.md) | Description-grounded direct application Preview, Apply and Undo. |
 | [Windows existing labels, 15 November](evidence/2026-11-15-windows-vocabulary/README.md) | Existing-category and tag controls through direct application calls. |
 | [Windows combined request, 15 November](evidence/2026-11-15-windows-combined/README.md) | One mixed request grounded in descriptions and labels, with direct application Preview, Apply and Undo. |
+| [Windows general CLI browser request, 16 November](evidence/2026-11-16-windows-general-cli/README.md) | Mixed fictional request through the general CLI route, with browser-reported Preview, Apply and Undo. |
 
 The study of 4 November and the dated records of October and November are in [`deliverables/`](../deliverables/). The paper is in [`paper/`](../paper/README.md).
 
