@@ -435,7 +435,7 @@ Read on 14 November 2026 (UTC). Each wire detail of the routes comes from these 
 The pages about model IDs, the error codes of OpenAI, the workspace header, the `--bare` mode, the Git Bash variable and the LM Studio example were read by the independent review of the routes on 14 November 2026; its report quotes them.
 The Windows stop steps follow the source of Python 3.13 (`subprocess.Popen.send_signal` with `CTRL_BREAK_EVENT`) and of uvicorn 0.42 (it handles `SIGBREAK` on Windows).
 
-Not verified: the behaviour of any real server, provider or CLI with these requests. The official pages were read; the services were not called.
+At the 14 November reference review, the official pages were read but the services were not called. Later checks are listed in the route table above.
 
 ## Model identity and stopping
 
