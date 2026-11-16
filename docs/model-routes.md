@@ -46,7 +46,7 @@ The separate [personal Windows CLI binding](../diagnostic/README.md) constructs 
 - **Write a few thousand tokens.** The model replies in the 13 November runs had up to 5,700 bytes. A hosted reasoning model counts its reasoning in the output limit. For that reason the default output limit is 16,384 tokens for the preset `openai` and for the `anthropic` route. Every other `openai-compatible` route has 4,096 tokens. For another hosted provider, set a higher limit with `--max-output-tokens`.
 
 A weak model can fail these requirements. Then the application rejects the reply and applies nothing.
-That is a result about the model. It is not a defect of the application.
+The rejection does not by itself identify the cause. Check the recorded request, reply and application checks before attributing it to the model or the application.
 A reply in the correct format can still be wrong in meaning. The review before Apply stays necessary.
 
 ## Set up a route

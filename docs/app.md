@@ -159,7 +159,7 @@ FastAPI serves an interactive reference of these endpoints at `/docs` on the run
 
 ## Sessions and data
 
-- State is separate for each session token and each user. It ends after 12 idle hours. A reload of the page starts a new session. A restart of the server clears all sessions. Nothing is stored on disk.
+- State is separate for each session token and each user. It ends after 12 idle hours. A reload of the page starts a new session. A restart of the server clears all sessions. Session state is not persisted to disk. Model-route recordings are separate; see [model routes](model-routes.md).
 - The server holds at most 1,024 sessions.
 - The API checks identifiers, text lengths, profile words and weights. It returns only training and request-history information. Held-out items and labels are not returned and are not used for rankings.
 - Text from the catalogue and from a model is data. The page shows it as text and does not run it.
