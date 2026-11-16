@@ -238,7 +238,7 @@ Every message names the HTTP status that came, when there is one. Messages that 
 | The program ... was not found | The command is not installed or not on the PATH. | Install it, or give its full path. |
 | The CLI did not accept its sign-in state | The CLI is not signed in. | Run `claude auth login`, then try again. If the CLI signs in through a variable, name it in `pass_environment`. |
 | The CLI reports a usage or rate limit of the account | The subscription or the account reached a limit. | Wait until the limit resets, or use another route. |
-| This version of the CLI does not know the option ... | The installed CLI is older or newer than the flags expect. | Update the CLI, or add the option to `omit_flags`. Only optional compatibility flags can be omitted; the model, output-format and safety flags stay protected. |
+| This version of the CLI does not know the option ... | The installed CLI is older or newer than the flags expect. | Update the CLI. Only flags in the `omit_flags` allowlist below can be omitted. Omitting them changes CLI behavior; review the resulting command before use. The route retains its model and output-format arguments and still emits tool-denial arguments. |
 | The application is stopping | The server received a stop signal. | Start the application again. |
 | A record file in ... could not be written | The record folder was removed, is full or cannot be written. No further call is made in this run. | Check the folder and the free space, then start again. |
 
