@@ -1,0 +1,30 @@
+{
+  "note": "Test inputs for the Windows CLI. They are not used by the application logic. 'expect' records what a reasonable answer would include; the CLI reports whether it was met but never changes behaviour because of it.",
+  "manual": [
+    {"name": "hide-gaming", "kind": "category", "value": "Gaming", "action": "hide", "strength": "standard", "expect_eligible_after": 36},
+    {"name": "boost-calm-tag", "kind": "tag", "value": "calm", "action": "boost", "strength": "strong", "expect_eligible_after": 40},
+    {"name": "only-science", "kind": "category", "value": "Science", "action": "only", "strength": "standard", "expect_eligible_after": 4}
+  ],
+  "interpret": [
+    {"name": "food-hunger", "domain": "food", "request": "I'm not hungry, remove all the stuff that makes me hungry.", "expect_any": ["category:Cooking"], "expect_action": "hide"},
+    {"name": "fitness-knees", "domain": "fitness", "request": "My knees are killing me this week, so skip anything that would make me sweat.", "expect_any": ["category:Fitness", "tag:workout", "tag:hiit"], "expect_action": "hide"},
+    {"name": "bedtime-calm", "domain": "sleep / mood", "request": "It's late and I want to wind down: fewer things that get my heart racing, more peaceful stuff.", "expect_any": ["tag:calm", "tag:sleep", "tag:horror", "tag:esports"], "expect_action": null},
+    {"name": "money-wallet", "domain": "personal finance", "request": "My wallet is crying this month, help me be smarter with it.", "expect_any": ["category:Money", "tag:budgeting", "tag:personal finance", "tag:frugal living"], "expect_action": "boost"}
+  ],
+  "category": [
+    {"name": "teach-step-by-step", "domain": "education across topics", "description": "Videos where someone teaches a practical skill step by step, so I can follow along.", "action": "only",
+     "expect_members": ["v103", "v108", "v113", "v123", "v125", "v128"]},
+    {"name": "animals-outdoors", "domain": "animals / nature", "description": "Clips that show animals outside in nature or the open air.", "action": "boost",
+     "expect_members": ["v121", "v124"]},
+    {"name": "loud-intense", "domain": "noise / intensity", "description": "Anything loud or intense enough to wake a sleeping baby: screaming, shouting, explosions, crowds.", "action": "hide",
+     "expect_members": ["v115", "v117", "v118", "v120", "v130", "v136"]}
+  ],
+  "items": [
+    {"name": "bread-and-karts", "after_category": "teach-step-by-step", "items": [
+      {"title": "Sourdough starter, day three", "description": "A baker shows step by step how to feed the starter, check the bubbles and shape the first loaf before baking it.", "expect_category": "Cooking"},
+      {"title": "Retro kart racing tournament", "description": "Eight players race on a classic kart game; the commentator yells as the leader spins out on the final lap.", "expect_category": "Gaming"}]},
+    {"name": "hamster-and-hinge", "after_category": "animals-outdoors", "items": [
+      {"title": "Hamster obstacle course in the garden", "description": "A hamster explores a cardboard maze set up on the lawn outside, sniffing the grass between tunnels.", "expect_category": "Pets"},
+      {"title": "Fix a squeaky door hinge", "description": "Pull the hinge pin, clean it, add a drop of oil and tap it back in. Each step is shown up close.", "expect_category": "Home & DIY"}]}
+  ]
+}

@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Feed Control Studio</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<header class="top">
+  <div>
+    <h1>Feed Control Studio</h1>
+    <p class="sub">Natural-language controls for a short-video feed · the model proposes, you review, the feed changes only when you click Apply</p>
+  </div>
+  <div class="status">
+    <span id="provider-line" class="pill"></span>
+    <span class="pill">Spend this session: <b id="spend">$0.00</b></span>
+  </div>
+</header>
+
+<main class="grid">
+  <section class="col left">
+    <div class="card" id="key-card">
+      <h2>1 · Model and key</h2>
+      <label for="provider-kind">Provider</label>
+      <select id="provider-kind">
+        <option value="anthropic">Anthropic API (Claude)</option>
+        <option value="openai">OpenAI-compatible API</option>
+        <option value="mock">Mock (no AI, for tests)</option>
+        <option value="claude-cli">Claude CLI on this computer</option>
+      </select>
+      <div class="row2">
+        <div><label for="model-select">Model</label><input id="model-select" list="model-list" autocomplete="off"><datalist id="model-list"></datalist></div>
+        <div><label for="effort-select">Effort</label>
+          <select id="effort-select"><option>low</option><option>medium</option><option>high</option></select></div>
+      </div>
+      <div id="base-url-row" hidden><label for="base-url">Base URL (optional)</label><input id="base-url" placeholder="https://api.openai.com/v1" autocomplete="off"></div>
+      <label for="api-key">API key <span class="muted">(kept in memory only; never saved or shown)</span></label>
+      <input id="api-key" type="password" autocomplete="off" spellcheck="false" placeholder="Paste your key here">
+      <button id="save-provider" class="primary">Use this model</button>
+      <p id="provider-msg" class="msg" role="status"></p>
+    </div>
+
+    <div class="card">
+      <div class="tabs" role="tablist">
+        <button role="tab" id="tab-manual" data-tab="manual" class="tab active">Manual</button>
+        <button role="tab" id="tab-interpret" data-tab="interpret" class="tab">Plain language</button>
+        <button role="tab" id="tab-category" data-tab="category" class="tab">New category</button>
+        <button role="tab" id="tab-items" data-tab="items" class="tab">Add videos</button>
+      </div>
+
+      <div class="panel" id="panel-manual">
+        <h2>2 · Manual control <span class="muted">(no model)</span></h2>
+        <label for="manual-kind">Label type</label>
+        <select id="manual-kind"><option value="category">Category</option><option value="tag">Tag</option><option value="custom">New category (yours)</option></select>
+        <label for="manual-value">Label</label>
+        <select id="manual-value"></select>
+        <div class="row2">
+          <div><label for="manual-action">Action</label>
+            <select id="manual-action"><option value="hide">Hide</option><option value="reduce">Show less</option><option value="boost">Show more</option><option value="only">Show only</option></select></div>
+          <div><label for="manual-strength">Strength</label>
+            <select id="manual-strength"><option>light</option><option selected>standard</option><option>strong</option></select></div>
+        </div>
+        <button id="manual-preview" class="primary">Preview</button>
+      </div>
+
+      <div class="panel" id="panel-interpret" hidden>
+        <h2>3 · Plain-language request</h2>
+        <p class="help">Say what you want in your own words. The model maps it to existing categories and tags; it does not see item descriptions.</p>
+        <label for="interpret-text">Your request</label>
+        <textarea id="interpret-text" rows="3" placeholder="e.g. I'm not hungry, remove all the stuff that makes me hungry."></textarea>
+        <button id="interpret-preview" class="primary">Interpret and preview</button>
+      </div>
+
+      <div class="panel" id="panel-category" hidden>
+        <h2>4 · New category from a description</h2>
+        <p class="help">Step 1: the model writes a definition with quoted evidence. Step 2: you edit or accept it. Step 3: the model classifies every video with a quote, and a separate call checks each quote.</p>
+        <label for="category-text">Describe the category you want</label>
+        <textarea id="category-text" rows="3" placeholder="e.g. Videos where someone teaches a skill step by step"></textarea>
+        <button id="category-define" class="primary">Propose a definition</button>
+        <div id="definition-box" hidden>
+          <label for="def-label">Label (edit if needed)</label>
+          <input id="def-label" autocomplete="off">
+          <label for="def-definition">Definition (edit if needed)</label>
+          <textarea id="def-definition" rows="4"></textarea>
+          <div id="def-evidence"></div>
+          <div class="row2">
+            <div><label for="category-action">Then</label>
+              <select id="category-action"><option value="only">Show only this category</option><option value="hide">Hide this category</option><option value="boost">Show more of it</option><option value="reduce">Show less of it</option></select></div>
+            <div><label for="category-strength">Strength</label>
+              <select id="category-strength"><option>light</option><option selected>standard</option><option>strong</option></select></div>
+          </div>
+          <button id="category-classify" class="primary">Classify all videos and preview</button>
+        </div>
+      </div>
+
+      <div class="panel" id="panel-items" hidden>
+        <h2>5 · Add new videos</h2>
+        <p class="help">Give a title and a description. The model picks an existing category and tags, and checks your new categories, quoting the text.</p>
+        <div id="item-rows"></div>
+        <button id="add-item-row" class="ghost">+ Another video</button>
+        <button id="items-preview" class="primary">Classify and preview</button>
+      </div>
+
+      <label class="toggle"><input type="checkbox" id="auto-apply"> Auto-apply after each preview (evidence stays visible; Undo still works)</label>
+    </div>
+  </section>
+
+  <section class="col mid">
+    <div class="card" id="review">
+      <h2>Review</h2>
+      <p class="muted" id="review-empty">Run a preview. Nothing changes in your feed until you click Apply.</p>
+      <div id="review-body" hidden></div>
+      <div class="actions" id="review-actions" hidden>
+        <button id="apply-btn" class="primary big">Apply</button>
+        <button id="discard-btn" class="ghost">Discard</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="col right">
+    <div class="card" id="feed-card">
+      <div class="feed-head">
+        <h2>Your feed <span class="muted" id="feed-count"></span></h2>
+        <button id="undo-btn" class="ghost" disabled>Undo</button>
+      </div>
+      <ol id="feed" class="feed"></ol>
+      <h3>Applied controls</h3>
+      <ul id="controls" class="controls"></ul>
+    </div>
+  </section>
+</main>
+<div id="busy" hidden><div class="spinner"></div><span id="busy-text">Working…</span></div>
+<script type="module" src="/static/app.js"></script>
+</body>
+</html>

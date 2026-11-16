@@ -15,9 +15,14 @@ dependencies = ["numpy>=1.26,<3", "scipy>=1.11,<2", "fastapi>=0.115,<1", "uvicor
 recommender = ["torch>=2.5.1,<3"]
 test = ["pytest>=8,<10", "httpx>=0.27,<1"]
 claude-personal = []
+# Feed Control Studio model providers (bring your own key).
+studio = ["anthropic>=0.89", "openai>=2"]
 
 [tool.setuptools.packages.find]
-include = ["feedctrl*"]
+include = ["feedctrl*", "studio*"]
+
+[tool.setuptools.package-data]
+studio = ["static/*", "data/*.json"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
