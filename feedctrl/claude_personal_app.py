@@ -1,6 +1,5 @@
 """Unactivated personal CLI app binding. Never selects a provider on import."""
 from copy import deepcopy
-import hmac
 import ipaddress
 from pathlib import Path
 from urllib.parse import urlsplit
@@ -25,13 +24,13 @@ def _personal_origin(value):
 
 
 class PersonalBoundary:
-    """Direct loopback, configured Host, narrow public UI and token-gated API.
+    """Direct loopback peer, configured Host/Origin and same-origin API requests.
 
     This is defense in depth, not OS-user isolation. Do not place behind a proxy;
     the actual server must disable proxy-header trust and bind only to the chosen host.
     """
-    def __init__(self, app, token, origin, index_path, public_assets):
-        self.app=app;self.token=token.encode('ascii')
+    def __init__(self, app, origin, index_path, public_assets):
+        self.app=app
         self.origin,self.host=_personal_origin(origin)
         self.index_path=Path(index_path);self.public_assets=frozenset(public_assets)
 
@@ -40,7 +39,7 @@ class PersonalBoundary:
             await send({'type':'websocket.close','code':1008})
         else:
             await send({'type':'http.response.start','status':403,'headers':[(b'cache-control',b'no-store')]})
-            await send({'type':'http.response.body','body':b'Personal operator access required'})
+            await send({'type':'http.response.body','body':b'Personal loopback access required'})
 
     async def __call__(self, scope, receive, send):
         if scope['type'] not in ('http','websocket'):
@@ -50,7 +49,6 @@ class PersonalBoundary:
             local=bool(peer and ipaddress.ip_address(peer[0]).is_loopback)
             hosts=[v for k,v in headers if k.lower()==b'host']
             origins=[v for k,v in headers if k.lower()==b'origin']
-            tokens=[v for k,v in headers if k.lower()==b'x-personal-operator-token']
             fetch_sites=[v for k,v in headers if k.lower()==b'sec-fetch-site']
             forwarded=any(k.lower()==b'forwarded' or k.lower().startswith(b'x-forwarded-') for k,_ in headers)
             request_ok=(local and scope.get('scheme')=='http' and not forwarded and len(hosts)==1
@@ -67,8 +65,6 @@ class PersonalBoundary:
                 return await self._reject(scope,send)
             if fetch_sites and method not in ('GET','HEAD') and not origins:
                 return await self._reject(scope,send)
-            if not (len(tokens)==1 and hmac.compare_digest(tokens[0],self.token)):
-                return await self._reject(scope,send)
         async def safe_send(message):
             if message['type']=='http.response.start':
                 headers=list(message.get('headers',[]))
@@ -82,7 +78,7 @@ class PersonalBoundary:
                 data=self.index_path.read_bytes()
                 marker=b'<html lang="en">'
                 if data.count(marker)!=1:raise ValueError('Unexpected frontend index')
-                data=data.replace(marker,b'<html lang="en" data-personal-auth="required">',1)
+                data=data.replace(marker,b'<html lang="en" data-personal-mode="loopback">',1)
             except (OSError,ValueError):
                 await safe_send({'type':'http.response.start','status':503,'headers':[]})
                 await safe_send({'type':'http.response.body','body':b'Personal UI unavailable'})
@@ -117,16 +113,13 @@ def shared_personal_factories(infer, provenance):
     return semantic_factory,category_factory
 
 
-def create_claude_personal_app(*, operator_token, allowed_origin, data_path=None, semantic_path=None, fixture=False, infer_wrapper=None, **transport):
+def create_claude_personal_app(*, allowed_origin, data_path=None, semantic_path=None, fixture=False, infer_wrapper=None, **transport):
     """Create only after independent personal runtime, data, and usage review.
 
     This is not a launcher and does not configure a network listener. The caller
-    must bind only to loopback and protect the token. Transport launch is disabled
-    by default; a runner must be supplied explicitly.
+    must bind only to loopback. Transport launch is disabled by default; a runner
+    must be supplied explicitly.
     """
-    if (not isinstance(operator_token,str) or len(operator_token)<32 or len(operator_token)>256
-            or not operator_token.isascii() or any(c.isspace() for c in operator_token)):
-        raise ValueError('A separately supplied personal operator token of at least 32 characters is required')
     _personal_origin(allowed_origin)
     infer, provenance, receipts=make_claude_personal_infer(**transport)
     if infer_wrapper is not None:
@@ -144,7 +137,7 @@ def create_claude_personal_app(*, operator_token, allowed_origin, data_path=None
         for file in assets.rglob('*'):
             if file.is_file() and not file.is_symlink() and file.resolve().is_relative_to(assets.resolve()):
                 public_assets.append('/assets/'+file.relative_to(assets).as_posix())
-    app.add_middleware(PersonalBoundary,token=operator_token,origin=allowed_origin,
+    app.add_middleware(PersonalBoundary,origin=allowed_origin,
                        index_path=dist/'index.html',public_assets=public_assets)
     app.state.hosted_model_provenance=deepcopy(provenance)
     app.state.hosted_model_receipts=receipts

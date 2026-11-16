@@ -277,7 +277,15 @@ class Director:
         pyautogui.write(text, interval=interval)
         time.sleep(0.4)
 
-    def wait_preview(self, prev_id, timeout=420):
+    def wait_preview(self, prev_id, timeout=420, explain=None):
+        """Wait for a new preview. If it is still running when the narration ends, explain the stage once."""
+        done = "prev => window.studioLastPreview && window.studioLastPreview.id !== prev"
+        if explain:
+            self.wait_speech()
+            if not self.page.evaluate(done, prev_id):
+                time.sleep(2.0)
+                if not self.page.evaluate(done, prev_id):
+                    self.say(explain, wait=False)
         self.page.wait_for_function(
             "prev => window.studioLastPreview && window.studioLastPreview.id !== prev", arg=prev_id, timeout=timeout * 1000)
         return self.page.evaluate("window.studioLastPreview")
@@ -319,7 +327,12 @@ def say_spoken(text):
 
 
 # ------------------------------------------------------------------ the script
-def run_demo(d: Director, page, model, events):
+PROVIDERS = {"openai": ("OpenAI", "OpenAI-compatible API"), "anthropic": ("Anth", "Anthropic API")}
+SPOKEN_MODEL = {"gpt-5-mini": "GPT five mini", "gpt-5": "GPT five", "claude-sonnet-5-5": "Claude Sonnet five point five",
+                "claude-opus-5-5": "Claude Opus five point five"}
+
+
+def run_demo(d: Director, page, cfg, events):
     titles = {i["id"]: i["title"] for i in page.evaluate("fetch('/api/state').then(r => r.json())")["items"]}
 
     def effect(p):
@@ -338,15 +351,23 @@ def run_demo(d: Director, page, model, events):
 
     # 1. Model and key
     d.point("#key-card", "First, the model. The person running the app brings their own key; there is no password or login.")
-    d.choose("#provider-kind", "In the Provider list, I choose the Anthropic API.", "Anth")
-    d.point("#model-select", f"The model is Claude Sonnet 5.5 at low effort. In my tests it finished every workflow in under half a minute.")
+    typed, name = PROVIDERS[cfg.provider]
+    d.choose("#provider-kind", f"The app works with any provider: Anthropic, OpenAI, or a local server that speaks the OpenAI format. "
+                               f"Here I choose the {name}.", typed)
+    spoken = SPOKEN_MODEL.get(cfg.model, cfg.model)
+    if page.input_value("#model-select") != cfg.model:
+        d.type_into("#model-select", cfg.model, f"I set the model to {spoken}.")
+    else:
+        d.point("#model-select", f"The model is {spoken}.")
+    if page.input_value("#effort-select") != cfg.effort:
+        d.choose("#effort-select", f"Effort {cfg.effort}.", cfg.effort[:3])
     d.click("#api-key", "Now I paste my API key into this field.")
     pyautogui.hotkey("ctrl", "v"); time.sleep(0.6)
     d.say("The field is masked. The key stays only in the memory of the local server; it is never written to disk or shown.")
     d.click("#save-provider", "I click Use this model.")
     page.wait_for_selector("#provider-msg.ok", timeout=20000)
     subprocess.run(["powershell", "-NoProfile", "-Command", "Set-Clipboard -Value $null"], check=False)
-    d.point("#provider-line", "The status at the top now shows the Anthropic API, the model, and that the key was pasted and is held in memory only.")
+    d.point("#provider-line", f"The status at the top now shows the {name}, the model, and that the key was pasted and is held in memory only.")
     d.hold(0.5)
 
     # 2. Manual
@@ -374,7 +395,7 @@ def run_demo(d: Director, page, model, events):
     d.type_into("#interpret-text", req, "I type: I'm not hungry, remove all the stuff that makes me hungry.")
     prev = d.last_id()
     d.click("#interpret-preview", "I click Interpret and preview.")
-    d.say("The request goes to Claude with the list of existing categories and tags and how many videos carry each. "
+    d.say("The request goes to the model with the list of existing categories and tags and how many videos carry each. "
           "The model sees no video descriptions in this workflow.", wait=False)
     p = d.wait_preview(prev)
     ev = p["evidence"][0] if p["evidence"] else {}
@@ -398,7 +419,7 @@ def run_demo(d: Director, page, model, events):
     d.click("#auto-apply", "This time I turn on auto-apply. The change is applied straight away, but the evidence stays on screen and Undo still works.")
     prev = d.last_id()
     d.click("#interpret-preview", "Interpret.")
-    p = d.wait_preview(prev)
+    p = d.wait_preview(prev, explain="Again, one call with the request and the existing labels only.")
     page.wait_for_selector("text=Auto-applied", timeout=30000)
     ev = p["evidence"][0] if p["evidence"] else {}
     labels = [c["target"]["value"] for c in p["controls"]]
@@ -414,7 +435,7 @@ def run_demo(d: Director, page, model, events):
     desc = "Videos where someone teaches a practical skill step by step, so I can follow along."
     d.type_into("#category-text", desc, "I describe it: Videos where someone teaches a practical skill step by step, so I can follow along.")
     d.click("#category-define", "I click Propose a definition.")
-    d.say("Claude now reads all forty titles and descriptions and proposes one definition, with quotes that support it.", wait=False)
+    d.say("The model now reads all forty titles and descriptions and proposes one definition, with quotes that support it.", wait=False)
     page.wait_for_function("window.studioLastDefinition", timeout=300000)
     df = page.evaluate("window.studioLastDefinition")
     found = sum(1 for e in df["evidence"] if e["quote_verified"])
@@ -427,7 +448,8 @@ def run_demo(d: Director, page, model, events):
     d.say("The model classifies every video under that exact definition, in four batches of ten, citing an exact quote for each match. "
           "Then a separate call, which never sees the verdicts, checks whether each quote really supports the definition. "
           "A video is selected only if both agree and the quote is found.", wait=False)
-    p = d.wait_preview(prev)
+    p = d.wait_preview(prev, explain="The batches run in parallel, so the wait is about as long as the slowest one. "
+                                     "Each reply must name every video exactly once; a video the model skips counts as unknown, never as a match.")
     rows = p["evidence"]
     sel = [r for r in rows if r["selected"]]
     matched = [r for r in rows if r["verdict"] == "match"]
@@ -460,7 +482,8 @@ def run_demo(d: Director, page, model, events):
                 "And its description.", interval=0.035)
     prev = d.last_id()
     d.click("#items-preview", "I click Classify and preview.")
-    p = d.wait_preview(prev)
+    p = d.wait_preview(prev, explain="One call picks an existing category and tags for each new video and gives a verdict, with a quote, "
+                                     "for my new category. A matched video then goes through the same independent check as before.")
     parts = []
     for e in p["evidence"]:
         nc = e["new_categories"][0] if e["new_categories"] else None
@@ -536,6 +559,9 @@ def main():
     ap.add_argument("--test-clip", action="store_true")
     ap.add_argument("--studio-python", default=sys.executable)
     ap.add_argument("--voice", default="af_heart")
+    ap.add_argument("--provider", default="openai", choices=["openai", "anthropic"])
+    ap.add_argument("--model", default="gpt-5-mini")
+    ap.add_argument("--effort", default="low")
     args = ap.parse_args()
     out = Path(args.out); out.mkdir(parents=True, exist_ok=True)
     events = []
@@ -580,7 +606,7 @@ def main():
             if args.test_clip:
                 test_clip(d, page)
             else:
-                run_demo(d, page, None, events)
+                run_demo(d, page, args, events)
             d.wait_speech(); time.sleep(1.0)
             cap.stop(); cap = None
             timeline = d.timeline

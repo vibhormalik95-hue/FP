@@ -67,7 +67,7 @@ function syncProviderForm() {
   const needsKey = kind === 'anthropic' || kind === 'openai';
   $('api-key').disabled = !needsKey;
   $('api-key').placeholder = !needsKey ? 'No key needed' : (p.env_keys[kind] ? 'Optional: a key is set in the environment' : 'Paste your key here');
-  $('effort-select').disabled = !(kind === 'anthropic' || kind === 'claude-cli');
+  $('effort-select').disabled = !(kind === 'anthropic' || kind === 'claude-cli' || kind === 'openai');
 }
 
 async function saveProvider() {

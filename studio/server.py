@@ -113,7 +113,7 @@ def create_app(port=8765, provider=None, studio=None, ledger=None):
         info["key_source"] = app.state.key_source
         info["env_keys"] = {"anthropic": env_key_available("anthropic"), "openai": env_key_available("openai")}
         info["models"] = {"anthropic": ANTHROPIC_MODELS, "claude-cli": ANTHROPIC_MODELS,
-                          "openai": [DEFAULT_OPENAI_MODEL], "mock": ["mock-literal-v1"]}
+                          "openai": [DEFAULT_OPENAI_MODEL, "gpt-5", "gpt-5-nano"], "mock": ["mock-literal-v1"]}
         info["defaults"] = {"anthropic_model": DEFAULT_ANTHROPIC_MODEL, "effort": DEFAULT_EFFORT}
         info["cli_enabled"] = bool(os.environ.get("STUDIO_ENABLE_CLAUDE_CLI"))
         return info

@@ -73,5 +73,6 @@ td.q { font-style: italic; }
 .spinner { width: 16px; height: 16px; border: 3px solid #fff5; border-top-color: #fff; border-radius: 50%; animation: spin 1s linear infinite; }
 @keyframes spin { to { transform: rotate(360deg); } }
 @media (max-width: 1300px) { .grid { grid-template-columns: 1fr; } }
+.col.right { align-self: stretch; }
 .col.right .card { position: sticky; top: 12px; }
 [hidden] { display: none !important; }

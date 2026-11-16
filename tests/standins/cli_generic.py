@@ -2,7 +2,7 @@
 
     python tests/standins/cli_generic.py [--replies scripted|echo-ok] [--fail FAULT]
 
-It writes the hand-written rehearsal reply for the request to standard output.
+It writes the fixed test reply (authored_replies.py, a test double) for the request to standard output.
 """
 import argparse
 import json

@@ -1,12 +1,29 @@
-"""Hand-written replies for the three bundled demonstration scenarios.
+"""TEST DOUBLE ONLY: fixed replies for the offline tests of the bundled scenarios.
 
-These are rehearsal doubles, not model output and not a method. They let the
-review screens, Apply and Undo be exercised with no inference. Each reply is
-returned only for the exact bundled request; every other request is refused.
-Every reason string starts with "Authored rehearsal reply" and each generated
-label or title ends with "(authored rehearsal)", so the text identifies itself
-on screen.
+This module is not part of the application and no launcher imports it. It
+replaced the former rehearsal provider ("scripted", scripts/demo_scripted_replies.py),
+which was removed from every launcher. The replies are fixtures, not model
+output and not a method: each one is returned only for the exact bundled
+request of a test, so the tests can exercise the review routes, Apply and Undo,
+the route trial and the stand-in servers without any inference. Every other
+request is refused. Every reason string starts with "Authored rehearsal reply"
+and each generated label or title ends with "(authored rehearsal)".
+
+``provider()`` returns an in-process ``(infer, identity, receipts)`` triple for
+tests that build the application directly; the stand-in servers of this folder
+call ``lookup`` for their "scripted" reply mode.
 """
+from copy import deepcopy
+import hashlib
+import json
+from pathlib import Path
+import sys
+import threading
+
+ROOT = Path(__file__).resolve().parents[2]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
 
 _AUTHORED = 'Authored rehearsal reply, not model output. '
 
@@ -222,3 +239,32 @@ TABLE = [_CATEGORY_OBJECTIVE, _CATEGORY_DEFINITION, _CATEGORY_MEMBERSHIP, _CATEG
          _HUNGER_REQUEST, _HUNGER_ACTION, _HUNGER_GROUNDING,
          _TAGS_VOCABULARY, _TAGS_REPLIES, _EATING_REQUEST, _EATING_ACTION, _EATING_GROUNDING,
          _FICTIONAL_BRIEF, _FICTIONAL_DRAFT]
+
+
+BACKEND = 'test-double-authored-replies'
+MODEL = 'none (test double, replies written by hand)'
+REFUSAL = ('Test double: no fixed reply exists for this request. Nothing was interpreted and nothing was applied.')
+
+
+def provider():
+    """``(infer, identity, receipts)`` for the fixed replies, in this process. Test use only."""
+    from feedctrl.demo_providers import ProviderMessage
+    digest = hashlib.sha256(json.dumps(TABLE, sort_keys=True, default=str).encode('utf-8')).hexdigest()
+    identity = {'backend': BACKEND, 'model': MODEL, 'digest': digest,
+                'digest_kind': 'sha256 of the test fixture table', 'live_model': False}
+    receipts, lock = [], threading.Lock()
+
+    def infer(payload, schema):
+        reply = lookup(deepcopy(payload), deepcopy(schema))
+        with lock:
+            receipts.append({'ordinal': len(receipts) + 1, 'answered': reply is not None})
+        if reply is None:
+            raise ProviderMessage(REFUSAL)
+        return deepcopy(reply)
+
+    return infer, identity, receipts
+
+
+def install(monkeypatch, run_demo):
+    """Make ``--provider route`` of ``run_demo.build_app`` use the fixed replies in this test."""
+    monkeypatch.setattr(run_demo, 'build_route_provider', lambda args, scenario, summary: provider())

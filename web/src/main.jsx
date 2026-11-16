@@ -27,7 +27,7 @@ function parserWords(message) {
   return message;
 }
 
-function App({client, personal, onLock}) {
+function App({client}) {
   const [status, setStatus] = useState(null), [users, setUsers] = useState([]), [cats, setCats] = useState([]);
   const [user, setUser] = useState(null), [condition, setCondition] = useState('E');
   const [backend, setBackend] = useState('rule'), [feed, setFeed] = useState(null), [comparison, setComparison] = useState(null);
@@ -155,7 +155,7 @@ function App({client, personal, onLock}) {
   const cardLines = item => semanticTool ? controlLines(semanticGroups, item.item_id) : item.explanation;
 
   return <div className="app-shell">
-    <header className="header"><a href="#main" className="brand"><span className="brand-mark">f<span>↗</span></span><span>feed control<span className="brand-sub">RESEARCH LAB</span></span></a><div className="header-right"><span className="research-tag">COMP 9500 · OFFLINE PROTOTYPE</span>{personal && <button type="button" className="text-button" onClick={onLock}>Lock session</button>}</div></header>
+    <header className="header"><a href="#main" className="brand"><span className="brand-mark">f<span>↗</span></span><span>feed control<span className="brand-sub">RESEARCH LAB</span></span></a><div className="header-right"><span className="research-tag">COMP 9500 · OFFLINE PROTOTYPE</span></div></header>
     <main id="main">
       {language
         ? <section className="intro compact"><div><p className="eyebrow">LANGUAGE CONTROLS</p><h1>Say what you want. Review it. Apply it. Undo it.</h1></div></section>
@@ -168,7 +168,7 @@ function App({client, personal, onLock}) {
       <div className="toolbar"><label className="user-select">Research user<select value={user ?? ''} onChange={e => selectUser(e.target.value)} disabled={busy || !users.length}>{users.map(u => <option key={u.user_id} value={u.user_id}>User {u.user_id} · {plural(u.history_items, 'history item')}</option>)}</select></label><div className="view-tabs" role="group" aria-label="View"><button aria-pressed={view === 'feed'} className={view === 'feed' ? 'active' : ''} onClick={() => setView('feed')}>Original study (A to E)</button><button aria-pressed={view === 'compare'} className={view === 'compare' ? 'active' : ''} onClick={() => setView('compare')}>Compare A to E</button><button aria-pressed={language} className={language ? 'active' : ''} disabled={!languageReady} onClick={() => {setMessages({}); setView('steering');}}>Language controls</button></div>
         {confirmReset ? <span className="confirm-reset" role="group" aria-label="Confirm the reset"><span>Remove every control and all feedback of this user? You cannot undo this.</span> <button type="button" className="text-button" onClick={resetUser}>Yes, remove everything</button> <button type="button" className="text-button" onClick={() => setConfirmReset(false)}>Keep everything</button></span>
           : <button type="button" className="text-button" disabled={busy || user === null} onClick={() => setConfirmReset(true)}>Reset this user ↺</button>}</div>
-      {languageMissing && <p className="help tab-note" data-role="language-unavailable">The view "Language controls" is not available here: no item descriptions are loaded, so there is nothing to match a request with. To use it, start a bundled scenario, for example <code>python scripts/quickstart.py rehearse --scenario tags</code>.</p>}
+      {languageMissing && <p className="help tab-note" data-role="language-unavailable">The view "Language controls" is not available here: no item descriptions are loaded, so there is nothing to match a request with. To use it, start a bundled scenario, for example <code>python scripts/quickstart.py start --scenario tags</code>.</p>}
       <p className="view-intro" data-role="view-intro">{viewIntro}</p>
       <div className={`workspace ${language ? 'language' : ''}`}>
         <aside className="controls">
@@ -259,31 +259,9 @@ function App({client, personal, onLock}) {
 }
 
 function PersonalEntry() {
-  const personal = document.documentElement.dataset.personalAuth === 'required';
+  const personal = document.documentElement.dataset.personalMode === 'loopback';
   const [client] = useState(() => createApiClient({personal}));
-  const [unlocked, setUnlocked] = useState(!personal);
-  const [draft, setDraft] = useState('');
-  const [checking, setChecking] = useState(false);
-  const [authError, setAuthError] = useState('');
-  async function submit(event) {
-    event.preventDefault();
-    if (!draft || checking) return;
-    setChecking(true); setAuthError('');
-    const ok = await client.unlock(draft);
-    setDraft(''); setChecking(false);
-    if (ok) setUnlocked(true); else setAuthError('Could not unlock this personal session. Check the token and try again.');
-  }
-  function lock() {client.lock(); setDraft(''); setAuthError(''); setUnlocked(false);}
-  if (unlocked) return <App client={client} personal={personal} onLock={lock}/>;
-  return <main className="personal-entry"><section className="panel" aria-labelledby="personal-title">
-    <p className="eyebrow">PERSONAL LOOPBACK SESSION</p><h1 id="personal-title">Unlock the research app</h1>
-    <p className="help">Enter the operator token supplied for this local session. It stays in this page’s memory and is cleared when you lock or reload.</p>
-    <form onSubmit={submit} autoComplete="off"><label className="field-label" htmlFor="personal-token">Operator token</label>
-      <input id="personal-token" type="password" autoComplete="off" spellCheck={false} value={draft}
-        onChange={e => setDraft(e.target.value)} disabled={checking} />
-      <button type="submit" className="primary" disabled={checking || !draft}>{checking ? 'Checking…' : 'Unlock'}</button>
-    </form>{authError && <p role="alert" className="alert error">{authError}</p>}
-  </section></main>;
+  return <App client={client}/>;
 }
 
 createRoot(document.getElementById('root')).render(<PersonalEntry/>);

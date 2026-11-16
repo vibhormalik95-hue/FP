@@ -4,9 +4,6 @@
         Use the model route of model-route.json (write it with
         "python scripts/quickstart.py setup").
 
-    python scripts/route_trial.py run --scenario tags --provider scripted
-        Use the hand-written rehearsal replies. No model.
-
     python scripts/route_trial.py cases --scenario tags
         List the cases of a scenario. Nothing is run.
 
@@ -21,10 +18,9 @@ reads the applied state back after each case to record that.
 
 For each case it records what the application made of the model's reply: the
 outcome class, the controls, the chosen terms or quotations, the selected
-items, the application's own checks and the raw reply. Where a hand-written
-rehearsal reply exists for the same request, it also records whether the
-outcome and the selection are the same as with that reply. "The same" is not
-"correct": the rehearsal reply is one authored answer, not a reference label.
+items, the application's own checks and the raw reply. There is no reference answer: the trial does not compare a
+reply with any hand-written answer. Two trials can be put side by side with
+"compare".
 
 This is a check of a model route on exposed development requests with invented
 items. It is not an accuracy study. See docs/route-trial.md.
@@ -58,7 +54,7 @@ FORMAT = 1
 STATEMENTS = (
     'The requests are exposed development requests of a bundled scenario with invented items.',
     'This is a check of a model route. It is not an accuracy study.',
-    'An outcome that equals the authored rehearsal reply is not proof of a correct interpretation.',
+    'A review or any other outcome is not proof of a correct interpretation.',
     'Each case ran one time. Nothing was approved and nothing was applied.',
 )
 COMPARE_STATEMENTS = (
@@ -165,14 +161,11 @@ def launcher_options(**values):
     return argparse.Namespace(**base)
 
 
-def build_application(provider, scenario, *, route_file=None, out=None):
+def build_application(scenario, *, route_file=None, out=None):
     """Return ``(app, summary)`` from ``run_demo.build_app``; nothing is copied from it."""
     run_demo = launcher()
-    if provider == 'scripted':
-        options = launcher_options(provider='scripted', scenario=scenario)
-    else:
-        options = launcher_options(provider='route', scenario=scenario, route_file=str(route_file),
-                                   record_dir=str(out / 'route-calls'), relay_dir=str(out / 'relay'))
+    options = launcher_options(provider='route', scenario=scenario, route_file=str(route_file),
+                               record_dir=str(out / 'route-calls'), relay_dir=str(out / 'relay'))
     try:
         app, _, summary, _ = run_demo.build_app(options)
     except SystemExit as stopped:
@@ -455,23 +448,6 @@ def run_cases(app, cases, label, *, say=None):
     return results, interrupted
 
 
-def compare_with_authored(result, authored):
-    """How a result relates to the run with the hand-written rehearsal reply."""
-    if authored is None or authored['outcome'] == 'error':
-        # The rehearsal provider refuses every request that it has no reply for.
-        return {'available': False, 'reason': 'No hand-written rehearsal reply exists for this request.'}
-    both_review = result['outcome'] == 'review' and authored['outcome'] == 'review'
-    return {'available': True, 'outcome': authored['outcome'], 'model_calls': authored['model_calls'],
-            'selection': authored['selection'], 'selected_item_ids': authored['selected_item_ids'],
-            'same_outcome': result['outcome'] == authored['outcome'],
-            # The action and the items of each control. Not applicable when either side selects nothing.
-            'same_selection': result['selection'] == authored['selection'] if both_review else None}
-
-
-# --------------------------------------------------------------------------
-# Text for a person
-# --------------------------------------------------------------------------
-
 def outcome_words(outcome):
     return OUTCOME_WORDS.get(outcome, outcome)
 
@@ -508,19 +484,6 @@ def checks_words(result):
     return text + ('; failed: ' + one_line('; '.join(failed), 160) if failed else '')
 
 
-def authored_words(result, provider):
-    authored = result['authored']
-    if not authored['available']:
-        return 'no rehearsal reply'
-    if provider == 'scripted':
-        return 'this run is the rehearsal'
-    if not authored['same_outcome']:
-        return f'no (rehearsal: {outcome_words(authored["outcome"])})'
-    if authored['same_selection'] is None:
-        return 'same outcome'
-    return 'same outcome, same selection' if authored['same_selection'] else 'same outcome, other selection'
-
-
 def ascii_table(headers, rows):
     rows = [[ascii_text(cell) for cell in row] for row in rows]
     widths = [max(len(str(cell)) for cell in column) for column in zip(headers, *rows)]
@@ -536,8 +499,9 @@ def markdown_table(headers, rows):
 
 def identity_lines(trial):
     provider, identity = trial['provider'], trial['provider']['identity']
-    if provider['kind'] == 'scripted':
-        lines = ['Provider: hand-written rehearsal replies. No model.']
+    if provider['kind'] != 'route':
+        # Only a record written before the rehearsal provider was removed has another kind.
+        lines = [f'Provider: {provider["kind"]} (not a model route; an earlier record).']
     else:
         lines = [f'Provider: model route; backend {identity.get("backend")}; '
                  f'model {identity.get("model")} (the name that the route declares; the application cannot attest it)']
@@ -547,14 +511,13 @@ def identity_lines(trial):
 
 
 def trial_rows(trial):
-    kind = trial['provider']['kind']
     return [[result['case'], result['method_title'], result['model_calls'], outcome_words(result['outcome']),
-             selection_words(result), checks_words(result), authored_words(result, kind), f'{result["seconds"]:.1f}']
+             selection_words(result), checks_words(result), f'{result["seconds"]:.1f}']
             for result in trial['cases']]
 
 
 TRIAL_HEADERS = ['Case', 'Method in the page', 'Model calls', 'Outcome', 'Selection or reason',
-                 'Application checks', 'Same as the authored rehearsal reply', 'Seconds']
+                 'Application checks', 'Seconds']
 
 
 def error_lines(trial):
@@ -597,8 +560,6 @@ def trial_markdown(trial):
               'The application selected the items; the model chose the names or quotations.',
               '- **Application checks** are mechanical. A passed check shows that names, identifiers and quotations exist in the item data. '
               'It does not show that the meaning is right.',
-              '- **Same as the authored rehearsal reply** compares with one hand-written answer for the same request. '
-              '"Same selection" means the same action and the same items in each control. It is not a correctness label.',
               '', 'The complete record, with every raw reply, is in `trial.json` in this folder.', '']
     return '\n'.join(lines)
 
@@ -608,8 +569,8 @@ def print_trial(trial, say):
     if not trial['cases']:
         say('No case finished.')
         return
-    say(ascii_table(['Case', 'Method in the page', 'Calls', 'Outcome', 'Same as authored rehearsal reply', 'Seconds'],
-                    [[row[0], row[1], row[2], row[3], row[6], row[7]] for row in trial_rows(trial)]))
+    say(ascii_table(['Case', 'Method in the page', 'Calls', 'Outcome', 'Seconds'],
+                    [[row[0], row[1], row[2], row[3], row[6]] for row in trial_rows(trial)]))
     say('')
     for result in trial['cases']:
         say(f'{result["case"]}: {selection_words(result)}')
@@ -638,8 +599,7 @@ def prepare_route(route_file, cases):
     try:
         config = model_routes.load_config(route_file)
     except model_routes.RouteError as error:
-        raise Stop(model_routes.ascii_text(error) + '\nRun "python scripts/quickstart.py setup" first, '
-                                                    'or use --provider scripted for the rehearsal replies.') from None
+        raise Stop(model_routes.ascii_text(error) + '\nRun "python scripts/quickstart.py setup" first.') from None
     needed = calls_needed(cases)
     if config['max_calls'] < needed:
         raise Stop(f'The chosen cases ({len(cases)}) can need up to {needed} model calls. The route file allows '
@@ -669,9 +629,7 @@ def run(args, out=print):
     run_demo = launcher()
     if args.scenario not in run_demo.SCENARIOS:
         raise Stop('Unknown scenario. Scenarios: ' + ', '.join(sorted(run_demo.SCENARIOS)) + '.')
-    if args.provider == 'scripted' and args.route_file:
-        raise Stop('Give --route-file or --provider scripted, not both.')
-    provider = args.provider or 'route'
+    provider = 'route'
     cases, label = select_cases(args.scenario, args.cases)
     client_class()  # stop here, before anything is created, when the client is not installed
     del _IN_FLIGHT[:]
@@ -698,7 +656,7 @@ def run(args, out=print):
         existed = folder.exists()
         folder.mkdir(parents=True, exist_ok=True)
         try:
-            app, summary = build_application(provider, args.scenario, route_file=route_file, out=folder)
+            app, summary = build_application(args.scenario, route_file=route_file, out=folder)
         except Stop:
             if not existed and not any(folder.iterdir()):
                 folder.rmdir()  # a trial that never started leaves no folder behind
@@ -709,9 +667,9 @@ def run(args, out=print):
             f'up to {calls_needed(cases)} model calls.')
         say(f'Source fingerprint: {fingerprint}')
         description = list(summary.get('route') or [])
-        for line in (description if provider == 'route' else ['Provider: hand-written rehearsal replies. No model.']):
+        for line in description:
             say(line)
-        if provider == 'route' and config['route'] == 'relay':
+        if config['route'] == 'relay':
             for line in relay_lines(summary.get('relay_dir') or folder / 'relay', config['timeout_seconds']):
                 say(line)
         say(f'Records: {folder}')
@@ -719,16 +677,6 @@ def run(args, out=print):
         say('')
 
         results, interrupted = run_cases(app, cases, label, say=say)
-        if provider == 'route':
-            # The same cases with the hand-written rehearsal replies, in a second
-            # application of the same source. It has no model and no allowance.
-            baseline_app, _ = build_application('scripted', args.scenario)
-            finished = [case for case in cases if case['case'] in {result['case'] for result in results}]
-            baseline = {result['case']: result for result in run_cases(baseline_app, finished, label)[0]}
-        else:
-            baseline = {result['case']: result for result in results}
-        for result in results:
-            result['authored'] = compare_with_authored(result, baseline.get(result['case']))
     finally:
         if added_variable:
             os.environ.pop(added_variable, None)
@@ -890,8 +838,6 @@ def main(argv=None, out=print):
     step = steps.add_parser('run', help='send the bundled requests of a scenario to the application through a provider')
     step.add_argument('--scenario', default='tags')
     step.add_argument('--route-file', help='the model route to use; default: model-route.json')
-    step.add_argument('--provider', choices=('route', 'scripted'),
-                      help='"scripted" uses the hand-written rehearsal replies instead of a model route')
     step.add_argument('--out', help='a new folder for the records; default: a new folder under runs/')
     step.add_argument('--cases', help='run only these cases, separated by commas')
     step.set_defaults(action=run)

@@ -473,3 +473,18 @@ def test_two_separate_show_only_requests_narrow_the_feed():
     s.apply(p["id"])
     p = workflows.interpret_preview(s, only(["category:Fitness"]), Ledger(), "only fitness")
     assert p["changes"]["eligible_before"] == 8 and p["changes"]["eligible_after"] == 0
+
+
+def test_openai_reasoning_effort_only_for_reasoning_models():
+    seen = []
+
+    def handler(request):
+        seen.append(json.loads(request.content))
+        return httpx.Response(200, json={"id": "c", "object": "chat.completion", "created": 1, "model": "m",
+            "choices": [{"index": 0, "finish_reason": "stop", "message": {"role": "assistant", "content": "{\"assessments\": []}"}}],
+            "usage": {"prompt_tokens": 1, "completion_tokens": 1, "total_tokens": 2}})
+    for model in ("gpt-5-mini", "llama3.1"):
+        OpenAICompatibleProvider("k", model=model, effort="low", base_url="http://localhost:9/v1",
+                                 http_client=httpx.Client(transport=httpx.MockTransport(handler))).complete(
+            "assess", "s", {}, workflows.ASSESS_SCHEMA)
+    assert seen[0]["reasoning_effort"] == "low" and "reasoning_effort" not in seen[1]

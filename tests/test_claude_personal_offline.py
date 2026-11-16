@@ -166,32 +166,33 @@ class PersonalTests(unittest.TestCase):
             self.assertEqual(proc.call_count,2)
     def test_app_wiring_never_invokes_and_local_paths_disabled(self):
         with patch('feedctrl.claude_personal._run_process',side_effect=AssertionError('no invocation')):
-            app=create_claude_personal_app(operator_token='a'*32,allowed_origin='http://127.0.0.1:8000',fixture=True,**options())
+            app=create_claude_personal_app(allowed_origin='http://127.0.0.1:8000',fixture=True,**options())
             self.assertFalse(app.state.allow_local_models)
             self.assertEqual(app.state.hosted_model_receipts,[])
     def test_actual_launch_seam_is_unconditionally_disabled(self):
         from feedctrl.claude_personal import _run_process
         with self.assertRaises(ParserOperationalError):
             _run_process([],b'',{},'/',1,100)
-    def test_loopback_and_operator_token_boundary(self):
+    def test_loopback_boundary_without_token(self):
         from feedctrl.claude_personal_app import PersonalBoundary
         async def inner(scope,receive,send): await send({'type':'http.response.start','status':200,'headers':[]})
-        app=PersonalBoundary(inner,'s'*32,'http://127.0.0.1:8000','/unused',[])
-        async def check(host,headers):
+        app=PersonalBoundary(inner,'http://127.0.0.1:8000','/unused',[])
+        async def check(host,headers,host_headers=((b'host',b'127.0.0.1:8000'),)):
             messages=[]
             async def send(msg):messages.append(msg)
             async def receive():return {'type':'http.request','body':b''}
-            await app({'type':'http','client':(host,5),'scheme':'http','method':'GET','path':'/api/status','headers':[(b'host',b'127.0.0.1:8000'),*headers]},receive,send)
+            await app({'type':'http','client':(host,5),'scheme':'http','method':'GET','path':'/api/status','headers':[*host_headers,*headers]},receive,send)
             return messages[0]['status']
-        good=[(b'x-personal-operator-token',b's'*32)]
-        self.assertEqual(asyncio.run(check('127.0.0.1',good)),200)
-        self.assertEqual(asyncio.run(check('192.0.2.1',good)),403)
-        self.assertEqual(asyncio.run(check('127.0.0.1',[])),403)
-        self.assertEqual(asyncio.run(check('127.0.0.1',good+good)),403)
-    def test_operator_token_required(self):
-        for token in ('short', 'x'*31, 'x'*31+' ', None):
-            with self.assertRaises(ValueError):
-                create_claude_personal_app(operator_token=token,allowed_origin='http://127.0.0.1:8000',fixture=True,**options())
+        self.assertEqual(asyncio.run(check('127.0.0.1',[])),200)
+        self.assertEqual(asyncio.run(check('192.0.2.1',[])),403)
+        self.assertEqual(asyncio.run(check('127.0.0.1',[],((b'host',b'evil.test:8000'),))),403)
+        self.assertEqual(asyncio.run(check('127.0.0.1',[],((b'host',b'127.0.0.1:8000'),)*2)),403)
+        self.assertEqual(asyncio.run(check('127.0.0.1',[(b'x-forwarded-for',b'127.0.0.1')])),403)
+        self.assertEqual(asyncio.run(check('127.0.0.1',[(b'sec-fetch-site',b'cross-site')])),403)
+        self.assertEqual(asyncio.run(check('127.0.0.1',[(b'origin',b'http://evil.test')])),403)
+    def test_personal_app_takes_no_operator_token(self):
+        with self.assertRaises(TypeError):
+            create_claude_personal_app(operator_token='a'*32,allowed_origin='http://127.0.0.1:8000',fixture=True,**options())
     def test_provenance_is_not_weight_or_billing_attestation(self):
         _,p,_=make_claude_personal_infer(**options())
         self.assertIn('not_model_weights',p['digest_kind'])

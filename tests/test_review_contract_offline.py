@@ -23,6 +23,8 @@ from feedctrl import indirect_grounding as ig
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'scripts'))
+sys.path.insert(0, str(ROOT / 'tests' / 'standins'))
+import authored_replies  # noqa: E402  (test double)
 import run_demo  # noqa: E402
 
 IDENTITY = {'backend': 'test-double', 'model': 'authored', 'digest': 'not-live'}
@@ -315,14 +317,15 @@ def test_a_review_states_the_scope_of_a_manual_control(served):
 # ----------------------------------------------------------------- staged routes and the discard
 
 def options(**values):
-    base = dict(provider='scripted', scenario='category', port=None, reviewed_config=None, report=None,
+    base = dict(provider='route', scenario='category', port=None, reviewed_config=None, report=None,
                 relay_dir=None, declared_model=None, transport_note=None, relay_timeout=600, max_calls=None)
     base.update(values)
     return argparse.Namespace(**base)
 
 
 @pytest.fixture
-def category():
+def category(monkeypatch):
+    authored_replies.install(monkeypatch, run_demo)
     app, _, _, _ = run_demo.build_app(options())
     with TestClient(app) as client:
         body = json.loads((run_demo.SCENARIOS['category'] / 'app-preview.json').read_text(encoding='utf-8'))
@@ -359,7 +362,7 @@ def test_the_staged_routes_count_their_calls(category):
     refused = client.post('/api/semantic/definition/preview', headers=h,
                           json={**body, 'objective': body['objective'] + ' Please.'}).json()
     assert refused['status'] == 'error' and refused['outcome_source'] == 'provider_failure'
-    assert refused['calls_attempted'] == 1 and refused['reason'].startswith('This server has no model.')
+    assert refused['calls_attempted'] == 1 and refused['reason'].startswith('Test double: no fixed reply')
 
 
 def test_a_proposed_name_that_exists_is_its_own_outcome():
@@ -372,7 +375,7 @@ def test_a_proposed_name_that_exists_is_its_own_outcome():
 
 # ----------------------------------------------------------------- the launcher scenario "conditions"
 
-@pytest.mark.parametrize('provider', ['scripted', 'relay', 'route', 'personal-cli'])
+@pytest.mark.parametrize('provider', ['relay', 'route', 'personal-cli'])
 def test_the_conditions_scenario_refuses_every_provider_but_manual(provider):
     with pytest.raises(SystemExit, match='Start it with --provider manual'):
         run_demo.build_app(options(provider=provider, scenario='conditions'))
@@ -408,7 +411,8 @@ def test_the_conditions_scenario_serves_the_fixture_for_the_rule_parser(monkeypa
 
 # ----------------------------------------------------------------- texts of an invented scenario (ui m16, M13, N3)
 
-def test_an_invented_scenario_is_not_called_the_official_sidecar_and_an_empty_history_reads_well():
+def test_an_invented_scenario_is_not_called_the_official_sidecar_and_an_empty_history_reads_well(monkeypatch):
+    authored_replies.install(monkeypatch, run_demo)
     app, _, _, _ = run_demo.build_app(options(scenario='tags'))
     with TestClient(app) as client:
         status = client.get('/api/status').json()

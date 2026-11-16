@@ -1,4 +1,4 @@
-"""Scripted and relay providers: transport contracts only, no model and no network."""
+"""Relay provider and factory binding: transport contracts only, no model and no network."""
 import json
 import threading
 import time
@@ -141,20 +141,6 @@ def test_relay_needs_an_empty_folder_and_explicit_declarations(tmp_path):
         settings.update(bad)
         with pytest.raises(ValueError):
             dp.relay_provider(empty, **settings)
-
-
-def test_scripted_provider_answers_only_known_requests_and_declares_no_model():
-    known = {'answer': 'authored'}
-    infer, identity, receipts = dp.scripted_provider(
-        lambda payload, schema: known if payload.get('question') == 'synthetic' else None, [known])
-    assert infer(PAYLOAD, SCHEMA) == known
-    with pytest.raises(ParserOperationalError) as refused:
-        infer({'system': 's', 'question': 'anything else'}, SCHEMA)
-    # One page-safe sentence for every method: no model, what exists, what to do.
-    assert refused.value.page_safe is True and str(refused.value) == dp.SCRIPTED_REFUSAL
-    assert 'This server has no model.' in dp.SCRIPTED_REFUSAL and 'Insert the bundled scenario request' in dp.SCRIPTED_REFUSAL
-    assert identity['live_model'] is False and identity['backend'] == dp.SCRIPTED_BACKEND
-    assert [r['answered'] for r in receipts] == [True, False]
 
 
 def test_bound_factories_share_one_callable_and_map_category_instructions():

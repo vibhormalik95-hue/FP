@@ -22,16 +22,15 @@ The bundled scenarios use invented items and a labelled diagnostic scorer. The s
 Run one server at a time from the source folder. Stop it with Ctrl+C.
 
 ```
-python scripts/quickstart.py rehearse --scenario tags
 python scripts/quickstart.py start --scenario tags
-python scripts/run_demo.py --scenario tags --provider manual
-python scripts/quickstart.py rehearse --scenario conditions
+python scripts/quickstart.py manual --scenario tags
+python scripts/quickstart.py manual --scenario conditions
 ```
 
-- `rehearse` uses replies that a person wrote by hand for the bundled requests. No model is used.
 - `start` uses your [model route](model-routes.md).
-- `--provider manual` serves the page without a model. Only the manual method works. The page lists the model methods as "(needs a model provider)" and names the commands that start a provider.
-- `rehearse --scenario conditions` serves the original conditions A to E on the built-in fixture, with no model. `python scripts/run_demo.py --scenario conditions` does the same. This scenario has no language controls.
+- `manual` (the same as `python scripts/run_demo.py --provider manual`) serves the page without a model. Only the manual method works. The page lists the model methods as "(needs a model provider)" and names the commands that start a provider.
+- There is no mode with hand-written replies. To try the language-control screens with no key and no cost, use Feed Control Studio: run `run-studio.cmd` and choose the **Mock** provider (see the [Studio guide](studio-guide.md)). The mock provider matches words literally and is only for trying the screens.
+- `manual --scenario conditions` serves the original conditions A to E on the built-in fixture, with no model. `python scripts/run_demo.py --scenario conditions` does the same. This scenario has no language controls.
 
 | Scenario | Items | Existing category for the manual method | Bundled requests |
 | --- | --- | --- | --- |
@@ -54,7 +53,7 @@ A proposed change carries the flag **PREVIEW · NOTHING IS APPLIED YET** and the
 
 | Block | Content |
 | --- | --- |
-| **Model output (not verified)** | What the model returned: the direction and strength, the part of your request that names the subject, the reason that the model gave, and the names or quotations that it chose. The raw reply is in a folded element. The model can be wrong. With the hand-written replies of `rehearse`, this block is **Authored reply (written by hand, not a model)**, and the flag ends with "AUTHORED REPLIES, NO MODEL". For the manual method, for Undo and for the removal of every control, it is **Your selection**. |
+| **Model output (not verified)** | What the model returned: the direction and strength, the part of your request that names the subject, the reason that the model gave, and the names or quotations that it chose. The raw reply is in a folded element. The model can be wrong. For the manual method, for Undo and for the removal of every control, it is **Your selection**. |
 | **Application checks** | Mechanical checks with `Passed`, `Failed` or `Not confirmed on this page`, the items that each chosen name selects, the items of the control outside the evidence scope, and the provider line. The provider line names the provider and the model as the server settings name them. It says that the application did not verify which model answered. A passed check shows that names, IDs and quotations exist in the item data. It does not show that the meaning is right. |
 | **Your decision** | What will change if you approve, the time limit "Approve before HH:MM:SS", and the two buttons **Approve this exact item set and apply** and **Discard this review and apply nothing**. |
 
@@ -77,7 +76,7 @@ While a call runs, the button shows the seconds. **Stop waiting** discards the r
 
 Two settings apply to every method.
 
-- **Evidence scope.** "First 6 items of the starting list" or "First 10 items of the starting list". The application uses no other item. With the hand-written replies, the model methods use the complete scope of ten items, because the replies exist for that scope only.
+- **Evidence scope.** "First 6 items of the starting list" or "First 10 items of the starting list". The application uses no other item.
 - **How to combine with the applied controls.** "Add to the applied controls" or "Replace every applied control". "Add" keeps the applied controls. A new manual control replaces an applied control of the same name only when both have the same category and the same action. Another control with the same name stops the request with "An applied control has the same name". The method with categories and tags gives a generated name a number when the name is in use, for example ` (2)`.
 
 Limits that the page states: at most 8 applied controls; at most 4 controls in one request; a review is valid for five minutes; Undo goes back at most 10 changes. A ninth control stops the request with the heading "At most eight controls can be applied". The manual method and the method with item descriptions stop before any model call. The method with categories and tags decides after the interpretation, because a reply can replace an applied control and then fits; the page then says that a model call was made.
@@ -100,7 +99,7 @@ Example in the scenario `tags`: `Cooking` with "Remove from the feed" selects th
 
 Use this method when the request should become a control over category and tag names that already exist. The request does not need to contain a name.
 
-1. Method: **My request, matched to existing categories and tags (model)**. With `rehearse`, the name ends with "(authored replies, no model)".
+1. Method: **My request, matched to existing categories and tags (model)**.
 2. The panel lists **Existing categories and tags in the scope**, with the number of items for each name. This list needs no model call.
 3. Write your request, or press **Insert the bundled scenario request**. The list **More bundled examples** holds further requests.
 4. Press **Interpret my request**. The application makes one model call.
@@ -117,8 +116,8 @@ What the application does with the reply:
 - It then selects the items that carry the chosen names. The model does not select items.
 - It names each control from its action and its names, for example `Remove: category "Cooking", tag "street food"`.
 
-Example in the scenario `tags`, with the hand-written replies of `rehearse`: the request "I'm not hungry, remove all the stuff that makes me hungry." gives the control `Remove: category "Cooking", tag "street food"`. The category `Cooking` selects 61001, 61002 and 61009. The tag `street food` selects 61003. The feed goes from 10 eligible items to 6. Undo restores 10.
-Item 61004 mentions a sandwich in its description only. It has no food category and no food tag, so this method does not select it. A real model can choose other names.
+Example of the mechanics in the scenario `tags`: a reply that chooses the category `Cooking` and the tag `street food` with the action "remove" gives the control `Remove: category "Cooking", tag "street food"`. The category `Cooking` selects 61001, 61002 and 61009. The tag `street food` selects 61003. The feed goes from 10 eligible items to 6. Undo restores 10.
+Item 61004 mentions a sandwich in its description only. It has no food category and no food tag, so this method cannot select it. Which names fit a request is the decision of the model; the application holds no answer for any request.
 
 Limits that the application enforces:
 
@@ -141,12 +140,9 @@ Use this method when the answer is in what the descriptions say, not in a catego
 What the model receives: your request and the item data of the scope: descriptions, categories and tags.
 What the application checks: every selected item is in the scope and has its own quotation, and every quotation is an exact part of the text of its own item. Any other reply is rejected and nothing is proposed. The negated-command pattern and the size of the item data are checked before the first call.
 
-Examples with the hand-written replies of `rehearse`:
+Example of the mechanics in the scenario `tags`: a reply for "Remove the videos where someone is eating." that cites the quotation "between bites of a sandwich" selects item 61004. The feed goes from 10 eligible items to 9. The category and tag method cannot find this item, because no label says it. Which items fit a request is the decision of the model.
 
-- Scenario `tags`: "Remove the videos where someone is eating." selects item 61004 with the quotation "between bites of a sandwich". The feed goes from 10 eligible items to 9. The category and tag method cannot find this item, because no label says it.
-- Scenario `hunger`: "I'm not hungry, remove all the stuff that makes me hungry." selects the items 81001, 81003 and 81006 from their descriptions. The feed goes from 8 eligible items to 5. Undo restores 8.
-
-With a model (not with the hand-written replies), the option **I will state the target meaning and the action myself.** lets you write the target and choose the action. Tick "I confirm this target and the action below as my intended instruction." The model then only proposes related items. The review says that you supplied the interpretation.
+The option **I will state the target meaning and the action myself.** lets you write the target and choose the action. Tick "I confirm this target and the action below as my intended instruction." The model then only proposes related items. The review says that you supplied the interpretation.
 
 ## A new category from my description, in stages (model)
 
@@ -167,7 +163,7 @@ An approved definition is used once. If the classification stops, press **Propos
 
 The two calls can use the same model, and both can be wrong. A quotation that exists is not proof that the definition is right. Reject a definition that states a property that the descriptions do not state.
 
-Example in the scenario `category`, with the hand-written replies of `rehearse`: the items 41001, 41002 and 41003 become members of a category about a repaired object that is kept. Item 41004 is not a member in both replies. The items 41005 to 41008 are unknown in both replies, because their descriptions state no repair of an object that is kept. No item has a disagreement in this rehearsal; when the two calls of a real model disagree on an item, its row reads "Not selected: the two calls do not agree". The feed goes from 8 eligible items to 5. Undo restores 8.
+Example of the mechanics in the scenario `category`: when both calls support the items 41001, 41002 and 41003 as members, those three items are selected and the feed goes from 8 eligible items to 5. Undo restores 8. When the two calls disagree on an item, its row reads "Not selected: the two calls do not agree".
 
 The page also offers two earlier methods where the server allows them: **A new category in one call (earlier method)**, and **My request, matched to item descriptions (local model NAME)** through a local Ollama model.
 
@@ -175,7 +171,7 @@ The page also offers two earlier methods where the server allows them: **A new c
 
 One request can hold several preferences. The existing categories-and-tags method selects items by their labels. The separate **My mixed request, matched to descriptions, categories and tags** method sends the supplied captions, cover text and existing labels in one call, then checks each selected item and its cited evidence. Review every proposed control before Apply.
 
-Example in the scenario `tags`: "Show me more music videos, and remove anything about food." With the hand-written replies, the review shows two controls from one reply. `Show more: category "Music"` covers the items 61007 and 61008 (score +0.25). `Remove: category "Cooking", tag "street food"` covers the items 61001, 61002, 61003 and 61009. After Apply, item 61007 moves from position 4 to 2, item 61008 moves from position 5 to 4, and the feed goes from 10 eligible items to 6.
+Example in the scenario `tags`: "Show me more music videos, and remove anything about food." A reply that proposes the two controls below gives one review with two controls. `Show more: category "Music"` covers the items 61007 and 61008 (score +0.25). `Remove: category "Cooking", tag "street food"` covers the items 61001, 61002, 61003 and 61009. After Apply, item 61007 moves from position 4 to 2, item 61008 moves from position 5 to 4, and the feed goes from 10 eligible items to 6.
 The table has one group of rows for each control. In the existing-label method, an item in several controls shows one net result and removal takes priority. The combined descriptions-and-labels method rejects overlapping member sets. One approval applies the accepted controls together, and one Undo reverses them.
 
 Two controls that give opposite instructions to the same items get a request for clarification.
@@ -193,11 +189,9 @@ Some requests must not change the feed. The result then carries the flag **NO CH
 | A call started, and no usable reply came back. | The call to the provider failed | none |
 | A reply came back, and the application rejected it. | The application rejected the reply | none |
 
-With the hand-written replies, "The reply" reads "The authored reply". A request that has no hand-written reply (for example your own words) gets the heading "No authored reply exists for this request". To use your own words, start the server with a model route.
-
 The application accepts a "no match", "cannot express" or clarification result because the reply selects nothing. It does not check the reason in the reply. The reason stands in the first block, as text of the reply.
 
-When a model names alternatives, each one has a button. In the method with categories and tags it is **Add this meaning to my request**: it adds the meaning to your request in the panel. In the method with item descriptions it is **Use this as my stated target**. Nothing is sent until you submit the request again. With the hand-written replies these buttons are not shown.
+When a model names alternatives, each one has a button. In the method with categories and tags it is **Add this meaning to my request**: it adds the meaning to your request in the panel. In the method with item descriptions it is **Use this as my stated target**. Nothing is sent until you submit the request again.
 The message of an error comes from the application or from the model provider. See the [failure table](model-routes.md#if-something-fails).
 
 A real model can answer one of these examples with a proposal. Then review it as any other proposal. You are not obliged to approve it.
@@ -230,8 +224,7 @@ Below the fictional items, **Open the earlier topic tool** holds the tool **Exac
 
 | Provider | Start with | What answers | Status line | What a run shows |
 | --- | --- | --- | --- | --- |
-| `manual` | `run_demo.py --provider manual` | Nobody. Only the manual method works. | `No model provider · manual controls only` | The manual control. |
-| `scripted` | `quickstart.py rehearse` | Replies that a person wrote for the bundled requests. | `AUTHORED REPLIES · NO MODEL` | The screens, Apply and Undo. It is not model behaviour. |
+| `manual` | `quickstart.py manual` or `run_demo.py --provider manual` | Nobody. Only the manual method works. | `No model provider · manual controls only` | The manual control. |
 | `route` | `quickstart.py start` | The model of your route file. | `PROVIDER · backend · model` | Output of that model with those settings. The model name is the name that you requested; each call records the name that the reply reports. |
 | `route` with the relay, or `relay` | `quickstart.py start`, or `run_demo.py --provider relay` | A model that a person carries each request to. | `PROVIDER · operator-relay-file-queue · declared model` | Real model output with a person in the transport. The model name is a declaration. The relay cannot confirm it. |
 | `personal-cli` | `run_demo.py --provider personal-cli` | The signed-in Claude Code CLI, through a reviewed configuration. | `PROVIDER · claude-code-personal-cli · model` | An automatic call under a reviewed configuration. |
@@ -282,7 +275,7 @@ python scripts/run_demo.py --provider personal-cli --reviewed-config my-config.j
 ```
 
 - `tools/hosted_validation_current/driver.py` checks a reviewed configuration file before anything runs. The file holds six explicit statements by the operator, the hash of every application source file, the pinned scenario inputs, the path and hash of the executable, and the call allowance.
-- The page asks for the operator token of the configuration. The server uses port 8765 on 127.0.0.1 only.
+- The page opens directly; there is no password or token. The server uses port 8765 on 127.0.0.1 only and refuses requests from other hosts or origins.
 - A configuration file is marked as used and is refused a second time. The first request must equal the pinned scenario request exactly.
 - The report holds the facts of the provider: the exact inputs, the call receipts and the number of attempts.
 - The configuration templates in `tools/hosted_validation_current/` are incomplete on purpose, and every statement in them is false. These dated inputs and their driver are frozen evidence. A later prompt or source revision needs a separate reviewed successor profile; do not overwrite this directory.
@@ -337,14 +330,14 @@ For `failure` it accepts an answer with HTTP 200 or a structured answer with HTT
 
 **Review modes.**
 
-- `--review auto` (the default): the script ticks the review boxes itself. Use it only with the hand-written replies of `rehearse`. With a model as provider, the script stops with a failed check.
+- `--review auto` (the default): the script ticks the review boxes itself. Use it only with a server that has no model provider (`manual`) or with a test double. With a model as provider, the script stops with a failed check.
 - `--review wait --reviewer "your name"`: the script stops at each review. It writes `gate-NAME.json` and a screenshot into the `--out` folder. It continues only when you write the word `APPROVE` into `decision-NAME.txt` in that folder. Any other text is recorded as a decline, and the flow stops with nothing applied.
 
 **The receipt.** `browser-receipt.json` in the `--out` folder lists the checks of the script and the review decisions with the name of the reviewer. It also lists every provider call with a reply, the number of calls that the server says it started (`calls_attempted`, failed calls included), the text of the status line and the source fingerprint of the server. `python scripts/run_demo.py --fingerprint` prints the fingerprint of your files.
 
 **Exit codes.** 0: every flow completed. 2: a flow stopped early, for example after a declined review or a rejected reply. 1: a check failed.
 
-With `--video` the script records the page to `video/SCENARIO.webm` in the `--out` folder. For the `personal-cli` provider, set the variable `FEEDCTRL_OPERATOR_TOKEN`.
+With `--video` the script records the page to `video/SCENARIO.webm` in the `--out` folder.
 
 ## Other checks
 
@@ -358,5 +351,5 @@ python scripts/refresh_source_manifest.py --check
 
 The second command runs the guarded driver checks on the frozen profile of 11 November and on a temporary copy with the current-contract test inputs. On the frozen profile some checks do not pass, because the prompts changed after that date; the command says which result is expected.
 
-The Node tests need `npm ci` in `web/` first. These are checks of the program with hand-written replies and stand-ins. They are not model evidence.
+The Node tests need `npm ci` in `web/` first. These are checks of the program with test doubles and stand-ins. They are not model evidence.
 `npm run build` in `web/` reproduces the built interface in `web/dist` byte for byte. See [the built interface](source-verification.md).

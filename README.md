@@ -30,7 +30,7 @@ The view **Language controls** has five methods. Each one follows the same stage
 For every method:
 
 - a proposal does not change the feed;
-- the review shows what came back, the application checks and your decision in three separate blocks (with the hand-written replies of a rehearsal, the first block is "Authored reply (written by hand, not a model)");
+- the review shows what came back, the application checks and your decision in three separate blocks;
 - a table shows each item in the scope and why it is selected or not selected;
 - Apply uses exactly the reviewed set, and a two-step Undo restores the earlier feed.
 
@@ -61,8 +61,8 @@ You need Python 3.11 or newer. [Install and run](docs/install-and-run.md) gives 
 
 Three more commands help:
 
-- `python scripts/quickstart.py rehearse --scenario tags` serves the page with hand-written replies. No model is used. Use it to learn the screens.
-- `python scripts/quickstart.py rehearse --scenario conditions` serves the original conditions A to E on the built-in fixture (36 items, categories `category_0` to `category_5`, three users). It uses no model and has no language controls.
+- `python scripts/quickstart.py manual --scenario tags` serves the page with no model: only the manual category control works. To try the language-control screens with no key and no cost, use Feed Control Studio: `run-studio.cmd` with the **Mock** provider ([Studio guide](docs/studio-guide.md)).
+- `python scripts/quickstart.py manual --scenario conditions` serves the original conditions A to E on the built-in fixture (36 items, categories `category_0` to `category_5`, three users). It uses no model and has no language controls.
 - `python scripts/quickstart.py try --scenario tags` runs the bundled requests through your route without the browser. See [route trial](docs/route-trial.md).
 
 The general CLI, hosted API and local-server routes have stand-in test records from Linux; full native Windows and macOS verification remains open. A separate [Windows fictional-item run on 15 November](docs/fictional-lifecycle-2026-11-15.json) used Fable 5.2 through a task-local transport and a modified personal adapter. It completed draft, admit, remove, restore and reset. That run did not test the general quickstart route, category discovery or the later publication candidate.
@@ -114,7 +114,7 @@ Keep three kinds of evidence apart.
 - *14 November 2026, the package line before the merge.* On revision `b7c5a91` (source fingerprint `ab1a9d846b33...`), every method completed in a real browser with real model output through the file relay: the request matched to existing categories and tags, a mixed request, the request matched to item descriptions, the new category in stages and the fictional item, with the manual control as reference (13 model calls, 308 script checks passed). Four requests that must change nothing changed nothing. An AI operator made all 19 review decisions; no person has reviewed a run. The model name is declared, not attested. Records: [docs/evidence/2026-11-14/](docs/evidence/2026-11-14/README.md).
 - *14 November 2026, the integrated revision.* The published work branch and the package line were merged (`e797ce1`). A comparison of every line of the published branch and two independent reviews of the merge gave corrections (revision `ff92666`, source fingerprint `22ba794e2091...`). The revision has the prompts of the published branch for the new category and the page and routes of the package line. Between 20:05 and 20:13 UTC every method completed on it in a real browser with real model output through the file relay (13 model calls, 321 script checks passed), and the four requests that must change nothing changed nothing. An AI operator made all 19 review decisions; no person has reviewed a run. The model name is declared, not attested. Two earlier passes of the same runs on the merged source selected the same items. Records: [docs/evidence/2026-11-14-integrated/](docs/evidence/2026-11-14-integrated/README.md).
 
-**Software tests** use hand-written replies, stand-in servers and stand-in programs. They check program behaviour. They are not model evidence.
+**Software tests** use test doubles with fixed replies (under `tests/` only), stand-in servers and stand-in programs. They check program behaviour. They are not model evidence.
 
 ## Limits
 

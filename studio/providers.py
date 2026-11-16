@@ -136,8 +136,10 @@ class OpenAICompatibleProvider(Provider):
     name = "openai"
     label = "OpenAI-compatible"
 
-    def __init__(self, api_key, model=DEFAULT_OPENAI_MODEL, base_url=None, http_client=None):
+    def __init__(self, api_key, model=DEFAULT_OPENAI_MODEL, base_url=None, http_client=None, effort=None):
         super().__init__(model or DEFAULT_OPENAI_MODEL)
+        # Reasoning models (gpt-5 family, o-series) accept reasoning_effort; others ignore the setting.
+        self.effort = effort if effort in ("low", "medium", "high") and re.match(r"^(gpt-5|o\d)", self.model) else None
         from openai import OpenAI
         self._secret = (api_key or "").strip()
         kwargs = {"api_key": self._secret or "not-needed", "timeout": CALL_TIMEOUT_S, "max_retries": 1}
@@ -149,14 +151,15 @@ class OpenAICompatibleProvider(Provider):
         self.base_url = base_url or "https://api.openai.com/v1"
 
     def describe(self):
-        return {**super().describe(), "base_url": self.base_url}
+        return {**super().describe(), "base_url": self.base_url, "effort": self.effort}
 
     def complete(self, task, system, payload, schema):
         import openai
         started = time.monotonic()
+        extra = {"reasoning_effort": self.effort} if self.effort else {}
         try:
             response = self._client.chat.completions.create(
-                model=self.model,
+                model=self.model, **extra,
                 messages=[{"role": "system", "content": system},
                           {"role": "user", "content": json.dumps(payload, ensure_ascii=False)}],
                 response_format={"type": "json_schema",
@@ -282,7 +285,7 @@ def build_provider(kind, *, api_key=None, model=None, effort=None, base_url=None
         parts = urlsplit(base_url or "https://api.openai.com/v1")
         official = parts.scheme == "https" and parts.hostname == "api.openai.com" and parts.username is None
         env_key = os.environ.get("OPENAI_API_KEY", "") if official else ""
-        return OpenAICompatibleProvider(api_key or env_key, model=model, base_url=base_url)
+        return OpenAICompatibleProvider(api_key or env_key, model=model, base_url=base_url, effort=effort)
     if kind == "claude-cli":
         return ClaudeCLIProvider(model=model, effort=effort)
     raise ProviderError(f"Unknown provider: {kind}")

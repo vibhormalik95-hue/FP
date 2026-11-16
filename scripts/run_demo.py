@@ -2,10 +2,8 @@
 
 Examples (run from the repository root):
 
-    python scripts/run_demo.py --scenario tags --provider scripted
     python scripts/run_demo.py --scenario tags --provider route --route-file model-route.json
     python scripts/run_demo.py --scenario category --provider manual
-    python scripts/run_demo.py --scenario category --provider scripted
     python scripts/run_demo.py --scenario hunger --provider relay \
         --relay-dir runs/relay-01 --declared-model claude-fable-5-2 \
         --transport-note "replies pasted by hand from a Claude chat"
@@ -15,7 +13,6 @@ Examples (run from the repository root):
 
 Providers
     manual        No model. Only the manual category control is offered.
-    scripted      Hand-written replies for the bundled requests. Not a model.
     relay         An operator carries each request to a model and saves the reply.
     personal-cli  The signed-in Claude Code CLI on Windows, through the reviewed
                   configuration that the validation driver already checks.
@@ -23,6 +20,10 @@ Providers
                   hosted API with your own key, a local model server, or the relay.
                   Write the file with "python scripts/model_route.py setup".
                   See docs/model-routes.md.
+
+There is no provider with hand-written replies. To try the screens of a
+language-control workflow with no key and no model, use Feed Control Studio
+(run-studio.cmd) and its mock provider; see docs/studio-guide.md.
 
 Scenarios
     tags      Ten invented items with categories and tags: the manual control, a
@@ -107,9 +108,9 @@ def scenario_requests(name):
 def source_fingerprint(root=None):
     """One SHA-256 over the files that decide what the served app does.
 
-    It covers the application package, the built interface, this launcher, the
-    authored rehearsal replies and the bundled scenario inputs (the pinned
-    validation inputs and the ``scenarios`` folder). A run receipt
+    It covers the application package, the built interface, this launcher and
+    the bundled scenario inputs (the pinned validation inputs and the
+    ``scenarios`` folder). A run receipt
     that records it can be matched to an exact source tree without Git. Print
     it with ``python scripts/run_demo.py --fingerprint``.
 
@@ -122,7 +123,7 @@ def source_fingerprint(root=None):
     inputs = root / 'tools' / 'hosted_validation_current' / 'inputs'
     files = [*(root / 'feedctrl').glob('*.py'), *(root / 'web' / 'dist').rglob('*'), *inputs.rglob('*'),
              *(root / 'scenarios').rglob('*'),
-             root / 'scripts' / 'run_demo.py', root / 'scripts' / 'demo_scripted_replies.py']
+             root / 'scripts' / 'run_demo.py']
     digest = hashlib.sha256()
     for parts, path in sorted((path.relative_to(root).parts, path) for path in files if path.is_file()):
         data = path.read_bytes()
@@ -233,12 +234,7 @@ def build_app(args):
     data, sidecar = scenario_paths(scenario)
     factories = {}
     summary = {'scenario': scenario, 'provider': args.provider}
-    if args.provider == 'scripted':
-        sys.path.insert(0, str(ROOT / 'scripts'))
-        import demo_scripted_replies
-        infer, identity, receipts = demo_providers.scripted_provider(
-            demo_scripted_replies.lookup, demo_scripted_replies.TABLE)
-    elif args.provider == 'relay':
+    if args.provider == 'relay':
         if not args.relay_dir or not args.declared_model or not args.transport_note:
             raise SystemExit('relay needs --relay-dir, --declared-model and --transport-note')
         spool = Path(args.relay_dir)
@@ -265,6 +261,11 @@ def build_app(args):
     return app, port, summary, lambda: None
 
 
+RETIRED_PERSONAL_CLI = ('personal-cli is retired: it served the token-gated personal app through the frozen '
+                        'driver in tools/hosted_validation_current. Use the Studio instead: '
+                        'python -m studio --provider claude-cli  (or run-studio.cmd with your own API key).')
+
+
 def build_personal_cli_app(args):
     """Serve the exact app object that the reviewed validation driver builds.
 
@@ -276,7 +277,8 @@ def build_personal_cli_app(args):
     here holds the provider facts (exact inputs, receipts, attempts) and says so.
     A configuration file is marked as used and is refused a second time.
     """
-    if not args.reviewed_config or not args.report:
+    raise SystemExit(RETIRED_PERSONAL_CLI)
+    if not args.reviewed_config or not args.report:  # pragma: no cover - kept for the record of past runs
         raise SystemExit('personal-cli needs --reviewed-config and --report')
     if args.port not in (None, PERSONAL_PORT):
         raise SystemExit(f'personal-cli always serves on port {PERSONAL_PORT}, the origin the reviewed driver declares')
@@ -336,7 +338,7 @@ def build_personal_cli_app(args):
     summary = {'scenario': scenario, 'provider': 'personal-cli',
                'model': config['model'], 'max_calls': budget.max_calls,
                'report': str(report_path.resolve()),
-               'note': 'Enter the operator token from the reviewed configuration to unlock the page.'}
+               'note': 'Open the page on 127.0.0.1; it serves only loopback requests.'}
 
     def finish():
         report['status'] = 'server_stopped'
@@ -348,7 +350,7 @@ def build_personal_cli_app(args):
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__.split('\n\n')[0])
     parser.add_argument('--scenario', choices=sorted([*SCENARIOS, *FIXTURE_SCENARIOS]))
-    parser.add_argument('--provider', choices=('manual', 'scripted', 'relay', 'personal-cli', 'route'),
+    parser.add_argument('--provider', choices=('manual', 'relay', 'personal-cli', 'route'),
                         default='manual')
     parser.add_argument('--route-file', help='with --provider route; default: model-route.json')
     parser.add_argument('--record-dir', help='with --provider route: a new folder for the call records, or "none"')

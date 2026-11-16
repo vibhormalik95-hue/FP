@@ -18,7 +18,7 @@ class ScenarioTests(unittest.TestCase):
     def config(self,scenario):
         c=options();c.pop('run_budget');c.update(driver.BOUNDS)
         c.update(model=driver.EXPECTED_MODEL,effort='max',scenario=scenario,executable=str(self.exe),
-                 workdir=str(self.root),output_mode='plain_json',operator_token='authored-test-only-token-12345678901')
+                 workdir=str(self.root),output_mode='plain_json')
         return c
     def runner(self,*args):
         self.calls.append(args)
