@@ -13,6 +13,7 @@ feedctrl/staged_induction.py). There is no request-specific or example-specific 
 from __future__ import annotations
 
 import re
+import secrets
 import time
 from concurrent.futures import ThreadPoolExecutor
 
@@ -193,6 +194,7 @@ def interpret_preview(studio, provider, ledger, request):
     raw = _call(provider, ledger, "interpret", INTERPRET_PROMPT, payload, INTERPRET_SCHEMA, calls)
     by_id = {t["term_id"]: t for t in vocab}
     controls, checks, evidence, used = [], [], [], set()
+    batch_id = secrets.token_hex(4)   # unique per preview, so separate requests stay separate
     status = raw.get("status")
     for i, c in enumerate(raw.get("controls", []) if status == "propose" else []):
         span = c.get("intent_span") or ""
@@ -202,7 +204,7 @@ def interpret_preview(studio, provider, ledger, request):
             checks.append({"check": f"Control {i + 1}: unknown action {action!r} (dropped)", "ok": False})
             continue
         checks.append({"check": f"Control {i + 1}: quoted span \"{span}\" occurs in the request", "ok": span_ok})
-        group = f"interpret-{i}"   # labels of one preference act together: "only" matches any of them
+        group = f"{batch_id}-{i}"   # labels of one preference act together: "only" matches any of them
         for term_id in c.get("term_ids", []):
             term = by_id.get(term_id)
             ok = term is not None and term_id not in used

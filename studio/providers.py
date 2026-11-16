@@ -278,7 +278,9 @@ def build_provider(kind, *, api_key=None, model=None, effort=None, base_url=None
         return AnthropicProvider(api_key or os.environ.get("ANTHROPIC_API_KEY", ""), model=model, effort=effort)
     if kind == "openai":
         # The environment key is only sent to OpenAI itself, never to another server.
-        official = not base_url or base_url.rstrip("/").startswith("https://api.openai.com")
+        from urllib.parse import urlsplit
+        parts = urlsplit(base_url or "https://api.openai.com/v1")
+        official = parts.scheme == "https" and parts.hostname == "api.openai.com" and parts.username is None
         env_key = os.environ.get("OPENAI_API_KEY", "") if official else ""
         return OpenAICompatibleProvider(api_key or env_key, model=model, base_url=base_url)
     if kind == "claude-cli":

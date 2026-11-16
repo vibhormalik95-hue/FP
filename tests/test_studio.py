@@ -454,3 +454,22 @@ def test_environment_openai_key_is_not_sent_to_other_servers(monkeypatch):
     p = build_provider("openai", base_url="http://localhost:11434/v1")
     assert p._secret == ""
     assert build_provider("openai")._secret == "sk-env-secret"
+
+
+def test_lookalike_openai_hosts_do_not_get_the_environment_key(monkeypatch):
+    monkeypatch.setenv("OPENAI_API_KEY", "sk-env-secret")
+    for url in ("https://api.openai.com.evil.example/v1", "https://api.openai.com@evil.example/v1",
+                "http://api.openai.com/v1"):
+        assert build_provider("openai", base_url=url)._secret == ""
+    assert build_provider("openai", base_url="https://api.openai.com/v1")._secret == "sk-env-secret"
+
+
+def test_two_separate_show_only_requests_narrow_the_feed():
+    s = Studio()
+    def only(ids):
+        return Scripted({"interpret": {"status": "propose", "reason": "r", "alternatives": [], "controls": [
+            {"action": "only", "strength": "standard", "intent_span": "only", "relation": "x", "term_ids": ids}]}})
+    p = workflows.interpret_preview(s, only(["category:Cooking", "category:Travel"]), Ledger(), "only cooking or travel")
+    s.apply(p["id"])
+    p = workflows.interpret_preview(s, only(["category:Fitness"]), Ledger(), "only fitness")
+    assert p["changes"]["eligible_before"] == 8 and p["changes"]["eligible_after"] == 0
