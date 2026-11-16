@@ -220,7 +220,7 @@ class Director:
 
     # -- speech
     def say(self, text, wait=True, gap=0.35):
-        path, secs, text = self.voice.synth(text)
+        path, secs, text = self.voice.synth(speakable(text))
         self.wait_speech()
         at = self.cap.now()
         winsound.PlaySound(str(path), winsound.SND_FILENAME | winsound.SND_ASYNC)
@@ -242,7 +242,7 @@ class Director:
     def point(self, sel, text, min_ring=1.6):
         """Narrate, glide to the target, ring it while the narration names it."""
         b = self.ensure_visible(sel)
-        path, secs, _ = self.voice.synth(text)
+        self.voice.synth(speakable(text))
         self.say(text, wait=False)
         cx, cy = b["x"] + b["width"] / 2, b["y"] + b["height"] / 2
         self.glide(*self.screen(cx, cy))
@@ -321,9 +321,14 @@ def calls_line(p):
     return f"{n} model call{'s' if n != 1 else ''}, {secs:.0f} seconds of model time, {money(cost)}"
 
 
-def say_spoken(text):
-    """Make IDs and symbols speakable."""
-    return text.replace("&", "and").replace("/", " ")
+SPOKEN = {r"\bhiit\b": "H I I T", r"\bDIY\b": "D I Y", r"\blo-fi\b": "low-fi", r"&": "and", r"50/30/20": "fifty thirty twenty"}
+
+
+def speakable(text):
+    """Spell out labels that text-to-speech mispronounces."""
+    for pat, rep in SPOKEN.items():
+        text = re.sub(pat, rep, text, flags=re.I)
+    return text
 
 
 # ------------------------------------------------------------------ the script
