@@ -43,7 +43,7 @@
  * and that the two-step Undo restores the exact earlier state.
  *
  * Review gates. With --review auto the script ticks the review boxes itself;
- * use that only with the scripted provider. With --review wait it stops at each
+ * use that only with a test double or a stand-in. With --review wait it stops at each
  * gate, writes gate-<name>.json and a screenshot into --out, and continues only
  * when decision-<name>.txt contains APPROVE. Anything else is recorded as a
  * decline and the flow stops with nothing applied.
@@ -52,7 +52,7 @@
  * decisions under "review_decisions", every provider call with a reply under
  * "provider_calls", and the number of calls that the server says it began
  * (also failed ones) under "calls_attempted". A provider call is a model call only when the declared
- * provider is a model: the scripted provider answers with hand-written replies.
+ * provider is a model: a test double or a stand-in answers with fixed replies.
  * The script reports which provider the server declared. It never labels a run
  * as live inference by itself: that depends on the provider line in the receipt.
  * Exit code 0 means every flow completed; 2 means a flow stopped early (for
@@ -82,7 +82,6 @@ const OUT = path.resolve(args.out || 'browser-run');
 const REVIEW = args.review || 'auto';
 const STAGE_TIMEOUT = Number(args['stage-timeout'] || 1200) * 1000;
 const GATE_TIMEOUT = Number(args['gate-timeout'] || 280) * 1000;
-const TOKEN = process.env[args['token-env'] || 'FEEDCTRL_OPERATOR_TOKEN'] || '';
 const VIDEO = Boolean(args.video) && args.video !== 'false';
 const USER = 1;
 const WEIGHT = { light: 0.10, standard: 0.25, strong: 0.40 };
@@ -181,7 +180,7 @@ function check(name, condition, detail) {
     receipt.screenshots.push(file);
     save();
   };
-  const headers = () => ({ 'X-Session-ID': session, ...(TOKEN ? { 'X-Personal-Operator-Token': TOKEN } : {}) });
+  const headers = () => ({ 'X-Session-ID': session });
   const serverState = async () => {
     const response = await context.request.get(`${BASE}/api/semantic/groups?user_id=${USER}`, { headers: headers() });
     assert.strictEqual(response.status(), 200, 'semantic state read failed');
@@ -954,15 +953,8 @@ function check(name, condition, detail) {
     // The flow "expired" moves the clock of the page. The clock runs at its normal speed until then.
     if (FLOWS.includes('expired')) await page.clock.install();
     await page.goto(BASE + '/', { waitUntil: 'networkidle' });
-    if (await page.locator('#personal-token').count()) {
-      const refused = await context.request.get(BASE + '/api/status');
-      check('the API refuses a request that has no operator token', refused.status() === 403, { status: refused.status() });
-      check('an operator token was supplied to this script', TOKEN.length > 0);
-      await page.locator('#personal-token').fill(TOKEN);
-      await page.getByRole('button', { name: 'Unlock' }).click();
-    }
     await page.locator('.status-strip').waitFor({ state: 'visible', timeout: 30000 });
-    const statusResponse = await context.request.get(BASE + '/api/status', { headers: TOKEN ? { 'X-Personal-Operator-Token': TOKEN } : {} });
+    const statusResponse = await context.request.get(BASE + '/api/status');
     receipt.status = await statusResponse.json();
     receipt.source_fingerprint = receipt.status.source_fingerprint || null;
     receipt.status_strip_text = (await page.locator('.status-strip').innerText()).replace(/\s+/g, ' ');

@@ -13,8 +13,11 @@ This folder holds ten invented items. They are not KuaiRec items and they are no
 Start the scenario from the repository root:
 
 ```
-python scripts/run_demo.py --scenario tags --provider scripted
+python scripts/quickstart.py start --scenario tags
+python scripts/run_demo.py --scenario tags --provider manual
 ```
+
+The first command uses your [model route](../../docs/model-routes.md); the second serves the manual control only. There is no provider with hand-written replies. To try the language-control screens with no key, use Feed Control Studio (`run-studio.cmd`, **Mock** provider; see the [Studio guide](../../docs/studio-guide.md)).
 
 ## Items
 
@@ -56,18 +59,13 @@ A match to categories and tags can therefore select only what the labels state. 
 
 A key that starts with `vocabulary` is for the method that matches a request to existing categories and tags. The model receives the request and the list of existing terms. It does not receive a description. The application checks each returned term and selects the items that carry it.
 
-## Rehearsal replies
+## What a reply selects
 
-`scripts/demo_scripted_replies.py` holds a hand-written reply for each bundled request. Provider `scripted` returns them. They are not model output. With these replies:
+The application holds no answer for any request: the model chooses the terms or quotations, and the application selects the items that carry them. For example, a reply that chooses the category `Repair` selects the items 61004 and 61005, and a reply that cites "between bites of a sandwich" in the description method selects item 61004. Fixed replies for the offline tests are test doubles in `tests/standins/authored_replies.py`; no launcher uses them.
 
-- the indirect request selects the category `Cooking` and the tag `street food`, and so the items 61001, 61002, 61003 and 61009;
-- the literal request selects the category `Repair`, and so the items 61004 and 61005;
-- the mixed request gives two controls: an increase for `Music`, and an exclusion for `Cooking` and `street food`. After Apply, item 61007 moves from rank 4 to rank 2 and item 61008 moves from rank 5 to rank 4;
-- the description request selects item 61004 with the quotation "between bites of a sandwich".
+The application names each control from its action and its terms, for example `Remove: category "Repair"` and `Show more: category "Music"`. A name that is already in use gets a number, for example `(2)`.
 
-The application names each control from its action and its terms, for example `Remove: category "Cooking", tag "street food"` and `Show more: category "Music"`. A name that is already in use gets a number, for example `(2)`.
-
-A real model can select other terms. Review each proposal before you apply it.
+Review each proposal before you apply it.
 
 ## Limits to know
 

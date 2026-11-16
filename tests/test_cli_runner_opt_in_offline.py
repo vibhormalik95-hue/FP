@@ -139,7 +139,7 @@ class ExplicitRunnerTests(unittest.TestCase):
             capture.update(kwargs)
             return real_create_app(*args, **kwargs)
         with patch.object(api, 'create_app', side_effect=create):
-            app = create_claude_personal_app(operator_token='a'*32, allowed_origin='http://127.0.0.1:8000', fixture=True, semantic_path=self.semantic_path, **self.opts(budget, process_runner=runner))
+            app = create_claude_personal_app(allowed_origin='http://127.0.0.1:8000', fixture=True, semantic_path=self.semantic_path, **self.opts(budget, process_runner=runner))
         return app, capture
 
     def test_actual_app_paths_share_budget_and_receipts(self):

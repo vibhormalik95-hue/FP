@@ -4,8 +4,8 @@
 
 It implements ``GET /v1/models`` and ``POST /v1/chat/completions`` in the form
 that the official pages document (see docs/model-routes.md). With ``--replies
-scripted`` it answers the bundled scenario requests with the hand-written
-rehearsal replies and refuses every other request. ``--fail MODE`` makes every
+scripted`` it answers the bundled scenario requests with the fixed test
+replies of authored_replies.py (a test double) and refuses every other request. ``--fail MODE`` makes every
 chat request fail in one named way, to test how a route reports that failure.
 """
 import argparse

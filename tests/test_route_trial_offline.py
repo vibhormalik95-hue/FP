@@ -2,8 +2,9 @@
 
 scripts/route_trial.py sends the bundled requests of a scenario to the
 application in process and records what the application made of each reply.
-Here the replies are the hand-written rehearsal replies, either from the
-scripted provider or from a stand-in server behind a model route. These tests
+Here the model end of the route is a stand-in server that answers with the
+fixed test replies of tests/standins/authored_replies.py (a test double; no
+launcher has hand-written replies). These tests
 show that the tool reports outcomes, stops before a review, applies nothing
 and keeps credentials out of its records. They are not evidence about a model.
 """
@@ -22,9 +23,10 @@ import pytest
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'scripts'))
 sys.path.insert(0, str(ROOT / 'tests'))
+sys.path.insert(0, str(ROOT / 'tests' / 'standins'))
 
 from feedctrl import model_routes  # noqa: E402
-import demo_scripted_replies  # noqa: E402
+import authored_replies  # noqa: E402  (test double, the same module that the stand-ins use)
 import quickstart  # noqa: E402
 import relay_tools  # noqa: E402
 import route_trial  # noqa: E402
@@ -64,6 +66,14 @@ def route_file(tmp_path, config, name='model-route.json'):
     return str(path)
 
 
+@pytest.fixture
+def route(tmp_path):
+    """The path of a route file whose model end is a stand-in server with the fixed test replies."""
+    with openai_compatible_server.make_server(replies='scripted') as server:
+        yield route_file(tmp_path, {'route': 'openai-compatible', 'base_url': server.url + '/v1', 'model': MODEL},
+                         name='standin-route.json')
+
+
 def by_case(record):
     return {result['case']: result for result in record['cases']}
 
@@ -77,11 +87,11 @@ def everything_written(folder):
 
 
 # --------------------------------------------------------------------------
-# The rehearsal replies: each scenario, outcome classes, nothing applied
+# Each scenario, outcome classes, nothing applied
 # --------------------------------------------------------------------------
 
-def test_the_rehearsal_replies_give_every_request_of_the_tags_scenario_its_class(capsys, tmp_path):
-    code, record, output, errors, out = run_trial(capsys, tmp_path, '--scenario', 'tags', '--provider', 'scripted')
+def test_every_request_of_the_tags_scenario_gets_its_class(capsys, tmp_path, route):
+    code, record, output, errors, out = run_trial(capsys, tmp_path, '--scenario', 'tags', '--route-file', route)
     assert code == 0 and errors == '' and output.isascii()
     assert [result['case'] for result in record['cases']] == list(TAGS)   # the order of the scenario file
     for name, (outcome, calls, selection) in TAGS.items():
@@ -90,7 +100,7 @@ def test_the_rehearsal_replies_give_every_request_of_the_tags_scenario_its_class
         assert result['state_after'] == {'read': True, 'applied_groups': 0, 'can_undo': False, 'feed_unchanged': True,
                                          'revision_unchanged': True, 'fictional_items': 0, 'nothing_applied': True}
         assert result['request_text'] == run_demo.scenario_requests('tags')[name]
-        assert result['authored']['available'] and result['authored']['same_outcome']
+        assert 'authored' not in result   # no comparison with a hand-written answer
     cases = by_case(record)
     # A review names what was chosen and through what; the application selected the items.
     (control,) = cases['vocabulary']['controls']
@@ -112,20 +122,20 @@ def test_the_rehearsal_replies_give_every_request_of_the_tags_scenario_its_class
     assert record['kind'] == route_trial.KIND and record['exit_code'] == 0 and record['scenario'] == 'tags'
     assert record['cases_chosen'] == list(TAGS) and record['interrupted'] is False
     assert record['source_fingerprint'] == run_demo.source_fingerprint()
-    assert record['provider']['kind'] == 'scripted' and record['provider']['identity']['live_model'] is False
+    assert record['provider']['kind'] == 'route' and record['provider']['identity']['backend'] == 'openai-compatible-chat'
     assert record['statements'] == list(route_trial.STATEMENTS)
     text = (out / 'trial.md').read_text(encoding='utf-8')
     assert all(statement in text and statement in output for statement in route_trial.STATEMENTS)
-    assert 'hand-written rehearsal replies. No model.' in text and 'this run is the rehearsal' in text
+    assert 'Provider: model route; backend openai-compatible-chat' in text and 'Same as the authored' not in text
     assert 'nothing was applied' in text and '| vocabulary:mixed | categories and tags | 1 | review |' in text
     assert 'correct' not in output.lower().replace('not proof of a correct interpretation', '')
-    assert sorted(path.name for path in out.iterdir()) == ['trial.json', 'trial.md']   # no route, so no call records
+    assert sorted(path.name for path in out.iterdir()) == ['route-calls', 'trial.json', 'trial.md']
 
 
 @pytest.mark.parametrize('scenario,case,outcome,calls', [
     ('hunger', 'configured_model', 'review', 2), ('category', 'staged', 'definition_review', 1)])
-def test_the_two_older_scenarios_stop_at_their_first_review(capsys, tmp_path, scenario, case, outcome, calls):
-    code, record, output, _, _ = run_trial(capsys, tmp_path, '--scenario', scenario, '--provider', 'scripted')
+def test_the_two_older_scenarios_stop_at_their_first_review(capsys, tmp_path, route, scenario, case, outcome, calls):
+    code, record, output, _, _ = run_trial(capsys, tmp_path, '--scenario', scenario, '--route-file', route)
     (result,) = record['cases']
     assert code == 0 and (result['case'], result['outcome'], result['model_calls']) == (case, outcome, calls)
     assert result['state_after']['nothing_applied'] and record['totals']['nothing_applied']
@@ -159,65 +169,30 @@ def test_cases_lists_the_cases_and_runs_nothing(capsys):
 # A model route (the model end is a stand-in server with the same replies)
 # --------------------------------------------------------------------------
 
-def test_a_route_is_tried_on_the_same_requests_and_compared_with_the_rehearsal_reply(capsys, tmp_path):
+def test_a_route_is_tried_on_the_bundled_requests_and_its_calls_are_recorded(capsys, tmp_path):
     with openai_compatible_server.make_server(replies='scripted') as server:
         path = route_file(tmp_path, {'route': 'openai-compatible', 'base_url': server.url + '/v1', 'model': MODEL})
         code, record, output, errors, out = run_trial(capsys, tmp_path, '--scenario', 'tags', '--route-file', path)
         sent = chat_requests(server)
     assert code == 0 and errors == '' and output.isascii()
-    # Nine calls reached the route. The comparison run with the rehearsal replies made none.
+    # Nine calls reached the route, and no second run with any other provider was made.
     assert len(sent) == 9 and record['totals']['model_calls'] == 9
     for name, (outcome, calls, selection) in TAGS.items():
         result = by_case(record)[name]
         assert (result['outcome'], result['model_calls'], result['selection']) == (outcome, calls, selection), name
-        assert result['authored'] == {'available': True, 'outcome': outcome, 'model_calls': calls,
-                                      'selection': selection, 'selected_item_ids': result['selected_item_ids'],
-                                      'same_outcome': True, 'same_selection': None if selection is None else True}
+        assert 'authored' not in result
         assert result['state_after']['nothing_applied']
         assert [receipt['outcome'] for receipt in result['provider_receipts']] == ['parsed_transport_only'] * calls
     assert record['provider']['kind'] == 'route' and record['provider']['identity']['backend'] == 'openai-compatible-chat'
     assert record['provider']['route_description'][0] == 'Route: openai-compatible'
     assert record['provider']['identity']['route']['model'] == MODEL
-    assert 'same outcome, same selection' in output and 'same as the authored' not in output.lower().replace(
-        'same as authored rehearsal reply', '')
+    assert 'same as authored' not in output.lower() and 'same outcome' not in output
     # The route's own records of each call are in the trial folder.
     assert sorted(path.name for path in (out / 'route-calls').iterdir()) == [
         f'call-000{n}-{part}' for n in range(1, 10) for part in ('receipt.json', 'request.json', 'response.txt')]
     text = (out / 'trial.md').read_text(encoding='utf-8')
     assert 'Provider: model route; backend openai-compatible-chat' in text and 'cannot attest' in text
-    assert 'Same as the authored rehearsal reply' in text and 'It is not a correctness label.' in text
-
-
-def test_another_selection_than_the_rehearsal_reply_is_reported_as_other_not_as_wrong(capsys, tmp_path, monkeypatch):
-    # A reply that passes every check but chooses one name only: the tag, not the category.
-    original = demo_scripted_replies.lookup
-
-    def narrower(payload, schema):
-        reply = original(payload, schema)
-        if payload.get('request') == run_demo.scenario_requests('tags')['vocabulary'] and reply and reply.get('controls'):
-            reply = json.loads(json.dumps(reply))
-            reply['controls'][0]['terms'] = [term for term in reply['controls'][0]['terms'] if term['value'] == 'street food']
-        return reply
-
-    with openai_compatible_server.make_server(replies='scripted') as server:
-        path = route_file(tmp_path, {'route': 'openai-compatible', 'base_url': server.url + '/v1', 'model': MODEL})
-        monkeypatch.setattr(demo_scripted_replies, 'lookup', narrower)
-        # The comparison run must use the unchanged rehearsal reply, as a real trial does.
-        build = route_trial.build_application
-
-        def build_with_original_rehearsal(provider, scenario, **options):
-            if provider == 'scripted':
-                monkeypatch.setattr(demo_scripted_replies, 'lookup', original)
-            return build(provider, scenario, **options)
-
-        monkeypatch.setattr(route_trial, 'build_application', build_with_original_rehearsal)
-        code, record, output, _, _ = run_trial(capsys, tmp_path, '--scenario', 'tags', '--route-file', path,
-                                               '--cases', 'vocabulary')
-    (result,) = record['cases']
-    assert code == 0 and result['outcome'] == 'review' and result['selected_item_ids'] == [61003]
-    assert result['authored']['same_outcome'] is True and result['authored']['same_selection'] is False
-    assert result['authored']['selected_item_ids'] == FOOD
-    assert 'same outcome, other selection' in output and 'wrong' not in output.lower()
+    assert 'same as the authored' not in text.lower()
 
 
 @pytest.mark.parametrize('fault,category,words', [
@@ -235,7 +210,6 @@ def test_a_failing_route_gives_exit_code_2_and_a_line_that_says_what_to_do(capsy
     failed = [result for result in record['cases'] if result['case'] != 'vocabulary:negated']
     assert all(result['outcome'] == 'error' and result['model_calls'] == 1 for result in failed)
     assert record['totals']['errors'] == 8 and record['totals']['nothing_applied']
-    assert all(result['authored']['same_outcome'] is False for result in failed)
     # The description request stops at its first failed call: the second call is not made.
     assert cases['configured_model']['http_status'] == 502 and cases['vocabulary']['http_status'] == 200
     for result in failed:
@@ -268,7 +242,7 @@ def test_a_small_allowance_stops_the_trial_before_any_call(capsys, tmp_path):
 def test_the_relay_route_prints_its_commands_and_waits_for_each_reply(capsys, tmp_path):
     out = tmp_path / 'trial'
     path = route_file(tmp_path, {'route': 'relay', 'declared_model': 'stand-in: a test loop, not a model',
-                                 'transport_note': 'a thread writes the hand-written rehearsal reply', 'timeout_seconds': 30})
+                                 'transport_note': 'a thread writes the fixed test reply', 'timeout_seconds': 30})
     problems = []
 
     def operator():
@@ -276,7 +250,7 @@ def test_the_relay_route_prints_its_commands_and_waits_for_each_reply(capsys, tm
         try:
             for number in (1, 2):
                 request = relay_tools.wait_for_request(out / 'relay', number, wait=20)
-                reply = demo_scripted_replies.lookup({'system': request['system'], **request['payload']}, request['schema'])
+                reply = authored_replies.lookup({'system': request['system'], **request['payload']}, request['schema'])
                 answer = tmp_path / f'answer-{number}.json'
                 answer.write_text(json.dumps(reply), encoding='utf-8')
                 relay_tools.deliver(out / 'relay', number, answer)
@@ -291,7 +265,8 @@ def test_the_relay_route_prints_its_commands_and_waits_for_each_reply(capsys, tm
     record = json.loads((out / 'trial.json').read_text(encoding='utf-8'))
     (result,) = record['cases']
     assert problems == [] and code == 0
-    assert (result['outcome'], result['model_calls'], result['authored']['same_selection']) == ('review', 2, True)
+    assert (result['outcome'], result['model_calls']) == ('review', 2)
+    assert result['selection'] == [['exclude', 'none', [81001, 81003, 81006]]]
     assert record['provider']['identity']['backend'] == 'operator-relay-file-queue'
     assert f'Relay folder: {out / "relay"}' in output and 'relay_tools.py deliver' in output
     assert 'The trial waits for each reply as the app does (up to 30 s for each request).' in output
@@ -349,32 +324,32 @@ def test_a_missing_key_or_route_file_stops_before_any_call(capsys, tmp_path, mon
         assert 'TRIAL_TEST_KEY is not set' in errors
     code, _, _, errors, out = run_trial(capsys, tmp_path, '--scenario', 'hunger', '--route-file', str(tmp_path / 'none.json'))
     assert code == 1 and not out.exists()
-    assert 'does not exist' in errors and 'quickstart.py setup' in errors and '--provider scripted' in errors
+    assert 'does not exist' in errors and 'quickstart.py setup' in errors and 'scripted' not in errors
 
 
 # --------------------------------------------------------------------------
 # Usage problems and the invariant
 # --------------------------------------------------------------------------
 
-def test_usage_problems_are_exit_code_1_with_a_plain_message(capsys, tmp_path):
-    code, _, _, errors, _ = run_trial(capsys, tmp_path, '--scenario', 'tags', '--provider', 'scripted', '--cases', 'mixed')
+def test_usage_problems_are_exit_code_1_with_a_plain_message(capsys, tmp_path, route):
+    code, _, _, errors, _ = run_trial(capsys, tmp_path, '--scenario', 'tags', '--route-file', route, '--cases', 'mixed')
     assert code == 1 and 'Unknown case: mixed' in errors and 'vocabulary:mixed' in errors
-    code, _, _, errors, _ = run_trial(capsys, tmp_path, '--scenario', 'not-a-scenario', '--provider', 'scripted')
+    code, _, _, errors, _ = run_trial(capsys, tmp_path, '--scenario', 'not-a-scenario', '--route-file', route)
     assert code == 1 and 'Unknown scenario' in errors and 'tags' in errors
-    code, _, _, errors, _ = run_trial(capsys, tmp_path, '--scenario', 'tags', '--provider', 'scripted',
-                                      '--route-file', 'model-route.json')
-    assert code == 1 and 'not both' in errors
+    # The rehearsal provider with hand-written replies was removed.
+    code, _, _, errors, _ = run_trial(capsys, tmp_path, '--scenario', 'tags', '--provider', 'scripted', name='old')
+    assert code == 1 and not (tmp_path / 'old').exists()
     used = tmp_path / 'used'
     used.mkdir()
     (used / 'old.txt').write_text('x', encoding='utf-8')
-    code, _, _, errors, _ = run_trial(capsys, tmp_path, '--scenario', 'tags', '--provider', 'scripted', name='used')
+    code, _, _, errors, _ = run_trial(capsys, tmp_path, '--scenario', 'tags', '--route-file', route, name='used')
     assert code == 1 and 'not an empty folder' in errors and sorted(path.name for path in used.iterdir()) == ['old.txt']
     assert route_trial.main(['run', '--no-such-option']) == 1 and route_trial.main(['compare', 'one']) == 1
     capsys.readouterr()
     assert route_trial.main(['--help']) == 0 and 'run' in capsys.readouterr().out
 
 
-def test_a_changed_applied_state_is_reported_as_a_defect_with_exit_code_1(capsys, tmp_path, monkeypatch):
+def test_a_changed_applied_state_is_reported_as_a_defect_with_exit_code_1(capsys, tmp_path, monkeypatch, route):
     # The application does not change its state on a preview. If it ever did, the trial must say so loudly.
     read, reads = route_trial.applied_state, []
 
@@ -384,14 +359,14 @@ def test_a_changed_applied_state_is_reported_as_a_defect_with_exit_code_1(capsys
         return {**state, 'groups': [{'label': 'applied by a defect'}]} if len(reads) % 2 == 0 else state
 
     monkeypatch.setattr(route_trial, 'applied_state', changed_after_the_request)
-    code, record, output, _, out = run_trial(capsys, tmp_path, '--scenario', 'hunger', '--provider', 'scripted')
+    code, record, output, _, out = run_trial(capsys, tmp_path, '--scenario', 'hunger', '--route-file', route)
     assert code == 1 and record['exit_code'] == 1 and record['totals']['nothing_applied'] is False
     assert record['totals']['state_changed'] is True and record['cases'][0]['state_after']['applied_groups'] == 1
     assert 'THE APPLIED STATE CHANGED DURING A CASE' in output
     assert 'THE STATE CHANGED' in (out / 'trial.md').read_text(encoding='utf-8')
 
 
-def test_a_state_that_cannot_be_read_back_is_not_reported_as_unchanged(capsys, tmp_path, monkeypatch):
+def test_a_state_that_cannot_be_read_back_is_not_reported_as_unchanged(capsys, tmp_path, monkeypatch, route):
     read, reads = route_trial.applied_state, []
 
     def unreadable_after_the_request(client, headers, user):
@@ -399,7 +374,7 @@ def test_a_state_that_cannot_be_read_back_is_not_reported_as_unchanged(capsys, t
         return None if len(reads) % 2 == 0 else read(client, headers, user)
 
     monkeypatch.setattr(route_trial, 'applied_state', unreadable_after_the_request)
-    code, record, output, _, out = run_trial(capsys, tmp_path, '--scenario', 'hunger', '--provider', 'scripted')
+    code, record, output, _, out = run_trial(capsys, tmp_path, '--scenario', 'hunger', '--route-file', route)
     (result,) = record['cases']
     assert code == 1 and result['outcome'] == 'review' and result['state_after'] == {'read': False, 'nothing_applied': None}
     assert record['totals']['nothing_applied'] is False and record['totals']['state_changed'] is False
@@ -407,13 +382,13 @@ def test_a_state_that_cannot_be_read_back_is_not_reported_as_unchanged(capsys, t
     assert 'does not state that nothing was applied' in (out / 'trial.md').read_text(encoding='utf-8')
     # Not readable before the request: the request is not sent at all.
     monkeypatch.setattr(route_trial, 'applied_state', lambda client, headers, user: None)
-    code, record, _, _, _ = run_trial(capsys, tmp_path, '--scenario', 'hunger', '--provider', 'scripted', name='second')
+    code, record, _, _, _ = run_trial(capsys, tmp_path, '--scenario', 'hunger', '--route-file', route, name='second')
     (result,) = record['cases']
     assert code == 1 and result['outcome'] == 'error' and result['model_calls'] == 0 and result['http_status'] is None
     assert 'the request was not sent' in result['reason']
 
 
-def test_an_interrupted_trial_keeps_the_finished_cases(capsys, tmp_path, monkeypatch):
+def test_an_interrupted_trial_keeps_the_finished_cases(capsys, tmp_path, monkeypatch, route):
     run_one, seen = route_trial.run_case, []
 
     def interrupt_at_the_third(client, case, user, label, receipts):
@@ -423,7 +398,7 @@ def test_an_interrupted_trial_keeps_the_finished_cases(capsys, tmp_path, monkeyp
         return run_one(client, case, user, label, receipts)
 
     monkeypatch.setattr(route_trial, 'run_case', interrupt_at_the_third)
-    code, record, output, _, out = run_trial(capsys, tmp_path, '--scenario', 'tags', '--provider', 'scripted')
+    code, record, output, _, out = run_trial(capsys, tmp_path, '--scenario', 'tags', '--route-file', route)
     assert code == 1 and record['interrupted'] is True and record['exit_code'] == 1
     assert [result['case'] for result in record['cases']] == ['vocabulary', 'vocabulary:literal']
     assert record['cases_chosen'] == list(TAGS) and record['totals']['nothing_applied'] is True
@@ -480,32 +455,30 @@ def test_ctrl_c_during_a_waiting_model_call_records_the_finished_cases_and_stops
     assert not any(thread.is_alive() for thread in route_trial._IN_FLIGHT)
 
 
-def test_an_answer_with_other_fields_than_expected_is_an_error_of_its_case(capsys, tmp_path, monkeypatch):
+def test_an_answer_with_other_fields_than_expected_is_an_error_of_its_case(capsys, tmp_path, monkeypatch, route):
     # A review answer without the fields that the trial reads: the tool and the application do not match.
     monkeypatch.setattr(route_trial, 'read_review', lambda method, body: body['no_such_field'])
-    code, record, _, _, _ = run_trial(capsys, tmp_path, '--scenario', 'hunger', '--provider', 'scripted')
+    code, record, _, _, _ = run_trial(capsys, tmp_path, '--scenario', 'hunger', '--route-file', route)
     (result,) = record['cases']
     assert code == 2 and result['outcome'] == 'error' and 'could not read the answer' in result['reason']
     assert 'KeyError' in result['reason'] and result['state_after']['nothing_applied'] is True
 
 
-def test_a_defect_in_a_provider_is_an_error_of_its_case_not_a_crash(capsys, tmp_path, monkeypatch):
+def test_a_defect_in_a_provider_is_an_error_of_its_case_not_a_crash(capsys, tmp_path, monkeypatch, route):
     def broken(payload, schema):
         raise RuntimeError('defect in a provider')
 
-    monkeypatch.setattr(demo_scripted_replies, 'lookup', broken)
-    code, record, output, _, _ = run_trial(capsys, tmp_path, '--scenario', 'tags', '--provider', 'scripted',
+    # The stand-in server then closes the connection without an answer.
+    monkeypatch.setattr(authored_replies, 'lookup', broken)
+    code, record, output, _, _ = run_trial(capsys, tmp_path, '--scenario', 'tags', '--route-file', route,
                                            '--cases', 'vocabulary,vocabulary:negated')
     cases = by_case(record)
     assert code == 2 and cases['vocabulary']['outcome'] == 'error' and cases['vocabulary']['state_after']['nothing_applied']
     assert cases['vocabulary:negated']['outcome'] == 'clarify'
-    # With no working rehearsal reply there is nothing to compare with, and the record says so.
-    assert cases['vocabulary']['authored'] == {'available': False,
-                                               'reason': 'No hand-written rehearsal reply exists for this request.'}
-    assert 'no rehearsal reply' in output
+    assert 'authored' not in cases['vocabulary'] and 'no rehearsal reply' not in output
 
 
-def test_a_defect_in_the_application_is_an_error_of_its_case_not_a_crash(capsys, tmp_path, monkeypatch):
+def test_a_defect_in_the_application_is_an_error_of_its_case_not_a_crash(capsys, tmp_path, monkeypatch, route):
     from feedctrl import vocabulary_grounding
 
     def broken(index):
@@ -513,7 +486,7 @@ def test_a_defect_in_the_application_is_an_error_of_its_case_not_a_crash(capsys,
 
     # The application answers HTTP 500 for an exception that it does not expect.
     monkeypatch.setattr(vocabulary_grounding, 'build_vocabulary', broken)
-    code, record, output, _, _ = run_trial(capsys, tmp_path, '--scenario', 'tags', '--provider', 'scripted',
+    code, record, output, _, _ = run_trial(capsys, tmp_path, '--scenario', 'tags', '--route-file', route,
                                            '--cases', 'vocabulary,configured_model')
     cases = by_case(record)
     assert code == 2 and record['totals']['errors'] == 1 and record['totals']['nothing_applied']
@@ -534,8 +507,8 @@ def test_text_for_the_terminal_is_ascii_and_a_long_reason_is_kept_in_the_record(
 # compare
 # --------------------------------------------------------------------------
 
-def test_compare_puts_two_trials_side_by_side_and_refuses_what_cannot_be_compared(capsys, tmp_path):
-    _, first, _, _, a = run_trial(capsys, tmp_path, '--scenario', 'tags', '--provider', 'scripted', name='a')
+def test_compare_puts_two_trials_side_by_side_and_refuses_what_cannot_be_compared(capsys, tmp_path, route):
+    _, first, _, _, a = run_trial(capsys, tmp_path, '--scenario', 'tags', '--route-file', route, name='a')
     with openai_compatible_server.make_server(replies='scripted') as server:
         path = route_file(tmp_path, {'route': 'openai-compatible', 'base_url': server.url + '/v1', 'model': MODEL})
         run_trial(capsys, tmp_path, '--scenario', 'tags', '--route-file', path, name='b')
@@ -559,7 +532,7 @@ def test_compare_puts_two_trials_side_by_side_and_refuses_what_cannot_be_compare
     capsys.readouterr()
 
     # A different scenario: other requests.
-    run_trial(capsys, tmp_path, '--scenario', 'hunger', '--provider', 'scripted', name='hunger')
+    run_trial(capsys, tmp_path, '--scenario', 'hunger', '--route-file', route, name='hunger')
     assert route_trial.main(['compare', str(a), str(tmp_path / 'hunger')]) == 1
     assert 'different scenarios ("tags" and "hunger")' in capsys.readouterr().err
     # A different source: other application, requests or items.
@@ -580,9 +553,9 @@ def test_compare_puts_two_trials_side_by_side_and_refuses_what_cannot_be_compare
     assert route_trial.main(['compare', str(a), str(empty)]) == 1 and 'not valid JSON' in capsys.readouterr().err
 
 
-def test_compare_marks_a_case_that_one_trial_did_not_run_and_two_different_selections(capsys, tmp_path):
-    _, first, _, _, a = run_trial(capsys, tmp_path, '--scenario', 'tags', '--provider', 'scripted', name='a')
-    _, _, _, _, part = run_trial(capsys, tmp_path, '--scenario', 'tags', '--provider', 'scripted',
+def test_compare_marks_a_case_that_one_trial_did_not_run_and_two_different_selections(capsys, tmp_path, route):
+    _, first, _, _, a = run_trial(capsys, tmp_path, '--scenario', 'tags', '--route-file', route, name='a')
+    _, _, _, _, part = run_trial(capsys, tmp_path, '--scenario', 'tags', '--route-file', route,
                                  '--cases', 'vocabulary,vocabulary:ambiguous', name='part')
     # The second trial chose one name only for the same request, and gave another class to the second one.
     changed = json.loads((part / 'trial.json').read_text(encoding='utf-8'))
@@ -605,29 +578,29 @@ def test_compare_marks_a_case_that_one_trial_did_not_run_and_two_different_selec
 # The command lines
 # --------------------------------------------------------------------------
 
-def test_quickstart_try_is_the_run_step_of_the_trial(capsys, tmp_path):
+def test_quickstart_try_is_the_run_step_of_the_trial(capsys, tmp_path, route):
     out = tmp_path / 'from-quickstart'
     with pytest.raises(SystemExit) as stopped:
-        quickstart.main(['try', '--scenario', 'hunger', '--provider', 'scripted', '--out', str(out)])
+        quickstart.main(['try', '--scenario', 'hunger', '--route-file', route, '--out', str(out)])
     assert stopped.value.code == 0 and json.loads((out / 'trial.json').read_text())['scenario'] == 'hunger'
     assert 'No case ended in an error.' in capsys.readouterr().out
     with pytest.raises(SystemExit) as stopped:
-        quickstart.main(['try', '--scenario', 'tags', '--provider', 'scripted', '--cases', 'nothing'])
+        quickstart.main(['try', '--scenario', 'tags', '--route-file', route, '--cases', 'nothing'])
     assert stopped.value.code == 1
     assert 'try' in quickstart.__doc__ and 'docs/route-trial.md' in quickstart.__doc__
 
 
-def test_the_script_runs_from_a_plain_command_line_with_the_documented_exit_codes(tmp_path):
+def test_the_script_runs_from_a_plain_command_line_with_the_documented_exit_codes(tmp_path, route):
     script = [sys.executable, str(ROOT / 'scripts' / 'route_trial.py')]
     started = time.monotonic()
-    done = subprocess.run([*script, 'run', '--scenario', 'hunger', '--provider', 'scripted', '--out', str(tmp_path / 'cli')],
+    done = subprocess.run([*script, 'run', '--scenario', 'hunger', '--route-file', route, '--out', str(tmp_path / 'cli')],
                           capture_output=True, text=True, cwd=str(tmp_path), timeout=120)
     assert done.returncode == 0 and done.stderr == '' and done.stdout.isascii(), done.stderr
     assert 'No case ended in an error.' in done.stdout and (tmp_path / 'cli' / 'trial.md').is_file()
     # It ran the files of this tree, from another working folder.
     record = json.loads((tmp_path / 'cli' / 'trial.json').read_text(encoding='utf-8'))
     assert record['source_fingerprint'] == run_demo.source_fingerprint()
-    wrong = subprocess.run([*script, 'run', '--scenario', 'hunger', '--provider', 'scripted', '--cases', 'x'],
+    wrong = subprocess.run([*script, 'run', '--scenario', 'hunger', '--route-file', route, '--cases', 'x'],
                            capture_output=True, text=True, cwd=str(tmp_path), timeout=120)
     assert wrong.returncode == 1 and 'Unknown case: x' in wrong.stderr and wrong.stdout == ''
     assert time.monotonic() - started < 120

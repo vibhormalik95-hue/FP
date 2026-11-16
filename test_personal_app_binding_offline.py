@@ -21,7 +21,7 @@ sys.path.insert(0,str(ROOT))
 from diagnostic import app_binding
 APPROVALS={k:True for k in app_binding._APPROVALS}
 CTX={'context_file':ROOT/'fake-context','context_sha256':'a'*64,'cli':str(ROOT/'fake-cli'),'workdir':str(ROOT),'home':str(ROOT)}
-ARGS=dict(context=CTX,marker=ROOT/'fake-marker',operator_token='x'*32,allowed_origin='http://127.0.0.1:8000',model='claude-offline-test',effort='max',estimated_per_invocation_usd=5,output_mode='plain_json',reviewed_cli_version='2.1.321',approvals=APPROVALS,reviewed_files={},fixture=True)
+ARGS=dict(context=CTX,marker=ROOT/'fake-marker',allowed_origin='http://127.0.0.1:8000',model='claude-offline-test',effort='max',estimated_per_invocation_usd=5,output_mode='plain_json',reviewed_cli_version='2.1.321',approvals=APPROVALS,reviewed_files={},fixture=True)
 class Checks(unittest.TestCase):
  def test_default_and_incomplete_review_fail_before_binding(self):
   with patch.object(app_binding.bootstrap,'bind_once') as bind:

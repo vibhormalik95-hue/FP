@@ -39,20 +39,20 @@ python scripts/quickstart.py check
 The command prints the source fingerprint, the Python version and the versions of the libraries. The last line must be `built interface: present`.
 The source fingerprint is one SHA-256 value over the files that decide what the application does. A run record holds the same value, so you can match a record to your files.
 
-## 4. Rehearse without a model
+## 4. Try the page without a model
 
 ```
-python scripts/quickstart.py rehearse --scenario tags
+python scripts/quickstart.py manual --scenario tags
 ```
 
-Open <http://127.0.0.1:8765>. The status line of the page shows **AUTHORED REPLIES · NO MODEL**. The replies were written by hand for the bundled requests.
-Do each method once here before you use a model. The [guide to the language controls](demo.md) gives the steps.
+Open <http://127.0.0.1:8765>. Without a model only the manual category control works; the model methods are marked "(needs a model provider)". There is no mode with hand-written replies.
+To try the language-control screens with no key and no cost, use Feed Control Studio instead: run `run-studio.cmd` and choose the **Mock** provider (see the [Studio guide](studio-guide.md)).
 Press Ctrl+C in the terminal to stop the server.
 
-The original conditions A to E need category IDs of the form `category_N`. To try them, rehearse the built-in fixture:
+The original conditions A to E need category IDs of the form `category_N`. To try them, serve the built-in fixture:
 
 ```
-python scripts/quickstart.py rehearse --scenario conditions
+python scripts/quickstart.py manual --scenario conditions
 ```
 
 The page then opens on "Original study (A to E)". This scenario uses no model and has no language controls. On the other scenarios the instruction and the profile of C, D and E are disabled, and the page says why.
@@ -111,7 +111,7 @@ Open <http://127.0.0.1:8765>. The page opens on **Language controls**. The statu
 | `category` | Eight invented items. The manual control and a new category from natural language. |
 | `hunger` | Eight invented items. The manual control and an indirect request matched to item descriptions. |
 
-`start` does not serve the scenario `conditions`, because that scenario has no language controls. Use `rehearse --scenario conditions` for it.
+`start` does not serve the scenario `conditions`, because that scenario has no language controls. Use `manual --scenario conditions` for it.
 
 - The terminal prints one line for each model call.
 - The exact request and the raw reply of each call go to a new folder `runs/route-SCENARIO-DATE-TIME/`. Add `--record-dir none` if you do not want these files.
@@ -161,15 +161,15 @@ Run these checks from the source folder. They use no model.
    npx playwright install chromium
    ```
 
-   Start the rehearsal of step 4 in one terminal. In a second terminal run:
+   Without a model, start the server of step 4 in one terminal. In a second terminal run the flows that need no model:
 
    ```
-   node tests/browser/demo_flows.cjs --base http://127.0.0.1:8765 --scenario tags --out runs/browser-tags-01
+   node tests/browser/demo_flows.cjs --base http://127.0.0.1:8765 --scenario tags --flows manual,history --out runs/browser-tags-01
    ```
 
-   The last lines must be `OUTCOME all flows completed` and the path of the receipt. `--out` must name a new or empty folder.
-   Do the same for the scenarios `category`, `hunger` and `conditions`, each with its own rehearsal server and its own `--out` folder. Recorded on `ff92666`: with authored replies on Linux: `tags` 222 checks, `category` 106, `hunger` 98, `conditions` 12; all passed, exit code 0 each.
-   With a model in place of the rehearsal, add `--review wait --reviewer "your name"`. The script then stops at each review and waits for your decision. See [check a run in a real browser](demo.md#check-a-run-in-a-real-browser).
+   The last lines must be `OUTCOME all flows completed` and the path of the receipt. `--out` must name a new or empty folder. For the scenario `conditions` (served with `manual --scenario conditions`) the script runs the flow `original`.
+   Recorded on `ff92666` (with the rehearsal provider that has since been removed) on Linux: `tags` 222 checks, `category` 106, `hunger` 98, `conditions` 12; all passed, exit code 0 each.
+   For the model flows, start the server with `start` and a model route, and add `--review wait --reviewer "your name"`. The script then stops at each review and waits for your decision. See [check a run in a real browser](demo.md#check-a-run-in-a-real-browser).
 
 The two commands that install the browser were not run for this page: the workspace that produced it already had Playwright and Chromium.
 
@@ -190,6 +190,5 @@ Press Ctrl+C in the terminal of the server. Controls and reviews last for one br
 | `Run "python scripts/quickstart.py setup" first.` | The route file `model-route.json` does not exist yet, or it has an error. Run `setup`. |
 | A line that starts with `FAILED` in `doctor` | Read the line `What to do:` below it. The [failure table](model-routes.md#if-something-fails) lists every message. |
 | The page shows "The call to the provider failed", "The application rejected the reply" or "The request failed" | Read the message in the block "Application checks". It comes from the application or from the model provider. Nothing was applied. |
-| The page shows "No authored reply exists for this request" | The server runs with hand-written replies (`rehearse`). They exist only for the bundled requests. Insert a bundled request, or start the server with `start` and a model route. |
-| The model methods are marked "(needs a model provider)" | The server runs without a model (`--provider manual`). Start it with `rehearse` or `start`. |
-| The instruction and the profile of the conditions C, D and E are disabled | The scenario has named categories. Use `python scripts/quickstart.py rehearse --scenario conditions`. |
+| The model methods are marked "(needs a model provider)" | The server runs without a model (`manual`). Start it with `start` and a model route, or use Feed Control Studio (`run-studio.cmd`, **Mock** provider) to try the screens with no key. |
+| The instruction and the profile of the conditions C, D and E are disabled | The scenario has named categories. Use `python scripts/quickstart.py manual --scenario conditions`. |

@@ -2,7 +2,7 @@
 
 It prints the same kind of JSON result object that the CLI documentation
 describes for ``claude -p --output-format json``. It answers with the
-hand-written rehearsal replies. A route starts it through a small launcher file
+fixed test replies of authored_replies.py (a test double). A route starts it through a small launcher file
 (``common.write_launcher``), because a route starts a program by its path.
 
 Behaviour is set through environment variables, which the route must name in

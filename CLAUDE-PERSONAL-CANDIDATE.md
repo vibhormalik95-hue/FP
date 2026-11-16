@@ -19,7 +19,7 @@ Before any future activation, verify:
 - The requested model, effective fallback behavior, routing and reasoning effort. Requested effort may be reduced by provider or organization policy.
 - The exact data and recipient authorized for the run, including context that managed hooks might add.
 - Process containment, bounded output capture and timeout cleanup on the actual operating system.
-- Personal-only access, a securely random operator token, loopback binding and browser behavior.
+- Personal-only access, loopback binding and browser behavior.
 - The run's call allowance, estimated CLI threshold and any separately verified account-side limit.
 
 Configuration flags and version strings are declarations, not proof that these checks happened. Safe mode still permits managed policy and hooks. An isolated working directory and disabled built-in tools are not an operating-system sandbox.
@@ -66,16 +66,12 @@ Receipt SHA-256: `584caa325f927e937349227357b1971a5e72654acf09296c89ce8b33b0f0c9
 
 That check also did not execute the project or verify app integration.
 
-## Browser access and operator token
+## Browser access
 
-The personal app requires an externally supplied operator token and an explicit canonical HTTP loopback origin with a non-default port, such as `http://127.0.0.1:8000`. A future launcher must bind directly to that address, disable proxy-header trust and protect the token. These checks do not isolate operating-system users.
+The personal app requires an explicit canonical HTTP loopback origin with a non-default port, such as `http://127.0.0.1:8000`. There is no password or operator token. A future launcher must bind directly to that address and disable proxy-header trust. These checks do not isolate operating-system users: any local process that can reach the loopback port can use the app.
 
-Only the index and exact built assets are served without the token. Every API route requires the operator header. Remote peers, mismatched Host or Origin, forwarded headers and cross-site API requests are rejected.
+Remote peers, mismatched Host or Origin, duplicate Host/Origin/Sec-Fetch-Site headers, forwarded headers and cross-site API requests are rejected. A browser request that is not GET or HEAD must carry the matching Origin. Served responses carry no-store, no-referrer, nosniff, frame-deny and a same-origin content security policy.
 
-The personal index enables a token-entry screen. After a successful check, the UI holds the token only in JavaScript memory and adds it to same-origin API request headers. This code does not put it in URLs, browser storage, application logs or model requests. The form requests autocomplete off. Browser extensions, password managers, debuggers, compromised same-origin scripts and other local processes remain outside this protection.
+The personal index is marked as loopback mode, and the page opens the app directly. Its API requests omit credentials, refuse redirects and bypass the cache. The normal non-personal app retains its existing session header.
 
-Lock clears the UI's token references, aborts outstanding fetches and starts a new UI session on the next unlock. Refresh also returns to token entry. Resetting the research user leaves the operator session unlocked.
-
-Lock cannot revoke a copied token, immediately erase strings from browser memory, delete server sessions or guarantee that already-started backend work stops. Supply the token securely outside the app; these files do not generate or store it. The normal non-personal app has no token-entry requirement and retains its existing session header.
-
-The token flow has offline tests, but browser verification is still outstanding. The default CLI launcher remains disabled; the explicit runner path has the bounded headless evidence described above.
+The loopback boundary has offline tests, but browser verification is still outstanding. The default CLI launcher remains disabled; the explicit runner path has the bounded headless evidence described above.
