@@ -163,7 +163,7 @@ function evidenceBox(p) {
   if (p.kind === 'new-items') {
     return stageBox('How the model classified the new videos', `<table><tr><th>New video</th><th>Category</th><th>Tags</th><th>Your categories</th><th>Why</th></tr>${
       p.evidence.map(e => `<tr><td>${esc(e.title)} <span class="muted">${esc(e.item_id)}</span></td><td>${esc(e.category)}</td><td>${esc(e.tags.join(', '))}</td>
-        <td>${e.new_categories.map(n => `${esc(n.label)}: <b>${esc(n.verdict)}</b>${n.quote ? ' “' + esc(n.quote) + '”' : ''}`).join('<br>')}</td>
+        <td>${e.new_categories.map(n => `${esc(n.label)}: <b>${esc(n.verdict.replace('_', ' '))}</b>${n.quote ? ' “' + esc(n.quote) + '”' : ''}${n.assessment ? (n.assessment.supports ? ' · check ✓' : ' · check ✗') : ''}${n.selected ? ' → <b>joins</b>' : ''}`).join('<br>')}</td>
         <td>${esc(e.category_reason)}</td></tr>`).join('')}</table>`);
   }
   return '';

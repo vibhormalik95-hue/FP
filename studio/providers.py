@@ -277,7 +277,10 @@ def build_provider(kind, *, api_key=None, model=None, effort=None, base_url=None
     if kind == "anthropic":
         return AnthropicProvider(api_key or os.environ.get("ANTHROPIC_API_KEY", ""), model=model, effort=effort)
     if kind == "openai":
-        return OpenAICompatibleProvider(api_key or os.environ.get("OPENAI_API_KEY", ""), model=model, base_url=base_url)
+        # The environment key is only sent to OpenAI itself, never to another server.
+        official = not base_url or base_url.rstrip("/").startswith("https://api.openai.com")
+        env_key = os.environ.get("OPENAI_API_KEY", "") if official else ""
+        return OpenAICompatibleProvider(api_key or env_key, model=model, base_url=base_url)
     if kind == "claude-cli":
         return ClaudeCLIProvider(model=model, effort=effort)
     raise ProviderError(f"Unknown provider: {kind}")
@@ -288,15 +291,29 @@ def env_key_available(kind):
                  "openai": os.environ.get("OPENAI_API_KEY")}.get(kind))
 
 
-class Ledger:
-    """Running record of every model call: cost per call and running total."""
+CEILING_PRICE = (16.0, 80.0)   # highest per-token price we know (fast mode); used when a price is unknown
 
-    def __init__(self):
+
+class Ledger:
+    """Running record of every model call: cost per call and running total.
+
+    ``budget_usd`` (optional) is the amount this process may still spend; once the
+    running total reaches it, no further calls are started."""
+
+    def __init__(self, budget_usd=None):
         self.calls = []
+        self.budget_usd = budget_usd
         self._lock = threading.Lock()
+
+    def over_budget(self):
+        return self.budget_usd is not None and self.total() >= self.budget_usd
 
     def add(self, call):
         with self._lock:
+            if call.get("cost_usd") is None and not call.get("error"):
+                tin, tout = call.get("input_tokens") or 0, call.get("output_tokens") or 0
+                call["cost_usd"] = round(tin / 1e6 * CEILING_PRICE[0] + tout / 1e6 * CEILING_PRICE[1], 6)
+                call["cost_source"] = "price unknown: upper-bound estimate"
             self.calls.append(call)
             call["running_total_usd"] = self.total()
         return call

@@ -68,7 +68,7 @@
         <h2>3 · Plain-language request</h2>
         <p class="help">Say what you want in your own words. The model maps it to existing categories and tags; it does not see item descriptions.</p>
         <label for="interpret-text">Your request</label>
-        <textarea id="interpret-text" rows="3" placeholder="e.g. I'm not hungry, remove all the stuff that makes me hungry."></textarea>
+        <textarea id="interpret-text" rows="3" placeholder="Say what you want, e.g. less of the loud stuff tonight, I want to relax"></textarea>
         <button id="interpret-preview" class="primary">Interpret and preview</button>
       </div>
 
@@ -76,7 +76,7 @@
         <h2>4 · New category from a description</h2>
         <p class="help">Step 1: the model writes a definition with quoted evidence. Step 2: you edit or accept it. Step 3: the model classifies every video with a quote, and a separate call checks each quote.</p>
         <label for="category-text">Describe the category you want</label>
-        <textarea id="category-text" rows="3" placeholder="e.g. Videos where someone teaches a skill step by step"></textarea>
+        <textarea id="category-text" rows="3" placeholder="Describe the kind of videos the category should hold"></textarea>
         <button id="category-define" class="primary">Propose a definition</button>
         <div id="definition-box" hidden>
           <label for="def-label">Label (edit if needed)</label>

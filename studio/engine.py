@@ -68,6 +68,13 @@ class Studio:
     def _restore(self, snap):
         self.items, self.custom, self.controls = snap["items"], snap["custom"], snap["controls"]
 
+    def view(self):
+        """A consistent, private copy of the state, taken under the lock before any model call."""
+        with self._lock:
+            return {"version": self.version, "items": copy.deepcopy(self.items), "custom": copy.deepcopy(self.custom),
+                    "controls": copy.deepcopy(self.controls), "categories": self.categories(), "tags": self.tags(),
+                    "vocabulary": self.vocabulary(), "cold_start": self.cold_start_score()}
+
     # ----- vocabulary ---------------------------------------------------
     def categories(self):
         counts = {}
@@ -116,12 +123,15 @@ class Studio:
         items = self.items if items is None else items
         controls = self.controls if controls is None else controls
         custom = self.custom if custom is None else custom
-        only = [c for c in controls if c["action"] == "only"]
+        only_groups = {}
+        for c in controls:
+            if c["action"] == "only":   # labels proposed together for one preference are OR-ed
+                only_groups.setdefault(c.get("group") or c["id"], []).append(c)
         rows = []
         for item in items.values():
             if any(c["action"] == "hide" and self.matches(item, c["target"], custom) for c in controls):
                 continue
-            if only and not all(self.matches(item, c["target"], custom) for c in only):
+            if any(not any(self.matches(item, c["target"], custom) for c in group) for group in only_groups.values()):
                 continue
             score = item["score"]
             for c in controls:
@@ -153,15 +163,24 @@ class Studio:
 
     # ----- previews -------------------------------------------------------
     def _new_preview(self, kind, summary, *, controls=(), new_custom=None, new_items=None,
-                     proposal=None, evidence=None, checks=None, calls=None, notes=None):
+                     proposal=None, evidence=None, checks=None, calls=None, notes=None,
+                     base_version=None, custom_updates=None):
         with self._lock:
             self._expire()
+            if base_version is not None and base_version != self.version:
+                raise StudioError("The feed changed while the model was working (a change was applied or undone). "
+                                  "Run the preview again so it reflects the current feed.", 409)
             items = dict(self.items)
             for item in new_items or []:
+                if item["id"] in items:
+                    raise StudioError(f"Video id {item['id']} already exists. Run the preview again.", 409)
                 items[item["id"]] = item
-            custom = dict(self.custom)
+            custom = {k: {**v, "members": dict(v["members"])} for k, v in self.custom.items()}
             if new_custom:
                 custom[new_custom["label"]] = new_custom
+            for label, members in (custom_updates or {}).items():
+                if label in custom:
+                    custom[label]["members"].update(members)
             all_controls = self.controls + list(controls)
             before = self.feed()
             after = self.feed(items, all_controls, custom)
@@ -170,7 +189,7 @@ class Studio:
                 "created": time.time(), "expires_in_s": PREVIEW_TTL_S, "base_version": self.version,
                 "controls": [dict(c, text=control_text(c)) for c in controls],
                 "affected": self.affected(controls, items, custom),
-                "new_custom": new_custom, "new_items": new_items or [],
+                "new_custom": new_custom, "new_items": new_items or [], "custom_updates": custom_updates or {},
                 "proposal": proposal, "evidence": evidence or [], "checks": checks or [],
                 "calls": calls or [], "notes": notes or [],
                 "feed_before": before, "feed_after": after, "changes": self.diff(before, after),
@@ -194,6 +213,8 @@ class Studio:
                 raise StudioError("The feed changed after this preview was made (another change was applied or undone). Run the preview again so you review the current effect.", 409)
             if not preview["applicable"]:
                 raise StudioError("There is nothing to apply in this preview.", 400)
+            if any(item["id"] in self.items for item in preview["new_items"]):
+                raise StudioError("A video in this preview already exists. Run the preview again.", 409)
             self.history.append(self._snapshot())
             for item in preview["new_items"]:
                 self.items[item["id"]] = item
@@ -203,7 +224,7 @@ class Studio:
                 if label in self.custom:
                     self.custom[label]["members"].update(members)
             for c in preview["controls"]:
-                self.controls.append({k: c[k] for k in ("id", "source", "action", "strength", "target")})
+                self.controls.append({k: c.get(k) for k in ("id", "source", "action", "strength", "target", "group")})
             self.version += 1
             del self.previews[preview_id]
             self.log.append({"event": "applied", "kind": preview["kind"], "summary": preview["summary"], "at": time.time()})
@@ -243,18 +264,19 @@ class Studio:
     def public_item(item):
         return {k: item.get(k) for k in ("id", "title", "description", "category", "tags", "score", "origin")}
 
-    def new_item_id(self, offset=0):
-        n = 1 + offset + max((int(i[1:]) for i in self.items if i[1:].isdigit()), default=100)
+    def new_item_id(self, offset=0, items=None):
+        n = 1 + offset + max((int(i[1:]) for i in (items or self.items) if i[1:].isdigit()), default=100)
         return f"v{n}"
 
     def cold_start_score(self):
         return round(statistics.median(i["score"] for i in self.items.values()), 3)
 
 
-def make_control(source, action, target, strength="standard"):
+def make_control(source, action, target, strength="standard", group=None):
     if action not in ACTIONS:
         raise StudioError(f"Unknown action {action!r}.")
     if strength not in STRENGTHS:
         raise StudioError(f"Unknown strength {strength!r}.")
-    return {"id": secrets.token_hex(4), "source": source, "action": action,
-            "strength": strength, "target": target}
+    cid = secrets.token_hex(4)
+    return {"id": cid, "source": source, "action": action,
+            "strength": strength, "target": target, "group": group or cid}

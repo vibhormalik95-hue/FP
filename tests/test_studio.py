@@ -195,7 +195,8 @@ def test_new_items_checks_categories_tags_and_custom_membership():
          "tags": ["baking", "made-up-tag"], "new_categories": [
              {"label": "Teaches a skill", "verdict": "match", "quote": "step by step", "reason": "steps"}]},
         {"item_id": pl["new_items"][1]["item_id"], "category": "Invented", "category_reason": "?", "tags": [],
-         "new_categories": []}]}})
+         "new_categories": []}]},
+        "assess": lambda pl: {"assessments": [{"item_id": i["item_id"], "supports": True, "reason": "ok"} for i in pl["items"]]}})
     p = workflows.add_items_preview(s, prov, Ledger(), [
         {"title": "Sourdough day 3", "description": "A baker shows step by step how to feed a starter."},
         {"title": "Kart race", "description": "Players race karts."}])
@@ -374,3 +375,82 @@ def test_cli_stops_at_budget(tmp_path):
     folder = next(p for p in tmp_path.iterdir() if p.is_dir())
     res = json.loads((folder / "results.json").read_text(encoding="utf-8"))
     assert code == 1 and res["summary"]["stopped"].startswith("Budget reached")
+
+
+def test_validation_errors_never_echo_values():
+    c, _ = client()
+    r = c.post("/api/provider", json={"kind": ["x"], "api_key": SECRET, "model": {"a": SECRET}})
+    assert r.status_code == 422 and SECRET not in r.text
+    r = c.post("/api/provider", json={"kind": "anthropic", "api_key": {"nested": SECRET}})
+    assert r.status_code == 422 and SECRET not in r.text
+
+
+# ------------------------------------------------------------------ regressions from the independent review
+class Racer(Scripted):
+    """Applies another preview while 'the model' is answering."""
+    def __init__(self, answers, studio, other_preview_id):
+        super().__init__(answers)
+        self.studio, self.other = studio, other_preview_id
+
+    def complete(self, task, system, payload, schema):
+        if self.other:
+            self.studio.apply(self.other)
+            self.other = None
+        return super().complete(task, system, payload, schema)
+
+
+def _items_answer(pl):
+    return {"items": [{"item_id": i["item_id"], "category": "Cooking", "category_reason": "r", "tags": [],
+                       "new_categories": []} for i in pl["new_items"]]}
+
+
+def test_change_applied_during_a_model_call_makes_the_preview_stale():
+    s = Studio()
+    first = workflows.add_items_preview(s, Scripted({"new-items": _items_answer}), Ledger(),
+                                        [{"title": "Pasta night", "description": "Cooking pasta."}])
+    with pytest.raises(StudioError) as e:
+        workflows.add_items_preview(s, Racer({"new-items": _items_answer}, s, first["id"]), Ledger(),
+                                    [{"title": "Gym day", "description": "Lifting."}])
+    assert e.value.status == 409
+    assert any(i["title"] == "Pasta night" for i in s.items.values()) and len(s.items) == 41
+
+
+def test_only_with_several_labels_of_one_preference_is_an_or():
+    s = Studio()
+    prov = Scripted({"interpret": {"status": "propose", "reason": "r", "alternatives": [], "controls": [
+        {"action": "only", "strength": "standard", "intent_span": "cooking or travel", "relation": "x",
+         "term_ids": ["category:Cooking", "category:Travel"]}]}})
+    p = workflows.interpret_preview(s, prov, Ledger(), "show only cooking or travel")
+    assert p["changes"]["eligible_after"] == 8
+
+
+def test_budget_stops_calls_and_unknown_prices_are_counted():
+    ledger = Ledger(budget_usd=0.0001)
+    ledger.add({"task": "x", "model": "unknown-model", "input_tokens": 1000, "output_tokens": 1000, "cost_usd": None})
+    assert ledger.total() > 0 and "upper-bound" in ledger.calls[0]["cost_source"]
+    with pytest.raises(StudioError) as e:
+        workflows.interpret_preview(Studio(), MockProvider(), ledger, "hide gaming")
+    assert e.value.status == 402
+
+
+def test_new_videos_need_the_independent_check_for_user_categories():
+    s = Studio()
+    p = workflows.classify_category(s, Scripted({"classify": _classify, "assess": _assess}), Ledger(),
+                                    "Teaches a skill", "Teaches a practical skill in steps.", "boost")
+    s.apply(p["id"])
+    answer = lambda pl: {"items": [{"item_id": i["item_id"], "category": "none", "category_reason": "r", "tags": [],
+                                    "new_categories": [{"label": "Teaches a skill", "verdict": "match",
+                                                        "quote": i["title"], "reason": "r"}]} for i in pl["new_items"]]}
+    disagree = lambda pl: {"assessments": [{"item_id": i["item_id"], "supports": False, "reason": "no"} for i in pl["items"]]}
+    prov = Scripted({"new-items": answer, "assess": disagree})
+    p = workflows.add_items_preview(s, prov, Ledger(), [{"title": "Knitting basics", "description": "Needles."}])
+    entry = p["evidence"][0]["new_categories"][0]
+    assert entry["field"] == "title" and entry["quote_verified"] and not entry["selected"]
+    assert "assess" in [t for t, _ in prov.payloads]
+
+
+def test_environment_openai_key_is_not_sent_to_other_servers(monkeypatch):
+    monkeypatch.setenv("OPENAI_API_KEY", "sk-env-secret")
+    p = build_provider("openai", base_url="http://localhost:11434/v1")
+    assert p._secret == ""
+    assert build_provider("openai")._secret == "sk-env-secret"

@@ -148,6 +148,9 @@ def item_view(item):
 
 
 def _call(provider, ledger, task, system, payload, schema, calls):
+    if ledger.over_budget():
+        raise StudioError(f"Budget reached: USD {ledger.total():.4f} of {ledger.budget_usd:.2f} spent. "
+                          "No further model calls are made.", 402)
     try:
         data, call = provider.complete(task, system, payload, schema)
     except ProviderError as exc:
@@ -166,13 +169,15 @@ def _batches(seq, n=BATCH_SIZE):
 def manual_preview(studio, kind, value, action, strength="standard"):
     if kind not in ("category", "tag", "custom"):
         raise StudioError("Choose a category, a tag or a new category.")
-    known = {"category": studio.categories(), "tag": studio.tags(), "custom": studio.custom}[kind]
+    view = studio.view()
+    known = {"category": view["categories"], "tag": view["tags"], "custom": view["custom"]}[kind]
     if value not in known:
         raise StudioError(f"'{value}' is not an existing {kind}.")
     control = make_control("manual", action, {"kind": kind, "value": value}, strength)
     return studio._new_preview("manual", f"Manual control: {action} {kind} '{value}'", controls=[control],
                                checks=[{"check": f"'{value}' exists as a {kind}", "ok": True}],
-                               notes=["No model was called. The person chose the label and the action."])
+                               notes=["No model was called. The person chose the label and the action."],
+                               base_version=view["version"])
 
 
 # ---------------------------------------------------------------- 2. interpret
@@ -180,17 +185,24 @@ def interpret_preview(studio, provider, ledger, request):
     request = _clip(request, 1000)
     if not request:
         raise StudioError("Write a request first.")
-    vocab = studio.vocabulary()
+    view = studio.view()
+    vocab = view["vocabulary"]
     payload = {"request": request, "labels": [{k: t[k] for k in ("term_id", "kind", "value", "item_count")} for t in vocab],
-               "catalogue_size": len(studio.items)}
+               "catalogue_size": len(view["items"])}
     calls = []
     raw = _call(provider, ledger, "interpret", INTERPRET_PROMPT, payload, INTERPRET_SCHEMA, calls)
     by_id = {t["term_id"]: t for t in vocab}
     controls, checks, evidence, used = [], [], [], set()
     status = raw.get("status")
     for i, c in enumerate(raw.get("controls", []) if status == "propose" else []):
-        span_ok = _norm(c.get("intent_span")) in _norm(request) and bool(_norm(c.get("intent_span")))
-        checks.append({"check": f"Control {i + 1}: quoted span \"{c.get('intent_span', '')}\" occurs in the request", "ok": span_ok})
+        span = c.get("intent_span") or ""
+        span_ok = bool(_norm(span)) and _norm(span) in _norm(request)
+        action = c.get("action")
+        if action not in ("boost", "reduce", "hide", "only"):
+            checks.append({"check": f"Control {i + 1}: unknown action {action!r} (dropped)", "ok": False})
+            continue
+        checks.append({"check": f"Control {i + 1}: quoted span \"{span}\" occurs in the request", "ok": span_ok})
+        group = f"interpret-{i}"   # labels of one preference act together: "only" matches any of them
         for term_id in c.get("term_ids", []):
             term = by_id.get(term_id)
             ok = term is not None and term_id not in used
@@ -199,46 +211,51 @@ def interpret_preview(studio, provider, ledger, request):
             if not ok or not span_ok:
                 continue
             used.add(term_id)
-            action = c.get("action")
             strength = c.get("strength") if action in ("boost", "reduce") else "standard"
             controls.append(make_control("interpret", action, {"kind": term["kind"], "value": term["value"]},
-                                         strength if strength in STRENGTHS else "standard"))
-        evidence.append({"intent_span": c.get("intent_span"), "relation": c.get("relation"),
-                         "action": c.get("action"), "strength": c.get("strength"), "labels": c.get("term_ids", [])})
+                                         strength if strength in STRENGTHS else "standard", group=group))
+        evidence.append({"intent_span": span, "relation": c.get("relation", ""),
+                         "action": action, "strength": c.get("strength"), "labels": c.get("term_ids", [])})
     notes = [f"Model status: {status}. {raw.get('reason', '')}".strip()]
     if raw.get("alternatives"):
-        notes.append("Competing readings: " + "; ".join(raw["alternatives"]))
+        notes.append("Competing readings: " + "; ".join(map(str, raw["alternatives"])))
     if status == "propose" and not controls:
         notes.append("Every proposed control failed a check, so nothing can be applied.")
     preview = studio._new_preview("interpret", f"Request: \"{request}\"", controls=controls,
-                                  proposal=raw, evidence=evidence, checks=checks, calls=calls, notes=notes)
-    _warn_large(studio, preview)
+                                  proposal=raw, evidence=evidence, checks=checks, calls=calls, notes=notes,
+                                  base_version=view["version"])
+    _warn_large(preview)
     return preview
 
 
-def _warn_large(studio, preview):
+def _warn_large(preview):
     removed = preview["changes"]["eligible_before"] - preview["changes"]["eligible_after"]
     if preview["changes"]["eligible_before"] and removed / preview["changes"]["eligible_before"] > 0.5:
         preview["notes"].append(f"Check carefully: this removes {removed} of {preview['changes']['eligible_before']} eligible items, more than half.")
 
 
 # ---------------------------------------------------------------- 3. new category
+def _existing_labels(view):
+    return list(view["categories"]) + list(view["custom"])
+
+
 def define_category(studio, provider, ledger, description):
     description = _clip(description, 1000)
     if not description:
         raise StudioError("Describe the new category first.")
-    items = list(studio.items.values())
-    payload = {"description": description, "catalogue": [item_view(i) for i in items],
-               "existing_categories": sorted(studio.categories()) + sorted(studio.custom)}
+    view = studio.view()
+    items = view["items"]
+    payload = {"description": description, "catalogue": [item_view(i) for i in items.values()],
+               "existing_categories": sorted(view["categories"]) + sorted(view["custom"])}
     calls = []
     raw = _call(provider, ledger, "define", DEFINE_PROMPT, payload, DEFINE_SCHEMA, calls)
     evidence = []
     for ev in raw.get("evidence", []):
-        item = studio.items.get(ev.get("item_id"))
+        item = items.get(ev.get("item_id"))
         evidence.append({**ev, "title": item["title"] if item else None,
                          "quote_verified": bool(item) and quote_found(item, ev.get("field"), ev.get("quote"))})
     label = (raw.get("label") or "").strip()[:60]
-    duplicate = any(_norm(label) == _norm(x) for x in list(studio.categories()) + list(studio.custom))
+    duplicate = any(_norm(label) == _norm(x) for x in _existing_labels(view))
     return {"status": raw.get("status"), "label": label, "definition": (raw.get("definition") or "").strip()[:600],
             "rationale": raw.get("rationale", ""), "alternatives": raw.get("alternatives", []),
             "evidence": evidence, "duplicate": duplicate, "calls": calls, "description": description}
@@ -248,25 +265,28 @@ def classify_category(studio, provider, ledger, label, definition, action="only"
     label, definition = (label or "").strip()[:60], (definition or "").strip()[:600]
     if not label or not definition:
         raise StudioError("A reviewed label and definition are required.")
-    if any(_norm(label) == _norm(x) for x in list(studio.categories()) + list(studio.custom)):
+    view = studio.view()
+    if any(_norm(label) == _norm(x) for x in _existing_labels(view)):
         raise StudioError(f"'{label}' already exists. Choose a different label.")
-    items = list(studio.items.values())
+    control = make_control("new-category", action, {"kind": "custom", "value": label}, strength)
+    items = list(view["items"].values())
     calls = []
     memberships = _classify_items(provider, ledger, label, definition, items, calls)
-    assessments = _assess(provider, ledger, definition, memberships, studio.items, calls)
+    assessments = _assess(provider, ledger, definition, memberships, view["items"], calls)
     members, rows = {}, []
     for item in items:
-        m = memberships.get(item["id"], {"verdict": "unknown", "field": "none", "quote": "", "reason": "Model returned no verdict for this item."})
-        verified = m["verdict"] == "unknown" or quote_found(item, m.get("field"), m.get("quote"))
+        m = memberships.get(item["id"]) or {"verdict": "unknown", "field": "none", "quote": "",
+                                            "reason": "Model returned no verdict for this item."}
+        verdict = m.get("verdict") if m.get("verdict") in ("match", "not_match", "unknown") else "unknown"
+        verified = verdict == "unknown" or quote_found(item, m.get("field"), m.get("quote"))
         a = assessments.get(item["id"])
-        selected = m["verdict"] == "match" and verified and bool(a and a["supports"])
-        ev = {"verdict": m["verdict"], "field": m.get("field"), "quote": m.get("quote", ""),
+        selected = verdict == "match" and verified and bool(a and a.get("supports") is True)
+        ev = {"verdict": verdict, "field": m.get("field"), "quote": m.get("quote", ""),
               "reason": m.get("reason", ""), "quote_verified": verified,
               "assessment": a, "selected": selected}
         members[item["id"]] = ev
         rows.append({"item_id": item["id"], "title": item["title"], "category": item.get("category"), **ev})
     new_custom = {"label": label, "definition": definition, "members": members}
-    control = make_control("new-category", action, {"kind": "custom", "value": label}, strength)
     selected = [r["item_id"] for r in rows if r["selected"]]
     checks = [
         {"check": f"Every item received a verdict ({len(memberships)}/{len(items)})", "ok": len(memberships) == len(items)},
@@ -282,8 +302,9 @@ def classify_category(studio, provider, ledger, label, definition, action="only"
         notes.append("Matched but not selected (quote or assessment failed): " + ", ".join(rejected))
     preview = studio._new_preview("new-category", f"New category '{label}'", controls=[control],
                                   new_custom=new_custom, proposal={"label": label, "definition": definition},
-                                  evidence=rows, checks=checks, calls=calls, notes=notes)
-    _warn_large(studio, preview)
+                                  evidence=rows, checks=checks, calls=calls, notes=notes,
+                                  base_version=view["version"])
+    _warn_large(preview)
     return preview
 
 
@@ -297,7 +318,7 @@ def _classify_items(provider, ledger, label, definition, items, calls):
         payload = {"category_label": label, "definition": definition, "items": [item_view(i) for i in batch]}
         raw = _call(provider, ledger, "classify", MEMBERSHIP_PROMPT, payload, MEMBERSHIP_SCHEMA, calls)
         ids = {i["id"] for i in batch}
-        return {m["item_id"]: m for m in raw.get("memberships", []) if m.get("item_id") in ids}
+        return {m["item_id"]: m for m in raw.get("memberships", []) if isinstance(m, dict) and m.get("item_id") in ids}
     out = {}
     for part in _parallel(run, _batches(items)):
         out.update(part)
@@ -305,6 +326,7 @@ def _classify_items(provider, ledger, label, definition, items, calls):
 
 
 def _assess(provider, ledger, definition, memberships, items, calls):
+    """Independent check. Only the cited field and quote are sent; verdicts never are."""
     cited = [(iid, m) for iid, m in memberships.items()
              if m.get("verdict") == "match" and iid in items and quote_found(items[iid], m.get("field"), m.get("quote"))]
     if not cited:
@@ -316,7 +338,7 @@ def _assess(provider, ledger, definition, memberships, items, calls):
             for iid, m in batch]}
         raw = _call(provider, ledger, "assess", ASSESS_PROMPT, payload, ASSESS_SCHEMA, calls)
         ids = {iid for iid, _ in batch}
-        return {a["item_id"]: a for a in raw.get("assessments", []) if a.get("item_id") in ids}
+        return {a["item_id"]: a for a in raw.get("assessments", []) if isinstance(a, dict) and a.get("item_id") in ids}
     out = {}
     for part in _parallel(run, _batches(cited)):
         out.update(part)
@@ -325,27 +347,29 @@ def _assess(provider, ledger, definition, memberships, items, calls):
 
 # ---------------------------------------------------------------- 4. new videos
 def add_items_preview(studio, provider, ledger, new_items):
+    view = studio.view()
     clean = []
-    for i, raw in enumerate(new_items or []):
-        title, desc = _clip(raw.get("title"), 120), _clip(raw.get("description"), 1000)
+    for raw_item in new_items or []:
+        title, desc = _clip(raw_item.get("title"), 120), _clip(raw_item.get("description"), 1000)
         if title and desc:
-            clean.append({"id": studio.new_item_id(i), "title": title, "description": desc})
+            clean.append({"id": studio.new_item_id(len(clean), view["items"]), "title": title, "description": desc})
     if not clean:
         raise StudioError("Give each new video a title and a description.")
     if len(clean) > 10:
         raise StudioError("Add at most ten videos at a time.")
-    categories, tags = studio.categories(), studio.tags()
+    categories, tags, custom = view["categories"], view["tags"], view["custom"]
     payload = {"new_items": [{"item_id": c["id"], "title": c["title"], "description": c["description"]} for c in clean],
                "existing_categories": sorted(categories), "existing_tags": sorted(tags),
-               "user_created_categories": [{"label": k, "definition": v["definition"]} for k, v in sorted(studio.custom.items())]}
+               "user_created_categories": [{"label": k, "definition": v["definition"]} for k, v in sorted(custom.items())]}
     calls = []
     raw = _call(provider, ledger, "new-items", NEW_ITEMS_PROMPT, payload, NEW_ITEMS_SCHEMA, calls)
-    by_id = {r.get("item_id"): r for r in raw.get("items", [])}
-    score = studio.cold_start_score()
-    checks, evidence, final = [], [], []
-    custom_updates = {}
+    by_id = {r.get("item_id"): r for r in raw.get("items", []) if isinstance(r, dict)}
+    score = view["cold_start"]
+    checks, final, per_item, matched = [], [], [], {}
     for c in clean:
         r = by_id.get(c["id"], {})
+        if not r:
+            checks.append({"check": f"{c['id']}: the model returned no classification (left uncategorised)", "ok": False})
         cat = r.get("category", "none")
         cat_ok = cat in categories or cat == "none"
         good_tags = [t for t in r.get("tags", []) if t in tags]
@@ -357,35 +381,34 @@ def add_items_preview(studio, provider, ledger, new_items):
                 "score": score, "origin": "added"}
         customs = []
         for nc in r.get("new_categories", []):
-            if nc.get("label") not in studio.custom:
+            if not isinstance(nc, dict) or nc.get("label") not in custom:
                 continue
-            verified = nc.get("verdict") == "unknown" or quote_found(item, "title", nc.get("quote")) \
-                or quote_found(item, "description", nc.get("quote"))
-            selected = nc.get("verdict") == "match" and verified
-            customs.append({**nc, "quote_verified": verified, "selected": selected})
-            custom_updates.setdefault(nc["label"], {})[c["id"]] = {
-                "verdict": nc.get("verdict"), "field": "description", "quote": nc.get("quote", ""),
-                "reason": nc.get("reason", ""), "quote_verified": verified, "assessment": None, "selected": selected}
+            field = next((f for f in ("title", "description") if quote_found(item, f, nc.get("quote"))), None)
+            verdict = nc.get("verdict") if nc.get("verdict") in ("match", "not_match", "unknown") else "unknown"
+            entry = {"label": nc["label"], "verdict": verdict, "field": field or "none", "quote": nc.get("quote", ""),
+                     "reason": nc.get("reason", ""), "quote_verified": verdict == "unknown" or field is not None}
+            customs.append(entry)
+            if verdict == "match" and field:
+                matched.setdefault(nc["label"], {})[c["id"]] = entry
         final.append(item)
+        per_item.append((c, r, item, customs))
+    # The same independent assessment as the new-category workflow, per user-created category.
+    items_by_id = {it["id"]: it for it in final}
+    assessments = {label: _assess(provider, ledger, custom[label]["definition"], m, items_by_id, calls)
+                   for label, m in matched.items()}
+    custom_updates, evidence = {}, []
+    for c, r, item, customs in per_item:
+        for e in customs:
+            a = assessments.get(e["label"], {}).get(c["id"])
+            e["assessment"] = a
+            e["selected"] = e["verdict"] == "match" and e["quote_verified"] and bool(a and a.get("supports") is True)
+            custom_updates.setdefault(e["label"], {})[c["id"]] = {
+                k: e[k] for k in ("verdict", "field", "quote", "reason", "quote_verified", "assessment", "selected")}
         evidence.append({"item_id": c["id"], "title": c["title"], "category": item["category"] or "none",
-                         "category_reason": r.get("category_reason", ""), "tags": good_tags, "new_categories": customs,
+                         "category_reason": r.get("category_reason", ""), "tags": item["tags"], "new_categories": customs,
                          "missing": not r})
-    preview = studio._new_preview("new-items", f"Add {len(final)} new video(s)", new_items=final,
-                                  proposal=raw, evidence=evidence, checks=checks, calls=calls,
-                                  notes=[f"New videos start with the catalogue median score ({score}) because they have no viewing history yet.",
-                                         "Applied controls are re-applied, so a new video that matches a hidden label stays hidden."])
-    preview["custom_updates"] = custom_updates
-    # membership of new items in user-created categories is merged on Apply
-    if custom_updates:
-        _attach_custom_updates(studio, preview)
-    return preview
-
-
-def _attach_custom_updates(studio, preview):
-    """Recompute the after-feed with the new items' memberships in user-created categories."""
-    custom = {k: {**v, "members": {**v["members"], **preview["custom_updates"].get(k, {})}} for k, v in studio.custom.items()}
-    items = dict(studio.items)
-    for it in preview["new_items"]:
-        items[it["id"]] = it
-    preview["feed_after"] = studio.feed(items, studio.controls, custom)
-    preview["changes"] = studio.diff(preview["feed_before"], preview["feed_after"])
+    return studio._new_preview("new-items", f"Add {len(final)} new video(s)", new_items=final,
+                               proposal=raw, evidence=evidence, checks=checks, calls=calls,
+                               notes=[f"New videos start with the catalogue median score ({score}) because they have no viewing history yet.",
+                                      "Applied controls are re-applied, so a new video that matches a hidden label stays hidden."],
+                               base_version=view["version"], custom_updates=custom_updates)

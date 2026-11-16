@@ -26,7 +26,7 @@ from pathlib import Path
 import httpx
 import uvicorn
 
-from studio.providers import ProviderError, build_provider
+from studio.providers import Ledger, ProviderError, build_provider
 from studio.server import create_app
 
 EXAMPLES = Path(__file__).parent / "data" / "examples.json"
@@ -53,6 +53,8 @@ class Runner:
         t = time.monotonic()
         r = self.c.post(path, json=body or {})
         data = r.json() if r.headers.get("content-type", "").startswith("application/json") else {"error": r.text}
+        if r.status_code == 402:
+            raise BudgetReached(data.get("error", "Budget reached"))
         if r.status_code >= 400:
             raise RuntimeError(f"{path} -> HTTP {r.status_code}: {data.get('error', data)}")
         return data, round(time.monotonic() - t, 3)
@@ -205,7 +207,7 @@ def main(argv=None):
     prior = json.loads(ledger_path.read_text(encoding="utf-8")) if ledger_path.exists() else {"runs": [], "total_usd": 0.0}
 
     port = free_port()
-    app = create_app(port=port, provider=provider)
+    app = create_app(port=port, provider=provider, ledger=Ledger(budget_usd=max(0.0, args.budget_usd - prior["total_usd"])))
     server = uvicorn.Server(uvicorn.Config(app, host="127.0.0.1", port=port, log_level="warning", access_log=False))
     thread = threading.Thread(target=server.run, daemon=True)
     thread.start()

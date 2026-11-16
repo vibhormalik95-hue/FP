@@ -11,6 +11,7 @@ import os
 from pathlib import Path
 
 from fastapi import FastAPI, Request
+from fastapi.exceptions import RequestValidationError
 from fastapi.responses import FileResponse, JSONResponse, PlainTextResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
@@ -90,6 +91,12 @@ def create_app(port=8765, provider=None, studio=None, ledger=None):
     @app.exception_handler(StudioError)
     async def studio_error(_request, exc: StudioError):
         return JSONResponse({"error": str(exc)}, status_code=exc.status)
+
+    @app.exception_handler(RequestValidationError)
+    async def invalid_request(_request, exc: RequestValidationError):
+        # Never echo submitted values (a pasted key could be among them).
+        fields = sorted({".".join(str(p) for p in e.get("loc", [])[1:]) for e in exc.errors()})
+        return JSONResponse({"error": "Invalid request: check " + (", ".join(fields) or "the input")}, status_code=422)
 
     @app.exception_handler(ProviderError)
     async def provider_error(_request, exc: ProviderError):
