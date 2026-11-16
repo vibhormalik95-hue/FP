@@ -23,9 +23,9 @@ pdflatex research-paper-2026-11-14
 
 The result has 8 pages. The page limit of the course is 6 to 8 pages with the references.
 
-## Values of the final-build demonstration runs
+## Values of the 14 November demonstration runs
 
-One block at the top of `research-paper-2026-11-14.tex` defines a macro for each value that comes from the demonstration runs on the final application build.
+One block at the top of `research-paper-2026-11-14.tex` defines a macro for each value that comes from the demonstration runs on the 14 November application build.
 A value that is not recorded yet prints as **[to fill: ...]** in the PDF, so that it cannot be read as a result.
 Replace each `\TBF{...}` in that block by the recorded value and build again.
 
@@ -40,7 +40,7 @@ Replace each `\TBF{...}` in that block by the recorded value and build again.
 | `\FinalAssertions` | Scripted assertions passed, and the number of review decisions. It completes the sentence "In total, ...". |
 | `\FinalRouteChecks` | What ran against each stand-in. It completes the sentence "Route checks: ...". |
 
-The paragraph "Runs on the final build" states the limits of those runs as fixed text: who produced the model replies, who made the review decisions, and which routes ran against stand-ins only.
+The paragraph "Runs on the 14 November build" states the limits of those runs as fixed text: who produced the model replies, who made the review decisions, and which routes ran against stand-ins only.
 Read that paragraph again before you report other runs, and change it if their conditions differ: the model route and the limits of its attestation, the reviewer, the exposure of the scenarios, the platform, and which checks used authored replies or stand-ins. New values in the macros alone are not sufficient.
 Keep the paper at 8 pages: with values of ordinary length, about nine lines of the last column stay free.
 

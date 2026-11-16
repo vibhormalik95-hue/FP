@@ -142,7 +142,7 @@ The application reaches a model through a route that the person selects ([model 
 | Route | Evidence |
 | --- | --- |
 | File relay | Demonstration with real model output: the runs of 13 November; 14 November 2026 (UTC), revision `b7c5a91`: three relay runs (13 model calls; started with `--provider relay`), records in `docs/evidence/2026-11-14/real-model-relay/`; and the integrated revision `ff92666`: three relay runs again (13 model calls), records in `docs/evidence/2026-11-14-integrated/real-model-relay/`. |
-| Command-line program (`cli`) | Stand-in program only. |
+| Command-line program (`cli`) | Linux stand-in checks and one [16 November Windows Opera trial](evidence/2026-11-16-windows-general-cli/README.md) with a real Claude Code invocation. The trial used an isolated candidate with modified combined prompt and schema descriptions; it does not establish acceptance of unmodified main. |
 | OpenAI-compatible endpoint, local or hosted | Earlier stand-in checks; on 15 November, one real Windows Ollama request completed the fictional-item lifecycle through direct application calls. A separate OpenAI connectivity request returned a quota error, so no hosted-API lifecycle ran. See [15 November provider checks](evidence/2026-11-15-provider-checks/README.md). |
 | Anthropic API | Stand-in server only. |
 
@@ -219,7 +219,7 @@ These are software checks. They are not model evidence.
 
 ## What remains
 
-- **Real-machine checks.** Complete the language-control flows through the general `cli` and real HTTP model routes, including the browser and cleanup checks. The Windows Ollama check covers one fictional-item lifecycle only. Real hosted OpenAI-compatible and Anthropic lifecycle checks, and native macOS checks, remain open.
+- **Real-machine checks.** Complete the remaining language-control flows through the general `cli` and real HTTP model routes, including browser and cleanup checks. The 16 November Windows CLI browser trial used a modified combined prompt and schema on one fictional scenario; it does not qualify unmodified main. The Windows Ollama check covers one fictional-item lifecycle only. Real hosted OpenAI-compatible and Anthropic lifecycle checks, and native macOS checks, remain open.
 - **Human review.** A review by a person of a run with real model output. No person has reviewed a run of 14 November. An AI operator made all 19 review decisions of the three real-model runs on revision `b7c5a91`, and all 19 on the integrated revision.
 - **A fresh evaluation.** Scenarios that were not used during development, with references fixed before any prediction. The scenarios of this repository are exposed development material.
 - **A like-for-like model comparison**, with its own protocol before the first run.
