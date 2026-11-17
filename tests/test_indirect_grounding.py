@@ -6,15 +6,15 @@ from feedctrl.indirect_grounding import propose_indirect
 class GroundingTests(unittest.TestCase):
     def setUp(self):
         self.index = {'sha256': 'a' * 64, 'items': {
-            1: {'fields': {'caption': '烹饪米饭和蔬菜', 'first_level_category_name': '美食'}},
-            2: {'fields': {'caption': '修理自行车', 'first_level_category_name': '维修'}},
-            3: {'fields': {'caption': '弹奏钢琴', 'first_level_category_name': '音乐'}},
-            4: {'fields': {'caption': '登山旅行', 'first_level_category_name': '旅行'}}}}
+            1: {'fields': {'caption': 'Cooking rice and vegetables', 'first_level_category_name': 'Food'}},
+            2: {'fields': {'caption': 'Repairing a bicycle', 'first_level_category_name': 'Repairs'}},
+            3: {'fields': {'caption': 'Playing the piano', 'first_level_category_name': 'Music'}},
+            4: {'fields': {'caption': 'Mountain hiking trip', 'first_level_category_name': 'Travel'}}}}
         self.action = {'operation': 'exclude', 'strength': 'none', 'intent_span': 'makes me hungry'}
         self.request = 'I am not hungry, hide what makes me hungry'
         self.raw = {'status': 'propose', 'reason': 'Prepared meals may trigger appetite.',
             'negation_resolved': True, 'alternatives': [],
-            'evidence': [{'item_id': 1, 'field': 'caption', 'quote': '烹饪米饭和蔬菜'}]}
+            'evidence': [{'item_id': 1, 'field': 'caption', 'quote': 'Cooking rice and vegetables'}]}
         self.provenance = {'backend': 'test-double', 'model': 'synthetic-contract-fixture', 'digest': 'not-a-real-model'}
     def run_proposal(self, **kwargs):
         return propose_indirect(self.request, self.action, self.index,
@@ -28,7 +28,7 @@ class GroundingTests(unittest.TestCase):
     def test_general_contract_not_hunger_rule(self):
         self.request = 'Show more things that help me commute without petrol'
         self.action = {'operation': 'boost', 'strength': 'light', 'intent_span': 'commute without petrol'}
-        self.raw['evidence'] = [{'item_id': 2, 'field': 'caption', 'quote': '修理自行车'}]
+        self.raw['evidence'] = [{'item_id': 2, 'field': 'caption', 'quote': 'Repairing a bicycle'}]
         self.raw['reason'] = 'Bicycle maintenance supports cycling.'
         self.assertEqual(self.run_proposal()['item_ids'], [2])
     def test_callback_cannot_fabricate_authoritative_evidence(self):

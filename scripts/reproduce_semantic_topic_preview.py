@@ -24,7 +24,9 @@ def main():
         raise SystemExit("Saved processed data, trained model and official sidecar are required")
     user_id = 14
     state = demo.user_state(demo.create_session(), user_id)
-    topic = "青岛"  # Qingdao: an ad-hoc caption topic, not an official category ID.
+    # Qingdao, the source-language topic of the recorded run: an ad-hoc caption topic, not an official
+    # category ID. Built from code points because the repository is English-only.
+    topic = chr(0x9752) + chr(0x5C9B)
     command = manual_topic_command("boost", topic)
     matched, evidence = match_topic(demo.topic_index, command)
     original = demo.rank(user_id, state, "C", 10)

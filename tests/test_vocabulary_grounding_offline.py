@@ -15,6 +15,8 @@ from feedctrl import vocabulary_grounding as vg
 
 MODEL = {'backend': 'test-double', 'model': 'authored', 'digest': 'not-live'}
 REQUEST = 'Fewer alpha things and more gamma, please.'
+# Built from code points because the repository is English-only.
+FULLWIDTH_COMMA, FULLWIDTH_SEMICOLON = chr(0xFF0C), chr(0xFF1B)
 
 
 def index():
@@ -22,7 +24,7 @@ def index():
     rows = {
         1: {'caption': 'SECRET-ONE', 'first_level_category_name': 'Alpha', 'second_level_category_name': 'Alpha minor',
             'topic_tag': 'red, round'},
-        2: {'caption': 'SECRET-TWO', 'first_level_category_name': 'Alpha', 'topic_tag': '[red，#square]'},
+        2: {'caption': 'SECRET-TWO', 'first_level_category_name': 'Alpha', 'topic_tag': '[red' + FULLWIDTH_COMMA + '#square]'},
         3: {'caption': 'SECRET-THREE', 'first_level_category_name': 'Beta', 'topic_tag': 'blue|round'},
         4: {'caption': 'SECRET-FOUR', 'first_level_category_name': 'Beta', 'third_level_category_name': 'Deep'},
         5: {'caption': 'SECRET-FIVE', 'first_level_category_name': 'Gamma', 'topic_tag': 'Gamma'},
@@ -70,8 +72,8 @@ def failed(result):
 
 def test_tags_are_split_by_the_stated_rule_and_nothing_else():
     assert vg.split_tags('red, round') == ['red', 'round']
-    assert vg.split_tags('[red，#square]') == ['red', 'square']
-    assert vg.split_tags(' a ; b ；c|d ,, a ') == ['a', 'b', 'c', 'd']
+    assert vg.split_tags('[red' + FULLWIDTH_COMMA + '#square]') == ['red', 'square']
+    assert vg.split_tags(' a ; b ' + FULLWIDTH_SEMICOLON + 'c|d ,, a ') == ['a', 'b', 'c', 'd']
     assert vg.split_tags('#  spaced out ') == ['spaced out']
     assert vg.split_tags('Street Food') == ['Street Food']  # case and inner spaces are kept
     assert vg.split_tags('[]') == [] and vg.split_tags('') == [] and vg.split_tags(None) == []

@@ -497,8 +497,8 @@ def test_a_defect_in_the_application_is_an_error_of_its_case_not_a_crash(capsys,
 
 
 def test_text_for_the_terminal_is_ascii_and_a_long_reason_is_kept_in_the_record():
-    table = route_trial.ascii_table(['Case', 'Outcome'], [['café — résumé', '美食']])
-    assert table.isascii() and '\\xe9' in table and '\\u7f8e' in table
+    table = route_trial.ascii_table(['Case', 'Outcome'], [['café — résumé', 'Ωmega']])
+    assert table.isascii() and '\\xe9' in table and '\\u03a9' in table
     assert route_trial.markdown_table(['A'], [['x | y\nz']]) == '| A |\n| --- |\n| x \\| y z |'
     assert route_trial.one_line('a\n  b\tc') == 'a b c' and len(route_trial.one_line('x' * 900)) == 700
 

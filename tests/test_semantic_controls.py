@@ -22,9 +22,9 @@ def sidecar(path, ids):
         writer.writeheader()
         for item_id in ids:
             writer.writerow({"video_id": item_id, "manual_cover_text": "UNKNOWN",
-                             "caption": "做饭, 好吃" if item_id in (1, 2) else "跑步健身",
+                             "caption": "cooking, tasty" if item_id in (1, 2) else "running fitness",
                              "topic_tag": "[]", "first_level_category_id": 1,
-                             "first_level_category_name": "美食" if item_id in (1, 2) else "运动",
+                             "first_level_category_name": "Food" if item_id in (1, 2) else "Sports",
                              "second_level_category_id": -124, "second_level_category_name": "UNKNOWN",
                              "third_level_category_id": -124, "third_level_category_name": "UNKNOWN"})
 
@@ -35,7 +35,7 @@ def test_source_text_grounding_and_three_distinct_actions(tmp_path):
     index = topic.load_topic_index(path, {1, 2, 3, 4})
     assert index["candidate_items"] == 4
     assert len(index["sha256"]) == 64
-    command = topic.manual_topic_command("boost", "美食")
+    command = topic.manual_topic_command("boost", "food")
     matched, evidence = topic.match_topic(index, command)
     assert matched == {1, 2}
     assert evidence[0]["source_fields"] == ["first_level_category_name"]
@@ -47,7 +47,7 @@ def test_source_text_grounding_and_three_distinct_actions(tmp_path):
     assert topic.rerank_topic(ids, scores, cats, {}, matched, "exclude", "none") == [4, 3]
     assert topic.rerank_topic(ids, scores, cats, {"category_0": -1}, matched, "boost") == []
     with pytest.raises(topic.ParserOperationalError, match="No candidate"):
-        topic.match_topic(index, topic.manual_topic_command("boost", "宠物"))
+        topic.match_topic(index, topic.manual_topic_command("boost", "pets"))
 
 
 def test_source_coverage_and_command_validation(tmp_path):
@@ -58,30 +58,30 @@ def test_source_coverage_and_command_validation(tmp_path):
     with pytest.raises(topic.ParserOperationalError, match="fields conflict"):
         topic.validate_topic_command({"operation": "boost", "strength": "standard", "topic": "", "search_terms": []}, "test")
     with pytest.raises(topic.ParserOperationalError, match="invalid keys"):
-        topic.validate_topic_command({"operation": "boost", "strength": "standard", "topic": "food", "search_terms": ["美食"],
+        topic.validate_topic_command({"operation": "boost", "strength": "standard", "topic": "food", "search_terms": ["food"],
                                       "matched_items": [1]}, "test")
     with pytest.raises(topic.ParserOperationalError, match="bounded strength"):
         topic.validate_topic_command({"operation": "boost", "strength": "none", "topic": "food",
-                                      "search_terms": ["美食"]}, "test")
+                                      "search_terms": ["food"]}, "test")
     with pytest.raises(topic.ParserOperationalError, match="cannot have"):
         topic.validate_topic_command({"operation": "exclude", "strength": "strong", "topic": "food",
-                                      "search_terms": ["美食"]}, "test")
-    assert topic.manual_topic_command("reduce", "美食", "strong")["adjustment"] == -0.4
-    assert topic.manual_topic_command("exclude", "美食")["strength"] == "none"
-    mixed = topic.validate_topic_command({"operation": "boost", "strength": "light", "topic": "美食",
-                                          "search_terms": ["美食", "多"]}, "ollama:test")
-    assert mixed["search_terms"] == ["美食"]
-    assert mixed["rejected_terms"] == ["多"]
+                                      "search_terms": ["food"]}, "test")
+    assert topic.manual_topic_command("reduce", "food", "strong")["adjustment"] == -0.4
+    assert topic.manual_topic_command("exclude", "food")["strength"] == "none"
+    mixed = topic.validate_topic_command({"operation": "boost", "strength": "light", "topic": "food",
+                                          "search_terms": ["food", "a"]}, "ollama:test")
+    assert mixed["search_terms"] == ["food"]
+    assert mixed["rejected_terms"] == ["a"]
 
 
 def test_llm_output_is_validated_and_never_silently_replaced(monkeypatch):
     monkeypatch.setattr(topic, "ollama_provenance", lambda *args, **kwargs: {"digest": "test-digest"})
     monkeypatch.setattr(topic, "_request", lambda *args, **kwargs: {
-        "done": True, "message": {"content": json.dumps({"operation": "boost", "strength": "light", "topic": "美食",
-                                                          "search_terms": ["美食", "做饭"]})}})
+        "done": True, "message": {"content": json.dumps({"operation": "boost", "strength": "light", "topic": "food",
+                                                          "search_terms": ["food", "cooking"]})}})
     result = topic.parse_topic_request("Show me more cooking videos")
     assert result == {"operation": "boost", "strength": "light", "adjustment": 0.1,
-                      "topic": "美食", "search_terms": ["美食", "做饭"],
+                      "topic": "food", "search_terms": ["food", "cooking"],
                       "source": "ollama:llama3.1:8b:test-digest"}
     monkeypatch.setattr(topic, "_request", lambda *args, **kwargs: {
         "done": True, "message": {"content": json.dumps({"operation": "boost", "strength": "strong", "topic": "food",
@@ -136,7 +136,7 @@ def test_preview_is_opt_in_and_does_not_mutate_ae_state(tmp_path):
         headers = {"X-Session-ID": session}
         before = client.get("/api/feed?user_id=1&condition=C", headers=headers).json()
         response = client.post("/api/topic/preview", headers=headers,
-                               json={"user_id": 1, "text": "美食", "operation": "exclude",
+                               json={"user_id": 1, "text": "food", "operation": "exclude",
                                      "backend": "manual", "condition": "C"})
         assert response.status_code == 200, response.text
         preview = response.json()
@@ -187,8 +187,8 @@ def test_mocked_english_llm_request_reaches_source_text_preview(tmp_path, monkey
     path = tmp_path / "captions.csv"
     sidecar(path, range(1, 37))
     monkeypatch.setattr("feedctrl.api.parse_topic_request", lambda text, **kwargs:
-                        topic.validate_topic_command({"operation": "boost", "strength": "strong", "topic": "美食",
-                                                      "search_terms": ["美食", "做饭"]},
+                        topic.validate_topic_command({"operation": "boost", "strength": "strong", "topic": "food",
+                                                      "search_terms": ["food", "cooking"]},
                                                      "ollama:mock-digest"))
     with TestClient(create_app(fixture=True, semantic_path=path)) as client:
         headers = {"X-Session-ID": client.post("/api/session", json={}).json()["session_id"]}
@@ -207,8 +207,8 @@ def test_llm_grounding_repair_reaches_api_and_preserves_ae(tmp_path, monkeypatch
     outputs = iter([
         {"operation": "boost", "strength": "light", "topic": "unmatched",
          "search_terms": ["unmatched"]},
-        {"operation": "boost", "strength": "light", "topic": "美食",
-         "search_terms": ["美食", "多"]}])
+        {"operation": "boost", "strength": "light", "topic": "food",
+         "search_terms": ["food", "a"]}])
     monkeypatch.setattr(topic, "ollama_provenance", lambda *args, **kwargs: {"digest": "test-digest"})
     monkeypatch.setattr(topic, "_request", lambda *args, **kwargs: {
         "done": True, "message": {"content": json.dumps(next(outputs))}})
@@ -222,7 +222,7 @@ def test_llm_grounding_repair_reaches_api_and_preserves_ae(tmp_path, monkeypatch
         result = response.json()
         assert result["applied"] is True and result["candidate_matches"] == 2
         assert result["command"]["strength"] == "light"
-        assert result["command"]["rejected_terms"] == ["多"]
+        assert result["command"]["rejected_terms"] == ["a"]
         assert result["command"]["source"].endswith(":repair1")
         assert client.get("/api/feed?user_id=1&condition=C", headers=headers).json() == before
 

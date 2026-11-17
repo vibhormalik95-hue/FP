@@ -65,7 +65,7 @@ class EvidenceContextTests(unittest.TestCase):
                 self.assert_full("a" * length, "a")
 
     def test_unicode_and_combining_characters_preserved_exactly(self):
-        self.assert_full("🧭旅行" * 800 + "不可登机；cafe\u0301 only, not café.", "cafe\u0301")
+        self.assert_full("🧭ταξίδι" * 800 + "Όχι επιβίβαση; cafe\u0301 only, not café.", "cafe\u0301")
 
     def test_missing_item_and_nonstring_field(self):
         for row in (display("text", "text", missing_item=True), display(None, "text"),

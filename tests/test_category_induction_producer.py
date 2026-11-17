@@ -213,7 +213,7 @@ class ProducerTests(unittest.TestCase):
         self.assertEqual(out['status'],'review');self.assertEqual(out['unknown_ids'],[33,44])
 
     def test_unicode_byte_budget(self):
-        idx=index();idx['items'][44]['fields']['caption']='景'*6000
+        idx=index();idx['items'][44]['fields']['caption']='é'*6000
         r=self.produce(idx=idx,max_bytes=10000)
         self.assertEqual(r['status'],'blocked')
 

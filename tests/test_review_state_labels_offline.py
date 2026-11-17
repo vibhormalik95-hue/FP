@@ -181,7 +181,7 @@ class RemovalStateTests(unittest.TestCase):
                 review.SemanticPreview(user_id=1, label=label, candidate_ids=list(range(1, 9)),
                     backend="manual_category", action_source="manual", category="category_1"),
                 self.session)
-        pending = semantic_preview("Café & 京都")
+        pending = semantic_preview("Café & Kyoto")
         self.assertIs(pending["ready"], True)
         self.assertIs(pending["applied"], False)
         self.assertEqual(self.state["semantic_groups"], [])
@@ -191,7 +191,7 @@ class RemovalStateTests(unittest.TestCase):
         active = deepcopy(self.state["semantic_groups"])
         revision = self.state["semantic_revision"]
         history = deepcopy(self.state["semantic_history"])
-        for label in ("\u200b", "Café & 京都\u200b", "Bread\u202e", "\tBread"):
+        for label in ("\u200b", "Café & Kyoto\u200b", "Bread\u202e", "\tBread"):
             with self.subTest(label=repr(label)):
                 with self.assertRaises(HTTPException) as raised:
                     semantic_preview(label)
@@ -200,6 +200,11 @@ class RemovalStateTests(unittest.TestCase):
                 self.assertEqual(self.state["semantic_revision"], revision)
                 self.assertEqual(self.state["semantic_history"], history)
                 self.assertIsNone(self.state["semantic_pending"])
+
+
+# Built from code points because the repository is English-only: CJK labels must still survive.
+ZH_FOOD_LABEL = "".join(map(chr, (0x4EAC, 0x90FD, 0x7F8E, 0x98DF)))
+JA_FOOD_LABEL = "".join(map(chr, (0x30D1, 0x30F3, 0x30FB, 0x6599, 0x7406)))
 
 
 class LabelValidationTests(unittest.TestCase):
@@ -230,8 +235,8 @@ class LabelValidationTests(unittest.TestCase):
                 self.assert_rejected(label)
 
     def test_multilingual_labels_punctuation_and_existing_trimming_survive(self):
-        for label in ("京都美食", "Café / pâtisserie (été)", "Cafe\u0301, pain & thé!",
-                      "مرحبا بالعالم", "हिन्दी भोजन", "パン・料理", "  Bread & tea  "):
+        for label in (ZH_FOOD_LABEL, "Café / pâtisserie (été)", "Cafe\u0301, pain & thé!",
+                      "مرحبا بالعالم", "हिन्दी भोजन", JA_FOOD_LABEL, "  Bread & tea  "):
             with self.subTest(label=label):
                 index, raw, definition, proposal, catalogue = label_inputs(label)
                 group = review.seal_group(label, OBJECTIVE,
@@ -306,9 +311,9 @@ class LabelValidationTests(unittest.TestCase):
 
     def test_existing_label_length_and_evidence_byte_budgets_remain(self):
         for size in (80, 81):
-            index, raw, definition, proposal, catalogue = label_inputs("界" * size)
+            index, raw, definition, proposal, catalogue = label_inputs("é" * size)
             if size == 80:
-                self.assertEqual(induction.validate_induced_category(proposal, catalogue, PROVENANCE)["label"], "界" * size)
+                self.assertEqual(induction.validate_induced_category(proposal, catalogue, PROVENANCE)["label"], "é" * size)
                 self.assertEqual(producer.propose_category(OBJECTIVE, index, lambda *_: raw,
                     model_provenance=MODEL)["status"], "review")
                 self.assertEqual(staged.propose_definition(OBJECTIVE, index, [], lambda *_: definition, MODEL)["status"], "definition_review")
@@ -323,7 +328,7 @@ class LabelValidationTests(unittest.TestCase):
             self.fail("Evidence budget must stop before authored inference")
         self.assertEqual(producer.propose_category(OBJECTIVE, index, forbidden,
             model_provenance=MODEL, max_bytes=1)["status"], "blocked")
-        large_index, _, _, _, _ = label_inputs("Bread", "界" * 2400)
+        large_index, _, _, _, _ = label_inputs("Bread", "é" * 3600)
         with self.assertRaisesRegex(ValueError, "Evidence budget"):
             staged.propose_definition(OBJECTIVE, large_index, [], forbidden, MODEL)
 
