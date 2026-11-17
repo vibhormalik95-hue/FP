@@ -179,7 +179,7 @@ def label_view(term):
 
 
 def call_model(provider, ledger, task, system, payload, schema, calls):
-    estimate = provider.estimate_usd(system, payload) if ledger.budget_usd is not None else 0.0
+    estimate = provider.estimate_usd(system, payload)   # also charged if the call fails without a budget
     reservation = ledger.reserve(estimate)   # parallel calls each reserve their upper bound first
     if reservation is None or (ledger.budget_usd is not None and ledger.total() >= ledger.budget_usd):
         if reservation is not None:
@@ -189,15 +189,15 @@ def call_model(provider, ledger, task, system, payload, schema, calls):
     try:
         data, call = provider.complete(task, system, payload, schema)
     except ProviderError as exc:
-        held = ledger.release(reservation)
-        # A failed call may still have used tokens: charge the reserved upper bound, never zero.
-        calls.append(ledger.add({"task": task, "provider": provider.name, "model": provider.model,
-                                 "error": str(exc), "cost_usd": held,
-                                 "cost_source": "failed call: reserved upper bound charged" if held else "failed call",
-                                 "latency_s": None}))
+        # A failed call may still have used tokens: settle charges the reservation, never zero.
+        calls.append(ledger.settle(reservation, {"task": task, "provider": provider.name, "model": provider.model,
+                                                 "error": str(exc), "latency_s": None}))
         raise LabError(f"The model call '{task}' failed: {exc}", 502) from None
-    ledger.release(reservation)
-    calls.append(ledger.add(call))
+    except BaseException:
+        ledger.settle(reservation, {"task": task, "provider": provider.name, "model": provider.model,
+                                    "error": "unexpected failure", "latency_s": None})
+        raise
+    calls.append(ledger.settle(reservation, call))
     return data
 
 

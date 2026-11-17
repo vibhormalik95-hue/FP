@@ -143,3 +143,5 @@ P### = paragraph of the supplied proposal form (SHA-256 `1bc68ff0…a27bd`), cou
 4. Author review of the paper: the student reviews the text and removes the "[student to confirm]" marker.
 5. Code-review findings not fixed in code (the budget reservation is fixed in `04d21ed`): resumed runs overwrite `meta.json`; URL userinfo is not stripped from the displayed base URL; CLI replies are not schema-checked; the Results narration is fixed text.
 6. Not fixable by software: R15, R16, R17, R19 (design), the frozen 79/100 (R23), R32. Real events: supervisor receipt, defence, paper acceptance.
+
+Note on failures in the local runs: two llama3.1:8b cases (AB09, AB11) failed because the operator stopped the Ollama model during a video recording; they are kept and scored as errors. See `docs/evidence/lab-eval/POST-FREEZE-AUDIT.md`.

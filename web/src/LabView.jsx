@@ -195,7 +195,7 @@ export function LabView({api, user, status, onStatus}) {
             <label>Action<select value={action} onChange={e => setAction(e.target.value)} data-role="manual-action">{Object.entries(ACTIONS).map(([k, l]) => <option key={k} value={k}>{l}</option>)}</select></label>
             {['boost', 'reduce'].includes(action) && <label>Strength<select value={strength} onChange={e => setStrength(e.target.value)} data-role="lab-strength">{STRENGTHS.map(s => <option key={s}>{s}</option>)}</select></label>}</div>
           <LabelPicker api={api} user={user} kind={kind} value={value} onPick={addValue}/>
-          {values.length > 0 && <div className="lab-picked" data-role="picked">{values.map(v => <span key={v} lang="zh">{enValue.t(v)} <button type="button" aria-label="Remove" onClick={() => setValues(values.filter(x => x !== v))}>×</button></span>)}</div>}
+          {values.length > 0 && <div className="lab-picked" data-role="picked">{values.map(v => <span key={v} lang={english ? 'en' : 'zh'}>{enValue.t(v)} <button type="button" aria-label={`Remove ${enValue.t(v)}`} onClick={() => setValues(values.filter(x => x !== v))}>×</button></span>)}</div>}
           <button className="primary" disabled={busy || !values.length} data-role="manual-preview">Preview <span>↗</span></button></form>}
 
         {tab === 'interpret' && <form className="panel" onSubmit={e => { e.preventDefault(); run('interpret', () => api('lab/interpret', {user_id: user, request}), showPreview); }}>

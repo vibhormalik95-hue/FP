@@ -32,12 +32,24 @@ FILLER = "The model is still working."
 
 
 def clipboard(text):
-    """Set (or, with an empty string, clear) the Windows clipboard. The value goes through stdin,
-    never through a command line, so it does not appear in any process list or log."""
+    """Set (or, with an empty string, clear) the Windows clipboard. The value goes through stdin, never a
+    command line. The data carries the formats that keep it out of Windows clipboard history and cloud
+    clipboard sync (ExcludeClipboardContentFromMonitorProcessing, CanIncludeInClipboardHistory=0,
+    CanUploadToCloudClipboard=0), so clearing it leaves no copy behind."""
     import subprocess
-    script = ("$v = [Console]::In.ReadToEnd(); if ($v.Length -gt 0) { Set-Clipboard -Value $v } "
-              "else { Set-Clipboard -Value $null }")
-    subprocess.run(["powershell", "-NoProfile", "-NonInteractive", "-Command", script], input=text,
+    script = r"""
+Add-Type -AssemblyName System.Windows.Forms
+$v = [Console]::In.ReadToEnd()
+if ($v.Length -eq 0) { [System.Windows.Forms.Clipboard]::Clear(); exit 0 }
+$d = New-Object System.Windows.Forms.DataObject
+$d.SetData([System.Windows.Forms.DataFormats]::UnicodeText, $v)
+$zero = New-Object System.IO.MemoryStream (,[byte[]](0,0,0,0))
+$d.SetData('ExcludeClipboardContentFromMonitorProcessing', (New-Object System.IO.MemoryStream (,[byte[]](0))))
+$d.SetData('CanIncludeInClipboardHistory', $zero)
+$d.SetData('CanUploadToCloudClipboard', (New-Object System.IO.MemoryStream (,[byte[]](0,0,0,0))))
+[System.Windows.Forms.Clipboard]::SetDataObject($d, $true)
+"""
+    subprocess.run(["powershell", "-NoProfile", "-NonInteractive", "-STA", "-Command", script], input=text,
                    text=True, encoding="utf-8", capture_output=True, timeout=30, check=True)
 
 

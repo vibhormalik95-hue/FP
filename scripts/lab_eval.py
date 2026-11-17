@@ -61,7 +61,7 @@ def git_commit():
         head = subprocess.run(["git", "rev-parse", "--short", "HEAD"], cwd=ROOT, capture_output=True, text=True).stdout.strip()
         dirty = subprocess.run(["git", "status", "--porcelain", "--", "feedctrl", "scripts/lab_eval.py"], cwd=ROOT,
                                capture_output=True, text=True).stdout.strip()
-        return head + ("+dirty" if dirty else "")
+        return (head + ("+dirty" if dirty else "")) if head else "unknown"
     except OSError:
         return "unknown"
 
@@ -362,8 +362,8 @@ def cmd_score(args):
             f"Local versus frontier: the local models matched "
             + " and ".join(f"{summaries[l]['nl_exact']}" for l in local) + f" of {summaries[local[0]]['nl_cases']} nonliteral requests; "
             "where they proposed almost nothing, their abstention scores, "
-            + " and ".join(f"{summaries[l]['ab_abstained']}" for l in local) + " of 14, reflect refusing, not judgement. The frontier models matched "
-            + " to ".join(sorted({str(summaries[h]['nl_exact']) for h in hosted})) + f" of {summaries[hosted[0]]['nl_cases']}. "
+            + " and ".join(f"{summaries[l]['ab_abstained']}" for l in local) + f" of {summaries[local[0]]['ab_cases']}, reflect refusing, not judgement. The frontier models matched "
+            + " to ".join(str(v) for v in sorted({summaries[h]['nl_exact'] for h in hosted})) + f" of {summaries[hosted[0]]['nl_cases']}. "
             "Local calls cost nothing, but took " + " and ".join(f"{summaries[l]['latency_median_s']:.0f}" for l in local)
             + " seconds each at the median on this laptop."})
     parser = ROOT / "docs/evidence/lab-eval/20261117-b-parser-rerun/summary.json"

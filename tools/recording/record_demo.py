@@ -531,12 +531,15 @@ def main():
             timeline = d.timeline
             browser.close()
     finally:
+        try:
+            demo_script.clipboard("")      # first: never leave a key on the clipboard
+        except Exception:
+            pass
         if cap:
             cap.stop()
         chrome.terminate()
         server.terminate()
         voice.close()
-        demo_script.clipboard("")      # never leave a key on the clipboard
         set_toasts(True if old_toasts in (None, 1) else False)
         subprocess.run(["powershell", "-NoProfile", "-Command", "(New-Object -ComObject Shell.Application).UndoMinimizeALL()"])
     duration = probe_duration(out / "video-raw.mp4")

@@ -4,8 +4,8 @@
 
 The assets are published as a GitHub Release asset of this repository under CC BY-SA 4.0, with
 the KuaiRec attribution (ATTRIBUTION.md inside the archive). They are written to the ignored
-folders data/ and results/models/. Nothing is overwritten unless --force is given; an existing
-file whose hash differs is reported and left alone.
+folders data/ and results/models/. A file whose hash differs is reported, kept, and the exit code
+is 1, unless --force is given. Each write is atomic.
 """
 from __future__ import annotations
 
@@ -13,6 +13,7 @@ import argparse
 import hashlib
 import io
 import sys
+import urllib.error
 import urllib.request
 import zipfile
 from pathlib import Path
@@ -30,9 +31,27 @@ FILES = {   # path inside the repository -> SHA-256
     "results/models/seed_43/metadata.json": "08823319f850e91f4c3120a3aa65cc12a9b272912bbb65a6de4601b01c45086b",
     "results/models/seed_44/model.pt": "a7a141e7e9496db8d6b1f738682358cda76e19236af83d8edeb58070233bc3b9",
     "results/models/seed_44/metadata.json": "f6a713bb248568d49bc4074ad131fc874eff9df31e84bee2ed1fcb936bf5529b",
-    "notices/KUAIREC-ASSETS-ATTRIBUTION.md": "172435ae07758c26622ff274fb9674dce0c1920c6caf0deb79cb68437fe8338f",
+    "data/ATTRIBUTION.md": "172435ae07758c26622ff274fb9674dce0c1920c6caf0deb79cb68437fe8338f",
 }
-INSIDE = {"notices/KUAIREC-ASSETS-ATTRIBUTION.md": "ATTRIBUTION.md"}
+INSIDE = {"data/ATTRIBUTION.md": "ATTRIBUTION.md"}
+
+
+def download(url):
+    """The system certificate store first; certifi's store if this Python cannot verify GitHub's certificate."""
+    import ssl
+    try:
+        with urllib.request.urlopen(url, timeout=300) as response:
+            return response.read()
+    except urllib.error.URLError as exc:
+        if not isinstance(exc.reason, ssl.SSLCertVerificationError):
+            raise
+        try:
+            import certifi
+        except ImportError:
+            raise exc from None
+        context = ssl.create_default_context(cafile=certifi.where())
+        with urllib.request.urlopen(url, timeout=300, context=context) as response:
+            return response.read()
 
 
 def sha(data: bytes) -> str:
@@ -52,12 +71,16 @@ def main(argv=None):
         blob = Path(args.archive).read_bytes()
     else:
         print(f"Downloading {args.url} ...", flush=True)
-        with urllib.request.urlopen(args.url, timeout=300) as response:
-            blob = response.read()
+        try:
+            blob = download(args.url)
+        except OSError as exc:
+            print(f"FAILED: could not download the archive ({exc}). Check the network and try again. Nothing was written.")
+            return 1
     if sha(blob) != ARCHIVE_SHA256:
         print(f"FAILED: the archive SHA-256 is {sha(blob)}, expected {ARCHIVE_SHA256}. Nothing was written.")
         return 1
     print(f"Archive verified ({len(blob):,} bytes).")
+    kept = 0
     with zipfile.ZipFile(io.BytesIO(blob)) as archive:
         for path, expected in FILES.items():
             data = archive.read("comp9500-kuairec-assets/" + INSIDE.get(path, path))
@@ -70,13 +93,21 @@ def main(argv=None):
                 continue
             if target.is_file() and not args.force:
                 print(f"KEPT    {path}: a different file is there; rerun with --force to replace it")
+                kept += 1
                 continue
             target.parent.mkdir(parents=True, exist_ok=True)
-            target.write_bytes(data)
+            partial = target.with_name(target.name + ".partial")
+            partial.write_bytes(data)
+            partial.replace(target)            # atomic: a file is either the old one or the verified new one
             print(f"written {path}")
         licence = archive.read("comp9500-kuairec-assets/LICENSE-CC-BY-SA-4.0.txt")
         (ROOT / "data").mkdir(exist_ok=True)
-        (ROOT / "data" / "LICENSE-CC-BY-SA-4.0.txt").write_bytes(licence)
+        licence_path = ROOT / "data" / "LICENSE-CC-BY-SA-4.0.txt"
+        if not licence_path.is_file() or licence_path.read_bytes() != licence:
+            licence_path.write_bytes(licence)
+    if kept:
+        print(f"{kept} file(s) differ from the published assets and were kept. Rerun with --force to replace them.")
+        return 1
     print("Done. KuaiRec assets are CC BY-SA 4.0: see notices/KUAIREC-ASSETS-ATTRIBUTION.md. Start the app with run-app.cmd.")
     return 0
 

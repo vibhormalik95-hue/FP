@@ -4,7 +4,7 @@ These files let the COMP 9500 Feed Control Lab run on real KuaiRec data. They ar
 
 **Source:** Chongming Gao, Shijun Li, Wenqiang Lei, Jiawei Chen, Biao Li, Peng Jiang, Xiangnan He, Jiaxin Mao and Tat-Seng Chua. *KuaiRec: A Fully-Observed Dataset and Insights for Evaluating Recommender Systems.* CIKM 2022, 540–550. https://doi.org/10.1145/3511808.3557220. Repository: https://github.com/chongminggao/KuaiRec. Release used: https://doi.org/10.5281/zenodo.18164998.
 
-**Licence:** CC BY-SA 4.0, the licence named by the KuaiRec repository and by the `LICENSE` file inside `KuaiRec.zip` (the Zenodo metadata says CC BY 4.0; the stricter notice is kept). Full text: `LICENSE-CC-BY-SA-4.0.txt`. These adapted files are shared under CC BY-SA 4.0.
+**Licence:** CC BY-SA 4.0, the licence named by the KuaiRec repository and by the `LICENSE` file inside `KuaiRec.zip` (the Zenodo metadata says CC BY 4.0; the stricter notice is kept). Full text: https://creativecommons.org/licenses/by-sa/4.0/legalcode, also in `notices/KuaiRec-LICENSE.txt` of the repository and as `LICENSE-CC-BY-SA-4.0.txt` inside the release archive. These adapted files are shared under CC BY-SA 4.0.
 
 **Changes made (adapted material):**
 - `data/raw/kuairec_caption_category.csv`: the official KuaiRec caption and category table, unchanged.

@@ -38,3 +38,8 @@ All five models therefore ran the same prompts, schemas, item views and quotatio
 - All rows of a table are scored by the same scoring code at the same commit, from predictions produced by prediction code that is identical across models (except the local-only cap). No table mixes scoring versions.
 - The define change and the quotation-rule changes do not touch any reported number. The downstream re-score does; it is applied to all models at one scoring commit, so no model was re-run.
 - The shipped app is stricter than the measured code in one respect: quotations must be at least two characters (three for Latin text) and tags must match whole. The measured member selections used the freeze-time rule; this is stated beside the new-category table.
+
+## Notes on the local runs
+
+- llama3.1:8b ran in two parts on the same prediction code: cases 1–21 in the main checkout after commit `9071f05` (its `meta.json` start time, 06:58:58Z, is from the later resume in the `FP-measure` worktree at `9071f05`, which rewrote the meta file), and the rest in `FP-measure` at `9071f05`. The interpret and classification paths are byte-identical in both, so no number depends on the split.
+- Two llama cases, AB09 and AB11, failed with "Could not reach http://127.0.0.1:11434": the operator stopped the Ollama model while those cases were running, to free the machine for a video recording. The protocol keeps failures, so they are scored as errors (not as abstentions); they are not re-run. Five llama and five qwen cases failed at the local 2,048-token output cap; they are scored as errors too.

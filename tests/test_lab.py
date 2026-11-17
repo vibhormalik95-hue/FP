@@ -231,7 +231,7 @@ def test_budget_reservation_holds_under_parallel_calls():
         started = 0
         lock = threading.Lock()
 
-        def estimate_usd(self, system, payload, max_output_tokens=4000):
+        def estimate_usd(self, system, payload, max_output_tokens=None):
             return 0.010
 
         def complete(self, task, system, payload, schema):
@@ -261,7 +261,7 @@ def test_failed_call_is_charged_its_reservation():
     class Broken(Provider):
         name = "broken"
 
-        def estimate_usd(self, system, payload, max_output_tokens=4000):
+        def estimate_usd(self, system, payload, max_output_tokens=None):
             return 0.02
 
         def complete(self, task, system, payload, schema):
