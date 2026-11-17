@@ -5,9 +5,9 @@ import subprocess
 import sys
 
 EXPECTED = {
-    "web/dist/assets/index-BgdmOtnM.js": "29b1735eae0bcc92557d3b33738db43e99d2f8d0c557fbfb1080fc8ba34f8d4b",
-    "web/dist/assets/index-DyF_3HqL.css": "750b04a3d058dd72d007f583c44dc0b6a2e57c09cabc81ed278bef4bf5c5886d",
-    "web/dist/index.html": "d2b5ff18a941dcce76f773de0758291101ce6b913b144e5d40ab978fbb2e72c8"
+    "web/dist/assets/index-CmsvRrCT.css": "66cb2d58b3c680f5542bfa81e6db2fda11ed8cc8962577b5f285224d015d28d8",
+    "web/dist/assets/index-UzlWYA3b.js": "fbd489ec2faa39becb5f3e55a7d4bc272471dcbfb91533dca66c53d3a2756270",
+    "web/dist/index.html": "e17efdd9e72b7aba28f210621c77211a4d5c30812167ae7ac97c03b7db55c2f5"
 }
 
 

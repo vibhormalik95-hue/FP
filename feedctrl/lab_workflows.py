@@ -311,9 +311,7 @@ def interpret_preview(lab, provider, ledger, user_id, request):
     view = lab.view(user_id)
     vocabulary = lab.vocabulary(lab.user(user_id), for_model=True)
     raw, controls, checks, evidence, calls = interpret_request(provider, ledger, request, vocabulary)
-    notes = [f"Model status: {raw.get('status')}. {raw.get('reason', '')}".strip(),
-             f"The model saw {len(vocabulary)} labels: KuaiRec category names, topic tags on at least 3 items, "
-             "and person-created categories. It saw no item text."]
+    notes = [f"The model saw {len(vocabulary)} labels and no video text."]
     if raw.get("alternatives"):
         notes.append("Competing readings: " + "; ".join(map(str, raw["alternatives"])))
     if raw.get("status") == "propose" and not controls:
