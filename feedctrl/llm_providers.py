@@ -31,6 +31,7 @@ DEFAULT_OPENAI_MODEL = "gpt-5-mini"
 DEFAULT_EFFORT = "low"
 CALL_TIMEOUT_S = 120
 OLLAMA_BASE_URL = "http://127.0.0.1:11434/v1"
+LOCAL_MAX_TOKENS = 2048
 
 
 class ProviderError(Exception):
@@ -159,10 +160,14 @@ class OpenAICompatibleProvider(Provider):
         import openai
         started = time.monotonic()
         extra = {"reasoning_effort": self.effort} if self.effort else {}
+        client = self._client
         if self.name == "ollama":   # deterministic local decoding, as in the original parser runs
-            extra.update(temperature=0, seed=42)
+            # Operational limits (added 17 Nov after a runaway generation in the local run): an output cap far
+            # above any valid reply, and no automatic retry of a call that already used the whole timeout.
+            extra.update(temperature=0, seed=42, max_tokens=LOCAL_MAX_TOKENS)
+            client = self._client.with_options(max_retries=0)
         try:
-            response = self._client.chat.completions.create(
+            response = client.chat.completions.create(
                 model=self.model, **extra,
                 messages=[{"role": "system", "content": system},
                           {"role": "user", "content": json.dumps(payload, ensure_ascii=False)}],
@@ -176,6 +181,8 @@ class OpenAICompatibleProvider(Provider):
         except openai.APIConnectionError as exc:
             raise ProviderError(f"Could not reach {self.base_url}: {_scrub(exc, self._secret)}") from None
         choice = response.choices[0]
+        if self.name == "ollama" and getattr(choice, "finish_reason", None) == "length":
+            raise ProviderError(f"The local model hit the {LOCAL_MAX_TOKENS}-token output cap without finishing its reply.")
         if getattr(choice.message, "refusal", None):
             raise ProviderError("The model declined this request (refusal).")
         data = _parse_json(choice.message.content or "")
