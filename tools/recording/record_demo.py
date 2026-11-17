@@ -292,20 +292,22 @@ class Director:
         time.sleep(0.35)
 
     def choose(self, sel, text, typed):
-        """Open a select list and choose an option by typing its first letters, as a person would."""
-        self.click(sel, text)
-        time.sleep(0.45)
+        """Choose an option the way a keyboard user does: focus the list and type its first letters.
+        The native drop-down popup is never opened, so it cannot swallow the next click."""
+        cx, cy = self.point(sel, text)
+        self.page.evaluate("window.__demo.clear()")
+        self.page.evaluate(f"window.__demo.ripple({cx},{cy})")
+        self.page.focus(sel)
         self.ensure_front()
         pyautogui.write(typed, interval=0.12)
-        time.sleep(0.35)
-        pyautogui.press("enter")
-        time.sleep(0.5)
-        # Typeahead can land on a neighbour (two options with the same first letters): correct it.
+        time.sleep(0.6)
         want = self.page.evaluate("([s, t]) => { const o = [...document.querySelector(s).options].find(o => o.text.toLowerCase().startsWith(t.toLowerCase())); return o ? o.value : null; }", [sel, typed])
         if want is not None and self.page.locator(sel).first.input_value() != want:
             self.page.select_option(sel, want)
             self.events.append({"t": round(self.cap.now(), 2), "choose_corrected": sel})
-            time.sleep(0.4)
+        self.events.append({"t": round(self.cap.now(), 2), "choose": sel})
+        print(f"[take] {self.events[-1]['t']:7.1f}s choose {sel}", flush=True)
+        time.sleep(0.4)
 
     def type_into(self, sel, text, narration, interval=0.05):
         self.click(sel, narration)
@@ -424,7 +426,7 @@ def main():
     voice = Voice(args.tts_python, out / "voice", args.voice)
     env = {k: v for k, v in os.environ.items() if k not in ("ANTHROPIC_API_KEY", "OPENAI_API_KEY")}
     args.key = os.environ.get("OPENAI_API_KEY", "")
-    if not args.key and not args.test_clip:
+    if not args.key and not args.test_clip:  # noqa
         raise SystemExit("OPENAI_API_KEY is needed for the take (it is pasted into the masked field).")
     examples = json.loads((REPO / "tools/demo_examples.json").read_text(encoding="utf-8"))
     args.manual_value = examples["manual"][1]["value"]

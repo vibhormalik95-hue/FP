@@ -124,32 +124,35 @@ def calls_line(p):
     return f"{len(calls)} model call{'s' if len(calls) != 1 else ''}, {secs:.0f} seconds of model time, {money(cost)}"
 
 
-def wait_done(d, before, task):
-    """Wait for the page to finish a request, explaining each stage so no gap reaches five seconds."""
+def wait_done(d, before, task, trigger=None, limit=360):
+    """Wait for the page to finish a request, explaining each stage so no gap reaches five seconds.
+    If the trigger click did not start anything, click it once more; give up after ``limit`` seconds."""
     lines = list(WAIT_LINES.get(task, []))
     page = d.page
     done = lambda: page.evaluate("b => (window.labDone || 0) > b", before)
-    d.wait_speech()
+    busy = lambda: page.evaluate("t => !!document.querySelector('[data-role=stage]') || !!(t && document.querySelector(t)?.disabled)", trigger)
     started = time.monotonic()
+    nudged = False
+    d.wait_speech()
     while not done():
+        if time.monotonic() - started > limit:
+            raise RuntimeError(f"The {task} request did not finish within {limit} s.")
+        if trigger and not nudged and time.monotonic() - started > 3 and not busy() and not done():
+            if page.locator(trigger).first.is_enabled():
+                page.click(trigger, timeout=5000)   # the first click did not register: send it again
+            nudged = True
+            d.events.append({"t": round(d.cap.now(), 2), "nudged": trigger})
+            continue
         if lines:
             d.say(lines.pop(0), wait=False)
-        elif time.monotonic() - started > 20:
-            d.say(FILLER, wait=False)
-            started = time.monotonic()
-        while time.monotonic() < d.speech_end - 0.2:
-            if done():
-                break
+        elif time.monotonic() > d.speech_end + 1.5:
+            stage = page.evaluate('document.querySelector("[data-role=stage] b")?.textContent || ""')
+            d.say(f"Still waiting for the model, {stage} so far." if stage else FILLER, wait=False)
+        while time.monotonic() < d.speech_end - 0.2 and not done():
             time.sleep(0.2)
-        if done():
-            break
-        if not lines:
-            time.sleep(1.0)    # pauses stay short: the next filler comes long before five seconds pass
-            if not done():
-                d.say(f"Still waiting: {page.evaluate('document.querySelector(\"[data-role=stage] b\")?.textContent || \"\"')}.", wait=True)
+        time.sleep(0.3)
     d.wait_speech()
-    err = page.evaluate("window.labLastError || null")
-    return err
+    return page.evaluate("window.labLastError || null")
 
 
 def done_count(page):
@@ -197,7 +200,7 @@ def run_demo(d, page, cfg, events, model_label, results_line):
     d.choose("[data-role='lab-strength']", "Strength strong: plus zero point four on the normalized score.", "str")
     b = done_count(page)
     d.click("[data-role='manual-preview']", "Preview. A preview never changes the feed.")
-    wait_done(d, b, "manual")
+    wait_done(d, b, "manual", "[data-role='manual-preview']")
     p = page.evaluate("window.labLastPreview")
     ch = p["changes"]
     d.say(f"The review shows the control, the checks, and the effect: {len(ch['entered'])} videos would enter the top ten, and {len(ch['left'])} would leave it.")
@@ -219,7 +222,7 @@ def run_demo(d, page, cfg, events, model_label, results_line):
         time.sleep(0.5)
         b = done_count(page)
         d.click("[data-role='interpret-preview']", "Interpret and preview.")
-        err = wait_done(d, b, "interpret")
+        err = wait_done(d, b, "interpret", "[data-role='interpret-preview']")
         if err:
             d.say("The model call failed, and the page shows the error. Nothing was changed.")
             d.hold(3.0)
@@ -246,7 +249,7 @@ def run_demo(d, page, cfg, events, model_label, results_line):
     say_while_typing(d, cfg.new_category, "The description names the idea, not any existing KuaiRec label.", interval=0.035)
     b = done_count(page)
     d.click("[data-role='define']", "Step one: propose a definition.")
-    err = wait_done(d, b, "define")
+    err = wait_done(d, b, "define", "[data-role='define']")
     defn = page.evaluate("window.labLastDefinition")
     d.ensure_visible("[data-role='definition']")
     d.say(f"The model proposed a label and a definition with explicit conditions, and cited {defn['evidence']} example items. Each quotation shows a check mark when it was found in the item's text.")
@@ -255,7 +258,7 @@ def run_demo(d, page, cfg, events, model_label, results_line):
     d.choose("[data-role='category-action']", "When applied, I want to see more of these videos.", "Show m")
     b = done_count(page)
     d.click("[data-role='classify']", "I approve the definition, and the model classifies every item in scope.")
-    err = wait_done(d, b, "classify")
+    err = wait_done(d, b, "classify", "[data-role='classify']")
     p = page.evaluate("window.labLastPreview")
     d.ensure_visible(".lab-table")
     d.say(f"The evidence table has one row per item: the verdict, the exact quotation, and the independent check. {p['selected']} of {p['rows']} items were selected. That took {calls_line(p)}.")
@@ -276,7 +279,7 @@ def run_demo(d, page, cfg, events, model_label, results_line):
     say_while_typing(d, cfg.new_item["description"], "The description says what the video shows. The model sees only these words.", interval=0.03)
     b = done_count(page)
     d.click("[data-role='new-items-preview']", "Classify and preview.")
-    wait_done(d, b, "new-items")
+    wait_done(d, b, "new-items", "[data-role='new-items-preview']")
     d.ensure_visible("[data-role='review']")
     d.say("The model assigned existing KuaiRec categories and tags to the new video, and judged it against my new category with a quotation, checked independently again.")
     d.hold(4.0)
@@ -307,7 +310,15 @@ def test_clip(d, page, cfg):
     d.say("This is a short calibration clip.")
     d.click("[data-view='lab']", "The pointer moves to the Language controls tab, and the ring highlights it.")
     page.wait_for_selector(".lab-card")
-    d.click("[data-tab='interpret']", "I open workflow two.")
-    d.click("[data-role='request']", "I type a request into the box.")
-    say_while_typing(d, "Show me more 篮球", "English and Chinese characters both type in.")
+    d.click("[data-tab='manual']", "I open workflow one.")
+    d.click("[data-role='label-filter']", "I filter the labels.")
+    say_while_typing(d, cfg.manual_value, "Labels can be found in Chinese or in English.")
+    time.sleep(0.8)
+    d.click(f"[data-role='label-list'] option[value='{cfg.manual_value}']", "I pick a category.")
+    d.choose("[data-role='manual-action']", "The action is Show more.", "Show m")
+    d.choose("[data-role='lab-strength']", "Strength strong.", "str")
+    b = done_count(page)
+    d.click("[data-role='manual-preview']", "Preview.")
+    wait_done(d, b, "manual", "[data-role='manual-preview']")
+    d.say("The preview arrived.")
     d.hold(1.0)

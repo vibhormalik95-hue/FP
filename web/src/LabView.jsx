@@ -127,7 +127,7 @@ function LabelPicker({api, user, kind, value, onPick}) {
   const [q, setQ] = useState(''), [labels, setLabels] = useState([]);
   useEffect(() => { let live = true; api(`lab/labels?user_id=${user}&kind=${kind}&q=${encodeURIComponent(q)}&limit=60`).then(r => live && setLabels(r.labels)).catch(() => {}); return () => { live = false; }; }, [kind, q, user]);
   return <div className="lab-picker"><input value={q} onChange={e => setQ(e.target.value)} placeholder="Filter (Chinese or English)" data-role="label-filter"/>
-    <select size={7} value={value} onChange={e => onPick(e.target.value)} data-role="label-list">{labels.map(l => <option key={l.term_id} value={l.value} lang="zh">{l.value}{l.gloss_en ? ` · ${l.gloss_en}` : ''} · {l.item_count} items</option>)}</select></div>;
+    <select size={7} value={value} onChange={e => onPick(e.target.value)} data-role="label-list">{labels.map(l => <option key={l.term_id} value={l.value} lang="zh" onClick={() => onPick(l.value)}>{l.value}{l.gloss_en ? ` · ${l.gloss_en}` : ''} · {l.item_count} items</option>)}</select></div>;
 }
 
 export function LabView({api, user, status, onStatus}) {
