@@ -58,10 +58,17 @@ def main(argv=None):
             try:
                 obj, call = provider.complete("parser", system, payload, schema)
                 ledger.add(call)
+                row["raw"] = obj
+                # Post-hoc, format-lenient (secondary): ignore ONLY the strength field when the reply is
+                # reset or clarify; operation and category must still equal the reference.
+                row["posthoc_lenient_correct"] = (isinstance(obj, dict) and obj.get("operation") in ("reset", "clarify")
+                                                  and obj.get("operation") == case["expected"]["operation"]
+                                                  and obj.get("category") is None)
                 row["latency_s"], row["cost_usd"] = call.get("latency_s"), call.get("cost_usd")
                 row["prediction"] = _validate_control(obj, case["categories"], f"{args.provider}:{args.model}")
                 row["operation_correct"] = row["prediction"]["operation"] == case["expected"]["operation"]
                 row["correct"] = all(row["prediction"][k] == case["expected"][k] for k in ("operation", "category", "strength"))
+                row["posthoc_lenient_correct"] = row["posthoc_lenient_correct"] or row["correct"]
             except (ProviderError, ParserOperationalError) as exc:
                 row["error"] = str(exc)[:300]
             rows.append(row)
@@ -74,6 +81,9 @@ def main(argv=None):
                "exact_accuracy_wilson_95": _wilson(correct, len(rows)), "target": 0.85,
                "meets_85_target_point_estimate": correct / len(rows) >= 0.85,
                "operation_accuracy": sum(r["operation_correct"] for r in rows) / len(rows),
+               "posthoc_format_lenient_correct": sum(bool(r.get("posthoc_lenient_correct")) for r in rows),
+               "posthoc_note": ("Post-hoc, format-lenient: ignores only the strength field on reset/clarify replies. "
+                                "The frozen prompt states the rule (strength 0.0 for reset/clarify), so the strict score is primary."),
                "operational_errors": sum(r["error"] is not None for r in rows),
                "clarify_recall": f"{sum(r['correct'] for r in clarify)}/{len(clarify)}",
                "per_group": {g: f"{sum(r['correct'] for r in rows if r['group'] == g)}/{sum(r['group'] == g for r in rows)}"

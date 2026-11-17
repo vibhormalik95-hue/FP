@@ -149,9 +149,9 @@ export function LabView({api, user, status, onStatus}) {
     setStage(lines.length ? {text: lines[0], s: 0} : null);
     clearInterval(timer.current);
     if (lines.length) timer.current = setInterval(() => { const s = Math.round((Date.now() - started) / 1000); setStage({text: lines[Math.min(Math.floor(s / 6), lines.length - 1)], s}); }, 1000);
-    try { const r = await fn(); after(r); } catch (e) { setError(e.message); } finally { clearInterval(timer.current); setStage(null); setBusy(false); onStatus(); }
+    try { const r = await fn(); after(r); window.labDone = (window.labDone || 0) + 1; } catch (e) { setError(e.message); window.labLastError = e.message; window.labDone = (window.labDone || 0) + 1; } finally { clearInterval(timer.current); setStage(null); setBusy(false); onStatus(); }
   }
-  const showPreview = async p => { setPreview(p); setSide('after'); if (auto && p.applicable) await apply(p); };
+  const showPreview = async p => { window.labLastPreview = {id: p.preview_id, kind: p.kind, changes: p.changes, calls: p.calls, controls: p.controls.map(c => c.text), notes: p.notes, applicable: p.applicable, selected: (p.evidence || []).filter(r => r.selected).length, rows: (p.evidence || []).length}; setPreview(p); setSide('after'); if (auto && p.applicable) await apply(p); };
   async function apply(p = preview) { await run('apply', () => api('lab/apply', {user_id: user, preview_id: p.preview_id}), s => { setState(s); setPreview(null); }); }
   const undo = () => run('undo', () => api('lab/undo', {user_id: user}), s => { setState(s); setPreview(null); });
   const reset = () => run('reset', () => api('lab/reset', {user_id: user}), s => { setState(s); setPreview(null); setDefinition(null); });
@@ -178,7 +178,7 @@ export function LabView({api, user, status, onStatus}) {
           <button className="primary" disabled={busy || !request.trim()} data-role="interpret-preview">Interpret and preview <span>↗</span></button></form>}
 
         {tab === 'category' && <div className="panel">
-          <form onSubmit={e => { e.preventDefault(); run('define', () => api('lab/define', {user_id: user, description, scope_size: scope}), d => setDefinition(d)); }}>
+          <form onSubmit={e => { e.preventDefault(); run('define', () => api('lab/define', {user_id: user, description, scope_size: scope}), d => { window.labLastDefinition = {label: d.label, status: d.status, evidence: d.evidence.length, calls: d.calls}; setDefinition(d); }); }}>
             <p className="help">Describe a category that KuaiRec does not have. Step 1: the model proposes a label and a definition from this user's top items. You review and may edit it. Step 2: the model classifies every item in scope with an exact quotation, and a separate call checks each quotation.</p>
             <textarea value={description} onChange={e => setDescription(e.target.value)} rows={3} maxLength={1000} placeholder="Describe the new category" data-role="category-description"/>
             <label className="lab-inline">Scope: this user's top <input type="number" min={10} max={100} step={10} value={scope} onChange={e => setScope(Number(e.target.value))}/> items</label>
