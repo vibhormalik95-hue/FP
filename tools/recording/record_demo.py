@@ -12,8 +12,10 @@ What it does
 
 Usage (from the repository root, app venv):
     python tools/recording/record_demo.py --tts-python <py with kokoro> --out <folder> [--test-clip]
-The API key comes from OPENAI_API_KEY, which the app server reads from its environment; the
-key is never typed, pasted, put on the clipboard or shown on screen.
+The API key comes from OPENAI_API_KEY of the recorder process. The app server gets no key in
+its environment: the recorder puts the key on the clipboard, pastes it into the masked field
+(never shown), clears the clipboard at once, and aborts the take unless the page reports the key
+as held in memory.
 Do not touch the mouse or keyboard while it runs. Moving the pointer into a screen corner aborts.
 """
 from __future__ import annotations
@@ -178,6 +180,8 @@ def focus_chrome():
     hwnd = found[0]
     pyautogui.press("shift")              # Windows lets a process that just sent input change the foreground
     u32.ShowWindow(hwnd, 3)               # SW_MAXIMIZE
+    u32.BringWindowToTop(hwnd)
+    u32.SwitchToThisWindow(hwnd, True)    # works when SetForegroundWindow alone is refused
     u32.SetForegroundWindow(hwnd)
     return True
 
@@ -199,6 +203,12 @@ class Director:
                 return
             focus_chrome()
             time.sleep(0.5)
+            if "Chrome" not in foreground_title() and hasattr(self, "dpr"):
+                # A real click always activates a window: click the blank left margin of the page.
+                back = pyautogui.position()
+                pyautogui.click(*self.screen(6, 6))   # top-left corner of the page: blank, nothing to select
+                pyautogui.moveTo(*back)
+                time.sleep(0.4)
         raise NotInFront(f"Foreground window is '{foreground_title()}', not Chrome; the take is aborted.")
 
     # -- coordinates
@@ -435,6 +445,7 @@ def main():
     ap.add_argument("--out", required=True)
     ap.add_argument("--test-clip", action="store_true")
     ap.add_argument("--app-python", default=sys.executable)
+    ap.add_argument("--prehide", default="", help="comma-separated KuaiRec categories hidden for the user before the take starts")
     ap.add_argument("--results", default="docs/evidence/lab-eval")
     ap.add_argument("--voice", default="af_heart")
     ap.add_argument("--provider", default="openai", choices=["openai", "anthropic"])
@@ -449,10 +460,10 @@ def main():
     events.append({"screen": phys, "capture": cap_size})
 
     voice = Voice(args.tts_python, out / "voice", args.voice)
-    env = {k: v for k, v in os.environ.items() if k != "ANTHROPIC_API_KEY"}   # the server reads OPENAI_API_KEY itself
+    env = {k: v for k, v in os.environ.items() if k not in ("ANTHROPIC_API_KEY", "OPENAI_API_KEY")}   # the key is pasted in the page
     args.key = os.environ.get("OPENAI_API_KEY", "")
-    if not args.key and not args.test_clip:  # noqa
-        raise SystemExit("OPENAI_API_KEY is needed for the take (the app server reads it from the environment).")
+    if not args.key:
+        raise SystemExit("OPENAI_API_KEY is needed for the take (it is pasted into the masked key field).")
     examples = json.loads((REPO / "tools/demo_examples.json").read_text(encoding="utf-8"))
     args.manual_value = examples["manual"][1]["value"]
     args.interpret = [{**examples["interpret"][2], "say": "I just ate, and do not want to be tempted by food."},
@@ -504,6 +515,9 @@ def main():
             for n, text in enumerate(lines, 1):
                 voice.synth(speakable(text))
             events.append({"presynthesized": len(lines)})
+            if args.prehide and not args.test_clip:
+                demo_script.prehide(args.prehide.split(","))
+                page.reload(); page.wait_for_selector("[data-view='lab']", timeout=60000)
             cap = Capture(out / "video-raw.mp4", cap_size)
             d = Director(page, voice, cap, events)
             demo_script.GUARD = d.ensure_front

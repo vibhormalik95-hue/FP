@@ -5,8 +5,9 @@ import time
 
 import pyautogui
 
-from demo_script import (SPOKEN_MODEL, calls_line, done_count, glosses, say_while_typing, spoken_controls,
-                         wait_done)
+import demo_script
+from demo_script import (SPOKEN_MODEL, api, calls_line, clipboard, done_count, glosses, say_while_typing,
+                         spoken_controls, wait_done)
 
 
 def run_demo(d, page, cfg, events, model_label, results_line):
@@ -27,13 +28,26 @@ def run_demo(d, page, cfg, events, model_label, results_line):
     d.click("[data-view='lab']", "Now the language controls.")
     page.wait_for_selector(".lab-card")
     d.point("[data-role='english-only']", "The display is in English: machine-translated from the original Chinese, and labelled as such. One click shows the original.")
+    applied = api("lab/state?user_id=14")["controls"]
+    if applied:
+        d.say("For this recording, KuaiRec's news and incident categories are hidden for this user. That control is listed under Applied now.")
     d.say("On the right: this user's top ten from the trained model.")
     d.hold(3.0)
     d.choose("[data-role='provider-kind']", "Provider: the OpenAI API.", "Op")
     d.type_into("[data-role='provider-model']", cfg.model, f"Model: {spoken_model}, the strongest model in my tests that needs only an API key.")
-    d.point("[data-role='api-key']", "A key pasted here is masked and kept in memory only. Here it comes from an environment variable.")
-    d.click("[data-role='provider-save']", "Use this provider.")
-    d.hold(1.5)
+    d.click("[data-role='api-key']", "This is where your own API key goes. I paste mine into the masked field.")
+    clipboard(cfg.key)
+    if demo_script.GUARD:
+        demo_script.GUARD()
+    pyautogui.hotkey("ctrl", "v")
+    clipboard("")                      # the key leaves the clipboard at once
+    time.sleep(0.4)
+    d.click("[data-role='provider-save']", "Use this provider. The key stays in this server's memory only; it is never shown, logged or saved.")
+    time.sleep(1.0)
+    status = api("lab/status")["provider"]
+    if "memory" not in status.get("key_source", ""):
+        raise RuntimeError("The page did not report the pasted key as held in memory; the take is aborted.")
+    d.say("The status line confirms it: key typed into this page, memory only.")
     # 1. Manual
     d.click("[data-tab='manual']", "Workflow one, the reference: a manual category control. No model.")
     d.click("[data-role='label-filter']", "I search the KuaiRec categories.")
@@ -141,16 +155,14 @@ def run_demo(d, page, cfg, events, model_label, results_line):
     d.click("[data-role='auto-apply']", "I turn it off")
     d.click("[data-role='undo']", "and undo.")
     d.hold(2.0)
-    # Results
-    d.click("[data-view='results']", "The Results page reads the measured result files.")
+    # Results: slower, every headline number read from the result files
+    d.click("[data-view='results']", "The Results page reads the measured result files. I will go through the headline numbers.")
     page.wait_for_selector("[data-role='results']")
     for line in results_line:
+        d.say(line["say"], wait=False)
         if line.get("selector"):
             d.ensure_visible(line["selector"])
-        d.say(line["say"])
-        d.hold(3.0)
-    d.ensure_visible("[data-role='results'] .panel >> nth=1")
-    d.say("Below, the old parser bank is re-used, and labelled as re-use. Llama again scores seventy-nine, short of the eighty-five percent target.")
-    d.hold(3.0)
+        d.wait_speech()
+        time.sleep(line.get("hold", 3.0))
     d.say("The test set was drafted by an AI and reviewed row by row by me. Claude is both the drafter's family and a measured model.")
-    d.say("Code, tests and results are in the repository. Thank you.")
+    d.say("Code, tests, data and results are in the repository. Thank you.")

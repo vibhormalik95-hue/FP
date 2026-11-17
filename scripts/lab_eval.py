@@ -347,10 +347,30 @@ def cmd_score(args):
             f"{say(n)} {summaries[n]['ab_abstained']} of {summaries[n]['ab_cases']}" for n in order) + "."},
         {"selector": f"{wraps} >> nth=2", "say": "For new categories, member F1 on the shared pool of one hundred fifty KuaiRec items: " + "; ".join(
             f"{say(n)} {summaries[n]['nc_member_f1']:.2f}" for n in order if summaries[n]["nc_member_f1"] is not None) + "."},
-        {"selector": f"{wraps} >> nth=3", "say": "Downstream, on the trained ranker, the controls raise the share of target videos in the top ten "
-         "from almost zero toward the level of the reviewed control. The table and the non-inferiority test below give the exact numbers, "
-         "including where the relative ten percent margin is not met."},
-        {"selector": f"{wraps} >> nth=-1", "say": "The last table lists latency, cost and every failure of every model."}]
+        {"selector": f"{wraps} >> nth=3", "say": "Downstream, on the trained ranker, the share of target videos in the top ten goes from "
+         f"{eff_rows[0][1]:.2f} with no control to {eff_rows[1][1]:.2f} with the reviewed control; the models reach "
+         + ", ".join(f"{r[1]:.2f}" for r in eff_rows[2:] if r[1] is not None) + ". Hit rate at one stays within the absolute margin; "
+         "the relative ten percent margin is not met, because the base rate is so low."}]
+    local = [n for n in order if meta[n].get("provider") == "ollama"]
+    hosted = [n for n in order if meta[n].get("provider") != "ollama"]
+    if local and hosted:
+        best_l, best_h = local[0], hosted[0]
+        narration.append({"selector": f"{wraps} >> nth=0", "hold": 3.5, "say":
+            f"Local versus frontier: the best local model, {say(best_l)}, matches {summaries[best_l]['nl_exact']} of "
+            f"{summaries[best_l]['nl_cases']} nonliteral requests exactly, against {summaries[best_h]['nl_exact']} for {say(best_h)}, "
+            f"and abstains correctly on {summaries[best_l]['ab_abstained']} of {summaries[best_l]['ab_cases']} against "
+            f"{summaries[best_h]['ab_abstained']}. Local calls cost nothing but take "
+            f"{summaries[best_l]['latency_median_s']:.0f} seconds each on this laptop."})
+    parser = ROOT / "docs/evidence/lab-eval/20261117-b-parser-rerun/summary.json"
+    if parser.is_file():
+        rows = {r[0]: r for r in json.loads(parser.read_text(encoding="utf-8"))["tables"][0]["rows"]}
+        parts = [f"{say(n)} {rows[n][1].split('/')[0]}" for n in ("llama3.1_8b", "qwen2.5-coder_7b-instruct", "gpt-5-mini", "gpt-5") if n in rows]
+        narration.append({"selector": "[data-role='results'] .panel >> nth=1", "hold": 3.5, "say":
+            "Finally, the old one-hundred-case parser bank, re-used and labelled as re-use, scored strictly: "
+            + "; ".join(parts) + " out of one hundred. None reaches the eighty-five percent target."})
+    narration.append({"selector": f"{wraps} >> nth=-1", "say": "The last table lists latency, cost and every failure of every model."})
+    for n in narration:
+        n.setdefault("hold", 3.0)
     (pub / "narration.json").write_text(json.dumps(narration, ensure_ascii=False, indent=1), encoding="utf-8")
     print("\n".join(lines))
     return 0

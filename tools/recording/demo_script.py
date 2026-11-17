@@ -32,26 +32,13 @@ FILLER = "The model is still working."
 
 
 def clipboard(text):
-    """Put text on the Windows clipboard (used to type characters a keyboard layout cannot)."""
-    CF_UNICODETEXT, GMEM_MOVEABLE = 13, 0x0002
-    k32, u32 = ctypes.windll.kernel32, ctypes.windll.user32
-    k32.GlobalAlloc.restype = ctypes.c_void_p
-    k32.GlobalLock.restype = ctypes.c_void_p
-    k32.GlobalLock.argtypes = [ctypes.c_void_p]
-    k32.GlobalUnlock.argtypes = [ctypes.c_void_p]
-    u32.SetClipboardData.argtypes = [ctypes.c_uint, ctypes.c_void_p]
-    data = (text + "\0").encode("utf-16-le")
-    for _ in range(20):
-        if u32.OpenClipboard(None):
-            break
-        time.sleep(0.05)
-    u32.EmptyClipboard()
-    if text:
-        h = k32.GlobalAlloc(GMEM_MOVEABLE, len(data))
-        ctypes.memmove(k32.GlobalLock(h), data, len(data))
-        k32.GlobalUnlock(h)
-        u32.SetClipboardData(CF_UNICODETEXT, h)
-    u32.CloseClipboard()
+    """Set (or, with an empty string, clear) the Windows clipboard. The value goes through stdin,
+    never through a command line, so it does not appear in any process list or log."""
+    import subprocess
+    script = ("$v = [Console]::In.ReadToEnd(); if ($v.Length -gt 0) { Set-Clipboard -Value $v } "
+              "else { Set-Clipboard -Value $null }")
+    subprocess.run(["powershell", "-NoProfile", "-NonInteractive", "-Command", script], input=text,
+                   text=True, encoding="utf-8", capture_output=True, timeout=30, check=True)
 
 
 GUARD = None   # set by record_demo: verifies Chrome is in front before each keystroke
@@ -76,6 +63,20 @@ def say_while_typing(d, text, line, interval=0.04):
     d.say(line, wait=False)
     type_text(text, interval=interval)
     d.wait_speech()
+
+
+def post(path, body):
+    req = urllib.request.Request("http://127.0.0.1:8765/api/" + path, data=json.dumps(body).encode(),
+                                 headers={"Content-Type": "application/json"})
+    with urllib.request.urlopen(req, timeout=60) as r:
+        return json.loads(r.read())
+
+
+def prehide(categories, user=14):
+    """Apply visible Hide controls before the take (shown under Applied now and narrated)."""
+    for value in categories:
+        p = post("lab/manual", {"user_id": user, "kind": "category", "value": value, "action": "hide"})
+        post("lab/apply", {"user_id": user, "preview_id": p["preview_id"]})
 
 
 def api(path):
@@ -158,15 +159,17 @@ def test_clip(d, page, cfg):
     d.say("This is a short calibration clip.")
     d.click("[data-view='lab']", "The pointer moves to the Language controls tab, and the ring highlights it.")
     page.wait_for_selector(".lab-card")
-    d.click("[data-tab='manual']", "I open workflow one.")
-    d.click("[data-role='label-filter']", "I filter the labels.")
-    say_while_typing(d, cfg.manual_value, "Labels can be found in Chinese or in English.")
-    time.sleep(0.8)
-    d.click(f"[data-role='label-list'] option[value='{cfg.manual_value}']", "I pick a category.")
-    d.choose("[data-role='manual-action']", "The action is Show more.", "Show m")
-    d.choose("[data-role='lab-strength']", "Strength strong.", "str")
-    b = done_count(page)
-    d.click("[data-role='manual-preview']", "Preview.")
-    wait_done(d, b, "manual", "[data-role='manual-preview']")
-    d.say("The preview arrived.")
-    d.hold(1.0)
+    d.choose("[data-role='provider-kind']", "Provider: the OpenAI API.", "Op")
+    d.type_into("[data-role='provider-model']", "gpt-5", "Model: GPT five.")
+    d.click("[data-role='api-key']", "I paste a key into the masked field.")
+    clipboard(cfg.key)
+    if GUARD:
+        GUARD()
+    pyautogui.hotkey("ctrl", "v")
+    clipboard("")
+    time.sleep(0.4)
+    d.click("[data-role='provider-save']", "Use this provider.")
+    time.sleep(1.0)
+    source = api("lab/status")["provider"].get("key_source", "")
+    d.events.append({"key_source": source})
+    d.say("The key is held in memory." if "memory" in source else "The key was not accepted.")
