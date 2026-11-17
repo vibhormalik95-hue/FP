@@ -168,7 +168,7 @@ export function LabView({api, user, status, onStatus}) {
           <p className="help">The reference control: you pick an existing label and an action. No model is called.</p>
           <div className="lab-row"><label>Label type<select value={kind} onChange={e => { setKind(e.target.value); setValue(''); }} data-role="manual-kind">{Object.entries(KINDS).map(([k, l]) => <option key={k} value={k}>{l}</option>)}</select></label>
             <label>Action<select value={action} onChange={e => setAction(e.target.value)} data-role="manual-action">{Object.entries(ACTIONS).map(([k, l]) => <option key={k} value={k}>{l}</option>)}</select></label>
-            {['boost', 'reduce'].includes(action) && <label>Strength<select value={strength} onChange={e => setStrength(e.target.value)}>{STRENGTHS.map(s => <option key={s}>{s}</option>)}</select></label>}</div>
+            {['boost', 'reduce'].includes(action) && <label>Strength<select value={strength} onChange={e => setStrength(e.target.value)} data-role="lab-strength">{STRENGTHS.map(s => <option key={s}>{s}</option>)}</select></label>}</div>
           <LabelPicker api={api} user={user} kind={kind} value={value} onPick={setValue}/>
           <button className="primary" disabled={busy || !value} data-role="manual-preview">Preview <span>↗</span></button></form>}
 

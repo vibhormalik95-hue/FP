@@ -346,6 +346,19 @@ def probe_duration(path):
     return float(out.stdout.strip())
 
 
+def static_lines(extra=()):
+    """Every literal narration sentence of demo_script, found by parsing it, so it can be synthesized before capture."""
+    import ast
+    tree = ast.parse((Path(__file__).parent / "demo_script.py").read_text(encoding="utf-8"))
+    texts = set(extra) | set(demo_script.WAIT_LINES_ALL) | {demo_script.FILLER}
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute) and node.func.attr in ("say", "click", "choose", "type_into", "point"):
+            for arg in node.args:
+                if isinstance(arg, ast.Constant) and isinstance(arg.value, str) and " " in arg.value and not arg.value.startswith(("[", "#", ".")):
+                    texts.add(arg.value)
+    return sorted(texts)
+
+
 def results_lines(folder):
     """What the narration says on the Results page, read from the newest published summary."""
     runs = sorted((p for p in Path(folder).iterdir() if (p / "summary.json").is_file()), reverse=True) if Path(folder).is_dir() else []
@@ -380,7 +393,7 @@ def main():
     if not args.key and not args.test_clip:
         raise SystemExit("OPENAI_API_KEY is needed for the take (it is pasted into the masked field).")
     examples = json.loads((REPO / "tools/demo_examples.json").read_text(encoding="utf-8"))
-    args.manual_value = examples["manual"][0]["value"]
+    args.manual_value = examples["manual"][1]["value"]
     args.interpret = [{**examples["interpret"][2], "say": "I write that I just ate, and do not want to be tempted by food. No category name."},
                       {**examples["interpret"][3], "say": "In Chinese: there has been too much negative news lately; give me a few quiet days."}]
     args.new_category = examples["new_category"][0]["description"]
@@ -413,6 +426,10 @@ def main():
             page.bring_to_front()
             time.sleep(1.5)
             pyautogui.moveTo(phys[0] // 2, phys[1] // 2)
+            lines = static_lines([l["say"] for l in results_lines(REPO / args.results)] if not args.test_clip else [])
+            for n, text in enumerate(lines, 1):
+                voice.synth(speakable(text))
+            events.append({"presynthesized": len(lines)})
             cap = Capture(out / "video-raw.mp4", cap_size)
             d = Director(page, voice, cap, events)
             time.sleep(1.0)

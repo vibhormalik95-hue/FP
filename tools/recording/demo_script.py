@@ -32,6 +32,7 @@ WAIT_LINES = {
                   "It may only choose labels that exist, and it judges the new category with a quotation.",
                   "The server drops any label that does not exist before the preview is shown."],
 }
+WAIT_LINES_ALL = [line for lines in WAIT_LINES.values() for line in lines]
 FILLER = "The model is still working. Long waits are normal for hosted models; the stage line on the page counts the seconds."
 
 
@@ -178,19 +179,20 @@ def run_demo(d, page, cfg, events, model_label, results_line):
     type_text(cfg.manual_value)
     time.sleep(0.8)
     d.click(f"[data-role='label-list'] option[value='{cfg.manual_value}']", f"I pick the category {gloss.get(cfg.manual_value, 'pets')}.")
-    d.choose("[data-role='manual-action']", "The action is Hide.", "Hi")
+    d.choose("[data-role='manual-action']", "The action is Show more.", "Sh")
+    d.choose("[data-role='lab-strength']", "Strength strong: plus zero point four on the normalized score.", "st")
     b = done_count(page)
     d.click("[data-role='manual-preview']", "Preview. A preview never changes the feed.")
     wait_done(d, b, "manual")
     p = page.evaluate("window.labLastPreview")
     ch = p["changes"]
-    d.say(f"The review shows the control, the checks, and the effect: eligible videos would drop from {ch['eligible_before']} to {ch['eligible_after']}, and {len(ch['entered'])} new videos would enter the top ten.")
+    d.say(f"The review shows the control, the checks, and the effect: {len(ch['entered'])} videos would enter the top ten, and {len(ch['left'])} would leave it.")
     d.click(".lab-feed .view-tabs button:has-text('Before')", "On the right I can compare the feed before")
     d.click(".lab-feed .view-tabs button:has-text('After')", "and after Apply.")
     d.hold(2.0)
     d.click("[data-role='apply']", "I approve it. Apply changes exactly the reviewed set, nothing else.")
     page.wait_for_function("!document.querySelector('[data-role=review]')")
-    d.say("The feed is filtered, and the applied control is listed under Applied now.")
+    d.say("The dance videos moved up, each card names the control that moved it, and the control is listed under Applied now.")
     d.hold(3.0)
     d.click("[data-role='undo']", "Undo restores the previous state exactly.")
     d.hold(3.0)

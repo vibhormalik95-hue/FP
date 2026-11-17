@@ -261,7 +261,7 @@ def cmd_score(args):
         f.append(a)
 
     names = sorted(rows_by_model)
-    pct = lambda v: None if v is None else round(100 * v, 1)
+    pct = lambda v: None if v is None else f"{100 * v:.0f}%"
     tables = [
         {"title": "Nonliteral request to existing KuaiRec labels (NL, %d cases)" % summaries[names[0]]["nl_cases"],
          "columns": ["Model", "Exact intended profile", "95% CI (Wilson)", "Action correct %", "Label precision", "Label recall", "Label F1", "F1 95% CI", "Missed required labels", "Unwanted clarifications"],
@@ -315,6 +315,24 @@ def cmd_score(args):
             lines += ["", t["note"]]
         lines.append("")
     (pub / "RESULTS.md").write_text("\n".join(lines), encoding="utf-8")
+    spoken = {"gpt-5-mini": "GPT five mini", "gpt-5": "GPT five", "claude-sonnet-5-5-cli": "Claude Sonnet five point five",
+              "llama3.1_8b": "Llama three point one eight B", "qwen2.5-coder_7b-instruct": "Qwen two point five coder seven B"}
+    say = lambda n: spoken.get(n, n)
+    order = sorted(summaries, key=lambda n: -(summaries[n]["nl_exact"] or 0))
+    wraps = "[data-role='results'] .lab-table-wrap"
+    narration = [
+        {"selector": f"{wraps} >> nth=0", "say": "The first table is the nonliteral requests. Exact means the right action, every required "
+         "label, and nothing outside the reviewed acceptable set. " + "; ".join(
+             f"{say(n)} {summaries[n]['nl_exact']} of {summaries[n]['nl_cases']}" for n in order) + "."},
+        {"selector": f"{wraps} >> nth=1", "say": "Next, cases where the model should not change the feed. Correct abstentions: " + "; ".join(
+            f"{say(n)} {summaries[n]['ab_abstained']} of {summaries[n]['ab_cases']}" for n in order) + "."},
+        {"selector": f"{wraps} >> nth=2", "say": "For new categories, member F1 on the shared pool of one hundred fifty KuaiRec items: " + "; ".join(
+            f"{say(n)} {summaries[n]['nc_member_f1']:.2f}" for n in order if summaries[n]["nc_member_f1"] is not None) + "."},
+        {"selector": f"{wraps} >> nth=3", "say": "Downstream, on the trained ranker, the controls raise the share of target videos in the top ten "
+         "from almost zero toward the level of the reviewed control. The table and the non-inferiority test below give the exact numbers, "
+         "including where the relative ten percent margin is not met."},
+        {"selector": f"{wraps} >> nth=-1", "say": "The last table lists latency, cost and every failure of every model."}]
+    (pub / "narration.json").write_text(json.dumps(narration, ensure_ascii=False, indent=1), encoding="utf-8")
     print("\n".join(lines))
     return 0
 
