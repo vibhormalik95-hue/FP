@@ -16,13 +16,13 @@
  },
  {
   "selector": "[data-role='results'] .lab-table-wrap >> nth=3",
-  "say": "Downstream, on the trained ranker, the share of target videos in the top ten goes from 0.01 with no control to 0.53 with the reviewed control; the models reach 0.56, 0.55, 0.52, 0.02, 0.06. Hit rate at one stays within the absolute margin; the relative ten percent margin is not met, because the base rate is so low.",
+  "say": "Downstream, on the trained ranker, the share of target videos in the top ten goes from 0.01 with no control to 0.53 with the reviewed control. The frontier models reach 0.56, 0.55, 0.52; the two local models only 0.02 and 0.06. For the frontier models, hit rate at one stays within the absolute margin, but not within the relative ten percent margin, because the base rate is so low.",
   "hold": 3.0
  },
  {
   "selector": "[data-role='results'] .lab-table-wrap >> nth=0",
   "hold": 3.5,
-  "say": "Local versus frontier: the best local model, Llama three point one eight B, matches 0 of 20 nonliteral requests exactly, against 17 for Claude Sonnet five point five, and abstains correctly on 11 of 14 against 12. Local calls cost nothing but take 126 seconds each on this laptop."
+  "say": "Local versus frontier: both local models matched 0 of 20 nonliteral requests; they proposed almost nothing, so their abstention scores, 11 and 9 of 14, reflect refusing, not judgement. The frontier models matched 16 or 17 of 20. Local calls cost nothing, but took 126 and 109 seconds each at the median on this laptop."
  },
  {
   "selector": "[data-role='results'] .panel >> nth=1",

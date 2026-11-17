@@ -347,20 +347,25 @@ def cmd_score(args):
             f"{say(n)} {summaries[n]['ab_abstained']} of {summaries[n]['ab_cases']}" for n in order) + "."},
         {"selector": f"{wraps} >> nth=2", "say": "For new categories, member F1 on the shared pool of one hundred fifty KuaiRec items: " + "; ".join(
             f"{say(n)} {summaries[n]['nc_member_f1']:.2f}" for n in order if summaries[n]["nc_member_f1"] is not None) + "."},
-        {"selector": f"{wraps} >> nth=3", "say": "Downstream, on the trained ranker, the share of target videos in the top ten goes from "
-         f"{eff_rows[0][1]:.2f} with no control to {eff_rows[1][1]:.2f} with the reviewed control; the models reach "
-         + ", ".join(f"{r[1]:.2f}" for r in eff_rows[2:] if r[1] is not None) + ". Hit rate at one stays within the absolute margin; "
-         "the relative ten percent margin is not met, because the base rate is so low."}]
-    local = [n for n in order if meta[n].get("provider") == "ollama"]
-    hosted = [n for n in order if meta[n].get("provider") != "ollama"]
+        {"selector": f"{wraps} >> nth=3", "say": None}]
+    local = sorted(n for n in order if meta[n].get("provider") == "ollama")
+    hosted = sorted(n for n in order if meta[n].get("provider") != "ollama")
+    eff = {r[0]: r for r in eff_rows}
+    narration[-1]["say"] = (f"Downstream, on the trained ranker, the share of target videos in the top ten goes from {eff['none'][1]:.2f} "
+                            f"with no control to {eff['reference'][1]:.2f} with the reviewed control. The frontier models reach "
+                            + ", ".join(f"{eff[h][1]:.2f}" for h in hosted)
+                            + ("; the local models only " + " and ".join(f"{eff[l][1]:.2f}" for l in local) if local else "")
+                            + ". For the frontier models, hit rate at one stays within the absolute margin, but not within the "
+                              "relative ten percent margin, because the base rate is so low.")
     if local and hosted:
-        best_l, best_h = local[0], hosted[0]
         narration.append({"selector": f"{wraps} >> nth=0", "hold": 3.5, "say":
-            f"Local versus frontier: the best local model, {say(best_l)}, matches {summaries[best_l]['nl_exact']} of "
-            f"{summaries[best_l]['nl_cases']} nonliteral requests exactly, against {summaries[best_h]['nl_exact']} for {say(best_h)}, "
-            f"and abstains correctly on {summaries[best_l]['ab_abstained']} of {summaries[best_l]['ab_cases']} against "
-            f"{summaries[best_h]['ab_abstained']}. Local calls cost nothing but take "
-            f"{summaries[best_l]['latency_median_s']:.0f} seconds each on this laptop."})
+            f"Local versus frontier: the local models matched "
+            + " and ".join(f"{summaries[l]['nl_exact']}" for l in local) + f" of {summaries[local[0]]['nl_cases']} nonliteral requests; "
+            "where they proposed almost nothing, their abstention scores, "
+            + " and ".join(f"{summaries[l]['ab_abstained']}" for l in local) + " of 14, reflect refusing, not judgement. The frontier models matched "
+            + " to ".join(sorted({str(summaries[h]['nl_exact']) for h in hosted})) + f" of {summaries[hosted[0]]['nl_cases']}. "
+            "Local calls cost nothing, but took " + " and ".join(f"{summaries[l]['latency_median_s']:.0f}" for l in local)
+            + " seconds each at the median on this laptop."})
     parser = ROOT / "docs/evidence/lab-eval/20261117-b-parser-rerun/summary.json"
     if parser.is_file():
         rows = {r[0]: r for r in json.loads(parser.read_text(encoding="utf-8"))["tables"][0]["rows"]}
