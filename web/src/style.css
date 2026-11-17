@@ -162,3 +162,4 @@ thead th,.review-table thead th{color:#4d5a44;font-weight:600}
 @media(max-width:1100px){.lab-grid{grid-template-columns:minmax(0,1fr)}.lab-feed{position:static;max-height:none}}
 .lab-gloss-main{font-size:13px;color:#24301f;font-style:normal}
 .lab-checks-box summary{font-size:12px;cursor:pointer}.lab-checks-box summary.ok{color:#4b6b33}.lab-checks-box summary.bad{color:#a2482a}
+.lab-picked{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 12px}.lab-picked span{background:#e9eddf;border-radius:4px;padding:4px 8px;font-size:12px}.lab-picked button{border:0;background:none;color:#7a856e;margin-left:4px}

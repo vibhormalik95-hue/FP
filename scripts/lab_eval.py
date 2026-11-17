@@ -54,6 +54,18 @@ def load_set(path):
     return data, hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def git_commit():
+    """Short commit of the code that produces predictions, with '+dirty' when it has local changes."""
+    import subprocess
+    try:
+        head = subprocess.run(["git", "rev-parse", "--short", "HEAD"], cwd=ROOT, capture_output=True, text=True).stdout.strip()
+        dirty = subprocess.run(["git", "status", "--porcelain", "--", "feedctrl", "scripts/lab_eval.py"], cwd=ROOT,
+                               capture_output=True, text=True).stdout.strip()
+        return (head + ("+dirty" if dirty else "")) if head else "unknown"
+    except OSError:
+        return "unknown"
+
+
 # ------------------------------------------------------------------ run
 def cmd_run(args):
     data, set_sha = load_set(args.set)
@@ -72,6 +84,7 @@ def cmd_run(args):
     provider = build_provider(args.provider, model=args.model, effort=args.effort, timeout=args.timeout)
     ledger = Ledger(budget_usd=args.budget_usd)
     meta = {"name": args.name, "provider": args.provider, "model": args.model, "effort": args.effort,
+            "code_commit": git_commit(),
             "set_sha256": set_sha, "started_utc": datetime.now(timezone.utc).isoformat(timespec="seconds")}
     (out / f"{args.name}.meta.json").write_text(json.dumps(meta, indent=2), encoding="utf-8")
     with pred_path.open("a", encoding="utf-8") as handle:
@@ -199,6 +212,8 @@ def cmd_score(args):
     run = ROOT / args.run
     cases = {c["id"]: c for c in data["cases"]}
     preds_by_model, rows_by_model, calls_by_model, meta = {}, {}, {}, {}
+    prov_path = run / "PROVENANCE.json"
+    provenance = json.loads(prov_path.read_text(encoding="utf-8")) if prov_path.is_file() else {}
     for path in sorted(run.glob("*.jsonl")):
         name = path.stem
         preds = {}
@@ -207,6 +222,9 @@ def cmd_score(args):
             preds[r["case_id"]] = r
         missing = [cid for cid in cases if cid not in preds]
         meta[name] = {**json.loads((run / f"{name}.meta.json").read_text(encoding="utf-8")), "missing_cases": missing}
+        if not meta[name].get("code_commit") and provenance.get(name):
+            meta[name]["code_commit"] = provenance[name]["code_commit"]
+            meta[name]["code_commit_source"] = provenance[name]["source"]
         rows = []
         for cid, case in cases.items():
             p = preds.get(cid, {"error": "not run"})
@@ -255,6 +273,9 @@ def cmd_score(args):
         f.append(a)
 
     names = sorted(rows_by_model)
+    scoring_commit = git_commit()
+    provenance_line = ("Predictions produced at commit: " + "; ".join(f"{n} {meta[n].get('code_commit', 'unknown')}" for n in names)
+                       + f". Scored at commit {scoring_commit}.")
     pct = lambda v: None if v is None else f"{100 * v:.0f}%"
     tables = [
         {"title": "Nonliteral request to existing KuaiRec labels (NL, %d cases)" % summaries[names[0]]["nl_cases"],
@@ -267,7 +288,7 @@ def cmd_score(args):
         {"title": "New category membership on a shared pool of %d KuaiRec items (NC, %d cases)" % (len(data["pool"]), summaries[names[0]]["nc_cases"]),
          "columns": ["Model", "Member precision", "Member recall", "Member F1", "F1 95% CI", "Raw-verdict F1", "Missed members"],
          "rows": [[n, s["nc_member_precision"], s["nc_member_recall"], s["nc_member_f1"], str(s["nc_member_f1_ci"]), s["nc_raw_f1"], s["retrieval_misses_members"]] for n, s in summaries.items()],
-         "note": "Selected = verdict match, quotation found in the item, and the independent check supports it. Every model used the reviewed reference definition."},
+         "note": "Selected = verdict match, quotation found in the item, and the independent check supports it. Every model used the reviewed reference definition. Measured with the freeze-time quotation rule; the shipped app is stricter since 1de3955 (quotations of 2+ characters, 3+ letters for Latin text, whole tags)."},
         {"title": "Downstream effect on the trained SASRec ranking (%d sampled users, seed %d)" % (len(sample), args.seed),
          "columns": ["Control", "TCP@10 (boost/only cases)", "TCER@10 (hide/reduce cases)", "NDCG@10", "HR@1"],
          "rows": eff_rows, "note": "TCP/TCER: share of the top ten that is in the REFERENCE target set. none = no control; reference = the reviewed control."},
@@ -284,9 +305,13 @@ def cmd_score(args):
          "rows": [[n, s["calls"], s["call_errors"], s["errors"], s["latency_median_s"], s["latency_p90_s"], s["cost_usd"]] for n, s in summaries.items()],
          "note": "Cost: list price x tokens (OpenAI, Anthropic), as reported (Claude CLI), zero for local models (electricity not counted)."},
     ]
+    for t in tables:   # every table names the commits that produced it
+        t["note"] = (t.get("note", "") + " " + provenance_line).strip()
     summary = {"title": "KuaiRec language controls: local vs frontier models on the frozen reviewed set",
                "status_note": (f"Set {data.get('version')} (SHA-256 {set_sha[:16]}…), reviewed by {data['frozen']['reviewed_by']} "
-                               f"at {data['frozen']['reviewed_utc']}. Review CSV SHA-256 {data['frozen']['review_csv_sha256'][:16]}…"),
+                               f"at {data['frozen']['reviewed_utc']}. Review CSV SHA-256 {data['frozen']['review_csv_sha256'][:16]}…. "
+                               f"{provenance_line}"),
+               "scoring_commit": scoring_commit,
                "set_sha256": set_sha, "models": meta, "summaries": summaries, "paired_tests": tests,
                "downstream": {"users": sample, "cases": effects}, "tables": tables,
                "scored_utc": datetime.now(timezone.utc).isoformat(timespec="seconds")}
@@ -322,10 +347,35 @@ def cmd_score(args):
             f"{say(n)} {summaries[n]['ab_abstained']} of {summaries[n]['ab_cases']}" for n in order) + "."},
         {"selector": f"{wraps} >> nth=2", "say": "For new categories, member F1 on the shared pool of one hundred fifty KuaiRec items: " + "; ".join(
             f"{say(n)} {summaries[n]['nc_member_f1']:.2f}" for n in order if summaries[n]["nc_member_f1"] is not None) + "."},
-        {"selector": f"{wraps} >> nth=3", "say": "Downstream, on the trained ranker, the controls raise the share of target videos in the top ten "
-         "from almost zero toward the level of the reviewed control. The table and the non-inferiority test below give the exact numbers, "
-         "including where the relative ten percent margin is not met."},
-        {"selector": f"{wraps} >> nth=-1", "say": "The last table lists latency, cost and every failure of every model."}]
+        {"selector": f"{wraps} >> nth=3", "say": None}]
+    local = sorted(n for n in order if meta[n].get("provider") == "ollama")
+    hosted = sorted(n for n in order if meta[n].get("provider") != "ollama")
+    eff = {r[0]: r for r in eff_rows}
+    narration[-1]["say"] = (f"Downstream, on the trained ranker, the share of target videos in the top ten goes from {eff['none'][1]:.2f} "
+                            f"with no control to {eff['reference'][1]:.2f} with the reviewed control. The frontier models reach "
+                            + ", ".join(f"{eff[h][1]:.2f}" for h in hosted)
+                            + ("; the local models only " + " and ".join(f"{eff[l][1]:.2f}" for l in local) if local else "")
+                            + ". For the frontier models, hit rate at one stays within the absolute margin, but not within the "
+                              "relative ten percent margin, because the base rate is so low.")
+    if local and hosted:
+        narration.append({"selector": f"{wraps} >> nth=0", "hold": 3.5, "say":
+            f"Local versus frontier: the local models matched "
+            + " and ".join(f"{summaries[l]['nl_exact']}" for l in local) + f" of {summaries[local[0]]['nl_cases']} nonliteral requests; "
+            "where they proposed almost nothing, their abstention scores, "
+            + " and ".join(f"{summaries[l]['ab_abstained']}" for l in local) + f" of {summaries[local[0]]['ab_cases']}, reflect refusing, not judgement. The frontier models matched "
+            + " to ".join(str(v) for v in sorted({summaries[h]['nl_exact'] for h in hosted})) + f" of {summaries[hosted[0]]['nl_cases']}. "
+            "Local calls cost nothing, but took " + " and ".join(f"{summaries[l]['latency_median_s']:.0f}" for l in local)
+            + " seconds each at the median on this laptop."})
+    parser = ROOT / "docs/evidence/lab-eval/20261117-b-parser-rerun/summary.json"
+    if parser.is_file():
+        rows = {r[0]: r for r in json.loads(parser.read_text(encoding="utf-8"))["tables"][0]["rows"]}
+        parts = [f"{say(n)} {rows[n][1].split('/')[0]}" for n in ("llama3.1_8b", "qwen2.5-coder_7b-instruct", "gpt-5-mini", "gpt-5") if n in rows]
+        narration.append({"selector": "[data-role='results'] .panel >> nth=1", "hold": 3.5, "say":
+            "Finally, the old one-hundred-case parser bank, re-used and labelled as re-use, scored strictly: "
+            + "; ".join(parts) + " out of one hundred. None reaches the eighty-five percent target."})
+    narration.append({"selector": f"{wraps} >> nth=-1", "say": "The last table lists latency, cost and every failure of every model."})
+    for n in narration:
+        n.setdefault("hold", 3.0)
     (pub / "narration.json").write_text(json.dumps(narration, ensure_ascii=False, indent=1), encoding="utf-8")
     print("\n".join(lines))
     return 0

@@ -67,6 +67,19 @@ class Provider:
     def complete(self, task, system, payload, schema):  # pragma: no cover - interface
         raise NotImplementedError
 
+    free = False   # True for providers that never charge (mock, local models)
+
+    max_output_tokens = 16000   # the largest reply a hosted provider may return (Anthropic max_tokens; OpenAI uncapped)
+
+    def estimate_usd(self, system, payload, max_output_tokens=None):
+        """An upper-bound cost of one call, reserved against the budget before the call starts.
+        Characters / 2.5 over-counts tokens for mixed Chinese and English text on purpose."""
+        if self.free or self.name in ("mock", "ollama"):
+            return 0.0
+        tokens_in = (len(system) + len(json.dumps(payload, ensure_ascii=False))) / 2.5
+        price = PRICES.get(self.model) or OPENAI_PRICES.get(self.model) or CEILING_PRICE
+        return round(tokens_in / 1e6 * price[0] + (max_output_tokens or self.max_output_tokens) / 1e6 * price[1], 6)
+
     def _record(self, task, started, tokens_in, tokens_out, cost, cost_source, **extra):
         return {"task": task, "provider": self.name, "model": self.model,
                 "latency_s": round(time.monotonic() - started, 3),
@@ -343,9 +356,44 @@ class Ledger:
         self.calls = []
         self.budget_usd = budget_usd
         self._lock = threading.Lock()
+        self._reserved = {}
+        self._next = 0
 
     def over_budget(self):
-        return self.budget_usd is not None and self.total() >= self.budget_usd
+        return self.budget_usd is not None and self.total() + self.reserved() >= self.budget_usd
+
+    def reserved(self):
+        with self._lock:
+            return round(sum(self._reserved.values()), 6)
+
+    def reserve(self, amount):
+        """Hold ``amount`` against the budget before a call starts, so parallel calls cannot overspend.
+        Returns a reservation id, or None when the reservation does not fit in the budget."""
+        with self._lock:
+            if self.budget_usd is not None and self.total() + sum(self._reserved.values()) + amount > self.budget_usd:
+                return None
+            self._next += 1
+            self._reserved[self._next] = amount
+            return self._next
+
+    def release(self, reservation):
+        with self._lock:
+            return self._reserved.pop(reservation, 0.0)
+
+    def settle(self, reservation, call):
+        """Release the reservation and record the call in one step, so no other call slips in between."""
+        with self._lock:
+            held = self._reserved.pop(reservation, 0.0)
+            if call.get("error") and not call.get("cost_usd"):
+                call["cost_usd"] = held
+                call["cost_source"] = "failed call: reserved upper bound charged" if held else "failed call"
+            elif call.get("cost_usd") is None:
+                tin, tout = call.get("input_tokens") or 0, call.get("output_tokens") or 0
+                call["cost_usd"] = round(tin / 1e6 * CEILING_PRICE[0] + tout / 1e6 * CEILING_PRICE[1], 6)
+                call["cost_source"] = "price unknown: upper-bound estimate"
+            self.calls.append(call)
+            call["running_total_usd"] = round(sum(c.get("cost_usd") or 0 for c in self.calls), 6)
+        return call
 
     def add(self, call):
         with self._lock:

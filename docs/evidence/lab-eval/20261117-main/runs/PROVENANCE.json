@@ -1,0 +1,7 @@
+{
+ "gpt-5": {"code_commit": "8dd978f", "source": "run started after the freeze commit 391d462 and test-only commit 8dd978f; meta written before code_commit was recorded"},
+ "gpt-5-mini": {"code_commit": "8dd978f", "source": "as gpt-5"},
+ "claude-sonnet-5-5-cli": {"code_commit": "8dd978f", "source": "as gpt-5"},
+ "llama3.1_8b": {"code_commit": "9071f05", "source": "worktree FP-measure checked out at 9071f05 (resume and qwen); first 21 cases ran in FP-final at 9071f05"},
+ "qwen2.5-coder_7b-instruct": {"code_commit": "9071f05", "source": "worktree FP-measure checked out at 9071f05"}
+}

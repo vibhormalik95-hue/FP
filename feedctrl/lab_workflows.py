@@ -179,16 +179,25 @@ def label_view(term):
 
 
 def call_model(provider, ledger, task, system, payload, schema, calls):
-    if ledger.over_budget():
-        raise LabError(f"Budget reached: USD {ledger.total():.4f} of {ledger.budget_usd:.2f}. "
-                       "No further model calls are made.", 402)
+    estimate = provider.estimate_usd(system, payload)   # also charged if the call fails without a budget
+    reservation = ledger.reserve(estimate)   # parallel calls each reserve their upper bound first
+    if reservation is None or (ledger.budget_usd is not None and ledger.total() >= ledger.budget_usd):
+        if reservation is not None:
+            ledger.release(reservation)
+        raise LabError(f"Budget reached: USD {ledger.total():.4f} spent and USD {ledger.reserved():.4f} reserved "
+                       f"of {ledger.budget_usd:.2f}. No further model calls are made.", 402)
     try:
         data, call = provider.complete(task, system, payload, schema)
     except ProviderError as exc:
-        calls.append(ledger.add({"task": task, "provider": provider.name, "model": provider.model,
-                                 "error": str(exc), "cost_usd": 0.0, "latency_s": None}))
+        # A failed call may still have used tokens: settle charges the reservation, never zero.
+        calls.append(ledger.settle(reservation, {"task": task, "provider": provider.name, "model": provider.model,
+                                                 "error": str(exc), "latency_s": None}))
         raise LabError(f"The model call '{task}' failed: {exc}", 502) from None
-    calls.append(ledger.add(call))
+    except BaseException:
+        ledger.settle(reservation, {"task": task, "provider": provider.name, "model": provider.model,
+                                    "error": "unexpected failure", "latency_s": None})
+        raise
+    calls.append(ledger.settle(reservation, call))
     return data
 
 
@@ -297,16 +306,24 @@ def _labels(lab, user_id, kind):
     return {t["value"] for t in lab.vocabulary(lab.user(user_id)) if t["kind"] == kind}
 
 
-def manual_preview(lab, user_id, kind, value, action, strength="standard"):
+def manual_preview(lab, user_id, kind, value, action, strength="standard", values=None):
+    """One or several existing labels of one kind, one action. No model is called."""
     if kind not in ("feature", "category", "tag", "custom"):
         raise LabError("Choose a KuaiRec feature, a KuaiRec category, a topic tag or a new category.")
-    if value not in _labels(lab, user_id, kind):
-        raise LabError(f"'{value}' is not an existing label of that kind.")
+    chosen = [v for v in (values or [value]) if v]
+    if not chosen or len(chosen) > 20:
+        raise LabError("Choose between one and twenty labels.")
+    known = _labels(lab, user_id, kind)
+    unknown = [v for v in chosen if v not in known]
+    if unknown:
+        raise LabError(f"'{unknown[0]}' is not an existing label of that kind.")
     view = lab.view(user_id)
-    control = make_control("manual", action, {"kind": kind, "value": value}, strength)
-    return lab.new_preview(user_id, "manual", f"Manual control: {control['text']}", controls=[control],
-                           checks=[{"check": f"'{value}' exists", "ok": True}],
-                           notes=["No model was called. The person chose the label and the action."],
+    group = secrets.token_hex(4)   # labels chosen together act together ("only" keeps any of them)
+    controls = [make_control("manual", action, {"kind": kind, "value": v}, strength, group=group) for v in dict.fromkeys(chosen)]
+    summary = controls[0]["text"] if len(controls) == 1 else f"{len(controls)} labels: " + "; ".join(c["text"] for c in controls)
+    return lab.new_preview(user_id, "manual", f"Manual control: {summary}", controls=controls,
+                           checks=[{"check": f"'{v}' exists", "ok": True} for v in dict.fromkeys(chosen)],
+                           notes=["No model was called. The person chose the labels and the action."],
                            base_version=view["version"])
 
 

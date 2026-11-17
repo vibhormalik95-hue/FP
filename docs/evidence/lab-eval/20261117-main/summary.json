@@ -1,6 +1,7 @@
 {
  "title": "KuaiRec language controls: local vs frontier models on the frozen reviewed set",
- "status_note": "Set lab-eval-set-20261117-frozen (SHA-256 d4af21e6ed311448…), reviewed by Vibhor Malik at 2026-11-17T02:27:25+00:00. Review CSV SHA-256 384c47777bef2984…",
+ "status_note": "Set lab-eval-set-20261117-frozen (SHA-256 d4af21e6ed311448…), reviewed by Vibhor Malik at 2026-11-17T02:27:25+00:00. Review CSV SHA-256 384c47777bef2984…. Predictions produced at commit: claude-sonnet-5-5-cli 8dd978f; gpt-5 8dd978f; gpt-5-mini 8dd978f; llama3.1_8b 9071f05; qwen2.5-coder_7b-instruct 9071f05. Scored at commit fbb3e59.",
+ "scoring_commit": "fbb3e59",
  "set_sha256": "d4af21e6ed311448c79fabc7286a7dc00eba62cb3ec5c45dde60d8a01f233a82",
  "models": {
   "claude-sonnet-5-5-cli": {
@@ -10,7 +11,9 @@
    "effort": "low",
    "set_sha256": "d4af21e6ed311448c79fabc7286a7dc00eba62cb3ec5c45dde60d8a01f233a82",
    "started_utc": "2026-11-17T02:28:10+00:00",
-   "missing_cases": []
+   "missing_cases": [],
+   "code_commit": "8dd978f",
+   "code_commit_source": "as gpt-5"
   },
   "gpt-5-mini": {
    "name": "gpt-5-mini",
@@ -19,7 +22,9 @@
    "effort": "low",
    "set_sha256": "d4af21e6ed311448c79fabc7286a7dc00eba62cb3ec5c45dde60d8a01f233a82",
    "started_utc": "2026-11-17T02:28:11+00:00",
-   "missing_cases": []
+   "missing_cases": [],
+   "code_commit": "8dd978f",
+   "code_commit_source": "as gpt-5"
   },
   "gpt-5": {
    "name": "gpt-5",
@@ -28,7 +33,31 @@
    "effort": "low",
    "set_sha256": "d4af21e6ed311448c79fabc7286a7dc00eba62cb3ec5c45dde60d8a01f233a82",
    "started_utc": "2026-11-17T02:28:11+00:00",
-   "missing_cases": []
+   "missing_cases": [],
+   "code_commit": "8dd978f",
+   "code_commit_source": "run started after the freeze commit 391d462 and test-only commit 8dd978f; meta written before code_commit was recorded"
+  },
+  "llama3.1_8b": {
+   "name": "llama3.1_8b",
+   "provider": "ollama",
+   "model": "llama3.1:8b",
+   "effort": "low",
+   "set_sha256": "d4af21e6ed311448c79fabc7286a7dc00eba62cb3ec5c45dde60d8a01f233a82",
+   "started_utc": "2026-11-17T06:58:58+00:00",
+   "missing_cases": [],
+   "code_commit": "9071f05",
+   "code_commit_source": "worktree FP-measure checked out at 9071f05 (resume and qwen); first 21 cases ran in FP-final at 9071f05"
+  },
+  "qwen2.5-coder_7b-instruct": {
+   "name": "qwen2.5-coder_7b-instruct",
+   "provider": "ollama",
+   "model": "qwen2.5-coder:7b-instruct",
+   "effort": "low",
+   "set_sha256": "d4af21e6ed311448c79fabc7286a7dc00eba62cb3ec5c45dde60d8a01f233a82",
+   "started_utc": "2026-11-17T09:27:29+00:00",
+   "missing_cases": [],
+   "code_commit": "9071f05",
+   "code_commit_source": "worktree FP-measure checked out at 9071f05"
   }
  },
  "summaries": {
@@ -166,6 +195,96 @@
    "cost_usd": 2.3888,
    "latency_median_s": 12.516,
    "latency_p90_s": 23.875
+  },
+  "llama3.1_8b": {
+   "nl_cases": 20,
+   "nl_exact": 0,
+   "nl_exact_rate": 0.0,
+   "nl_exact_wilson": [
+    0.0,
+    0.1611
+   ],
+   "nl_action_rate": 0.05,
+   "nl_label_precision": 0.03333333333333333,
+   "nl_label_recall": 0.05,
+   "nl_label_f1": 0.04,
+   "nl_label_f1_ci": [
+    0.0,
+    0.12
+   ],
+   "nl_unwanted_clarification": 17,
+   "nl_errors": 2,
+   "ab_cases": 14,
+   "ab_abstained": 11,
+   "ab_abstention_rate": 0.7857142857142857,
+   "ab_abstention_wilson": [
+    0.5241,
+    0.9243
+   ],
+   "false_acceptance": 0,
+   "ab_status_match": 5,
+   "nc_cases": 6,
+   "nc_member_precision": 0.291005291005291,
+   "nc_member_recall": 0.13106295149638802,
+   "nc_member_f1": 0.1794871794871795,
+   "nc_member_f1_ci": [
+    0.0,
+    0.3846
+   ],
+   "nc_raw_f1": 0.1710239651416122,
+   "retrieval_misses_labels": 30,
+   "retrieval_misses_members": 83,
+   "errors": 9,
+   "calls": 106,
+   "call_errors": 13,
+   "cost_usd": 0,
+   "latency_median_s": 125.766,
+   "latency_p90_s": 267.359
+  },
+  "qwen2.5-coder_7b-instruct": {
+   "nl_cases": 20,
+   "nl_exact": 0,
+   "nl_exact_rate": 0.0,
+   "nl_exact_wilson": [
+    0.0,
+    0.1611
+   ],
+   "nl_action_rate": 0.0,
+   "nl_label_precision": 0.0,
+   "nl_label_recall": 0.0,
+   "nl_label_f1": 0.0,
+   "nl_label_f1_ci": [
+    0.0,
+    0.0
+   ],
+   "nl_unwanted_clarification": 20,
+   "nl_errors": 0,
+   "ab_cases": 14,
+   "ab_abstained": 9,
+   "ab_abstention_rate": 0.6428571428571429,
+   "ab_abstention_wilson": [
+    0.3876,
+    0.8366
+   ],
+   "false_acceptance": 0,
+   "ab_status_match": 3,
+   "nc_cases": 6,
+   "nc_member_precision": 0.9722222222222222,
+   "nc_member_recall": 0.32995372575480936,
+   "nc_member_f1": 0.46924963924963925,
+   "nc_member_f1_ci": [
+    0.3072,
+    0.6276
+   ],
+   "nc_raw_f1": 0.6206633132948922,
+   "retrieval_misses_labels": 32,
+   "retrieval_misses_members": 64,
+   "errors": 5,
+   "calls": 138,
+   "call_errors": 10,
+   "cost_usd": 0,
+   "latency_median_s": 109.032,
+   "latency_p90_s": 159.375
   }
  },
  "paired_tests": [
@@ -181,7 +300,7 @@
    "mean_score_diff": 0.030648450405803346,
    "wilcoxon_p": 0.5711544403484945,
    "mcnemar_p_bh": 1.0,
-   "wilcoxon_p_bh": 0.5711544403484945
+   "wilcoxon_p_bh": 0.6081722534234125
   },
   {
    "a": "claude-sonnet-5-5-cli",
@@ -194,8 +313,36 @@
    "mcnemar_p": 0.3876953125,
    "mean_score_diff": 0.1090296504831734,
    "wilcoxon_p": 0.17941499252549664,
-   "mcnemar_p_bh": 0.76171875,
-   "wilcoxon_p_bh": 0.26912248878824496
+   "mcnemar_p_bh": 0.5538504464285714,
+   "wilcoxon_p_bh": 0.2242687406568708
+  },
+  {
+   "a": "claude-sonnet-5-5-cli",
+   "b": "llama3.1_8b",
+   "cases": 40,
+   "success_a": 33,
+   "success_b": 11,
+   "only_a": 24,
+   "only_b": 2,
+   "mcnemar_p": 1.049041748046875e-05,
+   "mean_score_diff": 0.5676539840088227,
+   "wilcoxon_p": 6.598700165963303e-06,
+   "mcnemar_p_bh": 5.07881244023641e-05,
+   "wilcoxon_p_bh": 3.2993500829816517e-05
+  },
+  {
+   "a": "claude-sonnet-5-5-cli",
+   "b": "qwen2.5-coder_7b-instruct",
+   "cases": 40,
+   "success_a": 33,
+   "success_b": 9,
+   "only_a": 25,
+   "only_b": 1,
+   "mcnemar_p": 8.046627044677734e-07,
+   "mean_score_diff": 0.5941896150444538,
+   "wilcoxon_p": 1.0231659630870213e-06,
+   "mcnemar_p_bh": 8.046627044677734e-06,
+   "wilcoxon_p_bh": 1.0231659630870214e-05
   },
   {
    "a": "gpt-5",
@@ -208,8 +355,78 @@
    "mcnemar_p": 0.5078125,
    "mean_score_diff": 0.07838120007737005,
    "wilcoxon_p": 0.17823273870494272,
-   "mcnemar_p_bh": 0.76171875,
-   "wilcoxon_p_bh": 0.26912248878824496
+   "mcnemar_p_bh": 0.634765625,
+   "wilcoxon_p_bh": 0.2242687406568708
+  },
+  {
+   "a": "gpt-5",
+   "b": "llama3.1_8b",
+   "cases": 40,
+   "success_a": 32,
+   "success_b": 11,
+   "only_a": 24,
+   "only_b": 3,
+   "mcnemar_p": 4.9233436584472656e-05,
+   "mean_score_diff": 0.5370055336030194,
+   "wilcoxon_p": 3.634075551622505e-05,
+   "mcnemar_p_bh": 0.00012308359146118164,
+   "wilcoxon_p_bh": 9.085188879056262e-05
+  },
+  {
+   "a": "gpt-5",
+   "b": "qwen2.5-coder_7b-instruct",
+   "cases": 40,
+   "success_a": 32,
+   "success_b": 9,
+   "only_a": 26,
+   "only_b": 3,
+   "mcnemar_p": 1.5236437320709229e-05,
+   "mean_score_diff": 0.5635411646386503,
+   "wilcoxon_p": 1.7026382904778484e-05,
+   "mcnemar_p_bh": 5.07881244023641e-05,
+   "wilcoxon_p_bh": 5.675460968259494e-05
+  },
+  {
+   "a": "gpt-5-mini",
+   "b": "llama3.1_8b",
+   "cases": 40,
+   "success_a": 29,
+   "success_b": 11,
+   "only_a": 24,
+   "only_b": 6,
+   "mcnemar_p": 0.0014309063553810122,
+   "mean_score_diff": 0.45862433352564935,
+   "wilcoxon_p": 0.0018304574446207072,
+   "mcnemar_p_bh": 0.0023848439256350202,
+   "wilcoxon_p_bh": 0.0030507624077011786
+  },
+  {
+   "a": "gpt-5-mini",
+   "b": "qwen2.5-coder_7b-instruct",
+   "cases": 40,
+   "success_a": 29,
+   "success_b": 9,
+   "only_a": 25,
+   "only_b": 5,
+   "mcnemar_p": 0.0003249142318964005,
+   "mean_score_diff": 0.48515996456128035,
+   "wilcoxon_p": 0.00044609730585600866,
+   "mcnemar_p_bh": 0.000649828463792801,
+   "wilcoxon_p_bh": 0.0008921946117120173
+  },
+  {
+   "a": "llama3.1_8b",
+   "b": "qwen2.5-coder_7b-instruct",
+   "cases": 40,
+   "success_a": 11,
+   "success_b": 9,
+   "only_a": 5,
+   "only_b": 3,
+   "mcnemar_p": 0.7265625,
+   "mean_score_diff": 0.026535631035631037,
+   "wilcoxon_p": 0.6081722534234125,
+   "mcnemar_p_bh": 0.8072916666666666,
+   "wilcoxon_p_bh": 0.6081722534234125
   }
  ],
  "downstream": {
@@ -444,6 +661,16 @@
       "target_share": 0.9690000000000001,
       "ndcg10": 0.0007139757201806865,
       "hr1": 0.0
+     },
+     "llama3.1_8b": {
+      "target_share": 0.0,
+      "ndcg10": 0.024160992169872907,
+      "hr1": 0.005
+     },
+     "qwen2.5-coder_7b-instruct": {
+      "target_share": 0.0,
+      "ndcg10": 0.024160992169872907,
+      "hr1": 0.005
      }
     }
    },
@@ -473,6 +700,16 @@
      },
      "gpt-5": {
       "target_share": 0.0,
+      "ndcg10": 0.024160992169872907,
+      "hr1": 0.005
+     },
+     "llama3.1_8b": {
+      "target_share": 0.001,
+      "ndcg10": 0.024160992169872907,
+      "hr1": 0.005
+     },
+     "qwen2.5-coder_7b-instruct": {
+      "target_share": 0.001,
       "ndcg10": 0.024160992169872907,
       "hr1": 0.005
      }
@@ -506,6 +743,16 @@
       "target_share": 0.0,
       "ndcg10": 0.024160992169872907,
       "hr1": 0.005
+     },
+     "llama3.1_8b": {
+      "target_share": 0.0005,
+      "ndcg10": 0.024160992169872907,
+      "hr1": 0.005
+     },
+     "qwen2.5-coder_7b-instruct": {
+      "target_share": 0.0005,
+      "ndcg10": 0.024160992169872907,
+      "hr1": 0.005
      }
     }
    },
@@ -537,6 +784,16 @@
       "target_share": 0.0,
       "ndcg10": 0.024160992169872907,
       "hr1": 0.005
+     },
+     "llama3.1_8b": {
+      "target_share": 0.0,
+      "ndcg10": 0.024160992169872907,
+      "hr1": 0.005
+     },
+     "qwen2.5-coder_7b-instruct": {
+      "target_share": 0.009000000000000001,
+      "ndcg10": 0.024160992169872907,
+      "hr1": 0.005
      }
     }
    },
@@ -565,6 +822,16 @@
       "hr1": 0.005
      },
      "gpt-5": {
+      "target_share": 0.0,
+      "ndcg10": 0.024160992169872907,
+      "hr1": 0.005
+     },
+     "llama3.1_8b": {
+      "target_share": 0.0,
+      "ndcg10": 0.024160992169872907,
+      "hr1": 0.005
+     },
+     "qwen2.5-coder_7b-instruct": {
       "target_share": 0.0,
       "ndcg10": 0.024160992169872907,
       "hr1": 0.005
@@ -599,6 +866,16 @@
       "target_share": 0.665,
       "ndcg10": 0.03487114837863793,
       "hr1": 0.045
+     },
+     "llama3.1_8b": {
+      "target_share": 0.099,
+      "ndcg10": 0.024160992169872907,
+      "hr1": 0.005
+     },
+     "qwen2.5-coder_7b-instruct": {
+      "target_share": 0.099,
+      "ndcg10": 0.024160992169872907,
+      "hr1": 0.005
      }
     }
    },
@@ -628,6 +905,16 @@
      },
      "gpt-5": {
       "target_share": 0.0,
+      "ndcg10": 0.024160992169872907,
+      "hr1": 0.005
+     },
+     "llama3.1_8b": {
+      "target_share": 0.007000000000000001,
+      "ndcg10": 0.024160992169872907,
+      "hr1": 0.005
+     },
+     "qwen2.5-coder_7b-instruct": {
+      "target_share": 0.007000000000000001,
       "ndcg10": 0.024160992169872907,
       "hr1": 0.005
      }
@@ -661,6 +948,16 @@
       "target_share": 1.0,
       "ndcg10": 0.003759668338826187,
       "hr1": 0.0
+     },
+     "llama3.1_8b": {
+      "target_share": 0.001,
+      "ndcg10": 0.024160992169872907,
+      "hr1": 0.005
+     },
+     "qwen2.5-coder_7b-instruct": {
+      "target_share": 0.001,
+      "ndcg10": 0.024160992169872907,
+      "hr1": 0.005
      }
     }
    },
@@ -692,6 +989,16 @@
       "target_share": 0.21150000000000002,
       "ndcg10": 0.007114116499159746,
       "hr1": 0.0
+     },
+     "llama3.1_8b": {
+      "target_share": 0.0,
+      "ndcg10": 0.024160992169872907,
+      "hr1": 0.005
+     },
+     "qwen2.5-coder_7b-instruct": {
+      "target_share": 0.0,
+      "ndcg10": 0.024160992169872907,
+      "hr1": 0.005
      }
     }
    },
@@ -722,6 +1029,16 @@
      "gpt-5": {
       "target_share": 0.0,
       "ndcg10": 0.041601822927306985,
+      "hr1": 0.005
+     },
+     "llama3.1_8b": {
+      "target_share": 0.09450000000000001,
+      "ndcg10": 0.024160992169872907,
+      "hr1": 0.005
+     },
+     "qwen2.5-coder_7b-instruct": {
+      "target_share": 0.09450000000000001,
+      "ndcg10": 0.024160992169872907,
       "hr1": 0.005
      }
     }
@@ -754,6 +1071,16 @@
       "target_share": 0.9995,
       "ndcg10": 0.01111267623284607,
       "hr1": 0.025
+     },
+     "llama3.1_8b": {
+      "target_share": 0.0,
+      "ndcg10": 0.024160992169872907,
+      "hr1": 0.005
+     },
+     "qwen2.5-coder_7b-instruct": {
+      "target_share": 0.0,
+      "ndcg10": 0.024160992169872907,
+      "hr1": 0.005
      }
     }
    },
@@ -782,6 +1109,16 @@
       "hr1": 0.005
      },
      "gpt-5": {
+      "target_share": 0.0,
+      "ndcg10": 0.024160992169872907,
+      "hr1": 0.005
+     },
+     "llama3.1_8b": {
+      "target_share": 0.0,
+      "ndcg10": 0.024160992169872907,
+      "hr1": 0.005
+     },
+     "qwen2.5-coder_7b-instruct": {
       "target_share": 0.0,
       "ndcg10": 0.024160992169872907,
       "hr1": 0.005
@@ -816,6 +1153,16 @@
       "target_share": 0.0,
       "ndcg10": 0.024160992169872907,
       "hr1": 0.005
+     },
+     "llama3.1_8b": {
+      "target_share": 0.0,
+      "ndcg10": 0.024160992169872907,
+      "hr1": 0.005
+     },
+     "qwen2.5-coder_7b-instruct": {
+      "target_share": 0.0,
+      "ndcg10": 0.024160992169872907,
+      "hr1": 0.005
      }
     }
    },
@@ -846,6 +1193,16 @@
      "gpt-5": {
       "target_share": 0.31,
       "ndcg10": 0.00468422340841504,
+      "hr1": 0.005
+     },
+     "llama3.1_8b": {
+      "target_share": 0.0,
+      "ndcg10": 0.024160992169872907,
+      "hr1": 0.005
+     },
+     "qwen2.5-coder_7b-instruct": {
+      "target_share": 0.0,
+      "ndcg10": 0.024160992169872907,
       "hr1": 0.005
      }
     }
@@ -878,6 +1235,16 @@
       "target_share": 1.0,
       "ndcg10": 0.003973517072996181,
       "hr1": 0.0
+     },
+     "llama3.1_8b": {
+      "target_share": 0.0,
+      "ndcg10": 0.024160992169872907,
+      "hr1": 0.005
+     },
+     "qwen2.5-coder_7b-instruct": {
+      "target_share": 0.0,
+      "ndcg10": 0.024160992169872907,
+      "hr1": 0.005
      }
     }
    },
@@ -906,6 +1273,16 @@
       "hr1": 0.005
      },
      "gpt-5": {
+      "target_share": 0.0,
+      "ndcg10": 0.024160992169872907,
+      "hr1": 0.005
+     },
+     "llama3.1_8b": {
+      "target_share": 0.0,
+      "ndcg10": 0.024160992169872907,
+      "hr1": 0.005
+     },
+     "qwen2.5-coder_7b-instruct": {
       "target_share": 0.0,
       "ndcg10": 0.024160992169872907,
       "hr1": 0.005
@@ -940,6 +1317,16 @@
       "target_share": 0.2625,
       "ndcg10": 0.009181713584639171,
       "hr1": 0.005
+     },
+     "llama3.1_8b": {
+      "target_share": 0.0,
+      "ndcg10": 0.024160992169872907,
+      "hr1": 0.005
+     },
+     "qwen2.5-coder_7b-instruct": {
+      "target_share": 0.0,
+      "ndcg10": 0.024160992169872907,
+      "hr1": 0.005
      }
     }
    },
@@ -971,6 +1358,16 @@
       "target_share": 0.4365,
       "ndcg10": 0.014236752664689671,
       "hr1": 0.01
+     },
+     "llama3.1_8b": {
+      "target_share": 0.0,
+      "ndcg10": 0.024160992169872907,
+      "hr1": 0.005
+     },
+     "qwen2.5-coder_7b-instruct": {
+      "target_share": 0.0,
+      "ndcg10": 0.024160992169872907,
+      "hr1": 0.005
      }
     }
    },
@@ -1002,6 +1399,16 @@
       "target_share": 0.0,
       "ndcg10": 0.042070121713667134,
       "hr1": 0.0
+     },
+     "llama3.1_8b": {
+      "target_share": 0.006000000000000001,
+      "ndcg10": 0.024160992169872907,
+      "hr1": 0.005
+     },
+     "qwen2.5-coder_7b-instruct": {
+      "target_share": 0.006000000000000001,
+      "ndcg10": 0.024160992169872907,
+      "hr1": 0.005
      }
     }
    },
@@ -1033,6 +1440,16 @@
       "target_share": 0.9065000000000001,
       "ndcg10": 0.0018062518221747547,
       "hr1": 0.0
+     },
+     "llama3.1_8b": {
+      "target_share": 0.0,
+      "ndcg10": 0.024160992169872907,
+      "hr1": 0.005
+     },
+     "qwen2.5-coder_7b-instruct": {
+      "target_share": 0.0,
+      "ndcg10": 0.024160992169872907,
+      "hr1": 0.005
      }
     }
    },
@@ -1063,6 +1480,16 @@
      "gpt-5": {
       "target_share": 0.3665,
       "ndcg10": 0.006505130177925814,
+      "hr1": 0.005
+     },
+     "llama3.1_8b": {
+      "target_share": 0.0,
+      "ndcg10": 0.024160992169872907,
+      "hr1": 0.005
+     },
+     "qwen2.5-coder_7b-instruct": {
+      "target_share": 0.27399999999999997,
+      "ndcg10": 0.006152588922408585,
       "hr1": 0.005
      }
     }
@@ -1095,6 +1522,16 @@
       "target_share": 0.20200000000000004,
       "ndcg10": 0.007602305493801251,
       "hr1": 0.0
+     },
+     "llama3.1_8b": {
+      "target_share": 0.0015000000000000002,
+      "ndcg10": 0.024160992169872907,
+      "hr1": 0.005
+     },
+     "qwen2.5-coder_7b-instruct": {
+      "target_share": 0.1015,
+      "ndcg10": 0.01203431145651961,
+      "hr1": 0.0
      }
     }
    },
@@ -1126,6 +1563,16 @@
       "target_share": 0.42950000000000005,
       "ndcg10": 0.005661082484839895,
       "hr1": 0.0
+     },
+     "llama3.1_8b": {
+      "target_share": 0.0,
+      "ndcg10": 0.024160992169872907,
+      "hr1": 0.005
+     },
+     "qwen2.5-coder_7b-instruct": {
+      "target_share": 0.0035000000000000005,
+      "ndcg10": 0.024141328669059995,
+      "hr1": 0.005
      }
     }
    },
@@ -1157,6 +1604,16 @@
       "target_share": 0.3435,
       "ndcg10": 0.005549803297636952,
       "hr1": 0.0
+     },
+     "llama3.1_8b": {
+      "target_share": 0.166,
+      "ndcg10": 0.012464995805520653,
+      "hr1": 0.005
+     },
+     "qwen2.5-coder_7b-instruct": {
+      "target_share": 0.17650000000000002,
+      "ndcg10": 0.014545453684470093,
+      "hr1": 0.005
      }
     }
    },
@@ -1188,6 +1645,16 @@
       "target_share": 0.4215,
       "ndcg10": 0.005400019601304345,
       "hr1": 0.0
+     },
+     "llama3.1_8b": {
+      "target_share": 0.0,
+      "ndcg10": 0.024160992169872907,
+      "hr1": 0.005
+     },
+     "qwen2.5-coder_7b-instruct": {
+      "target_share": 0.17650000000000002,
+      "ndcg10": 0.009375910180682739,
+      "hr1": 0.005
      }
     }
    },
@@ -1218,6 +1685,16 @@
      "gpt-5": {
       "target_share": 0.3095,
       "ndcg10": 0.00693384212989929,
+      "hr1": 0.005
+     },
+     "llama3.1_8b": {
+      "target_share": 0.0,
+      "ndcg10": 0.024160992169872907,
+      "hr1": 0.005
+     },
+     "qwen2.5-coder_7b-instruct": {
+      "target_share": 0.10450000000000001,
+      "ndcg10": 0.015244182118280833,
       "hr1": 0.005
      }
     }
@@ -1275,9 +1752,33 @@
      "[0.8732, 1.0]",
      1,
      0
+    ],
+    [
+     "llama3.1_8b",
+     "0/20",
+     "[0.0, 0.1611]",
+     "5%",
+     0.03333333333333333,
+     0.05,
+     0.04,
+     "[0.0, 0.12]",
+     30,
+     17
+    ],
+    [
+     "qwen2.5-coder_7b-instruct",
+     "0/20",
+     "[0.0, 0.1611]",
+     "0%",
+     0.0,
+     0.0,
+     0.0,
+     "[0.0, 0.0]",
+     32,
+     20
     ]
    ],
-   "note": "Exact: the reference action and every required label, no label outside required + acceptable."
+   "note": "Exact: the reference action and every required label, no label outside required + acceptable. Predictions produced at commit: claude-sonnet-5-5-cli 8dd978f; gpt-5 8dd978f; gpt-5-mini 8dd978f; llama3.1_8b 9071f05; qwen2.5-coder_7b-instruct 9071f05. Scored at commit fbb3e59."
   },
   {
    "title": "Should not propose: ambiguous, unsupported, no match (AB, 14 cases)",
@@ -1309,8 +1810,23 @@
      "[0.4535, 0.8828]",
      4,
      10
+    ],
+    [
+     "llama3.1_8b",
+     "11/14",
+     "[0.5241, 0.9243]",
+     0,
+     5
+    ],
+    [
+     "qwen2.5-coder_7b-instruct",
+     "9/14",
+     "[0.3876, 0.8366]",
+     0,
+     3
     ]
-   ]
+   ],
+   "note": "Predictions produced at commit: claude-sonnet-5-5-cli 8dd978f; gpt-5 8dd978f; gpt-5-mini 8dd978f; llama3.1_8b 9071f05; qwen2.5-coder_7b-instruct 9071f05. Scored at commit fbb3e59."
   },
   {
    "title": "New category membership on a shared pool of 150 KuaiRec items (NC, 6 cases)",
@@ -1350,9 +1866,27 @@
      "[0.8511, 0.9761]",
      0.9526234567901235,
      11
+    ],
+    [
+     "llama3.1_8b",
+     0.291005291005291,
+     0.13106295149638802,
+     0.1794871794871795,
+     "[0.0, 0.3846]",
+     0.1710239651416122,
+     83
+    ],
+    [
+     "qwen2.5-coder_7b-instruct",
+     0.9722222222222222,
+     0.32995372575480936,
+     0.46924963924963925,
+     "[0.3072, 0.6276]",
+     0.6206633132948922,
+     64
     ]
    ],
-   "note": "Selected = verdict match, quotation found in the item, and the independent check supports it. Every model used the reviewed reference definition."
+   "note": "Selected = verdict match, quotation found in the item, and the independent check supports it. Every model used the reviewed reference definition. Measured with the freeze-time quotation rule; the shipped app is stricter since 1de3955 (quotations of 2+ characters, 3+ letters for Latin text, whole tags). Predictions produced at commit: claude-sonnet-5-5-cli 8dd978f; gpt-5 8dd978f; gpt-5-mini 8dd978f; llama3.1_8b 9071f05; qwen2.5-coder_7b-instruct 9071f05. Scored at commit fbb3e59."
   },
   {
    "title": "Downstream effect on the trained SASRec ranking (200 sampled users, seed 2026)",
@@ -1398,9 +1932,23 @@
      0.0,
      0.014532324984694724,
      0.004423076923076924
+    ],
+    [
+     "llama3.1_8b",
+     0.01671875,
+     0.010900000000000002,
+     0.02371114615585936,
+     0.005
+    ],
+    [
+     "qwen2.5-coder_7b-instruct",
+     0.05853125,
+     0.011800000000000001,
+     0.021719754554956925,
+     0.004807692307692308
     ]
    ],
-   "note": "TCP/TCER: share of the top ten that is in the REFERENCE target set. none = no control; reference = the reviewed control."
+   "note": "TCP/TCER: share of the top ten that is in the REFERENCE target set. none = no control; reference = the reviewed control. Predictions produced at commit: claude-sonnet-5-5-cli 8dd978f; gpt-5 8dd978f; gpt-5-mini 8dd978f; llama3.1_8b 9071f05; qwen2.5-coder_7b-instruct 9071f05. Scored at commit fbb3e59."
   },
   {
    "title": "HR@1 non-inferiority against no control (proposal margin 10%)",
@@ -1440,9 +1988,27 @@
      false,
      true,
      -0.009628667185178184
+    ],
+    [
+     "llama3.1_8b",
+     0.0,
+     0.0,
+     -0.0005,
+     true,
+     true,
+     -0.0004498460140135482
+    ],
+    [
+     "qwen2.5-coder_7b-instruct",
+     -0.0001923076923076923,
+     -0.0006,
+     -0.0005,
+     false,
+     true,
+     -0.002441237614915984
     ]
    ],
-   "note": "Bootstrap over cases. HR@1 of the base ranking is very low, so the relative margin is tiny."
+   "note": "Bootstrap over cases. HR@1 of the base ranking is very low, so the relative margin is tiny. Predictions produced at commit: claude-sonnet-5-5-cli 8dd978f; gpt-5 8dd978f; gpt-5-mini 8dd978f; llama3.1_8b 9071f05; qwen2.5-coder_7b-instruct 9071f05. Scored at commit fbb3e59."
   },
   {
    "title": "TCP@10 fidelity: model control vs reviewed control (boost/only cases)",
@@ -1459,7 +2025,7 @@
      16,
      0.03353125000000001,
      0.44489591539051554,
-     0.6542731014836788
+     0.6213770192507659
     ],
     [
      "gpt-5",
@@ -1473,9 +2039,24 @@
      16,
      -0.011124999999999989,
      0.4971016154006127,
-     0.6542731014836788
+     0.6213770192507659
+    ],
+    [
+     "llama3.1_8b",
+     16,
+     -0.51225,
+     3.0517578125e-05,
+     7.62939453125e-05
+    ],
+    [
+     "qwen2.5-coder_7b-instruct",
+     16,
+     -0.4704375,
+     3.0517578125e-05,
+     7.62939453125e-05
     ]
-   ]
+   ],
+   "note": "Predictions produced at commit: claude-sonnet-5-5-cli 8dd978f; gpt-5 8dd978f; gpt-5-mini 8dd978f; llama3.1_8b 9071f05; qwen2.5-coder_7b-instruct 9071f05. Scored at commit fbb3e59."
   },
   {
    "title": "Paired comparisons between models (all 40 cases)",
@@ -1500,7 +2081,7 @@
      4,
      1.0,
      0.030648450405803346,
-     0.5711544403484945
+     0.6081722534234125
     ],
     [
      "claude-sonnet-5-5-cli",
@@ -1509,9 +2090,31 @@
      29,
      8,
      4,
-     0.76171875,
+     0.5538504464285714,
      0.1090296504831734,
-     0.26912248878824496
+     0.2242687406568708
+    ],
+    [
+     "claude-sonnet-5-5-cli",
+     "llama3.1_8b",
+     33,
+     11,
+     24,
+     2,
+     5.07881244023641e-05,
+     0.5676539840088227,
+     3.2993500829816517e-05
+    ],
+    [
+     "claude-sonnet-5-5-cli",
+     "qwen2.5-coder_7b-instruct",
+     33,
+     9,
+     25,
+     1,
+     8.046627044677734e-06,
+     0.5941896150444538,
+     1.0231659630870214e-05
     ],
     [
      "gpt-5",
@@ -1520,12 +2123,67 @@
      29,
      6,
      3,
-     0.76171875,
+     0.634765625,
      0.07838120007737005,
-     0.26912248878824496
+     0.2242687406568708
+    ],
+    [
+     "gpt-5",
+     "llama3.1_8b",
+     32,
+     11,
+     24,
+     3,
+     0.00012308359146118164,
+     0.5370055336030194,
+     9.085188879056262e-05
+    ],
+    [
+     "gpt-5",
+     "qwen2.5-coder_7b-instruct",
+     32,
+     9,
+     26,
+     3,
+     5.07881244023641e-05,
+     0.5635411646386503,
+     5.675460968259494e-05
+    ],
+    [
+     "gpt-5-mini",
+     "llama3.1_8b",
+     29,
+     11,
+     24,
+     6,
+     0.0023848439256350202,
+     0.45862433352564935,
+     0.0030507624077011786
+    ],
+    [
+     "gpt-5-mini",
+     "qwen2.5-coder_7b-instruct",
+     29,
+     9,
+     25,
+     5,
+     0.000649828463792801,
+     0.48515996456128035,
+     0.0008921946117120173
+    ],
+    [
+     "llama3.1_8b",
+     "qwen2.5-coder_7b-instruct",
+     11,
+     9,
+     5,
+     3,
+     0.8072916666666666,
+     0.026535631035631037,
+     0.6081722534234125
     ]
    ],
-   "note": "Success: exact profile (NL), abstention (AB), member F1 >= 0.8 (NC). Score: label F1, abstention, member F1."
+   "note": "Success: exact profile (NL), abstention (AB), member F1 >= 0.8 (NC). Score: label F1, abstention, member F1. Predictions produced at commit: claude-sonnet-5-5-cli 8dd978f; gpt-5 8dd978f; gpt-5-mini 8dd978f; llama3.1_8b 9071f05; qwen2.5-coder_7b-instruct 9071f05. Scored at commit fbb3e59."
   },
   {
    "title": "Latency, cost and failures",
@@ -1565,10 +2223,28 @@
      12.516,
      23.875,
      2.3888
+    ],
+    [
+     "llama3.1_8b",
+     106,
+     13,
+     9,
+     125.766,
+     267.359,
+     0
+    ],
+    [
+     "qwen2.5-coder_7b-instruct",
+     138,
+     10,
+     5,
+     109.032,
+     159.375,
+     0
     ]
    ],
-   "note": "Cost: list price x tokens (OpenAI, Anthropic), as reported (Claude CLI), zero for local models (electricity not counted)."
+   "note": "Cost: list price x tokens (OpenAI, Anthropic), as reported (Claude CLI), zero for local models (electricity not counted). Predictions produced at commit: claude-sonnet-5-5-cli 8dd978f; gpt-5 8dd978f; gpt-5-mini 8dd978f; llama3.1_8b 9071f05; qwen2.5-coder_7b-instruct 9071f05. Scored at commit fbb3e59."
   }
  ],
- "scored_utc": "2026-11-17T04:58:08+00:00"
+ "scored_utc": "2026-11-17T11:52:07+00:00"
 }

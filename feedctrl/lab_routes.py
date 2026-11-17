@@ -177,8 +177,10 @@ def mount_lab(app, *, gloss_path=None, results_dir=None, budget_usd=None, lab=No
 
     @app.post("/api/lab/manual")
     def manual(body: dict = Body(...)):
+        values = body.get("values") if isinstance(body.get("values"), list) else None
         return guarded(lambda: wf.manual_preview(need_lab(), int(body["user_id"]), body.get("kind"), body.get("value"),
-                                                 body.get("action"), body.get("strength", "standard")))
+                                                 body.get("action"), body.get("strength", "standard"),
+                                                 values=[str(v) for v in values] if values else None))
 
     @app.post("/api/lab/interpret")
     def interpret(body: dict = Body(...)):
