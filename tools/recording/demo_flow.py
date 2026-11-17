@@ -14,8 +14,7 @@ def run_demo(d, page, cfg, events, model_label, results_line):
     gloss = glosses()
     spoken_model = SPOKEN_MODEL.get(cfg.model, cfg.model)
     # A to E
-    d.say("Feed Control Lab: natural-language control of a short-video recommender, on real KuaiRec data, on this laptop.")
-    d.say("A SASRec model trained on KuaiRec ranks the videos. The language model only proposes changes; I review them.")
+    d.say("Feed Control Lab: natural-language control of a short-video recommender on real KuaiRec data. A trained SASRec model ranks; the language model only proposes, and I review.")
     d.click("button.condition:has-text('Free text')", "First, the original study. Condition C takes a free-text category instruction.")
     d.type_into("#control", "Show me more category_5", "I name one category by its dataset ID.")
     d.click("button:has-text('Apply instruction')", "Apply. The rule parser reads it, and the fixed policy boosts that category.")
@@ -99,8 +98,7 @@ def run_demo(d, page, cfg, events, model_label, results_line):
         p = page.evaluate("window.labLastPreview")
         d.say(f"Proposal: {spoken_controls(p['controls'], gloss)}. {calls_line(p)}.")
         d.ensure_visible("[data-role='review']")
-        d.say("The review shows the model's reason, the server's checks, and the effect on the feed.")
-        d.hold(3.0)
+        d.hold(2.0)
         if p["applicable"]:
             d.click("[data-role='apply']", "Apply.")
             page.wait_for_function("!document.querySelector('[data-role=review]')")
@@ -113,7 +111,7 @@ def run_demo(d, page, cfg, events, model_label, results_line):
     d.click("[data-tab='category']", "Workflow three: a new category that KuaiRec does not have.")
     d.click("[data-role='category-description']", "I describe it.")
     say_while_typing(d, cfg.new_category, "Plain English, no existing label.", interval=0.035)
-    d.type_into("[data-role='scope']", "20", "For this demo, the scope is this user's top twenty videos.")
+    d.type_into("[data-role='scope']", "10", "For this demo, the scope is this user's top ten videos.")
     b = done_count(page)
     d.click("[data-role='define']", "Step one: propose a definition.")
     wait_done(d, b, "define", "[data-role='define']")
@@ -153,9 +151,7 @@ def run_demo(d, page, cfg, events, model_label, results_line):
     d.click("[data-role='apply']", "Apply. It starts at a cold-start score, since the model has no history for it.")
     page.wait_for_function("!document.querySelector('[data-role=review]')")
     d.hold(2.5)
-    d.click("[data-role='undo']", "Undo")
-    d.click("[data-role='undo']", "and undo again.")
-    d.hold(2.0)
+    d.click("[data-role='undo']", "Undo removes the new video; the new category stays.")
     # Auto-apply
     d.click("[data-tab='manual']", "Last control: auto-apply.")
     d.click("[data-role='auto-apply']", "With it on, a preview is applied as soon as it arrives.")
@@ -175,7 +171,8 @@ def run_demo(d, page, cfg, events, model_label, results_line):
     # Results: slower, every headline number read from the result files
     d.click("[data-view='results']", "The Results page reads the measured result files. I will go through the headline numbers.")
     page.wait_for_selector("[data-role='results']")
-    for line in results_line:
+    keep = ("The first table", "Next, cases", "For new categories", "Local versus frontier", "Finally, the old")
+    for line in [l for l in results_line if l["say"].startswith(keep)]:
         d.say(line["say"], wait=False)
         if line.get("selector"):
             d.ensure_visible(line["selector"])
