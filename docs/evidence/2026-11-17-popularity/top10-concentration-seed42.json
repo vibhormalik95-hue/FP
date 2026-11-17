@@ -7,124 +7,125 @@
    "item_id": 8958,
    "users_with_item_in_top10": 865,
    "kuairec_categories": [
-    "民生资讯",
-    "社会事件"
+    "Livelihood news",
+    "Social incident"
    ]
   },
   {
    "item_id": 7383,
    "users_with_item_in_top10": 863,
    "kuairec_categories": [
-    "运动",
-    "球类运动",
-    "足球"
+    "Exercise",
+    "Ball sports",
+    "Football"
    ]
   },
   {
    "item_id": 1116,
    "users_with_item_in_top10": 862,
    "kuairec_categories": [
-    "民生资讯",
-    "社会事件",
-    "法制事件"
+    "Livelihood news",
+    "Social incident",
+    "Legal incident"
    ]
   },
   {
    "item_id": 2894,
    "users_with_item_in_top10": 849,
    "kuairec_categories": [
-    "旅游",
-    "旅游种草",
-    "境内游种草"
+    "Travel / Tourism",
+    "Travel recommendations (seed planting slang)",
+    "Domestic travel recommendations"
    ]
   },
   {
    "item_id": 6001,
    "users_with_item_in_top10": 848,
    "kuairec_categories": [
-    "民生资讯",
-    "社会事件"
+    "Livelihood news",
+    "Social incident"
    ]
   },
   {
    "item_id": 4367,
    "users_with_item_in_top10": 828,
    "kuairec_categories": [
-    "情感",
-    "情感关系",
-    "家庭关系"
+    "Emotion",
+    "Emotional relationship",
+    "Family relationships"
    ]
   },
   {
    "item_id": 2687,
    "users_with_item_in_top10": 704,
    "kuairec_categories": [
-    "时尚",
-    "营销售卖"
+    "Fashion",
+    "Sales and marketing"
    ]
   },
   {
    "item_id": 10217,
    "users_with_item_in_top10": 577,
    "kuairec_categories": [
-    "民生资讯",
-    "社会事件"
+    "Livelihood news",
+    "Social incident"
    ]
   },
   {
    "item_id": 4506,
    "users_with_item_in_top10": 557,
    "kuairec_categories": [
-    "自拍"
+    "Selfie"
    ]
   },
   {
    "item_id": 6090,
    "users_with_item_in_top10": 356,
    "kuairec_categories": [
-    "民生资讯"
+    "Livelihood news"
    ]
   },
   {
    "item_id": 7559,
    "users_with_item_in_top10": 301,
    "kuairec_categories": [
-    "民生资讯",
-    "社会事件"
+    "Livelihood news",
+    "Social incident"
    ]
   },
   {
    "item_id": 6086,
    "users_with_item_in_top10": 276,
    "kuairec_categories": [
-    "民生资讯",
-    "社会事件"
+    "Livelihood news",
+    "Social incident"
    ]
   },
   {
    "item_id": 5993,
    "users_with_item_in_top10": 230,
    "kuairec_categories": [
-    "颜值",
-    "颜值随拍"
+    "Looks/attractiveness",
+    "Casual face shots"
    ]
   },
   {
    "item_id": 7594,
    "users_with_item_in_top10": 160,
    "kuairec_categories": [
-    "民生资讯",
-    "社会事件"
+    "Livelihood news",
+    "Social incident"
    ]
   },
   {
    "item_id": 10095,
    "users_with_item_in_top10": 118,
    "kuairec_categories": [
-    "其他",
-    "生活泛拍"
+    "Other",
+    "Everyday candid shots"
    ]
   }
  ],
- "script": "FP-final: run_app.build + KuaiRecLab.base_scores, 17 Nov 2026"
+ "script": "FP-final: run_app.build + KuaiRecLab.base_scores, 17 Nov 2026",
+ "labels": "English labels of the English text layer (machine translation of KuaiRec, CC BY-SA 4.0); converted from the original labels through the label map."
 }

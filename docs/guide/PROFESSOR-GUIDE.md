@@ -11,11 +11,13 @@ The view **Original study (A to E)** holds the five conditions of the original p
 In every language control a model only *proposes*. The server checks the proposal, you review it, **Apply** changes exactly what you reviewed, and **Undo** restores the previous feed.
 The view **Results** shows the measured results of the offline evaluation, read from the result files.
 
-Everything is in English. The KuaiRec text (titles, captions, cover text, topic tags and the three levels of category names) was translated into English *before* processing; the application, the models and the screen work on that English text only. It is a machine translation of KuaiRec (CC BY-SA 4.0), stored as a versioned file with its SHA-256 (`data/kuairec_text_en-v1.json`).
+Everything is in English. The KuaiRec text (titles, captions, cover text, topic tags and the three levels of category names) was translated into English *before* processing; the application, the models and the screen work on that English text only. It is a machine translation of KuaiRec (CC BY-SA 4.0), stored as a versioned file with its SHA-256 (`data/kuairec_text_en-v1.json`). In short: the app works in English only; measured numbers come from the original-text run; the English set is frozen at `4847d80` and its re-run is pending.
 
-A demonstration video, `COMP9500-Feed-Control-Lab-demo.mp4`, is sent separately (not in the repository); the version sent with this guide was recorded on this English application and shows every workflow with OpenAI gpt-5, including where to paste your API key.
+A demonstration video, `COMP9500-Feed-Control-Lab-demo.mp4` (take 14, 10:57), is sent separately (not in the repository). It was recorded on this English application with OpenAI gpt-5-mini at low reasoning effort and shows every workflow, including where to paste your API key. In it, the new category "Dogs" selects 3 of the 50 videos in scope, two of them enter the top ten after Apply, and a new item about a puppy joins the category.
 
 # 2. Install (once)
+
+The code is at <https://github.com/vibhormalik95-hue/FP/tree/comp9500-final-2026-11-r5> (tag `comp9500-final-2026-11-r5`). Download it as a ZIP from that page, or run `git clone --branch comp9500-final-2026-11-r5 https://github.com/vibhormalik95-hue/FP.git`.
 
 You need:
 
@@ -185,13 +187,13 @@ Read the three blocks, then **Apply** or **Discard**. Other examples to try: `Fe
 
 ## 5.5 A new category
 
-Tab **3 · New category**. Describe a category that KuaiRec does not have, for example `Videos filmed outdoors in nature: mountains, rivers, fields or the sea.` Choose the scope (this user's top 10, 20, 40, 80, 120 or 200 items; 40 by default; 20 is enough for a demonstration) and press **Propose a definition**.
+Tab **3 · New category**. Describe a category that KuaiRec does not have, for example `Videos filmed outdoors in nature: mountains, rivers, fields or the sea.` Choose the scope: the top 10, 20, 40, 50, 80, 120 or 200 items of this user's *current* feed, after the controls already applied (a video you have hidden is not classified); 40 by default and press **Propose a definition**.
 
 **Step 1 — review the definition.** The model proposes a label and a precise definition, with quotations from the user's top items that the server has found in the item text (ticks). If none of the sampled items fits the description, the model still proposes a definition from the description alone. You may edit the label and the definition. Choose what Apply should do (**Show only**, **Show more**, **Show less**, **Hide**).
 
 ![Step 1: the proposed label "Nature outdoors — mountains/rivers/fields/sea" and its definition, with verified quotations from three items.](images/07-category-definition.png)
 
-**Step 2 — classification and evidence.** Press **Approve the definition and classify**. The model classifies every item in the scope and must quote the exact words it relies on; a separate call checks each quotation cited for a match, without seeing the verdict. A quotation counts only if it has at least three characters and occurs in the named field (a tag must match a whole tag). Only items whose quotation exists *and* passed the check are selected. The table shows, for each item: the English KuaiRec text, the verdict, the quotation (found or not), the evidence check and whether it is selected.
+**Step 2 — classification and evidence.** Press **Approve the definition and classify**. The model classifies every item in the scope and must quote the exact words it relies on; a separate call checks each quotation cited for a match, without seeing the verdict. A quotation counts only if it has at least three characters and occurs in the named field (a tag must match a whole tag). Only items whose quotation exists *and* passed the check are selected; the table shows, for every match, what the check said and why. Describe the category by what the text of a video can show (words in its title, description or tags); a condition about what the picture mainly shows can rarely be established from text, so such matches are often rejected by the check. The table shows, for each item: the English KuaiRec text, the verdict, the quotation (found or not), the evidence check and whether it is selected.
 
 ![Step 2: the classification evidence table: one row per item with its verdict, the quotation (found or not), the independent check and whether it is selected.](images/08-category-review.png)
 
@@ -199,7 +201,7 @@ Press **Apply** to use the new category on the feed (here: *Show more*). A secon
 
 ## 5.6 New items
 
-Tab **4 · New items**. Add items that are not in KuaiRec: a title and a description (up to ten items). Example: title `Weekend hike up the mountain`, description `A steep forest trail and a view over the city from the summit.` Press **Classify and preview**. The model assigns existing KuaiRec categories and tags; the server drops any label that does not exist. If you created a new category before, each new item is also judged against it with a quotation. New items have no viewing history, so they start at this user's median score.
+Tab **4 · New items**. Add items that are not in KuaiRec: a title and a description (up to ten items). Example: title `Weekend hike up the mountain`, description `A steep forest trail and a view over the city from the summit.` Press **Classify and preview**. The model assigns existing KuaiRec categories and tags; the server drops any label that does not exist. If you created a new category before, each new item is also judged against it with a quotation and the same independent check; the review shows the verdict, the quotation, the check and its reason, and the item joins the category only if all three agree. New items have no viewing history, so they start at this user's median score.
 
 ![The new item receives existing categories such as Travel / Tourism and Scenic photography and existing tags; the server confirms that the labels exist, and the item matches the new category with a quotation.](images/09-new-items-review.png)
 

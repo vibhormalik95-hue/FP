@@ -227,12 +227,14 @@ class KuaiRecLab:
         return out
 
     def scope(self, user_id, size):
-        """The items a model classifies: this user's top ``size`` base-ranked items plus added items."""
+        """The items a model classifies: the top ``size`` items of this user's current feed, after the applied
+        controls (an item the user has hidden is not classified), plus added items not already among them."""
         lab = self.user(user_id)
-        base = self.base_scores(user_id)
-        top = sorted(base, key=lambda i: (-base[i], i))[:size]
         with self._lock:
-            return [self.catalog[i] for i in top] + list(lab.added.values())
+            ranked = self.feed(user_id, lab=lab)["ranked_ids"]
+            items = self.items_for(lab)
+            top = ranked[:size]
+            return [items[i] for i in top] + [item for i, item in lab.added.items() if i not in top]
 
     # ----- previews ---------------------------------------------------------
     def new_preview(self, user_id, kind, summary, *, controls=(), new_custom=None, new_items=None,

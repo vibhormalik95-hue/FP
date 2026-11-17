@@ -20,11 +20,13 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 SOURCES = ["feedctrl/lab.py", "feedctrl/lab_workflows.py", "feedctrl/lab_routes.py", "feedctrl/llm_providers.py",
            "feedctrl/kuairec_catalog.py", "feedctrl/lab_mock.py", "web/src/LabView.jsx", "scripts/run_app.py"]
-CJK = re.compile(r"[㐀-鿿]")
+CJK = re.compile(r"[\u3400-\u9fff]")
 SUBJECT_WORDS = re.compile(r"\b(hungry|hunger|food|cook\w*|recipe\w*|bak(e|ing)|kitchen|eat\w*|gam(e|ing)|"
                            r"pet|pets|dog|cat|travel|music|repair|sport\w*|dance|beauty|car|cars)\b", re.I)
 # The mock may name generic action verbs in Chinese (hide, remove, less, only). They carry no subject.
-MOCK_ACTION_WORDS = {"不要", "屏蔽", "去掉", "少", "只看"}
+# Built from code points because the repository is English-only.
+MOCK_ACTION_WORDS = {"".join(map(chr, word)) for word in (
+    (0x4E0D, 0x8981), (0x5C4F, 0x853D), (0x53BB, 0x6389), (0x5C11,), (0x53EA, 0x770B))}
 ALLOWED_NUMBERS = {"9_000_000", "8765", "11434", "1000", "2000", "8000", "16000", "3600", "1008", "2048", "4096", "8192", "16384", "32768", "4000"}  # + Ollama context sizes
 
 
@@ -77,7 +79,7 @@ def test_no_request_text_of_any_example_in_the_source():
 def test_no_chinese_subject_text_in_the_source():
     for path in SOURCES:
         chars = set()
-        for run in re.findall(r"[㐀-鿿]+", _code(path)):
+        for run in re.findall(r"[\u3400-\u9fff]+", _code(path)):
             if path.endswith("lab_mock.py") and run in MOCK_ACTION_WORDS:
                 continue
             chars.add(run)

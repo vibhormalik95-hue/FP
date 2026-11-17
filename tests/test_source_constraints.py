@@ -1,11 +1,17 @@
 import pytest
 from feedctrl.source_constraints import literal_requirements,source_witnesses
 
+
+def fullwidth(text):
+    """Fullwidth form of ASCII text, built from code points because the repository is English-only."""
+    return "".join(chr(ord(ch) + 0xFEE0) for ch in text)
+
+
 @pytest.mark.parametrize('objective,definition,expected',[
     ('An IP68 claim','Rated IP68',['ip68']),('Exactly 90 points','A score of 90',['90']),
     ('An 18-month plan','A current 18-month plan',['18-month']),
     ('Version 5.4','Version 5.4.',['5.4']),('A quiet activity','Quiet activities',[]),
-    ('Fullwidth ＩＰ６８','IP68',['ip68'])])
+    ('Fullwidth '+fullwidth('IP68'),'IP68',['ip68'])])
 def test_declared_terms_are_general_and_deduplicated(objective,definition,expected):
     r=literal_requirements(objective,definition)
     assert r['terms']==expected and r['necessary_only'] and not r['semantic_truth_verified']

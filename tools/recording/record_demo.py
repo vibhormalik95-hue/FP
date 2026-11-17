@@ -471,7 +471,11 @@ def main():
     ap.add_argument("--results", default="docs/evidence/lab-eval")
     ap.add_argument("--voice", default="af_heart")
     ap.add_argument("--provider", default="openai", choices=["openai", "anthropic"])
-    ap.add_argument("--model", default="gpt-5")
+    ap.add_argument("--model", default="gpt-5-mini")
+    ap.add_argument("--category-index", type=int, default=2, help="which new_category example of tools/demo_examples.json")
+    ap.add_argument("--item-index", type=int, default=2, help="which new_items example of tools/demo_examples.json")
+    ap.add_argument("--scope", default="50")
+    ap.add_argument("--category-label", default="Dogs")
     ap.add_argument("--effort", default="low")
     args = ap.parse_args()
     out = Path(args.out); out.mkdir(parents=True, exist_ok=True)
@@ -490,8 +494,8 @@ def main():
     args.manual_value = examples["manual"][1]["value"]
     args.interpret = [{**examples["interpret"][2], "say": "I just ate, and do not want to be tempted by food."},
                       {**examples["interpret"][4], "say": "My cat is at the vet, and I cannot bear to see animals."}]
-    args.new_category = examples["new_category"][0]["description"]
-    args.new_item = examples["new_items"][0]["items"][0]
+    args.new_category = examples["new_category"][args.category_index]["description"]
+    args.new_item = examples["new_items"][args.item_index]["items"][0]
     server = subprocess.Popen([args.app_python, "scripts/run_app.py", "--port", "8765", "--provider", "mock"],
                               cwd=REPO, env=env)
     import urllib.request

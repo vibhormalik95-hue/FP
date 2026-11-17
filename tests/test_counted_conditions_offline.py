@@ -7,6 +7,12 @@ Classification never ran: evidence review was declined. No accuracy claim.
 """
 import unittest
 from feedctrl.source_constraints import literal_requirements, source_witnesses
+
+
+def fullwidth(text):
+    """Fullwidth form of ASCII text, built from code points because the repository is English-only."""
+    return "".join(chr(ord(ch) + 0xFEE0) for ch in text)
+
 OBJECTIVE = 'Propose one useful new category from these eight descriptions. Decide the shared concept yourself from the stated facts, rather than taking an existing category code as its meaning. Give a precise definition supported by the descriptions; do not merely rename an existing category or invent missing facts.'
 DEFINITION = 'An item matches when its description affirmatively states all three conditions: (1) an already-existing object has a stated defect or damage; (2) a corrective action is performed on that same object; and (3) that same object is kept or returned to use afterward. An item is not a match only when the description affirmatively shows a condition is false, for example the damaged object is discarded and a different one takes its place, or the stated outcome is a newly made object rather than the restoration of an existing one. If the description does not say whether damage, repair or retention occurred (for example, the subject or activity is not described), membership is unknown, not negative. Tool type, material, power source and the original K code are irrelevant to membership.'
 
@@ -57,7 +63,7 @@ class CountedConditionsTests(unittest.TestCase):
                 self.assertEqual(self.terms(text), ['1','2','8'])
 
     def test_independent_inputs_and_nfkc(self):
-        text = 'ALL TWO CONDITIONS: （１） the item is kept; AND （２） the item has ９ units.'
+        text = f"ALL TWO CONDITIONS: {fullwidth('(1)')} the item is kept; AND {fullwidth('(2)')} the item has {fullwidth('9')} units."
         self.assertEqual(self.terms(text), ['9'])
         self.assertEqual(literal_requirements('Require "1" and (2).',text)['terms'], ['1','2','9'])
         self.assertEqual(literal_requirements('all two conditions: (1) the item exists;', '(2) the item is kept')['terms'], ['1','2'])

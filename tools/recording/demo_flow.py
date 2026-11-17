@@ -27,8 +27,8 @@ def run_demo(d, page, cfg, events, model_label, results_line):
     d.say("On the right: this user's top ten from the trained model.")
     d.hold(3.0)
     d.choose("[data-role='provider-kind']", "Provider: the OpenAI API.", "Op")
-    d.type_into("[data-role='provider-model']", cfg.model, f"Model: {spoken_model}, the strongest model in my tests that needs only an API key.")
-    d.choose("[data-role='provider-effort']", "Reasoning effort minimal, so this video stays short. The measured results used low effort.", "mi")
+    d.type_into("[data-role='provider-model']", cfg.model, f"Model: {spoken_model}, fast and inexpensive, and the best of my tests at new categories.")
+    d.choose("[data-role='provider-effort']", "Reasoning effort low, the same setting as the measured results.", "lo")
     d.click("[data-role='api-key']", "This is where your own API key goes. I paste mine into the masked field.")
     clipboard(cfg.key)
     try:
@@ -39,8 +39,19 @@ def run_demo(d, page, cfg, events, model_label, results_line):
         clipboard("")                  # the key leaves the clipboard at once, also if the take aborts
     time.sleep(0.4)
     d.click("[data-role='provider-save']", "Use this provider. The key stays in this server's memory only; it is never shown, logged or saved.")
-    time.sleep(1.0)
-    status = api("lab/status")["provider"]
+    status = {}
+    for attempt in range(2):
+        for _ in range(16):                      # the save can take a few seconds; wait up to 8 s
+            time.sleep(0.5)
+            status = api("lab/status")["provider"]
+            if "memory" in status.get("key_source", ""):
+                break
+        if "memory" in status.get("key_source", "") or attempt:
+            break
+        if not page.locator("[data-role='api-key']").input_value():
+            break                                # the field is empty: nothing to save again
+        d.events.append({"t": round(d.cap.now(), 2), "nudged": "provider-save"})
+        page.click("[data-role='provider-save']")   # the first click did not register: send it again
     if "memory" not in status.get("key_source", ""):
         raise RuntimeError("The page did not report the pasted key as held in memory; the take is aborted.")
     d.say("The status line confirms it: key typed into this page, memory only.")
@@ -112,7 +123,7 @@ def run_demo(d, page, cfg, events, model_label, results_line):
     d.click("[data-tab='category']", "Workflow three: a new category that KuaiRec does not have.")
     d.click("[data-role='category-description']", "I describe it.")
     say_while_typing(d, cfg.new_category, "Plain English, no existing label.", interval=0.035)
-    d.choose("[data-role='scope']", "For this demo, the scope is this user's top ten videos.", "10")
+    d.choose("[data-role='scope']", "The scope is the top fifty videos of this user's current feed; the hidden news videos are left out.", cfg.scope)
     b = done_count(page)
     d.click("[data-role='define']", "Step one: propose a definition.")
     wait_done(d, b, "define", "[data-role='define']")
@@ -121,7 +132,7 @@ def run_demo(d, page, cfg, events, model_label, results_line):
     d.ensure_visible("[data-role='definition']")
     d.say(f"A label, a definition with conditions, and {defn['evidence']} cited examples, each quotation checked.")
     d.hold(3.0)
-    d.type_into("[data-role='definition-label']", "Outdoor nature", "I review it, and rename the label.")
+    d.type_into("[data-role='definition-label']", cfg.category_label, "I review it, and shorten the label.")
     d.choose("[data-role='category-action']", "When applied: show more.", "Show m")
     b = done_count(page)
     d.click("[data-role='classify']", "Approve and classify.")
@@ -130,13 +141,18 @@ def run_demo(d, page, cfg, events, model_label, results_line):
     p = page.evaluate("window.labLastPreview")
     d.ensure_visible(".lab-table")
     d.say(f"One row per video: verdict, quotation, independent check. {p['selected']} of {p['rows']} selected. {calls_line(p)}.")
+    d.events.append({"new_category": {"selected": p["selected"], "rows": p["rows"], "entered": p["changes"].get("entered", []),
+                                      "left": p["changes"].get("left", [])}})
     d.hold(4.0)
     d.say("The feed stays visible on the right during review.")
     d.hold(2.0)
     if p["applicable"]:
         d.click("[data-role='apply']", "Apply. The new category is now a label of its own.")
         page.wait_for_function("!document.querySelector('[data-role=review]')")
-        d.hold(3.0)
+        entered = len(p["changes"].get("entered", []))
+        d.say(f"{entered} of its videos enter the top ten, and its members move up." if entered
+              else "Its members move up in the ranking; none enters the top ten.")
+        d.hold(2.0)
     # 4. New items
     d.click("[data-tab='items']", "Workflow four: add a video that is not in KuaiRec.")
     d.click("[data-role='new-title-0']", "A title")
@@ -146,13 +162,19 @@ def run_demo(d, page, cfg, events, model_label, results_line):
     b = done_count(page)
     d.click("[data-role='new-items-preview']", "Classify and preview.")
     wait_done(d, b, "new-items", "[data-role='new-items-preview']")
+    d.say("The answer is back.", wait=False)
     d.ensure_visible("[data-role='review']")
-    d.say("It got existing categories and tags, and a checked verdict for my new category.")
+    q = page.evaluate("window.labLastPreview")
+    d.events.append({"new_item": {"joined": q.get("joined", 0)}})
+    if q.get("joined"):
+        d.say("It got existing categories and tags. For my new category: a match, with a quotation and a passed independent check, so it joins the category.")
+    else:
+        d.say("It got existing categories and tags. For my new category it was not selected; the review says why.")
     d.hold(4.0)
-    d.click("[data-role='apply']", "Apply. It starts at a cold-start score, since the model has no history for it.")
+    d.click("[data-role='apply']", "Apply. It starts at this user's median score, since the recommender has no history for it, so it does not reach the top ten by itself.")
     page.wait_for_function("!document.querySelector('[data-role=review]')")
     d.hold(2.5)
-    d.click("[data-role='undo']", "Undo removes the new video; the new category stays.")
+    d.click("[data-role='undo']", "Undo removes the new video; the new category and its members stay.")
     # Results: slower, every headline number read from the result files
     d.click("[data-view='results']", "The Results page reads the measured result files. I will go through the headline numbers.")
     page.wait_for_selector("[data-role='results']")

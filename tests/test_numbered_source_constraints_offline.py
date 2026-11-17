@@ -12,6 +12,12 @@ import unittest
 from feedctrl.source_constraints import literal_requirements, source_witnesses
 from feedctrl import evidence_audit as audit, staged_induction as staged
 
+
+def fullwidth(text):
+    """Fullwidth form of ASCII text, built from code points because the repository is English-only."""
+    return "".join(chr(ord(ch) + 0xFEE0) for ch in text)
+
+
 REAL_DEFINITION = 'An item belongs if its caption states all three of: (1) an already-existing object has a stated defect or damage (e.g. bent, torn, leaking); (2) that defect is fixed by a described repair action; and (3) the same object is kept or returned to use rather than discarded or replaced. Items are excluded if the object is replaced by a new one, if a new object is made from raw material or offcuts, or if no completed activity or subject is described.'
 REAL_CAPTIONS = ['A bent metal bookmark is straightened with pliers and used again. The existing piece is kept.', 'A torn canvas satchel is mended with a needle and spare thread so it can carry books again. The same bag is kept.', 'A leaking clay jug is sealed and returned to watering plants. The same jug remains in use.', 'A broken desk organizer is put in recycling and a newly purchased organizer is unpacked in its place.', 'Paper offcuts are folded into a new tray. No glue or powered equipment is used.', 'A raw wooden blank is shaped with an electric lathe into a new knob.', 'A page of knot diagrams is shown. No completed activity or finished object is described.', 'The only notes are a blue background and a 20-second duration. The subject is not described.']
 class NumberedRequirementsTests(unittest.TestCase):
@@ -34,7 +40,7 @@ class NumberedRequirementsTests(unittest.TestCase):
         examples = [
             'All two of: (1) the item is repaired; (2) the item is retained.',
             'All three of:\n(1) an object is repaired;\n(2) that object is retained;\nand (3) it is used.',
-            'ALL TWO OF: （１） the item is repaired; and （２） its use continues.',
+            f"ALL TWO OF: {fullwidth('(1)')} the item is repaired; and {fullwidth('(2)')} its use continues.",
             'All ten of: ' + '; '.join(f'({i}) the condition is stated' for i in range(1, 11)),
             'All two of: (1) each item is repaired; and (2) every item is retained.',
         ]

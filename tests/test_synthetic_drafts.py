@@ -257,5 +257,5 @@ def test_unicode_obscured_user_brief_rejected_before_inference(client,monkeypatc
     assert preview(client,h,brief='Fictional'+character+'brief').status_code==422 and count==[]
 
 def test_ordinary_unicode_and_explicit_multiline_text_remain_valid():
-    raw={'title':'Café 月','description':'Fictional café.\nA second imagined line.\tA detail.','category_label':'Imaginary café'}
+    raw={'title':'Café Δ','description':'Fictional café.\nA second imagined line.\tA detail.','category_label':'Imaginary café'}
     assert sd.validate_output(raw)==raw

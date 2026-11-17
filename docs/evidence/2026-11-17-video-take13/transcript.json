@@ -1,0 +1,757 @@
+[
+ {
+  "start": 0.0,
+  "end": 7.44,
+  "text": "Feed control lab, natural language control of a short video recommender on real QI Rec"
+ },
+ {
+  "start": 7.44,
+  "end": 8.44,
+  "text": "data."
+ },
+ {
+  "start": 8.44,
+  "end": 14.16,
+  "text": "A trained SAS Rec model ranks, the language model only proposes, and I review."
+ },
+ {
+  "start": 14.16,
+  "end": 17.18,
+  "text": "First, the original study."
+ },
+ {
+  "start": 17.18,
+  "end": 21.4,
+  "text": "Condition C takes a free text category instruction."
+ },
+ {
+  "start": 21.4,
+  "end": 25.72,
+  "text": "I name one category by its dataset ID."
+ },
+ {
+  "start": 26.72,
+  "end": 32.72,
+  "text": "Apply, the rule parser reads it, and the fixed policy boosts that category."
+ },
+ {
+  "start": 33.72,
+  "end": 36.72,
+  "text": "Now the language controls."
+ },
+ {
+  "start": 37.72,
+  "end": 40.72,
+  "text": "Everything here is English."
+ },
+ {
+  "start": 40.72,
+  "end": 46.72,
+  "text": "The QI Rec text was machine translated before processing, and the models read the English text."
+ },
+ {
+  "start": 46.72,
+  "end": 50.72,
+  "text": "On the right, this user's top 10 from the trained model."
+ },
+ {
+  "start": 51.72,
+  "end": 54.72,
+  "text": "Provider, the OpenAI API."
+ },
+ {
+  "start": 56.72,
+  "end": 64.72,
+  "text": "Model GPT-5, the strongest model in my tests that needs only an API key."
+ },
+ {
+  "start": 65.72,
+  "end": 69.72,
+  "text": "Reasoning effort minimal, so this video stays short."
+ },
+ {
+  "start": 69.72,
+  "end": 72.72,
+  "text": "The measured results used low effort."
+ },
+ {
+  "start": 73.72,
+  "end": 76.72,
+  "text": "This is where your own API key goes."
+ },
+ {
+  "start": 76.72,
+  "end": 79.72,
+  "text": "I paste mine into the masked field."
+ },
+ {
+  "start": 80.72,
+  "end": 81.72,
+  "text": "Use this provider."
+ },
+ {
+  "start": 81.72,
+  "end": 84.72,
+  "text": "The key stays in the server's memory only."
+ },
+ {
+  "start": 84.72,
+  "end": 87.72,
+  "text": "It is never shown, logged, or saved."
+ },
+ {
+  "start": 89.72,
+  "end": 91.72,
+  "text": "The status line confirms it."
+ },
+ {
+  "start": 91.72,
+  "end": 94.72,
+  "text": "Key typed into this page, memory only."
+ },
+ {
+  "start": 94.72,
+  "end": 99.72,
+  "text": "Workflow 1, the reference, a manual category control, no model."
+ },
+ {
+  "start": 99.72,
+  "end": 105.72,
+  "text": "This user's feed is full of news and incident stories, so first I hide those categories."
+ },
+ {
+  "start": 106.72,
+  "end": 108.72,
+  "text": "I search for incident."
+ },
+ {
+  "start": 108.72,
+  "end": 111.72,
+  "text": "Labels can be searched in English."
+ },
+ {
+  "start": 112.72,
+  "end": 114.72,
+  "text": "I pick social incident."
+ },
+ {
+  "start": 115.72,
+  "end": 117.72,
+  "text": "I pick legal incident."
+ },
+ {
+  "start": 119.72,
+  "end": 121.72,
+  "text": "I search for news."
+ },
+ {
+  "start": 122.72,
+  "end": 124.72,
+  "text": "Labels can be searched in English."
+ },
+ {
+  "start": 126.72,
+  "end": 128.72,
+  "text": "I pick social news."
+ },
+ {
+  "start": 129.72,
+  "end": 131.72,
+  "text": "I pick livelihood news."
+ },
+ {
+  "start": 133.72,
+  "end": 135.72,
+  "text": "I search for disaster."
+ },
+ {
+  "start": 136.72,
+  "end": 138.72,
+  "text": "Labels can be searched in English."
+ },
+ {
+  "start": 139.72,
+  "end": 141.72,
+  "text": "I pick disaster accident."
+ },
+ {
+  "start": 142.72,
+  "end": 144.72,
+  "text": "The action is hide."
+ },
+ {
+  "start": 146.72,
+  "end": 149.72,
+  "text": "Preview, a preview never changes the feed."
+ },
+ {
+  "start": 152.72,
+  "end": 158.72,
+  "text": "Five hide controls, 493 videos would leave the feed, and five leave the top 10."
+ },
+ {
+  "start": 159.72,
+  "end": 162.72,
+  "text": "Apply changes exactly the reviewed set."
+ },
+ {
+  "start": 162.72,
+  "end": 165.72,
+  "text": "These stay applied for the rest of this video."
+ },
+ {
+  "start": 166.72,
+  "end": 170.72,
+  "text": "The news and incident categories are now listed under applied now."
+ },
+ {
+  "start": 171.72,
+  "end": 173.72,
+  "text": "Now one more, dance."
+ },
+ {
+  "start": 175.72,
+  "end": 177.72,
+  "text": "I search for dance."
+ },
+ {
+  "start": 178.72,
+  "end": 180.72,
+  "text": "I pick dance."
+ },
+ {
+  "start": 181.72,
+  "end": 182.72,
+  "text": "Show more."
+ },
+ {
+  "start": 185.72,
+  "end": 186.72,
+  "text": "Strong."
+ },
+ {
+  "start": 189.72,
+  "end": 190.72,
+  "text": "Preview."
+ },
+ {
+  "start": 190.72,
+  "end": 196.72,
+  "text": "Ten dance videos would enter the top 10."
+ },
+ {
+  "start": 197.72,
+  "end": 198.72,
+  "text": "Apply."
+ },
+ {
+  "start": 201.72,
+  "end": 203.72,
+  "text": "Each card names the control that moved it."
+ },
+ {
+  "start": 204.72,
+  "end": 208.72,
+  "text": "Undo removes the dance boost and restores the previous feed exactly."
+ },
+ {
+  "start": 208.72,
+  "end": 210.72,
+  "text": "The news hide stays."
+ },
+ {
+  "start": 212.72,
+  "end": 218.72,
+  "text": "Workflow 2, a request in my own words, map to existing categories and tags."
+ },
+ {
+  "start": 220.72,
+  "end": 223.72,
+  "text": "I just ate and do not want to be tempted by food."
+ },
+ {
+  "start": 224.72,
+  "end": 226.72,
+  "text": "No category name is used."
+ },
+ {
+  "start": 227.72,
+  "end": 229.72,
+  "text": "Interpret and preview."
+ },
+ {
+  "start": 230.72,
+  "end": 234.72,
+  "text": "The model reads the request and the list of existing labels."
+ },
+ {
+  "start": 234.72,
+  "end": 236.72,
+  "text": "It sees no video text."
+ },
+ {
+  "start": 237.72,
+  "end": 242.72,
+  "text": "Next, the server checks that every label exists and that the quoted words are in the request."
+ },
+ {
+  "start": 243.72,
+  "end": 245.72,
+  "text": "The answer is back."
+ },
+ {
+  "start": 246.72,
+  "end": 256.72,
+  "text": "Proposal, hide category snack, hide category food tutorial, show less category delicious food, show less category dish, and nine more."
+ },
+ {
+  "start": 256.72,
+  "end": 260.72,
+  "text": "One model call, nine seconds of model time, about two cents."
+ },
+ {
+  "start": 263.72,
+  "end": 264.72,
+  "text": "Apply."
+ },
+ {
+  "start": 267.72,
+  "end": 268.72,
+  "text": "Undo."
+ },
+ {
+  "start": 272.72,
+  "end": 274.72,
+  "text": "A second request in another domain."
+ },
+ {
+  "start": 276.72,
+  "end": 280.72,
+  "text": "My cat is at the vet, and I cannot bear to see animals."
+ },
+ {
+  "start": 281.72,
+  "end": 283.72,
+  "text": "No category name is used."
+ },
+ {
+  "start": 284.72,
+  "end": 286.72,
+  "text": "Interpret and preview."
+ },
+ {
+  "start": 287.72,
+  "end": 291.72,
+  "text": "The model reads the request and the list of existing labels."
+ },
+ {
+  "start": 291.72,
+  "end": 293.72,
+  "text": "It sees no video text."
+ },
+ {
+  "start": 294.72,
+  "end": 295.72,
+  "text": "The answer is back."
+ },
+ {
+  "start": 297.72,
+  "end": 304.72,
+  "text": "Proposal, hide category pets, hide category pet cat, hide category pet dog, hide category pet bird,"
+ },
+ {
+  "start": 304.72,
+  "end": 305.72,
+  "text": "and 21 more."
+ },
+ {
+  "start": 306.72,
+  "end": 309.72,
+  "text": "One model call, six seconds of model time, about two cents."
+ },
+ {
+  "start": 313.72,
+  "end": 314.72,
+  "text": "Apply."
+ },
+ {
+  "start": 317.72,
+  "end": 318.72,
+  "text": "Undo."
+ },
+ {
+  "start": 322.72,
+  "end": 325.72,
+  "text": "Workflow 3, a new category that QIrec does not have."
+ },
+ {
+  "start": 327.72,
+  "end": 328.72,
+  "text": "I describe it."
+ },
+ {
+  "start": 329.72,
+  "end": 331.72,
+  "text": "Plain English, no existing label."
+ },
+ {
+  "start": 332.72,
+  "end": 336.72,
+  "text": "For this demo, the scope is this user's top 10 videos."
+ },
+ {
+  "start": 338.72,
+  "end": 340.72,
+  "text": "Step 1, propose a definition."
+ },
+ {
+  "start": 341.72,
+  "end": 345.72,
+  "text": "The model reads the description and this user's top 10 videos."
+ },
+ {
+  "start": 346.72,
+  "end": 348.72,
+  "text": "The answer is back."
+ },
+ {
+  "start": 349.72,
+  "end": 355.72,
+  "text": "A label, a definition with conditions, and two cited examples, each quotation checked."
+ },
+ {
+  "start": 357.72,
+  "end": 359.72,
+  "text": "I review it and rename the label."
+ },
+ {
+  "start": 362.72,
+  "end": 364.72,
+  "text": "When applied, show more."
+ },
+ {
+  "start": 366.72,
+  "end": 368.72,
+  "text": "Approve and classify."
+ },
+ {
+  "start": 369.72,
+  "end": 372.72,
+  "text": "Each video in scope is classified under the definition."
+ },
+ {
+  "start": 373.72,
+  "end": 375.72,
+  "text": "10 per call, 4 calls in parallel."
+ },
+ {
+  "start": 376.72,
+  "end": 378.72,
+  "text": "Every match must quote the video's own text."
+ },
+ {
+  "start": 379.72,
+  "end": 381.72,
+  "text": "The answer is back."
+ },
+ {
+  "start": 383.72,
+  "end": 387.72,
+  "text": "One row per video, verdict, quotation, independent check."
+ },
+ {
+  "start": 387.72,
+  "end": 389.72,
+  "text": "Zero of 10 selected."
+ },
+ {
+  "start": 389.72,
+  "end": 393.72,
+  "text": "Two model calls, nine seconds of model time, less than one cent."
+ },
+ {
+  "start": 395.72,
+  "end": 398.72,
+  "text": "The feed stays visible on the right during review."
+ },
+ {
+  "start": 400.72,
+  "end": 401.72,
+  "text": "Apply."
+ },
+ {
+  "start": 401.72,
+  "end": 403.72,
+  "text": "The new category is now a label of its own."
+ },
+ {
+  "start": 405.72,
+  "end": 409.72,
+  "text": "Workflow 4, add a video that is not in QIrec."
+ },
+ {
+  "start": 410.72,
+  "end": 411.72,
+  "text": "A title."
+ },
+ {
+  "start": 413.72,
+  "end": 416.72,
+  "text": "And a description."
+ },
+ {
+  "start": 417.72,
+  "end": 419.72,
+  "text": "The model sees only these words."
+ },
+ {
+  "start": 420.72,
+  "end": 422.72,
+  "text": "Classify and preview."
+ },
+ {
+  "start": 423.72,
+  "end": 429.72,
+  "text": "The model assigns existing categories and tags and judges the new category with a quotation."
+ },
+ {
+  "start": 431.72,
+  "end": 436.72,
+  "text": "It got existing categories and tags and a checked verdict for my new category."
+ },
+ {
+  "start": 438.72,
+  "end": 439.72,
+  "text": "Apply."
+ },
+ {
+  "start": 439.72,
+  "end": 443.72,
+  "text": "It starts at a cold start score since the model has no history for it."
+ },
+ {
+  "start": 444.72,
+  "end": 446.72,
+  "text": "Undo removes the new video."
+ },
+ {
+  "start": 446.72,
+  "end": 448.72,
+  "text": "The new category stays."
+ },
+ {
+  "start": 449.72,
+  "end": 452.72,
+  "text": "The results page reads the measured result files."
+ },
+ {
+  "start": 452.72,
+  "end": 454.72,
+  "text": "I will go through the headline numbers."
+ },
+ {
+  "start": 455.72,
+  "end": 460.72,
+  "text": "These numbers were measured on the original text run of 17 November."
+ },
+ {
+  "start": 460.72,
+  "end": 463.72,
+  "text": "The rerun on the English text is pending."
+ },
+ {
+  "start": 463.72,
+  "end": 466.72,
+  "text": "The first table is the non-literal requests."
+ },
+ {
+  "start": 466.72,
+  "end": 470.72,
+  "text": "Exact means the right action, every required label,"
+ },
+ {
+  "start": 470.72,
+  "end": 473.72,
+  "text": "and nothing outside the reviewed acceptable set."
+ },
+ {
+  "start": 473.72,
+  "end": 476.72,
+  "text": "Claude Sonnet 5.517 of 20."
+ },
+ {
+  "start": 476.72,
+  "end": 479.72,
+  "text": "GPT 5.17 of 20."
+ },
+ {
+  "start": 479.72,
+  "end": 481.72,
+  "text": "GPT 5 Mini 16 of 20."
+ },
+ {
+  "start": 481.72,
+  "end": 484.72,
+  "text": "Llama 3.18 B0 of 20."
+ },
+ {
+  "start": 484.72,
+  "end": 488.72,
+  "text": "QN 2.5 Coder 7 B0 of 20."
+ },
+ {
+  "start": 492.72,
+  "end": 495.72,
+  "text": "Next, cases where the model should not change the feed."
+ },
+ {
+  "start": 495.72,
+  "end": 497.72,
+  "text": "Correct abstentions."
+ },
+ {
+  "start": 497.72,
+  "end": 499.72,
+  "text": "Claude Sonnet 5.512 of 14."
+ },
+ {
+  "start": 499.72,
+  "end": 502.72,
+  "text": "GPT 5.10 of 14."
+ },
+ {
+  "start": 502.72,
+  "end": 505.72,
+  "text": "GPT 5 Mini 7 of 14."
+ },
+ {
+  "start": 505.72,
+  "end": 508.72,
+  "text": "Llama 3.18 B11 of 14."
+ },
+ {
+  "start": 508.72,
+  "end": 512.72,
+  "text": "QN 2.5 Coder 7 B9 of 14."
+ },
+ {
+  "start": 516.72,
+  "end": 521.72,
+  "text": "For new categories, member F1 on the shared pool of 150 QA Rec items."
+ },
+ {
+  "start": 521.72,
+  "end": 524.72,
+  "text": "Claude Sonnet 5.50.87."
+ },
+ {
+  "start": 524.72,
+  "end": 527.72,
+  "text": "GPT 5.0.92."
+ },
+ {
+  "start": 527.72,
+  "end": 530.72,
+  "text": "GPT 5 Mini 0.94."
+ },
+ {
+  "start": 530.72,
+  "end": 533.72,
+  "text": "Llama 3.18 B0.18."
+ },
+ {
+  "start": 533.72,
+  "end": 537.72,
+  "text": "QN 2.5 Coder 7 B0.47."
+ },
+ {
+  "start": 541.72,
+  "end": 543.72,
+  "text": "Local versus Frontier."
+ },
+ {
+  "start": 543.72,
+  "end": 547.72,
+  "text": "The local models matched 0 and 0 of 20 non-literal requests."
+ },
+ {
+  "start": 547.72,
+  "end": 552.72,
+  "text": "Where they proposed almost nothing, their abstention scores, 11 and 9 of 14,"
+ },
+ {
+  "start": 552.72,
+  "end": 555.72,
+  "text": "reflect refusing, not judgment."
+ },
+ {
+  "start": 555.72,
+  "end": 558.72,
+  "text": "The Frontier models matched 16 to 17 of 20."
+ },
+ {
+  "start": 558.72,
+  "end": 563.72,
+  "text": "Local calls cost nothing, but took 126 and 109 seconds each"
+ },
+ {
+  "start": 563.72,
+  "end": 566.72,
+  "text": "at the median on this laptop."
+ },
+ {
+  "start": 569.72,
+  "end": 575.72,
+  "text": "Finally, the old 100-case parser bank, reused and labeled as reuse, scored strictly."
+ },
+ {
+  "start": 575.72,
+  "end": 578.72,
+  "text": "Llama 3.18 B79."
+ },
+ {
+  "start": 578.72,
+  "end": 581.72,
+  "text": "QN 2.5 Coder 7 B74."
+ },
+ {
+  "start": 581.72,
+  "end": 584.72,
+  "text": "GPT 5 Mini 60."
+ },
+ {
+  "start": 584.72,
+  "end": 587.72,
+  "text": "GPT 5.60 out of 100."
+ },
+ {
+  "start": 587.72,
+  "end": 590.72,
+  "text": "None reaches the 85% target."
+ },
+ {
+  "start": 594.72,
+  "end": 598.72,
+  "text": "The test set was drafted by an AI and reviewed row by row by me."
+ },
+ {
+  "start": 598.72,
+  "end": 602.72,
+  "text": "Claude is both the drafters family and a measured model."
+ },
+ {
+  "start": 602.72,
+  "end": 606.72,
+  "text": "Code, tests, data and results are in the repository."
+ },
+ {
+  "start": 606.72,
+  "end": 608.72,
+  "text": "Thank you."
+ },
+ {
+  "start": 611.72,
+  "end": 615.72,
+  "text": "QN 2.5 Coder 7 B0.47."
+ }
+]

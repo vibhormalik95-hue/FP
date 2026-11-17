@@ -27,7 +27,7 @@ The path is **not** wired into the frozen E1/E2 evaluation harness. Its text-mat
 
 ## Executed mechanism example
 
-The [receipt](manual-topic-receipt.json) was generated on the saved processed dataset and seed-42 trained model with the explicit source-text topic `青岛` (Qingdao), which is not an official `category_N` ID. Five of 2,593 candidate items had that text. The untouched top ten contained one matching item. Manual literal boost placed two text-matching items in the top ten; graded reduce and hard exclude placed zero there. All three previews filled ten slots. Reduce kept all 2,593 items eligible; exclude left 2,588. The rule `manual_literal` mode was used. **No Llama call, participant preference, fresh held-out evaluation or new statistical result was produced.**
+The [receipt](manual-topic-receipt.json) was generated on the saved processed dataset and seed-42 trained model with the explicit source-text topic `Qingdao` (translated from Chinese), which is not an official `category_N` ID. Five of 2,593 candidate items had that text. The untouched top ten contained one matching item. Manual literal boost placed two text-matching items in the top ten; graded reduce and hard exclude placed zero there. All three previews filled ten slots. Reduce kept all 2,593 items eligible; exclude left 2,588. The rule `manual_literal` mode was used. **No Llama call, participant preference, fresh held-out evaluation or new statistical result was produced.**
 
 To reproduce from the FP checkout, supply paths to the unchanged processed data, saved seed-42 model directory and downloaded official CSV:
 
@@ -51,7 +51,7 @@ The isolated parser/ranking/API tests use synthetic sidecars and a mocked Ollama
 
 ### 3 November live smoke, separate from evaluation
 
-One already-installed local `llama3.1:8b` request through `/api/topic/preview` succeeded with a saved-model feed. For "Show me more videos about Qingdao," the returned `boost` command used the Chinese search terms `青岛`, `青岛市`, `山东` and `中国`. It matched 59 candidates and placed nine source-text matches in ten slots with full fill; the A-E feed was unchanged. The manual literal `青岛` matched five candidates. The broader Llama terms are a concrete precision limit. This single smoke establishes execution and provenance, not command accuracy against independent intent, user relevance, or superiority over a manual or rule method. The temporary local model was stopped after the call. The dated private meeting receipt records the exact digest and top-item IDs; those are not part of the frozen experiments.
+One already-installed local `llama3.1:8b` request through `/api/topic/preview` succeeded with a saved-model feed. For "Show me more videos about Qingdao," the returned `boost` command used the Chinese search terms `Qingdao`, `Qingdao City` (translated from Chinese), `Shandong` (translated from Chinese) and `China` (translated from Chinese). It matched 59 candidates and placed nine source-text matches in ten slots with full fill; the A-E feed was unchanged. The manual literal `Qingdao` matched five candidates. The broader Llama terms are a concrete precision limit. This single smoke establishes execution and provenance, not command accuracy against independent intent, user relevance, or superiority over a manual or rule method. The temporary local model was stopped after the call. The dated private meeting receipt records the exact digest and top-item IDs; those are not part of the frozen experiments.
 
 ### 4 November bounded strength check
 

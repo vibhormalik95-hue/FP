@@ -38,7 +38,7 @@ def endpoint(app, path):
 class HostedBoundaryTests(unittest.TestCase):
     def test_category_prompt_mapping_preserves_evidence_and_inputs(self):
         payload = {"instructions": "Trusted producer instruction", "objective": "test",
-                   "catalogue": [{"item_id": 1, "fields": {"caption": "旅行"}}]}
+                   "catalogue": [{"item_id": 1, "fields": {"caption": "Travel"}}]}
         before = deepcopy(payload)
         mapped = category_payload(payload)
         self.assertEqual(mapped, {"system": payload["instructions"],
