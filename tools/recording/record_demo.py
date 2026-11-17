@@ -159,6 +159,29 @@ class NotInFront(RuntimeError):
     pass
 
 
+def focus_chrome():
+    """Bring the recording Chrome window to the OS foreground (Playwright's bring_to_front does not)."""
+    u32 = ctypes.windll.user32
+    found = []
+
+    @ctypes.WINFUNCTYPE(ctypes.c_bool, ctypes.c_void_p, ctypes.c_void_p)
+    def visit(hwnd, _):
+        if u32.IsWindowVisible(hwnd):
+            buf = ctypes.create_unicode_buffer(512)
+            u32.GetWindowTextW(hwnd, buf, 512)
+            if buf.value.endswith("Google Chrome"):
+                found.append(hwnd)
+        return True
+    u32.EnumWindows(visit, 0)
+    if not found:
+        return False
+    hwnd = found[0]
+    pyautogui.press("shift")              # Windows lets a process that just sent input change the foreground
+    u32.ShowWindow(hwnd, 3)               # SW_MAXIMIZE
+    u32.SetForegroundWindow(hwnd)
+    return True
+
+
 # ------------------------------------------------------------------ the director
 class Director:
     def __init__(self, page, voice, capture, events):
@@ -168,14 +191,15 @@ class Director:
         self.calibrate()
 
     def ensure_front(self):
-        """Every click and keystroke must reach Chrome. Refocus once; abort the take otherwise."""
-        if "Chrome" in foreground_title():
-            return
-        self.page.bring_to_front()
-        time.sleep(0.6)
-        if "Chrome" not in foreground_title():
-            raise NotInFront(f"Foreground window is '{foreground_title()}', not Chrome; the take is aborted.")
-        self.events.append({"t": round(self.cap.now(), 2), "refocused": True})
+        """Every click and keystroke must reach Chrome. Refocus up to three times; abort the take otherwise."""
+        for attempt in range(4):
+            if "Chrome" in foreground_title():
+                if attempt:
+                    self.events.append({"t": round(self.cap.now(), 2), "refocused": attempt})
+                return
+            focus_chrome()
+            time.sleep(0.5)
+        raise NotInFront(f"Foreground window is '{foreground_title()}', not Chrome; the take is aborted.")
 
     # -- coordinates
     def calibrate(self):
@@ -472,6 +496,7 @@ def main():
                 page.goto(URL)
             page.wait_for_selector("[data-view='lab']", timeout=60000)
             page.bring_to_front()
+            focus_chrome()
             time.sleep(1.5)
             pyautogui.moveTo(phys[0] // 2, phys[1] // 2)
             lines = static_lines([l["say"] for l in results_lines(REPO / args.results)] if not args.test_clip else [])
