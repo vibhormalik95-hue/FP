@@ -1,0 +1,302 @@
+[
+ {
+  "start": 0.0,
+  "end": 7.68,
+  "text": "Feed control lab. Natural language control of a short video recommender on real QA Rec"
+ },
+ {
+  "start": 7.68,
+  "end": 15.04,
+  "text": "data on this laptop. A SAS Rec model trained on QA Rec ranks the videos. The language model"
+ },
+ {
+  "start": 15.04,
+  "end": 22.08,
+  "text": "only proposes changes. I review them. First, the original study. Condition C takes a free"
+ },
+ {
+  "start": 22.08,
+  "end": 32.52,
+  "text": "text category instruction. I name one category by its dataset ID. Apply, the rule parser"
+ },
+ {
+  "start": 32.52,
+  "end": 38.96,
+  "text": "reads it, and the fixed policy boosts that category. The ranking changed, and each card"
+ },
+ {
+  "start": 38.96,
+  "end": 48.92,
+  "text": "explains the boost. Compare A to E shows all five conditions side by side. Now the language"
+ },
+ {
+  "start": 48.92,
+  "end": 55.4,
+  "text": "controls. The display is in English, machine translated from the original Chinese, and"
+ },
+ {
+  "start": 55.4,
+  "end": 61.92,
+  "text": "labeled as such. One click shows the original. On the right, this user's top 10 from the"
+ },
+ {
+  "start": 61.92,
+  "end": 74.96,
+  "text": "train model. Provider, the OpenAI API. Model, GPT-5, the strongest model in my tests that"
+ },
+ {
+  "start": 74.96,
+  "end": 83.24,
+  "text": "needs only an API key. A key pasted here is masked and kept in memory only. Here it comes"
+ },
+ {
+  "start": 83.24,
+  "end": 92.56,
+  "text": "from an environment variable. Use this provider. Workflow 1, the reference, a manual category"
+ },
+ {
+  "start": 92.56,
+  "end": 102.64,
+  "text": "control, no model. I search the QA Rec categories. Labels can be searched in English. I pick"
+ },
+ {
+  "start": 102.64,
+  "end": 118.48,
+  "text": "dance. Show more. Strong. Preview, a preview never changes the feed. 10 videos would enter"
+ },
+ {
+  "start": 118.48,
+  "end": 133.12,
+  "text": "the top 10. Before. And after. Apply changes exactly the reviewed set. Applied, each card"
+ },
+ {
+  "start": 133.12,
+  "end": 144.96,
+  "text": "names the control that moved it. Undo restores the previous feed exactly. Workflow 2, a request"
+ },
+ {
+  "start": 144.96,
+  "end": 152.68,
+  "text": "in my own words, map to existing categories and tags. I just ate and do not want to be"
+ },
+ {
+  "start": 152.68,
+  "end": 161.88,
+  "text": "tempted by food. No category name is used. Interpret and preview. The model reads the"
+ },
+ {
+  "start": 161.88,
+  "end": 169.0,
+  "text": "request and the list of existing labels. It sees no video text. Next, the server checks"
+ },
+ {
+  "start": 169.0,
+  "end": 178.2,
+  "text": "that every label exists and that the quoted words are in the request. The answer is back."
+ },
+ {
+  "start": 178.2,
+  "end": 184.04,
+  "text": "Proposal, show less category snack, show less category food tutorial, show less topic tag"
+ },
+ {
+  "start": 184.04,
+  "end": 190.16,
+  "text": "Q-Shoe Kitchen, show less topic tag homemade food. One model call, 14 seconds of model"
+ },
+ {
+  "start": 190.16,
+  "end": 197.6,
+  "text": "time, about 4 cents. The review shows the model's reason, the server's checks, and"
+ },
+ {
+  "start": 197.6,
+  "end": 216.12,
+  "text": "the effect on the feed. Apply. Undo. A second request in another domain. My cat is at the"
+ },
+ {
+  "start": 216.12,
+  "end": 225.44,
+  "text": "vet and I cannot bear to see animals. No category name is used. Interpret and preview."
+ },
+ {
+  "start": 225.44,
+  "end": 231.36,
+  "text": "The model reads the request and the list of existing labels. It sees no video text."
+ },
+ {
+  "start": 231.36,
+  "end": 239.88,
+  "text": "Next, the server checks that every label exists and that the quoted words are in the request."
+ },
+ {
+  "start": 239.88,
+  "end": 247.96,
+  "text": "The answer is back. Proposal, hide category pets, hide category pet daily record, hide"
+ },
+ {
+  "start": 247.96,
+  "end": 254.64,
+  "text": "category pet dog, hide category pet cat, and 21 more. One model call, 15 seconds of"
+ },
+ {
+  "start": 254.64,
+  "end": 262.48,
+  "text": "model time, about 4 cents. The review shows the model's reason, the server's checks, and"
+ },
+ {
+  "start": 262.48,
+  "end": 279.56,
+  "text": "the effect on the feed. Apply. Undo. Workflow 3, a new category that QI Rec does not have."
+ },
+ {
+  "start": 279.56,
+  "end": 289.2,
+  "text": "I describe it. Plain English, no existing label. Step 1, propose a definition. The model"
+ },
+ {
+  "start": 289.2,
+  "end": 296.32,
+  "text": "reads the description and this user's top 40 videos. It drafts a label and a definition"
+ },
+ {
+  "start": 296.32,
+  "end": 305.52,
+  "text": "and cites example videos with exact quotations. The answer is back. A label, a definition"
+ },
+ {
+  "start": 305.52,
+  "end": 313.04,
+  "text": "with conditions, and three cited examples, each quotation checked. I review it and rename"
+ },
+ {
+  "start": 313.04,
+  "end": 325.32,
+  "text": "the label. When applied, show more. Approve and classify. Each video in scope is classified"
+ },
+ {
+  "start": 325.32,
+  "end": 332.0,
+  "text": "under the definition, 10 per call, 4 calls in parallel. Every match must quote the video's"
+ },
+ {
+  "start": 332.0,
+  "end": 339.88,
+  "text": "own text. A separate call checks each quotation without seeing the verdict. Only matches that"
+ },
+ {
+  "start": 339.88,
+  "end": 353.68,
+  "text": "pass both checks are selected. Still waiting for the model, 21 so far. The answer is back."
+ },
+ {
+  "start": 353.68,
+  "end": 360.84,
+  "text": "One row per video, verdict, quotation, independent check, one of 40 selected, five model calls,"
+ },
+ {
+  "start": 360.84,
+  "end": 367.72,
+  "text": "63 seconds of model time, about 6 cents. The feed stays visible on the right during"
+ },
+ {
+  "start": 367.72,
+  "end": 377.76,
+  "text": "review. Apply. The new category is now a label of its own. Workflow 4, add a video that is"
+ },
+ {
+  "start": 377.76,
+  "end": 390.88,
+  "text": "not in QA Rec, a title, and a description. The model sees only these words, classify"
+ },
+ {
+  "start": 390.88,
+  "end": 397.96,
+  "text": "and preview. The model assigns existing categories and tags and judges the new category with"
+ },
+ {
+  "start": 397.96,
+  "end": 409.68,
+  "text": "a quotation. Still waiting for the model, 8 so far. It got existing categories and tags"
+ },
+ {
+  "start": 409.68,
+  "end": 416.72,
+  "text": "and a checked verdict for my new category. Apply. It starts at a cold start score since"
+ },
+ {
+  "start": 416.72,
+  "end": 431.52,
+  "text": "the model has no history for it. Undo and undo again. Last control, auto apply. With"
+ },
+ {
+  "start": 431.52,
+  "end": 442.56,
+  "text": "it on, a preview is applied as soon as it arrives. Preview and it is already applied."
+ },
+ {
+  "start": 442.56,
+  "end": 455.68,
+  "text": "I turn it off and undo. The results page reads the measured result files. The first table"
+ },
+ {
+  "start": 455.68,
+  "end": 461.84,
+  "text": "is the nonliteral requests. Exact means the right action, every required label, and nothing"
+ },
+ {
+  "start": 461.84,
+  "end": 471.24,
+  "text": "outside the reviewed acceptable set. Claude Sonnet 5.517 of 20, GPT 5.17 of 20, GPT 5 Mini"
+ },
+ {
+  "start": 471.24,
+  "end": 481.28,
+  "text": "16 of 20. Next, cases where the model should not change the feed. Correct abstentions, Claude"
+ },
+ {
+  "start": 481.28,
+  "end": 493.32,
+  "text": "Sonnet 5.512 of 14, GPT 5.10 of 14, GPT 5 Mini 7 of 14. For new categories, member F1 on"
+ },
+ {
+  "start": 493.32,
+  "end": 508.52,
+  "text": "the shared pool of 150 QA Rec items, Claude Sonnet 5.50.87, GPT 5.0.92, GPT 5 Mini 0.94."
+ },
+ {
+  "start": 508.52,
+  "end": 513.48,
+  "text": "Downstream, on the trained ranker, the controls raise the share of target videos in the top"
+ },
+ {
+  "start": 513.48,
+  "end": 519.7,
+  "text": "10 from almost zero toward the level of the reviewed control. The table and the non-inferiority"
+ },
+ {
+  "start": 519.7,
+  "end": 529.36,
+  "text": "test below give the exact numbers, including where the relative 10% margin is not met."
+ },
+ {
+  "start": 529.36,
+  "end": 536.48,
+  "text": "The last table lists latency, cost, and every failure of every model. Below, the old"
+ },
+ {
+  "start": 536.48,
+  "end": 546.4,
+  "text": "parser bank is reused and labeled as reuse. Llama again scores 79, short of the 85% target."
+ },
+ {
+  "start": 546.4,
+  "end": 552.32,
+  "text": "The test set was drafted by an AI and reviewed row by row by me. Claude is both the drafter's"
+ },
+ {
+  "start": 552.32,
+  "end": 558.72,
+  "text": "family and a measured model. Code, tests, and results are in the repository. Thank you."
+ }
+]
