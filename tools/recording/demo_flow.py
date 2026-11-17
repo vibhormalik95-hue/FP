@@ -39,8 +39,19 @@ def run_demo(d, page, cfg, events, model_label, results_line):
         clipboard("")                  # the key leaves the clipboard at once, also if the take aborts
     time.sleep(0.4)
     d.click("[data-role='provider-save']", "Use this provider. The key stays in this server's memory only; it is never shown, logged or saved.")
-    time.sleep(1.0)
-    status = api("lab/status")["provider"]
+    status = {}
+    for attempt in range(2):
+        for _ in range(16):                      # the save can take a few seconds; wait up to 8 s
+            time.sleep(0.5)
+            status = api("lab/status")["provider"]
+            if "memory" in status.get("key_source", ""):
+                break
+        if "memory" in status.get("key_source", "") or attempt:
+            break
+        if not page.locator("[data-role='api-key']").input_value():
+            break                                # the field is empty: nothing to save again
+        d.events.append({"t": round(d.cap.now(), 2), "nudged": "provider-save"})
+        page.click("[data-role='provider-save']")   # the first click did not register: send it again
     if "memory" not in status.get("key_source", ""):
         raise RuntimeError("The page did not report the pasted key as held in memory; the take is aborted.")
     d.say("The status line confirms it: key typed into this page, memory only.")
