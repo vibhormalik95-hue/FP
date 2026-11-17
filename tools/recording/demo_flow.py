@@ -28,6 +28,7 @@ def run_demo(d, page, cfg, events, model_label, results_line):
     d.hold(3.0)
     d.choose("[data-role='provider-kind']", "Provider: the OpenAI API.", "Op")
     d.type_into("[data-role='provider-model']", cfg.model, f"Model: {spoken_model}, the strongest model in my tests that needs only an API key.")
+    d.choose("[data-role='provider-effort']", "Reasoning effort minimal, so this video stays short. The measured results used low effort.", "mi")
     d.click("[data-role='api-key']", "This is where your own API key goes. I paste mine into the masked field.")
     clipboard(cfg.key)
     try:
