@@ -32,6 +32,9 @@ All five models therefore ran the same prompts, schemas, item views and quotatio
 | `04d21ed` | Budget reservation before parallel calls; failed calls charged their reservation | No (no reported run hit a budget; failed hosted calls: none) | No |
 | `e1851ac` | Results tables name their commits; fetch-assets | No | No (labels only) |
 | r4 (English only) | The app, the prompts and the screen use the English text layer `data/kuairec_text_en-v1.json` (machine translation of KuaiRec, SHA-256 `034f5ac9…`) instead of the Chinese source text and the gloss; prompts say the text is English; no gloss field; quotations need at least 3 characters; the study-view topic prompt asks for English aliases | Not for any reported run: every reported prediction used the original text. A new run on the English layer is a separate run (`lab_eval.py run --text english`) | No: the 17 Nov runs are scored on the original text (`lab_eval.py score --text original`, the default) |
+| `4847d80` | English version of the frozen set (`docs/evidence/lab-eval-set-20261117-en/`), hashed before any English-run prediction | No reported run | No |
+| `dcfde76`, `629e0a9` | lab_eval: a selected-quotation counter no longer reads the removed translation field; the NC table note names the quotation rule of the run's text | No (bookkeeping and a note) | No for the 17 Nov tables (re-scoring them reproduces every table) |
+| `024ddd6` | App: the new-category scope is the current feed after applied controls; the new-item review shows the independent check; the definition prompt asks for text-checkable conditions | No (the NC cases use the shared pool, not a scope; define is not measured) | No |
 
 ## Consequence for the tables
 
