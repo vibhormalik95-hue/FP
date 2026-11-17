@@ -1,0 +1,23 @@
+{
+ "duration_s": 612.366667,
+ "streams": [
+  {
+   "codec_type": "video",
+   "width": 1920,
+   "height": 1080
+  },
+  {
+   "codec_type": "audio"
+  }
+ ],
+ "silences_5s": [],
+ "silence_pass": true,
+ "transcript_similarity": 0.89,
+ "sentences_found": "96/96",
+ "transcript_pass": true,
+ "frames": 20,
+ "duration_pass": true,
+ "cjk_live_checks": 69,
+ "cjk_hits": [],
+ "cjk_pass": true
+}
