@@ -20,7 +20,7 @@ from fastapi import Body, HTTPException, Query
 from fastapi.responses import JSONResponse
 
 from feedctrl import lab_workflows as wf
-from feedctrl.kuairec_catalog import GLOSS_NOTE, build_catalog, load_gloss, read_caption_table
+from feedctrl.kuairec_catalog import ENGLISH_LABEL, build_catalog, read_caption_table, read_english_layer
 from feedctrl.lab import KuaiRecLab, LabError
 from feedctrl.llm_providers import Ledger, ProviderError, build_provider, env_key_available
 
@@ -95,14 +95,25 @@ class ProviderSlot:
                 "calls": len(self.ledger.calls), "budget_usd": self.ledger.budget_usd}
 
 
-def build_lab(demo, gloss_path=None):
-    """The KuaiRec catalogue joined to the processed items, scored by the app's recommender."""
+# How the Results page labels a run by the item text it used. Runs before the English layer used the
+# original KuaiRec text (summary.json has no "input_text"); those files are frozen and are not edited.
+ORIGINAL_TEXT_PENDING = "Measured on the original-text run (17 Nov); English-input re-run pending."
+ORIGINAL_TEXT_PRIOR = "Prior run: measured on the original KuaiRec text (17 Nov)."
+ENGLISH_TEXT_RUN = "Measured on the English text layer (machine translation of KuaiRec)."
+
+
+def build_lab(demo, english_path=None):
+    """The English KuaiRec catalogue joined to the processed items, scored by the app's recommender.
+
+    The app reads the English text layer (machine translation of KuaiRec) only. Without it, a caption
+    sidecar in the same format is accepted (tests and fixtures).
+    """
+    english_path = english_path or os.getenv("FEEDCTRL_ENGLISH_LAYER")
     sidecar = os.getenv("FEEDCTRL_CAPTION_SIDECAR")
-    if not sidecar or demo.fixture:
+    if demo.fixture or not (english_path or sidecar):
         return None
-    rows, provenance = read_caption_table(sidecar)
-    gloss = load_gloss(gloss_path)
-    catalog = build_catalog(demo.data, rows, gloss)
+    rows, provenance = read_english_layer(english_path) if english_path else read_caption_table(sidecar)
+    catalog = build_catalog(demo.data, rows)
 
     def scorer(user_id):
         user = demo.users[user_id]
@@ -115,8 +126,8 @@ def build_lab(demo, gloss_path=None):
             raw = [sum(counts[c] for c in demo.items[i]) + ((i * 17 + user_id * 7) % 19) / 100 for i in ids]
         return dict(zip(ids, raw))
 
-    lab = KuaiRecLab(catalog, scorer=scorer, users=demo.users, gloss=gloss)
-    lab.provenance = {**provenance, "gloss": (gloss or {}).get("translator"), "gloss_note": GLOSS_NOTE if gloss else None,
+    lab = KuaiRecLab(catalog, scorer=scorer, users=demo.users)
+    lab.provenance = {**provenance, "text": ENGLISH_LABEL if english_path else "caption sidecar",
                       "items_with_text": sum(r["has_text"] for r in catalog.values())}
     return lab
 
@@ -125,9 +136,9 @@ def _error(exc):
     return JSONResponse({"detail": str(exc)}, status_code=getattr(exc, "status", 400))
 
 
-def mount_lab(app, *, gloss_path=None, results_dir=None, budget_usd=None, lab=None):
+def mount_lab(app, *, english_path=None, results_dir=None, budget_usd=None, lab=None):
     demo = app.state.demo
-    lab = lab or build_lab(demo, gloss_path)
+    lab = lab or build_lab(demo, english_path)
     slot = ProviderSlot(budget_usd)
     app.state.lab, app.state.provider_slot = lab, slot
     results_dir = Path(results_dir or ROOT / "docs" / "evidence" / "lab-eval")
@@ -167,7 +178,7 @@ def mount_lab(app, *, gloss_path=None, results_dir=None, budget_usd=None, lab=No
         terms = lab_.vocabulary(lab_.user(user_id))
         q = q.strip().casefold()
         out = [t for t in terms if (not kind or t["kind"] == kind)
-               and (not q or q in t["value"].casefold() or q in str(t.get("gloss_en", "")).casefold())]
+               and (not q or q in t["value"].casefold())]
         out.sort(key=lambda t: (-t["item_count"], t["value"]))
         return {"total": len(out), "labels": out[:limit]}
 
@@ -232,6 +243,12 @@ def mount_lab(app, *, gloss_path=None, results_dir=None, budget_usd=None, lab=No
                         runs.append({"run": folder.name, **json.loads(summary.read_text(encoding="utf-8"))})
                     except json.JSONDecodeError:
                         runs.append({"run": folder.name, "error": "summary.json is not valid JSON"})
+        english = any(r.get("input_text") == "english" for r in runs)
+        for r in runs:
+            if r.get("input_text", "original") == "original":
+                r["text_label"] = (ORIGINAL_TEXT_PRIOR if english else ORIGINAL_TEXT_PENDING)
+            else:
+                r["text_label"] = ENGLISH_TEXT_RUN
         return {"runs": runs, "folder": results_dir.name}
 
     return lab

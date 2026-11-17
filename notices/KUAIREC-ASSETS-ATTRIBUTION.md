@@ -9,7 +9,8 @@ These files let the COMP 9500 Feed Control Lab run on real KuaiRec data. They ar
 **Changes made (adapted material):**
 - `data/raw/kuairec_caption_category.csv`: the official KuaiRec caption and category table, unchanged.
 - `data/processed.json`: a research subset of `small_matrix.csv` (865 users, 2,593 items): rows without timestamps excluded, positives defined as watch_ratio > 2, global time splits, opaque category IDs `category_N` from the official item features. Its `metadata` block records every step.
-- `data/kuairec_gloss_en.json`: an English machine translation (gpt-5-mini) of the captions, cover texts, tags and category names. It is a reading aid, not source text.
+- `data/kuairec_gloss_en.json`: an English machine translation (gpt-5-mini) of the captions, cover texts, tags and category names (input of the English text layer).
+- `data/kuairec_text_en-v1.json` (release `comp9500-kuairec-english-v1`, SHA-256 `034f5ac96375175d4bb8c16c7a8aa934ea9b1035e3920c74fe2ddc5ddde1c207`): the English text layer that the application loads, machine translation of KuaiRec (CC BY-SA 4.0), built from the gloss with the remaining Chinese hashtags translated by gpt-5-mini. `data/kuairec_text_en-v1.label-map.json` (same release) maps each original KuaiRec label to its English label; only the evaluation reads it.
 - `results/models/seed_{42,43,44}/model.pt`: SASRec-style recommenders trained on `processed.json` (three seeds), with their training metadata.
 
 No warranty. These files are not endorsed by the KuaiRec authors.

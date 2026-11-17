@@ -186,6 +186,12 @@ def main(argv=None):
             r = json.loads(receipt.read_text(encoding="utf-8")) if receipt.is_file() else {}
             summary["steps"]["browser"] = {"exit": code, "seconds": sec, "ok": code == 0,
                                            "result": f"{r.get('passed', 0)} passed, {r.get('failed', '?')} failed"}
+            code, sec = sh([node, "tests/browser/cjk_check.cjs", "--base", base, "--out", str(out / "cjk")],
+                           out / "cjk.log", timeout=3600)
+            receipt = out / "cjk" / "cjk-check-receipt.json"
+            r = json.loads(receipt.read_text(encoding="utf-8")) if receipt.is_file() else {}
+            summary["steps"]["cjk"] = {"exit": code, "seconds": sec, "ok": code == 0,
+                                       "result": f"{r.get('screens', 0)} screens, {r.get('failed', '?')} with CJK"}
             call(base, "/api/lab/reset", {"user_id": args.user})
         examples = json.loads((ROOT / args.examples).read_text(encoding="utf-8"))
         started = time.monotonic()

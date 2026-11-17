@@ -97,11 +97,8 @@ def api(path):
 
 
 def glosses():
-    out = {}
-    for t in api("lab/labels?user_id=14&limit=2000")["labels"]:
-        if t.get("gloss_en"):
-            out[t["value"]] = t["gloss_en"]
-    return out
+    """Spoken names of the labels. The labels are English already, so each name is the label itself."""
+    return {t["value"]: t["value"] for t in api("lab/labels?user_id=14&limit=2000")["labels"]}
 
 
 def spoken_controls(texts, gloss, limit=4):
@@ -111,7 +108,7 @@ def spoken_controls(texts, gloss, limit=4):
         if not m:
             continue
         action, _, kind, value = m.groups()
-        name = gloss.get(value, "a label")
+        name = gloss.get(value, value)
         words.append(f"{action.lower()} {kind.replace('KuaiRec ', '')} {name}")
     if not words:
         return "no control"

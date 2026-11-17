@@ -57,7 +57,11 @@ def main():
     script_py.write_text(ASR, encoding="utf-8")
     subprocess.run([args.tts_python, str(script_py), str(video), str(take / "transcript.json")], check=True)
     transcript = json.loads((take / "transcript.json").read_text(encoding="utf-8"))
-    timeline = json.loads((take / "timeline.json").read_text(encoding="utf-8"))["timeline"]
+    take_log = json.loads((take / "timeline.json").read_text(encoding="utf-8"))
+    timeline = take_log["timeline"]
+    cjk = [e for e in take_log.get("events", []) if "cjk_checks" in e or "cjk_hit" in e]
+    cjk_checks = sum(e.get("cjk_checks", 0) for e in cjk)
+    cjk_hits = [e for e in cjk if "cjk_hit" in e]
     said = words(" ".join(c["text"] for c in timeline))
     heard = words(" ".join(s["text"] for s in transcript))
     similarity = difflib.SequenceMatcher(None, said, heard, autojunk=False).ratio()
@@ -72,10 +76,11 @@ def main():
     result = {"duration_s": duration, "streams": json.loads(probe)["streams"], "silences_5s": silences,
               "silence_pass": not silences, "transcript_similarity": round(similarity, 3),
               "sentences_found": f"{found}/{len(timeline)}", "transcript_pass": similarity >= 0.85,
-              "frames": len(frames), "duration_pass": duration <= 720}
+              "frames": len(frames), "duration_pass": duration <= 720,
+              "cjk_live_checks": cjk_checks, "cjk_hits": cjk_hits, "cjk_pass": cjk_checks > 0 and not cjk_hits}
     (take / "check.json").write_text(json.dumps(result, indent=1), encoding="utf-8")
     print(json.dumps(result, indent=1))
-    return 0 if result["silence_pass"] and result["transcript_pass"] and result["duration_pass"] else 1
+    return 0 if all(result[k] for k in ("silence_pass", "transcript_pass", "duration_pass", "cjk_pass")) else 1
 
 
 if __name__ == "__main__":

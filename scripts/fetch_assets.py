@@ -2,8 +2,9 @@
 
     python scripts/fetch_assets.py            (or fetch-assets.cmd / ./fetch-assets.sh)
 
-The assets are published as a GitHub Release asset of this repository under CC BY-SA 4.0, with
-the KuaiRec attribution (ATTRIBUTION.md inside the archive). They are written to the ignored
+The assets are published as GitHub Release assets of this repository under CC BY-SA 4.0, with
+the KuaiRec attribution (ATTRIBUTION.md inside the archive): the processed data and checkpoints
+(comp9500-kuairec-assets-v1) and the English text layer the app loads (comp9500-kuairec-english-v1). They are written to the ignored
 folders data/ and results/models/. A file whose hash differs is reported, kept, and the exit code
 is 1, unless --force is given. Each write is atomic.
 """
@@ -34,6 +35,13 @@ FILES = {   # path inside the repository -> SHA-256
     "data/ATTRIBUTION.md": "172435ae07758c26622ff274fb9674dce0c1920c6caf0deb79cb68437fe8338f",
 }
 INSIDE = {"data/ATTRIBUTION.md": "ATTRIBUTION.md"}
+# The English text layer the app loads (machine translation of KuaiRec, CC BY-SA 4.0), a separate release.
+# The label map links the original KuaiRec labels to the English labels; only the evaluation reads it.
+ENGLISH_RELEASE = "https://github.com/vibhormalik95-hue/FP/releases/download/comp9500-kuairec-english-v1/"
+ENGLISH_FILES = {
+    "data/kuairec_text_en-v1.json": "034f5ac96375175d4bb8c16c7a8aa934ea9b1035e3920c74fe2ddc5ddde1c207",
+    "data/kuairec_text_en-v1.label-map.json": "ba7e03c02e05757533679cd3c5351b9281cff8c0f35903b04cabec6acbe85e96",
+}
 
 
 def download(url):
@@ -58,14 +66,53 @@ def sha(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
 
 
+def fetch_english(args):
+    """Download each file of the English release and verify its SHA-256. Returns the number of problems."""
+    problems = 0
+    for path, expected in ENGLISH_FILES.items():
+        target = ROOT / path
+        if target.is_file() and sha(target.read_bytes()) == expected:
+            print(f"ok      {path} (already present)")
+            continue
+        source = Path(args.english_dir) / Path(path).name if args.english_dir else None
+        try:
+            data = source.read_bytes() if source else download(ENGLISH_RELEASE + Path(path).name)
+        except OSError as exc:
+            print(f"FAILED: could not get {path} ({exc}). Nothing was written for it.")
+            problems += 1
+            continue
+        if sha(data) != expected:
+            print(f"FAILED: {path} has SHA-256 {sha(data)}, expected {expected}. Nothing was written for it.")
+            problems += 1
+            continue
+        if target.is_file() and not args.force:
+            print(f"KEPT    {path}: a different file is there; rerun with --force to replace it")
+            problems += 1
+            continue
+        target.parent.mkdir(parents=True, exist_ok=True)
+        partial = target.with_name(target.name + ".partial")
+        partial.write_bytes(data)
+        partial.replace(target)
+        print(f"written {path}")
+    return problems
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--url", default=RELEASE)
     ap.add_argument("--archive", help="use a downloaded archive instead of the URL")
     ap.add_argument("--force", action="store_true", help="replace files whose hash differs")
+    ap.add_argument("--english-dir", help="use downloaded English-layer files from this folder instead of the URL")
     args = ap.parse_args(argv)
-    if all((ROOT / p).is_file() and sha((ROOT / p).read_bytes()) == h for p, h in FILES.items()):
+    every = {**FILES, **ENGLISH_FILES}
+    if all((ROOT / p).is_file() and sha((ROOT / p).read_bytes()) == h for p, h in every.items()):
         print("All assets are present and verified. Nothing to do.")
+        return 0
+    if all((ROOT / p).is_file() and sha((ROOT / p).read_bytes()) == h for p, h in FILES.items()):
+        print("The KuaiRec assets are present and verified.")
+        if fetch_english(args):
+            return 1
+        print("Done. Start the app with run-app.cmd.")
         return 0
     if args.archive:
         blob = Path(args.archive).read_bytes()
@@ -105,8 +152,9 @@ def main(argv=None):
         licence_path = ROOT / "data" / "LICENSE-CC-BY-SA-4.0.txt"
         if not licence_path.is_file() or licence_path.read_bytes() != licence:
             licence_path.write_bytes(licence)
+    kept += fetch_english(args)
     if kept:
-        print(f"{kept} file(s) differ from the published assets and were kept. Rerun with --force to replace them.")
+        print(f"{kept} file(s) differ from the published assets or could not be fetched. Rerun (with --force to replace).")
         return 1
     print("Done. KuaiRec assets are CC BY-SA 4.0: see notices/KUAIREC-ASSETS-ATTRIBUTION.md. Start the app with run-app.cmd.")
     return 0

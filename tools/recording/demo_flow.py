@@ -23,7 +23,7 @@ def run_demo(d, page, cfg, events, model_label, results_line):
     # Language controls
     d.click("[data-view='lab']", "Now the language controls.")
     page.wait_for_selector(".lab-card")
-    d.point("[data-role='english-only']", "The display is in English: machine-translated from the original Chinese, and labelled as such. One click shows the original.")
+    d.say("Everything here is English: the KuaiRec text was machine-translated before processing, and the models read the English text.")
     d.say("On the right: this user's top ten from the trained model.")
     d.hold(3.0)
     d.choose("[data-role='provider-kind']", "Provider: the OpenAI API.", "Op")
@@ -47,13 +47,14 @@ def run_demo(d, page, cfg, events, model_label, results_line):
     # 1. Manual: hide the news and incident categories, kept applied for the rest of the take
     d.click("[data-tab='manual']", "Workflow one, the reference: a manual category control. No model.")
     d.say("This user's feed is full of news and incident stories, so first I hide those categories.")
-    for word, picks in (("incident", ("社会事件", "法制事件")), ("news", ("社会新闻", "民生资讯")), ("disaster", ("灾害事故",))):
+    for word, picks in (("incident", ("Social incident", "Legal incident")), ("news", ("Social news", "Livelihood news")),
+                        ("disaster", ("Disaster accident",))):
         d.click("[data-role='label-filter']", f"I search for {word}.")
         d.page.fill("[data-role='label-filter']", "")
         say_while_typing(d, word, "Labels can be searched in English.")
         time.sleep(0.8)
         for value in picks:
-            d.click(f"[data-role='label-list'] option[value='{value}']", f"I pick {gloss.get(value, 'it').rstrip('.')}.")
+            d.click(f"[data-role='label-list'] option[value='{value}']", f"I pick {value}.")
     d.choose("[data-role='manual-action']", "The action is Hide.", "Hi")
     b = done_count(page)
     d.click("[data-role='manual-preview']", "Preview. A preview never changes the feed.")
@@ -111,7 +112,7 @@ def run_demo(d, page, cfg, events, model_label, results_line):
     d.click("[data-tab='category']", "Workflow three: a new category that KuaiRec does not have.")
     d.click("[data-role='category-description']", "I describe it.")
     say_while_typing(d, cfg.new_category, "Plain English, no existing label.", interval=0.035)
-    d.type_into("[data-role='scope']", "10", "For this demo, the scope is this user's top ten videos.")
+    d.choose("[data-role='scope']", "For this demo, the scope is this user's top ten videos.", "10")
     b = done_count(page)
     d.click("[data-role='define']", "Step one: propose a definition.")
     wait_done(d, b, "define", "[data-role='define']")
@@ -155,6 +156,7 @@ def run_demo(d, page, cfg, events, model_label, results_line):
     # Results: slower, every headline number read from the result files
     d.click("[data-view='results']", "The Results page reads the measured result files. I will go through the headline numbers.")
     page.wait_for_selector("[data-role='results']")
+    d.point("[data-role='text-label']", "These numbers were measured on the original-text run of 17 November. The re-run on the English text is pending.")
     keep = ("The first table", "Next, cases", "For new categories", "Local versus frontier", "Finally, the old")
     for line in [l for l in results_line if l["say"].startswith(keep)]:
         d.say(line["say"], wait=False)
@@ -164,3 +166,5 @@ def run_demo(d, page, cfg, events, model_label, results_line):
         time.sleep(line.get("hold", 3.0))
     d.say("The test set was drafted by an AI and reviewed row by row by me. Claude is both the drafter's family and a measured model.")
     d.say("Code, tests, data and results are in the repository. Thank you.")
+    d.check_cjk("end of take")
+    d.events.append({"cjk_checks": d.cjk_checks, "cjk_hits": 0})

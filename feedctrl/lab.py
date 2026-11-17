@@ -117,15 +117,14 @@ class UserLab:
 class KuaiRecLab:
     """All language-control state of this local server, one record per user. Thread-safe."""
 
-    def __init__(self, catalog, *, scorer, users, gloss=None, feed_size=FEED_SIZE):
+    def __init__(self, catalog, *, scorer, users, feed_size=FEED_SIZE):
         self.catalog = catalog                       # item_id -> record (kuairec_catalog.item_record)
         self.scorer = scorer                         # callable(user_id) -> {item_id: raw score}
         self.users = users                           # user_id -> processed user record
-        self.gloss = gloss or {}
         self.feed_size = feed_size
         self._lock = threading.RLock()
         self._state, self._scores = {}, {}
-        self.base_vocabulary = label_vocabulary(catalog, gloss)
+        self.base_vocabulary = label_vocabulary(catalog)
 
     # ----- state ------------------------------------------------------
     def user(self, user_id):
@@ -193,10 +192,9 @@ class KuaiRecLab:
     # ----- feed -----------------------------------------------------------
     def card(self, item, rank, score, adjusted, hits, controls):
         item_id = item["item_id"]
-        gloss = item.get("gloss_en") or self.gloss.get("items", {}).get(str(item_id), {})
         return {"item_id": item_id, "rank": rank, "title": item["title"], "caption": item["caption"],
                 "tags": item["tags"], "kuairec_categories": item["kuairec_categories"],
-                "feature_ids": item["feature_ids"], "gloss_en": gloss or None,
+                "feature_ids": item["feature_ids"],
                 "origin": item.get("origin", "kuairec"), "base_score": round(score, 4),
                 "score": round(adjusted, 4),
                 "controls": [c["text"] for c in controls if c["id"] in hits]}

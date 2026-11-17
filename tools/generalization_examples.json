@@ -25,7 +25,7 @@
     {"domain": "kindness", "items": [{"title": "Bus driver waits for an elderly passenger", "description": "The driver gets out to help an old man with his shopping bags onto the bus."}]}
   ],
   "manual": [
-    {"domain": "cars", "kind": "category", "value": "汽车", "action": "only"},
-    {"domain": "comedy", "kind": "category", "value": "喜剧", "action": "reduce", "strength": "light"}
+    {"domain": "cars", "kind": "category", "value": "Cars", "action": "only"},
+    {"domain": "comedy", "kind": "category", "value": "Comedy", "action": "reduce", "strength": "light"}
   ]
 }
