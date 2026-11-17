@@ -34,10 +34,12 @@ def run_demo(d, page, cfg, events, model_label, results_line):
     d.type_into("[data-role='provider-model']", cfg.model, f"Model: {spoken_model}, the strongest model in my tests that needs only an API key.")
     d.click("[data-role='api-key']", "This is where your own API key goes. I paste mine into the masked field.")
     clipboard(cfg.key)
-    if demo_script.GUARD:
-        demo_script.GUARD()
-    pyautogui.hotkey("ctrl", "v")
-    clipboard("")                      # the key leaves the clipboard at once
+    try:
+        if demo_script.GUARD:
+            demo_script.GUARD()
+        pyautogui.hotkey("ctrl", "v")
+    finally:
+        clipboard("")                  # the key leaves the clipboard at once, also if the take aborts
     time.sleep(0.4)
     d.click("[data-role='provider-save']", "Use this provider. The key stays in this server's memory only; it is never shown, logged or saved.")
     time.sleep(1.0)

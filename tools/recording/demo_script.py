@@ -163,10 +163,12 @@ def test_clip(d, page, cfg):
     d.type_into("[data-role='provider-model']", "gpt-5", "Model: GPT five.")
     d.click("[data-role='api-key']", "I paste a key into the masked field.")
     clipboard(cfg.key)
-    if GUARD:
-        GUARD()
-    pyautogui.hotkey("ctrl", "v")
-    clipboard("")
+    try:
+        if GUARD:
+            GUARD()
+        pyautogui.hotkey("ctrl", "v")
+    finally:
+        clipboard("")
     time.sleep(0.4)
     d.click("[data-role='provider-save']", "Use this provider.")
     time.sleep(1.0)
