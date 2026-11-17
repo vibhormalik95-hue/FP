@@ -1,0 +1,490 @@
+{
+ "duration": 622.2,
+ "narration": [
+  {
+   "at": 1.708,
+   "seconds": 12.59,
+   "text": "Feed Control Lab: natural-language control of a short-video recommender on real KuaiRec data. A trained SASRec model ranks; the language model only proposes, and I review."
+  },
+  {
+   "at": 14.505,
+   "seconds": 6.015,
+   "text": "First, the original study. Condition C takes a free-text category instruction."
+  },
+  {
+   "at": 21.083,
+   "seconds": 3.515,
+   "text": "I name one category by its dataset ID."
+  },
+  {
+   "at": 26.927,
+   "seconds": 5.465,
+   "text": "Apply. The rule parser reads it, and the fixed policy boosts that category."
+  },
+  {
+   "at": 33.958,
+   "seconds": 2.39,
+   "text": "Now the language controls."
+  },
+  {
+   "at": 38.427,
+   "seconds": 8.365,
+   "text": "The display is in English: machine-translated from the original Chinese, and labelled as such. One click shows the original."
+  },
+  {
+   "at": 47.005,
+   "seconds": 3.865,
+   "text": "On the right: this user's top ten from the trained model."
+  },
+  {
+   "at": 52.068,
+   "seconds": 3.09,
+   "text": "Provider: the OpenAI API."
+  },
+  {
+   "at": 58.755,
+   "seconds": 6.44,
+   "text": "Model: GPT five, the strongest model in my tests that needs only an API key."
+  },
+  {
+   "at": 66.427,
+   "seconds": 6.44,
+   "text": "Reasoning effort minimal, so this video stays short. The measured results used low effort."
+  },
+  {
+   "at": 74.333,
+   "seconds": 5.24,
+   "text": "This is where your own API key goes. I paste mine into the masked field."
+  },
+  {
+   "at": 81.114,
+   "seconds": 7.165,
+   "text": "Use this provider. The key stays in this server's memory only; it is never shown, logged or saved."
+  },
+  {
+   "at": 89.833,
+   "seconds": 4.965,
+   "text": "The status line confirms it: key typed into this page, memory only."
+  },
+  {
+   "at": 95.005,
+   "seconds": 5.015,
+   "text": "Workflow one, the reference: a manual category control. No model."
+  },
+  {
+   "at": 100.583,
+   "seconds": 6.19,
+   "text": "This user's feed is full of news and incident stories, so first I hide those categories."
+  },
+  {
+   "at": 107.677,
+   "seconds": 2.09,
+   "text": "I search for incident."
+  },
+  {
+   "at": 110.38,
+   "seconds": 2.64,
+   "text": "Labels can be searched in English."
+  },
+  {
+   "at": 114.818,
+   "seconds": 2.265,
+   "text": "I pick Social incident."
+  },
+  {
+   "at": 118.474,
+   "seconds": 2.215,
+   "text": "I pick Legal incident."
+  },
+  {
+   "at": 122.099,
+   "seconds": 2.065,
+   "text": "I search for news."
+  },
+  {
+   "at": 124.724,
+   "seconds": 2.64,
+   "text": "Labels can be searched in English."
+  },
+  {
+   "at": 129.083,
+   "seconds": 2.215,
+   "text": "I pick Social news."
+  },
+  {
+   "at": 132.708,
+   "seconds": 2.29,
+   "text": "I pick Livelihood news."
+  },
+  {
+   "at": 136.333,
+   "seconds": 2.29,
+   "text": "I search for disaster."
+  },
+  {
+   "at": 139.208,
+   "seconds": 2.64,
+   "text": "Labels can be searched in English."
+  },
+  {
+   "at": 143.739,
+   "seconds": 2.565,
+   "text": "I pick disaster accident."
+  },
+  {
+   "at": 146.864,
+   "seconds": 2.115,
+   "text": "The action is Hide."
+  },
+  {
+   "at": 150.443,
+   "seconds": 3.29,
+   "text": "Preview. A preview never changes the feed."
+  },
+  {
+   "at": 156.489,
+   "seconds": 7.09,
+   "text": "Five hide controls: 493 videos would leave the feed, and 5 leave the top ten."
+  },
+  {
+   "at": 163.786,
+   "seconds": 5.965,
+   "text": "Apply changes exactly the reviewed set. These stay applied for the rest of this video."
+  },
+  {
+   "at": 170.302,
+   "seconds": 4.865,
+   "text": "The news and incident categories are now listed under Applied now."
+  },
+  {
+   "at": 175.38,
+   "seconds": 2.365,
+   "text": "Now one more: dance."
+  },
+  {
+   "at": 179.396,
+   "seconds": 2.015,
+   "text": "I search for dance."
+  },
+  {
+   "at": 182.411,
+   "seconds": 1.915,
+   "text": "I pick Dance."
+  },
+  {
+   "at": 184.896,
+   "seconds": 1.69,
+   "text": "Show more,"
+  },
+  {
+   "at": 189.489,
+   "seconds": 1.69,
+   "text": "strong."
+  },
+  {
+   "at": 193.693,
+   "seconds": 1.69,
+   "text": "Preview."
+  },
+  {
+   "at": 197.38,
+   "seconds": 3.09,
+   "text": "10 dance videos would enter the top ten."
+  },
+  {
+   "at": 201.333,
+   "seconds": 1.715,
+   "text": "Apply."
+  },
+  {
+   "at": 205.333,
+   "seconds": 2.965,
+   "text": "Each card names the control that moved it."
+  },
+  {
+   "at": 208.505,
+   "seconds": 6.14,
+   "text": "Undo removes the dance boost and restores the previous feed exactly; the news hide stays."
+  },
+  {
+   "at": 217.224,
+   "seconds": 6.09,
+   "text": "Workflow two: a request in my own words, mapped to existing categories and tags."
+  },
+  {
+   "at": 225.208,
+   "seconds": 3.69,
+   "text": "I just ate, and do not want to be tempted by food."
+  },
+  {
+   "at": 229.458,
+   "seconds": 2.49,
+   "text": "No category name is used."
+  },
+  {
+   "at": 232.693,
+   "seconds": 2.165,
+   "text": "Interpret and preview."
+  },
+  {
+   "at": 235.427,
+   "seconds": 6.09,
+   "text": "The model reads the request and the list of existing labels. It sees no video text."
+  },
+  {
+   "at": 242.005,
+   "seconds": 6.14,
+   "text": "Next, the server checks that every label exists and that the quoted words are in the request."
+  },
+  {
+   "at": 248.896,
+   "seconds": 2.04,
+   "text": "The answer is back."
+  },
+  {
+   "at": 253.099,
+   "seconds": 14.115,
+   "text": "Proposal: hide category snack; hide category Food tutorial; hide category Delicious food; hide category Mukbang, and 13 more. 1 model call, 14 seconds of model time, about 3 cents."
+  },
+  {
+   "at": 269.849,
+   "seconds": 1.715,
+   "text": "Apply."
+  },
+  {
+   "at": 274.286,
+   "seconds": 1.64,
+   "text": "Undo."
+  },
+  {
+   "at": 278.943,
+   "seconds": 3.04,
+   "text": "A second request, in another domain."
+  },
+  {
+   "at": 284.411,
+   "seconds": 4.065,
+   "text": "My cat is at the vet, and I cannot bear to see animals."
+  },
+  {
+   "at": 289.036,
+   "seconds": 2.49,
+   "text": "No category name is used."
+  },
+  {
+   "at": 292.052,
+   "seconds": 2.165,
+   "text": "Interpret and preview."
+  },
+  {
+   "at": 294.786,
+   "seconds": 6.09,
+   "text": "The model reads the request and the list of existing labels. It sees no video text."
+  },
+  {
+   "at": 301.083,
+   "seconds": 2.04,
+   "text": "The answer is back."
+  },
+  {
+   "at": 305.286,
+   "seconds": 13.915,
+   "text": "Proposal: hide category Pets; hide category Pet daily record; hide category Pet dog; hide category Pet cat, and 15 more. 1 model call, 5 seconds of model time, about 3 cents."
+  },
+  {
+   "at": 321.833,
+   "seconds": 1.715,
+   "text": "Apply."
+  },
+  {
+   "at": 325.521,
+   "seconds": 1.64,
+   "text": "Undo."
+  },
+  {
+   "at": 329.083,
+   "seconds": 4.465,
+   "text": "Workflow three: a new category that KuaiRec does not have."
+  },
+  {
+   "at": 334.114,
+   "seconds": 1.89,
+   "text": "I describe it."
+  },
+  {
+   "at": 336.646,
+   "seconds": 3.04,
+   "text": "Plain English, no existing label."
+  },
+  {
+   "at": 339.896,
+   "seconds": 4.215,
+   "text": "For this demo, the scope is this user's top ten videos."
+  },
+  {
+   "at": 345.193,
+   "seconds": 2.965,
+   "text": "Step one: propose a definition."
+  },
+  {
+   "at": 348.708,
+   "seconds": 4.615,
+   "text": "The model reads the description and this user's top ten videos."
+  },
+  {
+   "at": 353.677,
+   "seconds": 6.215,
+   "text": "It drafts a label and a definition, and cites example videos with exact quotations."
+  },
+  {
+   "at": 360.099,
+   "seconds": 2.04,
+   "text": "The answer is back."
+  },
+  {
+   "at": 363.599,
+   "seconds": 6.215,
+   "text": "A label, a definition with conditions, and 2 cited examples, each quotation checked."
+  },
+  {
+   "at": 371.021,
+   "seconds": 2.815,
+   "text": "I review it, and rename the label."
+  },
+  {
+   "at": 375.552,
+   "seconds": 2.315,
+   "text": "When applied: show more."
+  },
+  {
+   "at": 379.818,
+   "seconds": 2.34,
+   "text": "Approve and classify."
+  },
+  {
+   "at": 382.724,
+   "seconds": 6.565,
+   "text": "Each video in scope is classified under the definition, ten per call, four calls in parallel."
+  },
+  {
+   "at": 389.708,
+   "seconds": 3.215,
+   "text": "Every match must quote the video's own text."
+  },
+  {
+   "at": 393.255,
+   "seconds": 4.465,
+   "text": "A separate call checks each quotation without seeing the verdict."
+  },
+  {
+   "at": 397.927,
+   "seconds": 2.04,
+   "text": "The answer is back."
+  },
+  {
+   "at": 402.739,
+   "seconds": 10.715,
+   "text": "One row per video: verdict, quotation, independent check. 1 of 10 selected. 2 model calls, 11 seconds of model time, less than one cent."
+  },
+  {
+   "at": 414.661,
+   "seconds": 3.39,
+   "text": "The feed stays visible on the right during review."
+  },
+  {
+   "at": 419.255,
+   "seconds": 3.915,
+   "text": "Apply. The new category is now a label of its own."
+  },
+  {
+   "at": 424.739,
+   "seconds": 3.99,
+   "text": "Workflow four: add a video that is not in KuaiRec."
+  },
+  {
+   "at": 429.286,
+   "seconds": 1.715,
+   "text": "A title"
+  },
+  {
+   "at": 432.489,
+   "seconds": 1.415,
+   "text": "and"
+  },
+  {
+   "at": 434.114,
+   "seconds": 1.84,
+   "text": "a description."
+  },
+  {
+   "at": 436.614,
+   "seconds": 2.69,
+   "text": "The model sees only these words."
+  },
+  {
+   "at": 439.505,
+   "seconds": 2.24,
+   "text": "Classify and preview."
+  },
+  {
+   "at": 442.318,
+   "seconds": 6.565,
+   "text": "The model assigns existing categories and tags, and judges the new category with a quotation."
+  },
+  {
+   "at": 450.474,
+   "seconds": 5.49,
+   "text": "It got existing categories and tags, and a checked verdict for my new category."
+  },
+  {
+   "at": 457.161,
+   "seconds": 5.415,
+   "text": "Apply. It starts at a cold-start score, since the model has no history for it."
+  },
+  {
+   "at": 464.161,
+   "seconds": 4.04,
+   "text": "Undo removes the new video; the new category stays."
+  },
+  {
+   "at": 468.771,
+   "seconds": 5.865,
+   "text": "The Results page reads the measured result files. I will go through the headline numbers."
+  },
+  {
+   "at": 475.208,
+   "seconds": 24.465,
+   "text": "The first table is the nonliteral requests. Exact means the right action, every required label, and nothing outside the reviewed acceptable set. Claude Sonnet five point five 17 of 20; GPT five 17 of 20; GPT five mini 16 of 20; Llama three point one eight B 0 of 20; Qwen two point five coder seven B 0 of 20."
+  },
+  {
+   "at": 502.88,
+   "seconds": 20.69,
+   "text": "Next, cases where the model should not change the feed. Correct abstentions: Claude Sonnet five point five 12 of 14; GPT five 10 of 14; GPT five mini 7 of 14; Llama three point one eight B 11 of 14; Qwen two point five coder seven B 9 of 14."
+  },
+  {
+   "at": 526.771,
+   "seconds": 22.19,
+   "text": "For new categories, member F1 on the shared pool of one hundred fifty KuaiRec items: Claude Sonnet five point five 0.87; GPT five 0.92; GPT five mini 0.94; Llama three point one eight B 0.18; Qwen two point five coder seven B 0.47."
+  },
+  {
+   "at": 552.161,
+   "seconds": 24.365,
+   "text": "Local versus frontier: the local models matched 0 and 0 of 20 nonliteral requests; where they proposed almost nothing, their abstention scores, 11 and 9 of 14, reflect refusing, not judgement. The frontier models matched 16 to 17 of 20. Local calls cost nothing, but took 126 and 109 seconds each at the median on this laptop."
+  },
+  {
+   "at": 580.239,
+   "seconds": 20.815,
+   "text": "Finally, the old one-hundred-case parser bank, re-used and labelled as re-use, scored strictly: Llama three point one eight B 79; Qwen two point five coder seven B 74; GPT five mini 60; GPT five 60 out of one hundred. None reaches the eighty-five percent target."
+  },
+  {
+   "at": 604.755,
+   "seconds": 8.815,
+   "text": "The test set was drafted by an AI and reviewed row by row by me. Claude is both the drafter's family and a measured model."
+  },
+  {
+   "at": 613.771,
+   "seconds": 4.815,
+   "text": "Code, tests, data and results are in the repository. Thank you."
+  }
+ ]
+}
