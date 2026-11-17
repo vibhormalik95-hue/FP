@@ -124,11 +124,14 @@ def workflows(base, user, examples):
 
 
 def main(argv=None):
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8", errors="replace")
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("--provider", default="mock")
     ap.add_argument("--model")
     ap.add_argument("--user", type=int, default=14)
     ap.add_argument("--skip-browser", action="store_true")
+    ap.add_argument("--only-workflows", action="store_true", help="skip the test suites and the browser")
     ap.add_argument("--out")
     args = ap.parse_args(argv)
     stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
@@ -136,7 +139,11 @@ def main(argv=None):
     out.mkdir(parents=True, exist_ok=False)
     summary = {"started_utc": stamp, "provider": args.provider, "model": args.model, "steps": {}}
 
-    code, sec = sh([PY, "-m", "pytest", "-q", "-p", "no:cacheprovider", "-rfE", "tests"], out / "pytest.log")
+    if args.only_workflows:
+        args.skip_browser = True
+    code, sec = (0, 0) if args.only_workflows else sh([PY, "-m", "pytest", "-q", "-p", "no:cacheprovider", "-rfE", "tests"], out / "pytest.log")
+    if args.only_workflows:
+        (out / "pytest.log").write_text("skipped (--only-workflows)", encoding="utf-8")
     text = (out / "pytest.log").read_text(encoding="utf-8", errors="replace")
     failed = re.findall(r"^(?:FAILED|ERROR) (\S+)", text, re.M)
     unexpected = [f for f in failed if f not in FROZEN_BY_DESIGN]
@@ -148,7 +155,9 @@ def main(argv=None):
 
     node = shutil.which("node")
     tests = sorted(str(p.relative_to(ROOT)) for p in (ROOT / "web/tests").glob("*.test.mjs"))
-    code, sec = sh([node, "--test", *tests], out / "node.log")
+    code, sec = (0, 0) if args.only_workflows else sh([node, "--test", *tests], out / "node.log")
+    if args.only_workflows:
+        (out / "node.log").write_text("skipped", encoding="utf-8")
     ntext = (out / "node.log").read_text(encoding="utf-8", errors="replace")
     summary["steps"]["node"] = {"exit": code, "seconds": sec, "ok": code == 0,
                                 "result": " ".join(re.findall(r"^# (?:pass|fail) \d+", ntext, re.M))}

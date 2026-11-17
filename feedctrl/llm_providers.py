@@ -159,6 +159,8 @@ class OpenAICompatibleProvider(Provider):
         import openai
         started = time.monotonic()
         extra = {"reasoning_effort": self.effort} if self.effort else {}
+        if self.name == "ollama":   # deterministic local decoding, as in the original parser runs
+            extra.update(temperature=0, seed=42)
         try:
             response = self._client.chat.completions.create(
                 model=self.model, **extra,
@@ -180,6 +182,12 @@ class OpenAICompatibleProvider(Provider):
         usage = response.usage
         tokens_in = getattr(usage, "prompt_tokens", 0) or 0
         tokens_out = getattr(usage, "completion_tokens", 0) or 0
+        if self.name == "ollama":
+            # A local server silently drops the start of a prompt longer than its context window.
+            if any(abs(tokens_in - size) <= 4 for size in (2048, 4096, 8192, 16384, 32768)):
+                raise ProviderError(f"The local model server cut the prompt at its context limit ({tokens_in} tokens). "
+                                    "Start Ollama with OLLAMA_CONTEXT_LENGTH=32768 and try again.")
+            return data, self._record(task, started, tokens_in, tokens_out, 0.0, "local model (no API charge)")
         return data, self._record(task, started, tokens_in, tokens_out,
                                   _openai_cost(self.model, tokens_in, tokens_out), "estimate (list price table)")
 
