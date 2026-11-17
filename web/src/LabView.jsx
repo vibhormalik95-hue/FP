@@ -118,12 +118,12 @@ function ProviderBar({status, api, onChange}) {
   const current = status?.provider;
   const [kind, setKind] = useState(current?.provider || 'mock');
   const [model, setModel] = useState(current?.model || PROVIDER_DEFAULTS.mock.model);
-  const [key, setKey] = useState(''), [baseUrl, setBaseUrl] = useState(''), [msg, setMsg] = useState('');
+  const [key, setKey] = useState(''), [baseUrl, setBaseUrl] = useState(''), [effort, setEffort] = useState('low'), [msg, setMsg] = useState('');
   useEffect(() => { if (current) { setKind(current.provider); setModel(current.model || ''); } }, [current?.provider, current?.model]);
   const choose = k => { setKind(k); setModel(PROVIDER_DEFAULTS[k].model); setMsg(''); };
   async function save(e) {
     e.preventDefault(); setMsg('');
-    try { await api('lab/provider', {kind, model, api_key: key || undefined, base_url: baseUrl || undefined}); setKey(''); setMsg('Provider set. The key is held in the server\'s memory only.'); onChange(); }
+    try { await api('lab/provider', {kind, model, effort, api_key: key || undefined, base_url: baseUrl || undefined}); setKey(''); setMsg('Provider set. The key is held in the server\'s memory only.'); onChange(); }
     catch (err) { setMsg(err.message); }
   }
   const keyed = kind === 'openai' || kind === 'anthropic';
@@ -132,8 +132,9 @@ function ProviderBar({status, api, onChange}) {
     <label>Model<input value={model} onChange={e => setModel(e.target.value)} spellCheck={false} data-role="provider-model"/></label>
     {keyed && <label>API key<input type="password" value={key} onChange={e => setKey(e.target.value)} placeholder={status?.env_keys?.[kind] ? 'empty = use the environment variable' : 'paste your key'} autoComplete="new-password" spellCheck={false} data-role="api-key"/></label>}
     {(kind === 'ollama' || kind === 'openai') && <label>Base URL<input value={baseUrl} onChange={e => setBaseUrl(e.target.value)} placeholder={kind === 'ollama' ? 'http://127.0.0.1:11434/v1' : 'https://api.openai.com/v1'} spellCheck={false}/></label>}
+    {(kind === 'openai' || kind === 'anthropic' || kind === 'claude-cli') && <label>Reasoning effort<select value={effort} onChange={e => setEffort(e.target.value)} data-role="provider-effort">{(kind === 'openai' ? ['minimal', 'low', 'medium', 'high'] : ['low', 'medium', 'high']).map(x => <option key={x} value={x}>{x}{x === 'low' ? ' (measured)' : ''}</option>)}</select></label>}
     <button className="secondary" data-role="provider-save">Use this provider</button>
-    <p className="help">Now: <b>{current?.label} · {current?.model}</b> · spent {fmtUsd(current?.spent_usd)}.{msg && <> {msg}</>}</p>
+    <p className="help">Now: <b>{current?.label} · {current?.model}{current?.effort ? ` · effort ${current.effort}` : ''}</b> · spent {fmtUsd(current?.spent_usd)}.{msg && <> {msg}</>}</p>
   </form>;
 }
 
@@ -207,7 +208,7 @@ export function LabView({api, user, status, onStatus}) {
           <form onSubmit={e => { e.preventDefault(); run('define', () => api('lab/define', {user_id: user, description, scope_size: scope}), d => { window.labLastDefinition = {label: d.label, status: d.status, evidence: d.evidence.length, calls: d.calls}; setDefinition(d); }); }}>
             <p className="help">Describe a category KuaiRec does not have.</p>
             <textarea value={description} onChange={e => setDescription(e.target.value)} rows={3} maxLength={1000} placeholder="Describe the new category" data-role="category-description"/>
-            <label className="lab-inline">Scope: this user's top <input type="number" min={10} max={200} step={10} value={scope} onChange={e => setScope(Number(e.target.value))}/> items</label>
+            <label className="lab-inline">Scope: this user's top <input type="number" min={10} max={200} step={10} value={scope} onChange={e => setScope(Number(e.target.value))} data-role="scope"/> items</label>
             <button className="primary" disabled={busy || !description.trim()} data-role="define">Propose a definition <span>↗</span></button></form>
           {definition && <form className="lab-definition" data-role="definition" onSubmit={e => { e.preventDefault(); run('classify', () => api('lab/classify', {user_id: user, label: definition.label, definition: definition.definition, action: catAction, scope_size: scope}), showPreview); }}>
             <p className="eyebrow">STEP 1 RESULT · REVIEW THE DEFINITION</p>

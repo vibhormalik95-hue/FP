@@ -11,7 +11,7 @@ The view **Original study (A to E)** holds the five conditions of the original p
 In every language control a model only *proposes*. The server checks the proposal, you review it, **Apply** changes exactly what you reviewed, and **Undo** restores the previous feed.
 The view **Results** shows the measured results of the offline evaluation, read from the result files.
 The page opens in **English**: the Chinese KuaiRec text is shown as an English machine translation, labelled as such. Untick **English** (next to **Auto-apply**, at the right of the tabs) to see the original Chinese text.
-A 9:23 demonstration video, `COMP9500-Feed-Control-Lab-demo.mp4` (sent separately, not in the repository), shows the workflows with OpenAI gpt-5 in the English display mode.
+A 10:22 demonstration video (take 12), `COMP9500-Feed-Control-Lab-demo.mp4` (sent separately, not in the repository), shows the workflows with OpenAI gpt-5 (minimal reasoning effort, for speed) in the English display mode, including where to paste your API key.
 
 # 2. Install (once)
 

@@ -157,7 +157,7 @@ class OpenAICompatibleProvider(Provider):
         super().__init__(model or DEFAULT_OPENAI_MODEL)
         self.timeout = float(timeout or CALL_TIMEOUT_S)
         # Reasoning models (gpt-5 family, o-series) accept reasoning_effort; others ignore the setting.
-        self.effort = effort if effort in ("low", "medium", "high") and re.match(r"^(gpt-5|o\d)", self.model) else None
+        self.effort = effort if effort in ("minimal", "low", "medium", "high") and re.match(r"^(gpt-5|o\d)", self.model) else None
         from openai import OpenAI
         self._secret = (api_key or "").strip()
         # Always explicit: an OPENAI_BASE_URL in the environment must never redirect the key.
