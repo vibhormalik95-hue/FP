@@ -271,7 +271,7 @@ class Director:
         pyautogui.moveTo(int(x), int(y), _pause=False)
 
     # -- speech
-    def say(self, text, wait=True, gap=0.35):
+    def say(self, text, wait=True, gap=0.2):
         path, secs, text = self.voice.synth(speakable(text))
         self.wait_speech()
         at = self.cap.now()
@@ -289,14 +289,14 @@ class Director:
 
     def hold(self, secs):
         # The result stays on screen while it is narrated; the silent part of a hold stays well under five seconds.
-        self.wait_speech(); time.sleep(min(secs, 2.2))
+        self.wait_speech(); time.sleep(min(secs, 1.0))
 
     # -- actions
     def point(self, sel, text, min_ring=1.6):
         """Narrate, glide to the target, ring it while the narration names it."""
-        b = self.ensure_visible(sel)
         self.voice.synth(speakable(text))
-        self.say(text, wait=False)
+        self.say(text, wait=False)          # speech starts first; scrolling and gliding happen while it plays
+        b = self.ensure_visible(sel)
         cx, cy = b["x"] + b["width"] / 2, b["y"] + b["height"] / 2
         self.glide(*self.screen(cx, cy))
         self.page.evaluate(f"window.__demo.ring({b['x']},{b['y']},{b['width']},{b['height']})")
