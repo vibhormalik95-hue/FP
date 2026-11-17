@@ -1,0 +1,1018 @@
+{
+ "version": "lab-eval-set-20261117-frozen",
+ "status": "DRAFT - written by an AI agent (Claude), not yet human-reviewed",
+ "label_vocabulary": "all kind==\"category\" terms (266) + kind==\"tag\" terms with item_count>=3 (201); term_id = \"category:<name>\" / \"tag:<name>\"",
+ "cases": [
+  {
+   "id": "NL01",
+   "group": "NL",
+   "language": "en",
+   "domain": "pets",
+   "request": "We're bringing home a golden retriever next weekend and I want to soak up everything about life with one before it arrives.",
+   "action": "boost",
+   "required": [
+    "category:宠物狗"
+   ],
+   "acceptable": [
+    "category:宠物",
+    "category:宠物日常记录",
+    "tag:狗狗",
+    "tag:萌宠",
+    "tag:宠物",
+    "category:宠物行业周边"
+   ],
+   "distractors": [
+    "category:宠物猫",
+    "tag:猫",
+    "category:动物收留",
+    "category:动植物与微生物",
+    "category:搞笑动物"
+   ]
+  },
+  {
+   "id": "NL02",
+   "group": "NL",
+   "language": "en",
+   "domain": "sports",
+   "request": "My team got bounced in the first round of the playoffs and watching anyone dunk right now just stings. Turn that down a notch.",
+   "action": "reduce",
+   "required": [
+    "category:篮球"
+   ],
+   "acceptable": [
+    "tag:CBA全力以复",
+    "category:球类运动",
+    "tag:篮球"
+   ],
+   "distractors": [
+    "category:足球",
+    "category:运动",
+    "tag:快手体育",
+    "category:竞技体育"
+   ]
+  },
+  {
+   "id": "NL03",
+   "group": "NL",
+   "language": "en",
+   "domain": "comedy",
+   "request": "Lately every other clip is someone hamming it up for laughs or goofy fake voices over movie scenes. I'm laughed out, so ease off on that.",
+   "action": "reduce",
+   "required": [
+    "category:喜剧",
+    "category:喜剧段子",
+    "category:搞笑配音",
+    "tag:搞笑"
+   ],
+   "acceptable": [
+    "tag:搞笑配音",
+    "tag:搞笑视频",
+    "category:搞笑互动",
+    "tag:沙雕",
+    "tag:超级段子手计划",
+    "tag:高能段子手",
+    "tag:动作喜剧",
+    "category:整蛊恶作剧",
+    "category:搞笑动物",
+    "category:搞笑表情包",
+    "tag:迷惑行为大赏"
+   ],
+   "distractors": [
+    "category:趣闻趣事",
+    "category:影视综",
+    "category:短剧"
+   ]
+  },
+  {
+   "id": "NL04",
+   "group": "NL",
+   "language": "en",
+   "domain": "military",
+   "request": "My brother just left on his first deployment. Anything with tanks, warships or barracks life makes my stomach drop, so take it off my feed completely.",
+   "action": "hide",
+   "required": [
+    "category:军事",
+    "category:军人生活"
+   ],
+   "acceptable": [
+    "category:国防动态",
+    "tag:我是特种兵之利刃出鞘"
+   ],
+   "distractors": [
+    "tag:特警力量",
+    "tag:火焰蓝",
+    "category:灾害事故",
+    "category:时政资讯"
+   ]
+  },
+  {
+   "id": "NL05",
+   "group": "NL",
+   "language": "en",
+   "domain": "beauty",
+   "request": "I've decided to go bare-faced for good, and I'm tired of being told which lipstick and eyeshadow to buy. Less of that, please.",
+   "action": "reduce",
+   "required": [
+    "category:彩妆"
+   ],
+   "acceptable": [
+    "tag:化妆",
+    "category:彩妆售卖",
+    "tag:夏日美妆好物",
+    "category:丽人",
+    "tag:修眉教程",
+    "category:美妆"
+   ],
+   "distractors": [
+    "category:护肤",
+    "category:颜值",
+    "category:营销售卖",
+    "category:美发",
+    "tag:好物推荐"
+   ]
+  },
+  {
+   "id": "NL06",
+   "group": "NL",
+   "language": "en",
+   "domain": "travel",
+   "request": "Zero leave days left this year and I'm stuck at my desk. For tonight, nothing but faraway places on my screen.",
+   "action": "only",
+   "required": [
+    "category:旅游",
+    "category:旅游种草"
+   ],
+   "acceptable": [
+    "category:境内游种草",
+    "category:旅游玩法",
+    "category:风景航拍",
+    "category:景物摄影",
+    "category:住宿种草",
+    "category:自驾游",
+    "tag:带你去旅行",
+    "tag:跟着快手去旅行",
+    "tag:快手旅行家",
+    "tag:这里超好玩",
+    "tag:风景",
+    "tag:向往的民宿",
+    "tag:乘风破浪的旅行",
+    "tag:毕业旅行去哪玩",
+    "tag:快手民宿体验师",
+    "tag:旅行新秀突围赛",
+    "tag:美丽城乡",
+    "tag:关注我带你看天下"
+   ],
+   "distractors": [
+    "category:摄影",
+    "category:交通资讯",
+    "category:户外美食"
+   ]
+  },
+  {
+   "id": "NL07",
+   "group": "NL",
+   "language": "en",
+   "domain": "kids/parenting",
+   "request": "We've been trying to conceive for two years, and the endless toddler-milestone clips are getting hard to watch. Dial them down a bit.",
+   "action": "reduce",
+   "required": [
+    "category:0至3岁萌宝",
+    "category:晒娃"
+   ],
+   "acceptable": [
+    "category:亲子",
+    "category:4至12岁萌娃",
+    "tag:宝宝成长记",
+    "tag:家有萌宝",
+    "tag:家有萌娃",
+    "tag:萌娃",
+    "tag:快手宝贝计划",
+    "category:孕产",
+    "category:怀孕",
+    "category:育儿",
+    "category:育儿健康知识"
+   ],
+   "distractors": [
+    "category:家庭关系",
+    "category:少儿动画",
+    "category:婚嫁",
+    "category:学业教育"
+   ]
+  },
+  {
+   "id": "NL08",
+   "group": "NL",
+   "language": "en",
+   "domain": "cars",
+   "request": "Petrolhead mode today: engines, burnouts, test drives and nothing else.",
+   "action": "only",
+   "required": [
+    "category:汽车"
+   ],
+   "acceptable": [
+    "category:玩车",
+    "category:炫技漂移",
+    "category:汽车资讯",
+    "category:汽车日常",
+    "category:用车",
+    "category:养护维修",
+    "category:车展资讯",
+    "category:机车族",
+    "tag:快说车"
+   ],
+   "distractors": [
+    "category:交通资讯",
+    "tag:交通安全",
+    "category:极限运动",
+    "category:自驾游",
+    "category:街头极限"
+   ]
+  },
+  {
+   "id": "NL09",
+   "group": "NL",
+   "language": "en",
+   "domain": "health",
+   "request": "My blood pressure readings keep creeping up and I've been told to start looking after myself. Help me learn how.",
+   "action": "boost",
+   "required": [
+    "category:健康",
+    "category:保健养生"
+   ],
+   "acceptable": [
+    "category:其他保健养生",
+    "category:养生食疗与饮食禁忌",
+    "category:常见疾病",
+    "category:看病治病",
+    "tag:健康科普在快手",
+    "tag:健康",
+    "tag:健康养生",
+    "category:健身",
+    "category:放松训练"
+   ],
+   "distractors": [
+    "category:减肥",
+    "category:肿瘤癌症",
+    "category:两性健康",
+    "category:美食教程"
+   ]
+  },
+  {
+   "id": "NL10",
+   "group": "NL",
+   "language": "en",
+   "domain": "emotion/relationships",
+   "request": "She left last week after five years together. No lovey-dovey pairs, no weepy breakup monologues — scrub all of that off my feed.",
+   "action": "hide",
+   "required": [
+    "category:情感关系",
+    "category:亲密关系"
+   ],
+   "acceptable": [
+    "category:情感",
+    "tag:情感",
+    "tag:情感语录",
+    "tag:情侣",
+    "tag:情侣头像",
+    "category:恋爱短剧",
+    "tag:用快手表达爱",
+    "category:情绪分享",
+    "category:婚嫁"
+   ],
+   "distractors": [
+    "category:家庭关系",
+    "category:家庭短剧",
+    "category:婚姻家事法",
+    "tag:感动"
+   ]
+  },
+  {
+   "id": "NL11",
+   "group": "NL",
+   "language": "zh",
+   "domain": "rural life",
+   "request": "在写字楼里憋了一年，特别想念老家院子里种菜喂鸡的日子，这种多给我来点。",
+   "action": "boost",
+   "required": [
+    "category:三农",
+    "category:农业与农民"
+   ],
+   "acceptable": [
+    "category:种植业",
+    "category:养殖业",
+    "category:渔业",
+    "tag:美丽城乡",
+    "category:乡村短剧"
+   ],
+   "distractors": [
+    "category:美食",
+    "category:旅游",
+    "category:生活泛拍",
+    "category:动植物与微生物",
+    "category:户外美食"
+   ]
+  },
+  {
+   "id": "NL12",
+   "group": "NL",
+   "language": "zh",
+   "domain": "celebrity",
+   "request": "谁离婚了谁出轨了谁又塌房了，我一点都不关心，以后别让我刷到这些。",
+   "action": "hide",
+   "required": [
+    "category:娱乐八卦",
+    "category:明星八卦"
+   ],
+   "acceptable": [
+    "category:明星娱乐",
+    "category:名人明星",
+    "tag:明星"
+   ],
+   "distractors": [
+    "category:饭制",
+    "category:婚嫁",
+    "category:法制事件",
+    "category:社会新闻",
+    "category:影视综"
+   ]
+  },
+  {
+   "id": "NL13",
+   "group": "NL",
+   "language": "zh",
+   "domain": "music/dance",
+   "request": "楼下大妈每天晚上把音响开到最大，我现在一听到那个节奏就头疼，这类视频少推点。",
+   "action": "reduce",
+   "required": [
+    "category:广场舞"
+   ],
+   "acceptable": [
+    "category:休闲舞蹈",
+    "category:健身操",
+    "tag:快手广场舞"
+   ],
+   "distractors": [
+    "category:舞蹈",
+    "category:拉丁舞",
+    "category:音乐",
+    "category:国标舞蹈",
+    "category:蹦迪"
+   ]
+  },
+  {
+   "id": "NL14",
+   "group": "NL",
+   "language": "zh",
+   "domain": "education",
+   "request": "孩子明年就要进考场了，全家都为六月那几天紧张，多推点能帮上忙的。",
+   "action": "boost",
+   "required": [
+    "tag:高考"
+   ],
+   "acceptable": [
+    "tag:高考加油",
+    "tag:2020高考季",
+    "category:教育",
+    "category:K12",
+    "category:k12",
+    "category:英语",
+    "category:语言技能",
+    "category:学业教育"
+   ],
+   "distractors": [
+    "category:舞蹈与艺考",
+    "category:亲子",
+    "tag:毕业旅行去哪玩",
+    "category:4至12岁萌娃"
+   ]
+  },
+  {
+   "id": "NL15",
+   "group": "NL",
+   "language": "zh",
+   "domain": "anime",
+   "request": "今天只想泡在纸片人的世界里，三次元的东西一律别出现。",
+   "action": "only",
+   "required": [
+    "category:二次元"
+   ],
+   "acceptable": [
+    "category:二次元酷图",
+    "category:动画",
+    "category:漫画",
+    "category:少儿动画",
+    "category:青少年动画",
+    "tag:动漫",
+    "category:壁纸头像",
+    "category:虚拟视界",
+    "category:虚拟视觉"
+   ],
+   "distractors": [
+    "category:二次元真人秀",
+    "category:cosplay",
+    "category:lolita",
+    "category:JK与制服",
+    "category:游戏",
+    "category:汉服古风"
+   ]
+  },
+  {
+   "id": "NL16",
+   "group": "NL",
+   "language": "zh",
+   "domain": "news",
+   "request": "这台平板是给我爸用的，他一看到车祸、塌方、着火这种画面就睡不着，这类少推一些。",
+   "action": "reduce",
+   "required": [
+    "category:灾害事故"
+   ],
+   "acceptable": [
+    "category:社会事件",
+    "tag:交通安全",
+    "category:交通资讯",
+    "tag:安全",
+    "tag:安全第一",
+    "tag:守规则平安行",
+    "tag:火焰蓝",
+    "tag:为你赴汤蹈火"
+   ],
+   "distractors": [
+    "category:暖新闻",
+    "category:民生资讯",
+    "category:法制事件",
+    "category:奇人异象",
+    "category:国际时政"
+   ]
+  },
+  {
+   "id": "NL17",
+   "group": "NL",
+   "language": "zh",
+   "domain": "fashion",
+   "request": "下个月去公司报到，衣柜里只有卫衣卫裤，想学学怎么打扮得体面一点。",
+   "action": "boost",
+   "required": [
+    "category:穿搭"
+   ],
+   "acceptable": [
+    "category:时尚",
+    "tag:每日穿搭",
+    "category:女装",
+    "category:时尚街拍",
+    "category:潮流",
+    "tag:街拍",
+    "category:鞋靴",
+    "tag:穿搭"
+   ],
+   "distractors": [
+    "category:美妆",
+    "category:运动",
+    "category:颜值",
+    "tag:变装",
+    "category:汉服古风"
+   ]
+  },
+  {
+   "id": "NL18",
+   "group": "NL",
+   "language": "zh",
+   "domain": "music",
+   "request": "下周单位有K歌比赛，想多看看人家怎么开嗓、怎么飙高音，取取经。",
+   "action": "boost",
+   "required": [
+    "category:音乐演唱"
+   ],
+   "acceptable": [
+    "category:音乐",
+    "category:原唱翻唱",
+    "category:表演"
+   ],
+   "distractors": [
+    "category:乐器演奏",
+    "category:专业舞蹈",
+    "category:搞笑配音",
+    "tag:卡点",
+    "category:蹦迪"
+   ]
+  },
+  {
+   "id": "NL19",
+   "group": "NL",
+   "language": "zh",
+   "domain": "fitness",
+   "request": "刚做完膝盖手术，那些蹦蹦跳跳、练得一身汗的视频看着眼馋又练不了，干脆别给我推了。",
+   "action": "hide",
+   "required": [
+    "category:健身",
+    "category:燃脂训练"
+   ],
+   "acceptable": [
+    "category:健身操",
+    "category:健身训练",
+    "category:健身塑形",
+    "category:减肥",
+    "tag:健身",
+    "tag:健身打卡",
+    "tag:快手健身房",
+    "tag:运动健身",
+    "tag:每天坚持锻炼给自己一个好身体",
+    "tag:形体训练",
+    "category:运动",
+    "category:休闲蹦床",
+    "category:瑜伽"
+   ],
+   "distractors": [
+    "category:放松训练",
+    "category:舞蹈",
+    "category:看病治病",
+    "category:健康"
+   ]
+  },
+  {
+   "id": "NL20",
+   "group": "NL",
+   "language": "zh",
+   "domain": "calligraphy/art",
+   "request": "退休后每天早上在公园拿海绵笔蘸水在地上写大字，想看看高手是怎么运笔的。",
+   "action": "boost",
+   "required": [
+    "category:书法",
+    "category:软笔"
+   ],
+   "acceptable": [
+    "tag:字画",
+    "tag:手写",
+    "category:硬笔",
+    "category:传统技艺",
+    "tag:书法"
+   ],
+   "distractors": [
+    "category:绘画",
+    "category:手绘",
+    "category:简笔画",
+    "category:签名设计",
+    "category:广场舞"
+   ]
+  },
+  {
+   "id": "NC01",
+   "group": "NC",
+   "language": "en",
+   "description": "Videos of police, firefighters, soldiers, medics and other first responders actually doing their job.",
+   "label": "First responders on duty",
+   "definition": "Member only if the item text establishes both: (1) a central person is identified as a police officer (any branch, incl. auxiliary or court police), firefighter, soldier/armed police, doctor, nurse, paramedic or professional rescue worker; (2) the text describes them actively doing that job in the events shown (rescuing, treating, testing, questioning, arresting, mediating, escorting, investigating), or states that they are on duty in those events (e.g. 执勤, 出警, 抗洪). Not members: they only issue a notice, statement or advice; are the victim or subject of a court case; appear off duty, in a skit, drama, dance or costume; or their role or duty is only implied.",
+   "members": [
+    557,
+    3810,
+    543,
+    622,
+    945,
+    3797,
+    3921,
+    5853,
+    8937,
+    8319,
+    914,
+    777,
+    7157,
+    1076,
+    4068
+   ],
+   "pool_size": 150,
+   "excluded": [
+    8382,
+    4518,
+    2871,
+    8874,
+    3913,
+    3970
+   ]
+  },
+  {
+   "id": "NC02",
+   "group": "NC",
+   "language": "en",
+   "description": "Stuff that happens overseas, or where the people in it are foreigners.",
+   "label": "Set abroad or about foreigners",
+   "definition": "Member only if the item text establishes either: (a) the scene or the reported event takes place in a named or explicitly foreign country (not mainland China, Hong Kong, Macao or Taiwan), or (b) the main people are explicitly identified as foreign nationals or foreigners (老外, 外国人, 美国人, etc.). Not members: Chinese people or officials discussing foreign matters from China; Chinese places said to look like abroad; people who hold or regained Chinese nationality; Taiwan/Hong Kong residents; foreign brands or words without a stated foreign setting or person.",
+   "members": [
+    203,
+    418,
+    518,
+    753,
+    873,
+    2119,
+    2158,
+    3930,
+    4449,
+    5352,
+    5466,
+    5575,
+    7100,
+    8806,
+    2430,
+    745,
+    8518
+   ],
+   "pool_size": 150,
+   "excluded": [
+    8563
+   ]
+  },
+  {
+   "id": "NC03",
+   "group": "NC",
+   "language": "en",
+   "description": "Clips where you see someone or something before and after a makeover.",
+   "label": "Before-and-after transformation in the clip",
+   "definition": "Member only if the item text indicates the video itself shows the same person, animal, object or picture in a before state and an after state of a visible change in appearance or condition. Counts: outfit/makeup transformation clips (titles or hashtags such as 变装, 换装, 变身, 最强变身术), makeup removal, photo restoration, side-by-side results. Not members: figurative turnarounds (career 逆袭, grades), behaviour comparisons (before vs after marriage, then vs now), policies about renovation, workouts promising future change, or merely wearing a costume.",
+   "members": [
+    562,
+    858,
+    2461,
+    2497,
+    3840,
+    3966,
+    4019,
+    5446,
+    5915,
+    7305,
+    8523,
+    8612,
+    3948
+   ],
+   "pool_size": 150
+  },
+  {
+   "id": "NC04",
+   "group": "NC",
+   "language": "zh",
+   "description": "下雨刮风、发大水这种天气里拍的视频。",
+   "label": "雨雪风暴或洪涝天气中的场景",
+   "definition": "同时满足才算：(1) 文字表明视频画面或所报道的事件发生在下雨（不论大小）、下雪、冰雹、台风或大风等天气中，或发生在这类天气造成的洪水、内涝、积水现场（含抗洪救灾现场）；(2) 这种天气或其后果是视频里真实出现的情境，而不是比喻、顺口溜、天气知识或与画面无关的口号。不算：晴天、高温、彩虹、晚霞；只有口号式标签（如“洪水无情人间有爱”）而没说明画面内容；泡水车之类的事后纠纷；拿天气开玩笑或作比喻（如“下雨不愁”）。",
+   "members": [
+    557,
+    945,
+    2871,
+    3913,
+    3970,
+    635,
+    2159,
+    2403,
+    2766,
+    3778,
+    3945,
+    3999,
+    4124,
+    4365,
+    2527,
+    8977,
+    5656,
+    6812,
+    5898
+   ],
+   "pool_size": 150,
+   "excluded": [
+    833
+   ]
+  },
+  {
+   "id": "NC05",
+   "group": "NC",
+   "language": "zh",
+   "description": "视频里提到具体多少钱的，比如价格、工资、罚款、赔偿这些。",
+   "label": "提到具体金额",
+   "definition": "只要文字中明确出现一个具体的金钱数额就算：数字或汉字数字 + 货币单位（元、块、万元、美元、¥等），表示价格、花费、收入、工资、罚款、赔偿、悬赏、涉案金额等。比喻或引语中的具体金额也算。不算：只说“钱”“省钱”“欠多少钱”而没有具体数额；“几两碎银”这类不确定说法；数字后的“块”“万”不是货币含义（如“2块鸡块”、未说明单位的“35万”）；斤、岁、年、电话号码等其他数字。",
+   "members": [
+    1076,
+    849,
+    2430,
+    183,
+    701,
+    721,
+    731,
+    1161,
+    2378,
+    3857,
+    4129,
+    6945,
+    8212,
+    8479,
+    8819,
+    10260,
+    1002
+   ],
+   "pool_size": 150
+  },
+  {
+   "id": "NC06",
+   "group": "NC",
+   "language": "zh",
+   "description": "外卖小哥、快递员、摆摊的、工地师傅这些普通劳动者干活的视频。",
+   "label": "基层劳动者的工作场景",
+   "definition": "同时满足才算：(1) 文字明确指出视频的主要人物是以下劳动者之一：外卖骑手、快递员、环卫工、建筑/装修/高空作业工人、搬运工或背夫、保安、保洁、餐厅服务员、货车或出租车司机、街头摆摊者，及同类一线体力或服务劳动者；(2) 内容与其工作有关：正在干活或送单、在工作场所、工作装备或工服、收入或经营情况，而不只是顺带一提。不算：职业只用作比喻、玩笑或撩人台词；角色扮演；只谈外卖/快递政策或公司而无具体劳动者；“打工”泛指上班而没有具体职业；故事里顺带出现的司机。",
+   "members": [
+    4124,
+    1161,
+    2439,
+    2473,
+    2489,
+    4080,
+    4554,
+    561,
+    5898,
+    904,
+    5684,
+    7245,
+    7354,
+    8793,
+    10000,
+    8602
+   ],
+   "pool_size": 150,
+   "excluded": [
+    5656
+   ]
+  },
+  {
+   "id": "AB01",
+   "group": "AB",
+   "language": "en",
+   "request": "Can you make my feed a bit more grown-up?",
+   "expected_status": "ambiguous",
+   "reason": "Competing readings: fewer kids/anime/cute content, more news/finance/education, or more adult/sexy content. No single label set or action follows."
+  },
+  {
+   "id": "AB02",
+   "group": "AB",
+   "language": "zh",
+   "request": "那种跳来跳去的，少给我来点。",
+   "expected_status": "ambiguous",
+   "reason": "'跳来跳去' could mean dance, square dance, aerobics, trampoline, parkour/extreme sports or jumpy pets; the subject is unclear."
+  },
+  {
+   "id": "AB03",
+   "group": "AB",
+   "language": "en",
+   "request": "Do something about all the dance videos.",
+   "expected_status": "ambiguous",
+   "reason": "Subject is clear (dance) but the action is not: more, fewer or hide are all plausible."
+  },
+  {
+   "id": "AB04",
+   "group": "AB",
+   "language": "zh",
+   "request": "跟苹果有关的多推点。",
+   "expected_status": "ambiguous",
+   "reason": "'苹果' can mean the fruit (food, farming) or Apple (phones, tag:苹果原相机); the readings select different labels."
+  },
+  {
+   "id": "AB05",
+   "group": "AB",
+   "language": "en",
+   "request": "Cap the celebrity gossip at three clips an hour.",
+   "expected_status": "unsupported",
+   "reason": "Rate quota (max N per hour) is not an available operation; only boost/reduce/hide/only exist."
+  },
+  {
+   "id": "AB06",
+   "group": "AB",
+   "language": "zh",
+   "request": "工作日早上九点以前只推新闻，其他时间无所谓。",
+   "expected_status": "unsupported",
+   "reason": "Time-window condition (weekday mornings before 9) is not supported; controls are not time-scoped."
+  },
+  {
+   "id": "AB07",
+   "group": "AB",
+   "language": "en",
+   "request": "Sort my feed so the funny stuff always comes before the news.",
+   "expected_status": "unsupported",
+   "reason": "Explicit ordering between categories is not an available operation."
+  },
+  {
+   "id": "AB08",
+   "group": "AB",
+   "language": "zh",
+   "request": "宠物和美食按一比一的比例给我推。",
+   "expected_status": "unsupported",
+   "reason": "Fixed mixing ratio between two categories is not supported."
+  },
+  {
+   "id": "AB09",
+   "group": "AB",
+   "language": "en",
+   "request": "Whenever I skip a video, bury anything like it for the rest of the day.",
+   "expected_status": "unsupported",
+   "reason": "Event-triggered, time-limited rule based on skips and item similarity; not expressible with label controls."
+  },
+  {
+   "id": "AB10",
+   "group": "AB",
+   "language": "en",
+   "request": "I'd love more tarot readings and horoscope forecasts.",
+   "expected_status": "no_match",
+   "reason": "No vocabulary label covers tarot/astrology (checked: no category or tag with 星座, 塔罗, 占卜, 运势; 宗教/佛教 are not astrology)."
+  },
+  {
+   "id": "AB11",
+   "group": "AB",
+   "language": "zh",
+   "request": "多推点讲彩票怎么选号的。",
+   "expected_status": "no_match",
+   "reason": "No label covers lotteries or gambling (checked: no 彩票/博彩/双色球 term); 理财/财经 are personal finance and 休闲棋牌 is chess/cards, so none relates closely enough."
+  },
+  {
+   "id": "AB12",
+   "group": "AB",
+   "language": "en",
+   "request": "If my nephew ever borrows my phone I might want the scary accident clips gone, but not right now.",
+   "expected_status": "any_abstain",
+   "reason": "Hypothetical and explicitly deferred ('not right now'); no change is requested at present."
+  },
+  {
+   "id": "AB13",
+   "group": "AB",
+   "language": "zh",
+   "request": "我没说不想看健身视频啊，你别乱改。",
+   "expected_status": "any_abstain",
+   "reason": "Negated statement / correction with no new preference; nothing should be proposed."
+  },
+  {
+   "id": "AB14",
+   "group": "AB",
+   "language": "zh",
+   "request": "我闺蜜最近天天给我转发萌宠视频，烦死了哈哈。",
+   "expected_status": "any_abstain",
+   "reason": "Venting about a friend's messages, not a request about the feed; reading it as 'reduce pets' would be an over-interpretation."
+  }
+ ],
+ "pool": [
+  557,
+  3810,
+  543,
+  622,
+  945,
+  3797,
+  3921,
+  5853,
+  8382,
+  8937,
+  8319,
+  914,
+  777,
+  4518,
+  7157,
+  1076,
+  4068,
+  5813,
+  378,
+  849,
+  7141,
+  2427,
+  2530,
+  2871,
+  8874,
+  3913,
+  3970,
+  203,
+  418,
+  518,
+  753,
+  873,
+  2119,
+  2158,
+  3930,
+  4449,
+  5352,
+  5466,
+  5575,
+  7100,
+  8806,
+  2430,
+  745,
+  142,
+  2660,
+  4127,
+  3589,
+  8563,
+  562,
+  858,
+  2461,
+  2497,
+  3840,
+  3966,
+  4019,
+  5446,
+  5915,
+  7305,
+  8523,
+  8612,
+  3948,
+  307,
+  3950,
+  5581,
+  8739,
+  7300,
+  5712,
+  635,
+  833,
+  2159,
+  2403,
+  2766,
+  3778,
+  3945,
+  3999,
+  4124,
+  4365,
+  2527,
+  8977,
+  503,
+  5656,
+  6812,
+  4530,
+  2400,
+  2460,
+  183,
+  701,
+  721,
+  731,
+  1161,
+  2378,
+  3857,
+  4129,
+  6945,
+  8212,
+  8479,
+  8819,
+  10260,
+  1002,
+  1875,
+  7270,
+  1095,
+  413,
+  8518,
+  2439,
+  2473,
+  2489,
+  4080,
+  4554,
+  561,
+  5898,
+  904,
+  5684,
+  7245,
+  7354,
+  8793,
+  10000,
+  8602,
+  5612,
+  3739,
+  555,
+  799,
+  2397,
+  2331,
+  8359,
+  2352,
+  435,
+  3977,
+  2941,
+  3723,
+  5718,
+  5353,
+  3742,
+  5726,
+  8460,
+  681,
+  258,
+  5782,
+  5241,
+  4416,
+  8571,
+  2065,
+  8783,
+  7097,
+  8506,
+  2545,
+  2240,
+  5367,
+  9821,
+  9843
+ ],
+ "frozen": {
+  "reviewed_by": "Vibhor Malik",
+  "reviewed_utc": "2026-11-17T02:27:25+00:00",
+  "review_csv": "review_human.csv",
+  "review_csv_sha256": "384c47777bef2984eeb088a482543473690d63057503dfc4db614a0210a150b2",
+  "draft_csv_sha256": "d44f3b923268de96cd660b64812b5884ad6a34a7d11aeafe7071bd01a8d8fc64",
+  "cases_reviewed_sha256": "b819850e41afa44fd5c24331959061fe08af843476364bdbad27ae5e099836b4",
+  "coverage": "all 1,211 rows judged individually",
+  "corrections": {
+   "label": 9,
+   "member": 10,
+   "definition": 2,
+   "expected_status": 3
+  },
+  "note": "AI-drafted (Claude Opus 5.5), human-reviewed. Chinese requests judged through English gloss. No tuning after freeze."
+ }
+}

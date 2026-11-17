@@ -177,7 +177,7 @@ def downstream(data, preds_by_model, catalog, users, n_users, seed):
         if case["group"] == "NL":
             target, action = items_of(case["required"]), case["action"]
         else:
-            target, action = {int(i) for i in case["members"]}, "boost"
+            target, action = {int(i) for i in case["members"]} - {int(i) for i in case.get("excluded", [])}, "boost"
         base = measure(set(), None, target)
         ref = measure(target, action, target)
         per_model = {}

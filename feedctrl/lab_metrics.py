@@ -7,7 +7,8 @@ Per case (all functions are pure; inputs are the frozen reference and one model'
   every control has the reference action, and R <= S <= R | A. Label precision |S & (R|A)| / |S|,
   recall |S & R| / |R|. A missed required label is a retrieval miss.
 * AB (should not propose). Correct abstention: no applicable control. False acceptance: at
-  least one applicable control. Status match: the returned status equals the expected one.
+  least one applicable control. Status match: the returned status equals the expected one; for
+  cases the reviewer marked "any_abstain", any non-propose status without a control matches.
 * NC (new category). Member precision/recall/F1 of the selected set (verdict match, quotation
   found, independent check supports) against the reference members of the shared pool; the raw
   classifier verdicts are scored too. A missed reference member is a retrieval miss.
@@ -77,13 +78,16 @@ def score_ab(case, pred):
     applicable = bool(pred.get("controls"))
     return {"case_id": case["id"], "group": "AB", "language": case["language"], "status": pred.get("status"),
             "error": pred.get("error"), "abstained": not applicable and not pred.get("error"),
-            "false_acceptance": applicable, "status_match": pred.get("status") == case["expected_status"]}
+            "false_acceptance": applicable,
+            "status_match": (not applicable and not pred.get("error") and pred.get("status") != "propose")
+            if case["expected_status"] == "any_abstain" else pred.get("status") == case["expected_status"]}
 
 
 def score_nc(case, pred):
-    reference = {int(i) for i in case["members"]}
-    selected = {int(i) for i in pred.get("selected", [])}
-    raw = {int(i) for i in pred.get("raw_match", [])}
+    dropped = {int(i) for i in case.get("excluded", [])}     # reviewer: drop from scoring
+    reference = {int(i) for i in case["members"]} - dropped
+    selected = {int(i) for i in pred.get("selected", [])} - dropped
+    raw = {int(i) for i in pred.get("raw_match", [])} - dropped
     p, r, f = prf(selected, reference)
     rp, rr, rf = prf(raw, reference)
     return {"case_id": case["id"], "group": "NC", "language": case["language"], "error": pred.get("error"),

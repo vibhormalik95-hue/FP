@@ -38,6 +38,9 @@ def _requests():
             for row in csv.DictReader(handle):
                 if row.get("request"):
                     texts.add(row["request"])
+    for path in (ROOT / "docs/evidence").glob("lab-eval-set*/cases.frozen.json"):
+        for case in json.loads(path.read_text(encoding="utf-8"))["cases"]:
+            texts.update(t for t in (case.get("request"), case.get("description"), case.get("definition")) if t)
     for path in (ROOT / "tools").glob("**/demo_examples*.json"):
         texts.update(json.loads(path.read_text(encoding="utf-8")).get("requests", []))
     return {t.strip() for t in texts if len(t.strip()) >= 6}

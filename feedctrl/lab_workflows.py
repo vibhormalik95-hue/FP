@@ -344,7 +344,7 @@ def define_category(lab, provider, ledger, user_id, description, scope_size=DEFA
                  "quote_verified": ev.get("item_id") in by_id and quote_found(by_id[ev["item_id"]], ev.get("field"), ev.get("quote"))}
                 for ev in raw.get("evidence", [])]
     label = (raw.get("label") or "").strip()[:60]
-    return {"status": raw.get("status"), "label": label, "definition": (raw.get("definition") or "").strip()[:600],
+    return {"status": raw.get("status"), "label": label, "definition": (raw.get("definition") or "").strip()[:800],
             "rationale": raw.get("rationale", ""), "alternatives": raw.get("alternatives", []),
             "evidence": evidence, "duplicate": any(_norm(label) == _norm(x) for x in existing),
             "calls": calls, "description": description, "scope_size": len(scope)}
@@ -352,7 +352,7 @@ def define_category(lab, provider, ledger, user_id, description, scope_size=DEFA
 
 def classify_category(lab, provider, ledger, user_id, label, definition, action="only", strength="standard",
                       scope_size=DEFAULT_SCOPE):
-    label, definition = (label or "").strip()[:60], (definition or "").strip()[:600]
+    label, definition = (label or "").strip()[:60], (definition or "").strip()[:800]
     if not label or not definition:
         raise LabError("A reviewed label and definition are required.")
     view = lab.view(user_id)

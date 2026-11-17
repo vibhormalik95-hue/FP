@@ -44,3 +44,12 @@ def test_paired_tests_shape():
     b = [lm.score_nl(NL, pred(labels=["category:a"])), lm.score_ab({"id": "AB1", "language": "en", "expected_status": "no_match"}, pred(labels=["x:y"]))]
     t = lm.paired_tests({"m1": a, "m2": b})[0]
     assert t["only_a"] == 2 and t["only_b"] == 0 and 0 < t["mcnemar_p_bh"] <= 1
+
+
+def test_reviewer_drops_and_any_abstain():
+    case = {"id": "NC02", "language": "en", "members": [1, 2], "excluded": [3]}
+    row = lm.score_nc(case, {"selected": [1, 2, 3]})
+    assert row["member_precision"] == 1.0 and row["exact"]
+    ab = {"id": "AB12", "language": "en", "expected_status": "any_abstain"}
+    assert lm.score_ab(ab, {"status": "unsupported", "controls": []})["status_match"]
+    assert not lm.score_ab(ab, {"status": "propose", "controls": [{"action": "hide", "term_id": "x:y"}]})["status_match"]
