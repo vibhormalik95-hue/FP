@@ -179,15 +179,24 @@ def label_view(term):
 
 
 def call_model(provider, ledger, task, system, payload, schema, calls):
-    if ledger.over_budget():
-        raise LabError(f"Budget reached: USD {ledger.total():.4f} of {ledger.budget_usd:.2f}. "
-                       "No further model calls are made.", 402)
+    estimate = provider.estimate_usd(system, payload) if ledger.budget_usd is not None else 0.0
+    reservation = ledger.reserve(estimate)   # parallel calls each reserve their upper bound first
+    if reservation is None or (ledger.budget_usd is not None and ledger.total() >= ledger.budget_usd):
+        if reservation is not None:
+            ledger.release(reservation)
+        raise LabError(f"Budget reached: USD {ledger.total():.4f} spent and USD {ledger.reserved():.4f} reserved "
+                       f"of {ledger.budget_usd:.2f}. No further model calls are made.", 402)
     try:
         data, call = provider.complete(task, system, payload, schema)
     except ProviderError as exc:
+        held = ledger.release(reservation)
+        # A failed call may still have used tokens: charge the reserved upper bound, never zero.
         calls.append(ledger.add({"task": task, "provider": provider.name, "model": provider.model,
-                                 "error": str(exc), "cost_usd": 0.0, "latency_s": None}))
+                                 "error": str(exc), "cost_usd": held,
+                                 "cost_source": "failed call: reserved upper bound charged" if held else "failed call",
+                                 "latency_s": None}))
         raise LabError(f"The model call '{task}' failed: {exc}", 502) from None
+    ledger.release(reservation)
     calls.append(ledger.add(call))
     return data
 

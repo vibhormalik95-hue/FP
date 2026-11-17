@@ -218,3 +218,57 @@ def test_routes_with_loopback_guard():
     assert remote.get("/api/lab/status").status_code == 403
     cross = client.post("/api/lab/reset", json={"user_id": 7}, headers={"Origin": "http://evil.example"})
     assert cross.status_code == 403
+
+
+def test_budget_reservation_holds_under_parallel_calls():
+    """Four parallel calls with a budget for two: the reservations stop the others before they start."""
+    import threading
+    import time as _time
+    from concurrent.futures import ThreadPoolExecutor
+
+    class Paid(Provider):
+        name = "paid"
+        started = 0
+        lock = threading.Lock()
+
+        def estimate_usd(self, system, payload, max_output_tokens=4000):
+            return 0.010
+
+        def complete(self, task, system, payload, schema):
+            with Paid.lock:
+                Paid.started += 1
+            _time.sleep(0.2)                      # all four are in flight at once
+            return {"status": "no_match", "reason": "", "alternatives": [], "controls": []}, \
+                {"task": task, "cost_usd": 0.009, "provider": "paid", "model": "m"}
+
+    ledger = Ledger(budget_usd=0.025)
+    lab = _lab()
+
+    def one(_):
+        try:
+            wf.interpret_preview(lab, Paid("m"), ledger, 7, "anything at all")
+            return "ok"
+        except LabError as exc:
+            return exc.status
+
+    with ThreadPoolExecutor(4) as pool:
+        results = list(pool.map(one, range(4)))
+    assert results.count("ok") == 2 and results.count(402) == 2 and Paid.started == 2
+    assert ledger.total() <= 0.025 and ledger.reserved() == 0
+
+
+def test_failed_call_is_charged_its_reservation():
+    class Broken(Provider):
+        name = "broken"
+
+        def estimate_usd(self, system, payload, max_output_tokens=4000):
+            return 0.02
+
+        def complete(self, task, system, payload, schema):
+            from feedctrl.llm_providers import ProviderError
+            raise ProviderError("The reply was cut off at the output limit.")
+
+    ledger = Ledger(budget_usd=1.0)
+    with pytest.raises(LabError):
+        wf.interpret_preview(_lab(), Broken("m"), ledger, 7, "anything at all")
+    assert ledger.total() == 0.02 and ledger.reserved() == 0
