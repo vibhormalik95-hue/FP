@@ -1,0 +1,121 @@
+model,abstained,action_ok,case_id,error,exact,false_acceptance,false_members,group,label_f1,label_precision,label_recall,language,member_f1,member_precision,member_recall,missed_members,missed_required,proposed,quote_failures,raw_f1,raw_precision,raw_recall,reference_members,selected,selected_labels,status,status_match,unknown_or_missing,wrong_labels
+claude-sonnet-5-5-cli,,True,NL01,,True,,,NL,1.0,1.0,1.0,en,,,,,[],True,,,,,,,"[""category:宠物"", ""category:宠物日常记录"", ""category:宠物狗"", ""tag:狗狗""]",propose,,,[]
+claude-sonnet-5-5-cli,,True,NL02,,True,,,NL,1.0,1.0,1.0,en,,,,,[],True,,,,,,,"[""category:篮球"", ""tag:篮球""]",propose,,,[]
+claude-sonnet-5-5-cli,,True,NL03,,True,,,NL,1.0,1.0,1.0,en,,,,,[],True,,,,,,,"[""category:喜剧"", ""category:喜剧段子"", ""category:搞笑互动"", ""category:搞笑配音"", ""tag:搞笑"", ""tag:搞笑视频"", ""tag:搞笑配音""]",propose,,,[]
+claude-sonnet-5-5-cli,,True,NL04,,True,,,NL,1.0,1.0,1.0,en,,,,,[],True,,,,,,,"[""category:军事"", ""category:军人生活"", ""category:国防动态""]",propose,,,[]
+claude-sonnet-5-5-cli,,True,NL05,,True,,,NL,1.0,1.0,1.0,en,,,,,[],True,,,,,,,"[""category:彩妆"", ""category:彩妆售卖"", ""category:美妆"", ""tag:化妆"", ""tag:夏日美妆好物""]",propose,,,[]
+claude-sonnet-5-5-cli,,False,NL06,,False,,,NL,0.0,0.0,0.0,en,,,,,"[""category:旅游"", ""category:旅游种草""]",False,,,,,,,[],unsupported,,,[]
+claude-sonnet-5-5-cli,,True,NL07,,False,,,NL,0.6666666666666666,1.0,0.5,en,,,,,"[""category:晒娃""]",True,,,,,,,"[""category:0至3岁萌宝"", ""tag:宝宝成长记""]",propose,,,[]
+claude-sonnet-5-5-cli,,True,NL08,,True,,,NL,1.0,1.0,1.0,en,,,,,[],True,,,,,,,"[""category:汽车"", ""category:汽车日常"", ""category:汽车资讯"", ""category:炫技漂移"", ""category:玩车"", ""category:用车"", ""category:车展资讯"", ""tag:快说车""]",propose,,,[]
+claude-sonnet-5-5-cli,,True,NL09,,True,,,NL,1.0,1.0,1.0,en,,,,,[],True,,,,,,,"[""category:保健养生"", ""category:健康"", ""category:养生食疗与饮食禁忌"", ""category:常见疾病"", ""tag:健康养生"", ""tag:健康科普在快手""]",propose,,,[]
+claude-sonnet-5-5-cli,,True,NL10,,False,,,NL,0.6666666666666666,1.0,0.5,en,,,,,"[""category:亲密关系""]",True,,,,,,,"[""category:恋爱短剧"", ""category:情感"", ""category:情感关系"", ""tag:情侣"", ""tag:情侣头像"", ""tag:情感"", ""tag:情感语录""]",propose,,,[]
+claude-sonnet-5-5-cli,,True,NL11,,True,,,NL,1.0,1.0,1.0,zh,,,,,[],True,,,,,,,"[""category:三农"", ""category:乡村短剧"", ""category:养殖业"", ""category:农业与农民"", ""category:种植业""]",propose,,,[]
+claude-sonnet-5-5-cli,,True,NL12,,True,,,NL,1.0,1.0,1.0,zh,,,,,[],True,,,,,,,"[""category:娱乐八卦"", ""category:明星八卦""]",propose,,,[]
+claude-sonnet-5-5-cli,,True,NL13,,True,,,NL,1.0,1.0,1.0,zh,,,,,[],True,,,,,,,"[""category:广场舞"", ""tag:快手广场舞""]",propose,,,[]
+claude-sonnet-5-5-cli,,True,NL14,,True,,,NL,1.0,1.0,1.0,zh,,,,,[],True,,,,,,,"[""category:学业教育"", ""tag:2020高考季"", ""tag:高考"", ""tag:高考加油""]",propose,,,[]
+claude-sonnet-5-5-cli,,True,NL15,,True,,,NL,1.0,1.0,1.0,zh,,,,,[],True,,,,,,,"[""category:二次元"", ""category:二次元酷图"", ""category:动画"", ""category:漫画"", ""tag:动漫""]",propose,,,[]
+claude-sonnet-5-5-cli,,True,NL16,,True,,,NL,1.0,1.0,1.0,zh,,,,,[],True,,,,,,,"[""category:灾害事故""]",propose,,,[]
+claude-sonnet-5-5-cli,,True,NL17,,True,,,NL,1.0,1.0,1.0,zh,,,,,[],True,,,,,,,"[""category:时尚"", ""category:穿搭"", ""tag:每日穿搭"", ""tag:穿搭""]",propose,,,[]
+claude-sonnet-5-5-cli,,True,NL18,,True,,,NL,1.0,1.0,1.0,zh,,,,,[],True,,,,,,,"[""category:原唱翻唱"", ""category:音乐"", ""category:音乐演唱""]",propose,,,[]
+claude-sonnet-5-5-cli,,True,NL19,,True,,,NL,1.0,1.0,1.0,zh,,,,,[],True,,,,,,,"[""category:休闲蹦床"", ""category:健身"", ""category:健身塑形"", ""category:健身操"", ""category:健身训练"", ""category:燃脂训练"", ""tag:健身"", ""tag:健身打卡"", ""tag:快手健身房"", ""tag:运动健身""]",propose,,,[]
+claude-sonnet-5-5-cli,,True,NL20,,True,,,NL,1.0,1.0,1.0,zh,,,,,[],True,,,,,,,"[""category:书法"", ""category:软笔"", ""tag:书法""]",propose,,,[]
+claude-sonnet-5-5-cli,,,NC01,,False,,[],NC,,,,en,0.888888888888889,1.0,0.8,"[945, 3797, 8319]",,,2,0.9655172413793104,1.0,0.9333333333333333,15,12,,,,22,
+claude-sonnet-5-5-cli,,,NC02,,False,,[],NC,,,,en,0.8666666666666666,1.0,0.7647058823529411,"[745, 5466, 7100, 8518]",,,0,1.0,1.0,1.0,17,13,,,,69,
+claude-sonnet-5-5-cli,,,NC03,,True,,[],NC,,,,en,1.0,1.0,1.0,[],,,0,1.0,1.0,1.0,13,13,,,,16,
+claude-sonnet-5-5-cli,,,NC04,,False,,[],NC,,,,zh,0.7741935483870968,1.0,0.631578947368421,"[557, 2403, 2527, 3945, 3970, 3999, 8977]",,,0,0.8823529411764706,1.0,0.7894736842105263,19,12,,,,32,
+claude-sonnet-5-5-cli,,,NC05,,True,,[],NC,,,,zh,1.0,1.0,1.0,[],,,0,1.0,1.0,1.0,17,17,,,,0,
+claude-sonnet-5-5-cli,,,NC06,,False,,[],NC,,,,zh,0.72,1.0,0.5625,"[561, 2439, 4080, 7245, 7354, 8602, 10000]",,,0,0.9696969696969697,0.9411764705882353,1.0,16,9,,,,15,
+claude-sonnet-5-5-cli,True,,AB01,,,False,,AB,,,,en,,,,,,,,,,,,,,ambiguous,True,,
+claude-sonnet-5-5-cli,True,,AB02,,,False,,AB,,,,zh,,,,,,,,,,,,,,ambiguous,True,,
+claude-sonnet-5-5-cli,True,,AB03,,,False,,AB,,,,en,,,,,,,,,,,,,,ambiguous,True,,
+claude-sonnet-5-5-cli,False,,AB04,,,True,,AB,,,,zh,,,,,,,,,,,,,,propose,False,,
+claude-sonnet-5-5-cli,True,,AB05,,,False,,AB,,,,en,,,,,,,,,,,,,,unsupported,True,,
+claude-sonnet-5-5-cli,True,,AB06,,,False,,AB,,,,zh,,,,,,,,,,,,,,unsupported,True,,
+claude-sonnet-5-5-cli,True,,AB07,,,False,,AB,,,,en,,,,,,,,,,,,,,unsupported,True,,
+claude-sonnet-5-5-cli,True,,AB08,,,False,,AB,,,,zh,,,,,,,,,,,,,,unsupported,True,,
+claude-sonnet-5-5-cli,True,,AB09,,,False,,AB,,,,en,,,,,,,,,,,,,,unsupported,True,,
+claude-sonnet-5-5-cli,True,,AB10,,,False,,AB,,,,en,,,,,,,,,,,,,,no_match,True,,
+claude-sonnet-5-5-cli,True,,AB11,,,False,,AB,,,,zh,,,,,,,,,,,,,,no_match,True,,
+claude-sonnet-5-5-cli,True,,AB12,,,False,,AB,,,,en,,,,,,,,,,,,,,unsupported,True,,
+claude-sonnet-5-5-cli,True,,AB13,,,False,,AB,,,,zh,,,,,,,,,,,,,,ambiguous,True,,
+claude-sonnet-5-5-cli,False,,AB14,,,True,,AB,,,,zh,,,,,,,,,,,,,,propose,False,,
+gpt-5-mini,,True,NL01,,True,,,NL,1.0,1.0,1.0,en,,,,,[],True,,,,,,,"[""category:宠物"", ""category:宠物日常记录"", ""category:宠物狗"", ""tag:宠物"", ""tag:狗狗"", ""tag:萌宠""]",propose,,,[]
+gpt-5-mini,,True,NL02,,True,,,NL,1.0,1.0,1.0,en,,,,,[],True,,,,,,,"[""category:篮球""]",propose,,,[]
+gpt-5-mini,,True,NL03,,True,,,NL,1.0,1.0,1.0,en,,,,,[],True,,,,,,,"[""category:喜剧"", ""category:喜剧段子"", ""category:搞笑互动"", ""category:搞笑配音"", ""tag:搞笑"", ""tag:搞笑视频"", ""tag:搞笑配音""]",propose,,,[]
+gpt-5-mini,,True,NL04,,True,,,NL,1.0,1.0,1.0,en,,,,,[],True,,,,,,,"[""category:军事"", ""category:军人生活"", ""category:国防动态""]",propose,,,[]
+gpt-5-mini,,True,NL05,,False,,,NL,0.8333333333333333,0.7142857142857143,1.0,en,,,,,[],True,,,,,,,"[""category:彩妆"", ""category:彩妆售卖"", ""category:美妆"", ""tag:化妆"", ""tag:夏日美妆好物"", ""tag:好物分享"", ""tag:好物推荐""]",propose,,,"[""tag:好物分享"", ""tag:好物推荐""]"
+gpt-5-mini,,False,NL06,,False,,,NL,0.0,0.0,0.0,en,,,,,"[""category:旅游"", ""category:旅游种草""]",False,,,,,,,[],unsupported,,,[]
+gpt-5-mini,,True,NL07,,True,,,NL,1.0,1.0,1.0,en,,,,,[],True,,,,,,,"[""category:0至3岁萌宝"", ""category:亲子"", ""category:晒娃"", ""tag:宝宝成长记"", ""tag:家有萌娃"", ""tag:家有萌宝"", ""tag:萌娃""]",propose,,,[]
+gpt-5-mini,,True,NL08,,True,,,NL,1.0,1.0,1.0,en,,,,,[],True,,,,,,,"[""category:汽车"", ""category:汽车日常"", ""category:汽车资讯"", ""category:炫技漂移"", ""category:玩车"", ""category:车展资讯""]",propose,,,[]
+gpt-5-mini,,True,NL09,,True,,,NL,1.0,1.0,1.0,en,,,,,[],True,,,,,,,"[""category:保健养生"", ""category:健康"", ""category:养生食疗与饮食禁忌"", ""category:常见疾病"", ""category:看病治病"", ""tag:健康"", ""tag:健康养生"", ""tag:健康科普在快手""]",propose,,,[]
+gpt-5-mini,,True,NL10,,True,,,NL,1.0,1.0,1.0,en,,,,,[],True,,,,,,,"[""category:亲密关系"", ""category:恋爱短剧"", ""category:情感"", ""category:情感关系"", ""category:情绪分享"", ""tag:情侣"", ""tag:情侣头像"", ""tag:情感"", ""tag:情感语录""]",propose,,,[]
+gpt-5-mini,,True,NL11,,True,,,NL,1.0,1.0,1.0,zh,,,,,[],True,,,,,,,"[""category:三农"", ""category:乡村短剧"", ""category:养殖业"", ""category:农业与农民"", ""category:种植业"", ""tag:美丽城乡""]",propose,,,[]
+gpt-5-mini,,True,NL12,,True,,,NL,1.0,1.0,1.0,zh,,,,,[],True,,,,,,,"[""category:名人明星"", ""category:娱乐八卦"", ""category:明星八卦"", ""category:明星娱乐"", ""tag:明星""]",propose,,,[]
+gpt-5-mini,,True,NL13,,True,,,NL,1.0,1.0,1.0,zh,,,,,[],True,,,,,,,"[""category:广场舞""]",propose,,,[]
+gpt-5-mini,,True,NL14,,True,,,NL,1.0,1.0,1.0,zh,,,,,[],True,,,,,,,"[""category:学业教育"", ""category:教育"", ""tag:高考"", ""tag:高考加油""]",propose,,,[]
+gpt-5-mini,,True,NL15,,False,,,NL,0.9333333333333333,0.875,1.0,zh,,,,,[],True,,,,,,,"[""category:二次元"", ""category:二次元酷图"", ""category:动画"", ""category:漫画"", ""category:虚拟视界"", ""category:虚拟视觉"", ""category:饭制"", ""tag:动漫""]",propose,,,"[""category:饭制""]"
+gpt-5-mini,,True,NL16,,True,,,NL,1.0,1.0,1.0,zh,,,,,[],True,,,,,,,"[""category:交通资讯"", ""category:灾害事故""]",propose,,,[]
+gpt-5-mini,,True,NL17,,True,,,NL,1.0,1.0,1.0,zh,,,,,[],True,,,,,,,"[""category:时尚"", ""category:时尚街拍"", ""category:穿搭"", ""tag:每日穿搭"", ""tag:穿搭""]",propose,,,[]
+gpt-5-mini,,True,NL18,,True,,,NL,1.0,1.0,1.0,zh,,,,,[],True,,,,,,,"[""category:音乐"", ""category:音乐演唱""]",propose,,,[]
+gpt-5-mini,,True,NL19,,False,,,NL,0.8421052631578948,0.7272727272727273,1.0,zh,,,,,[],True,,,,,,,"[""category:休闲蹦床"", ""category:健身"", ""category:健身塑形"", ""category:健身操"", ""category:健身训练"", ""category:燃脂训练"", ""category:舞蹈"", ""category:舞蹈日常"", ""tag:健身"", ""tag:健身打卡"", ""tag:舞蹈""]",propose,,,"[""category:舞蹈"", ""category:舞蹈日常"", ""tag:舞蹈""]"
+gpt-5-mini,,True,NL20,,True,,,NL,1.0,1.0,1.0,zh,,,,,[],True,,,,,,,"[""category:书法"", ""category:软笔"", ""tag:书法"", ""tag:字画""]",propose,,,[]
+gpt-5-mini,,,NC01,,False,,"[2240, 2530, 3930, 5575]",NC,,,,en,0.8484848484848485,0.7777777777777778,0.9333333333333333,[945],,,0,0.8823529411764706,0.7894736842105263,1.0,15,18,,,,2,
+gpt-5-mini,,,NC02,,True,,[],NC,,,,en,1.0,1.0,1.0,[],,,0,1.0,1.0,1.0,17,17,,,,12,
+gpt-5-mini,,,NC03,,False,,[],NC,,,,en,0.9166666666666666,1.0,0.8461538461538461,"[3948, 3966]",,,0,1.0,1.0,1.0,13,11,,,,8,
+gpt-5-mini,,,NC04,,False,,[],NC,,,,zh,0.972972972972973,1.0,0.9473684210526315,[4365],,,0,0.9743589743589743,0.95,1.0,19,18,,,,11,
+gpt-5-mini,,,NC05,,True,,[],NC,,,,zh,1.0,1.0,1.0,[],,,0,1.0,1.0,1.0,17,17,,,,12,
+gpt-5-mini,,,NC06,,False,,"[799, 5241]",NC,,,,zh,0.875,0.875,0.875,"[2439, 4080]",,,0,0.9142857142857143,0.8421052631578947,1.0,16,16,,,,7,
+gpt-5-mini,False,,AB01,,,True,,AB,,,,en,,,,,,,,,,,,,,propose,False,,
+gpt-5-mini,False,,AB02,,,True,,AB,,,,zh,,,,,,,,,,,,,,propose,False,,
+gpt-5-mini,True,,AB03,,,False,,AB,,,,en,,,,,,,,,,,,,,ambiguous,True,,
+gpt-5-mini,False,,AB04,,,True,,AB,,,,zh,,,,,,,,,,,,,,propose,False,,
+gpt-5-mini,True,,AB05,,,False,,AB,,,,en,,,,,,,,,,,,,,unsupported,True,,
+gpt-5-mini,True,,AB06,,,False,,AB,,,,zh,,,,,,,,,,,,,,unsupported,True,,
+gpt-5-mini,False,,AB07,,,True,,AB,,,,en,,,,,,,,,,,,,,propose,False,,
+gpt-5-mini,True,,AB08,,,False,,AB,,,,zh,,,,,,,,,,,,,,unsupported,True,,
+gpt-5-mini,True,,AB09,,,False,,AB,,,,en,,,,,,,,,,,,,,ambiguous,False,,
+gpt-5-mini,False,,AB10,,,True,,AB,,,,en,,,,,,,,,,,,,,propose,False,,
+gpt-5-mini,True,,AB11,,,False,,AB,,,,zh,,,,,,,,,,,,,,no_match,True,,
+gpt-5-mini,True,,AB12,,,False,,AB,,,,en,,,,,,,,,,,,,,unsupported,True,,
+gpt-5-mini,False,,AB13,,,True,,AB,,,,zh,,,,,,,,,,,,,,propose,False,,
+gpt-5-mini,False,,AB14,,,True,,AB,,,,zh,,,,,,,,,,,,,,propose,False,,
+gpt-5,,True,NL01,,True,,,NL,1.0,1.0,1.0,en,,,,,[],True,,,,,,,"[""category:宠物"", ""category:宠物日常记录"", ""category:宠物狗"", ""tag:宠物"", ""tag:狗狗"", ""tag:萌宠""]",propose,,,[]
+gpt-5,,True,NL02,,True,,,NL,1.0,1.0,1.0,en,,,,,[],True,,,,,,,"[""category:篮球"", ""tag:篮球""]",propose,,,[]
+gpt-5,,True,NL03,,True,,,NL,1.0,1.0,1.0,en,,,,,[],True,,,,,,,"[""category:喜剧"", ""category:喜剧段子"", ""category:搞笑互动"", ""category:搞笑配音"", ""tag:搞笑"", ""tag:搞笑视频"", ""tag:搞笑配音"", ""tag:沙雕""]",propose,,,[]
+gpt-5,,True,NL04,,True,,,NL,1.0,1.0,1.0,en,,,,,[],True,,,,,,,"[""category:军事"", ""category:军人生活"", ""category:国防动态""]",propose,,,[]
+gpt-5,,True,NL05,,True,,,NL,1.0,1.0,1.0,en,,,,,[],True,,,,,,,"[""category:彩妆"", ""category:彩妆售卖"", ""category:美妆"", ""tag:化妆"", ""tag:夏日美妆好物""]",propose,,,[]
+gpt-5,,True,NL06,,True,,,NL,1.0,1.0,1.0,en,,,,,[],True,,,,,,,"[""category:境内游种草"", ""category:旅游"", ""category:旅游玩法"", ""category:旅游种草"", ""category:景物摄影"", ""category:风景航拍"", ""tag:向往的民宿"", ""tag:带你去旅行"", ""tag:快手旅行家"", ""tag:旅行新秀突围赛"", ""tag:跟着快手去旅行"", ""tag:风景""]",propose,,,[]
+gpt-5,,True,NL07,,False,,,NL,0.6666666666666666,1.0,0.5,en,,,,,"[""category:晒娃""]",True,,,,,,,"[""category:0至3岁萌宝"", ""tag:宝宝成长记"", ""tag:家有萌宝""]",propose,,,[]
+gpt-5,,True,NL08,,True,,,NL,1.0,1.0,1.0,en,,,,,[],True,,,,,,,"[""category:机车族"", ""category:汽车"", ""category:汽车资讯"", ""category:炫技漂移"", ""category:玩车"", ""category:用车"", ""category:车展资讯"", ""tag:快说车""]",propose,,,[]
+gpt-5,,True,NL09,,False,,,NL,0.7142857142857143,0.5555555555555556,1.0,en,,,,,[],True,,,,,,,"[""category:保健养生"", ""category:健康"", ""category:健身"", ""category:养生食疗与饮食禁忌"", ""category:减肥"", ""category:常见疾病"", ""category:放松训练"", ""category:瑜伽"", ""category:看病治病"", ""category:运动"", ""tag:健康"", ""tag:健康养生"", ""tag:健康科普在快手"", ""tag:健身"", ""tag:健身打卡"", ""tag:每天坚持锻炼给自己一个好身体"", ""tag:瑜伽"", ""tag:运动健身""]",propose,,,"[""category:减肥"", ""category:瑜伽"", ""category:运动"", ""tag:健身"", ""tag:健身打卡"", ""tag:每天坚持锻炼给自己一个好身体"", ""tag:瑜伽"", ""tag:运动健身""]"
+gpt-5,,True,NL10,,True,,,NL,1.0,1.0,1.0,en,,,,,[],True,,,,,,,"[""category:亲密关系"", ""category:恋爱短剧"", ""category:情感"", ""category:情感关系"", ""category:情绪分享"", ""tag:情侣"", ""tag:情侣头像"", ""tag:情感"", ""tag:情感语录""]",propose,,,[]
+gpt-5,,True,NL11,,True,,,NL,1.0,1.0,1.0,zh,,,,,[],True,,,,,,,"[""category:三农"", ""category:养殖业"", ""category:农业与农民"", ""category:种植业"", ""tag:美丽城乡""]",propose,,,[]
+gpt-5,,True,NL12,,True,,,NL,1.0,1.0,1.0,zh,,,,,[],True,,,,,,,"[""category:娱乐八卦"", ""category:明星八卦""]",propose,,,[]
+gpt-5,,True,NL13,,True,,,NL,1.0,1.0,1.0,zh,,,,,[],True,,,,,,,"[""category:广场舞""]",propose,,,[]
+gpt-5,,True,NL14,,True,,,NL,1.0,1.0,1.0,zh,,,,,[],True,,,,,,,"[""tag:2020高考季"", ""tag:高考"", ""tag:高考加油""]",propose,,,[]
+gpt-5,,True,NL15,,True,,,NL,1.0,1.0,1.0,zh,,,,,[],True,,,,,,,"[""category:二次元"", ""category:二次元酷图"", ""category:动画"", ""category:少儿动画"", ""category:漫画"", ""category:青少年动画"", ""tag:动漫""]",propose,,,[]
+gpt-5,,True,NL16,,True,,,NL,1.0,1.0,1.0,zh,,,,,[],True,,,,,,,"[""category:灾害事故""]",propose,,,[]
+gpt-5,,True,NL17,,True,,,NL,1.0,1.0,1.0,zh,,,,,[],True,,,,,,,"[""category:时尚"", ""category:时尚街拍"", ""category:穿搭"", ""tag:每日穿搭"", ""tag:穿搭""]",propose,,,[]
+gpt-5,,True,NL18,,True,,,NL,1.0,1.0,1.0,zh,,,,,[],True,,,,,,,"[""category:原唱翻唱"", ""category:音乐"", ""category:音乐演唱""]",propose,,,[]
+gpt-5,,True,NL19,,False,,,NL,0.47058823529411764,0.3076923076923077,1.0,zh,,,,,[],True,,,,,,,"[""category:休闲蹦床"", ""category:休闲运动"", ""category:健身"", ""category:健身塑形"", ""category:健身操"", ""category:健身训练"", ""category:古风舞蹈"", ""category:国标舞蹈"", ""category:国风舞蹈"", ""category:宅舞"", ""category:广场舞"", ""category:拉丁舞"", ""category:拳击"", ""category:极限运动"", ""category:武术"", ""category:潮流舞蹈"", ""category:燃脂训练"", ""category:球类运动"", ""category:瑜伽"", ""category:空中极限"", ""category:竞技体育"", ""category:篮球"", ""category:舞蹈"", ""category:舞蹈日常"", ""category:街头极限"", ""category:街舞"", ""category:足球"", ""category:跆拳道"", ""category:运动"", ""tag:健身"", ""tag:健身打卡"", ""tag:快手体育"", ""tag:快手健身房"", ""tag:快手广场舞"", ""tag:拉丁舞"", ""tag:瑜伽"", ""tag:篮球"", ""tag:舞蹈"", ""tag:运动健身""]",propose,,,"[""category:休闲运动"", ""category:古风舞蹈"", ""category:国标舞蹈"", ""category:国风舞蹈"", ""category:宅舞"", ""category:广场舞"", ""category:拉丁舞"", ""category:拳击"", ""category:极限运动"", ""category:武术"", ""category:潮流舞蹈"", ""category:球类运动"", ""category:空中极限"", ""category:竞技体育"", ""category:篮球"", ""category:舞蹈"", ""category:舞蹈日常"", ""category:街头极限"", ""category:街舞"", ""category:足球"", ""category:跆拳道"", ""tag:快手体育"", ""tag:快手广场舞"", ""tag:拉丁舞"", ""tag:瑜伽"", ""tag:篮球"", ""tag:舞蹈""]"
+gpt-5,,True,NL20,,True,,,NL,1.0,1.0,1.0,zh,,,,,[],True,,,,,,,"[""category:书法"", ""category:软笔"", ""tag:书法"", ""tag:手写""]",propose,,,[]
+gpt-5,,,NC01,,False,,"[2240, 3930, 5575]",NC,,,,en,0.8749999999999999,0.8235294117647058,0.9333333333333333,[945],,,1,0.8749999999999999,0.8235294117647058,0.9333333333333333,15,17,,,,50,
+gpt-5,,,NC02,,True,,[],NC,,,,en,1.0,1.0,1.0,[],,,0,1.0,1.0,1.0,17,17,,,,99,
+gpt-5,,,NC03,,False,,[3797],NC,,,,en,0.9230769230769231,0.9230769230769231,0.9230769230769231,[3948],,,0,0.962962962962963,0.9285714285714286,1.0,13,13,,,,48,
+gpt-5,,,NC04,,False,,[],NC,,,,zh,0.7741935483870968,1.0,0.631578947368421,"[557, 945, 2403, 2766, 3945, 3970, 3999]",,,0,0.9444444444444444,1.0,0.8947368421052632,19,12,,,,102,
+gpt-5,,,NC05,,True,,[],NC,,,,zh,1.0,1.0,1.0,[],,,1,1.0,1.0,1.0,17,17,,,,63,
+gpt-5,,,NC06,,False,,[],NC,,,,zh,0.9333333333333333,1.0,0.875,"[2439, 4080]",,,1,0.9333333333333333,1.0,0.875,16,14,,,,36,
+gpt-5,False,,AB01,,,True,,AB,,,,en,,,,,,,,,,,,,,propose,False,,
+gpt-5,False,,AB02,,,True,,AB,,,,zh,,,,,,,,,,,,,,propose,False,,
+gpt-5,True,,AB03,,,False,,AB,,,,en,,,,,,,,,,,,,,ambiguous,True,,
+gpt-5,True,,AB04,,,False,,AB,,,,zh,,,,,,,,,,,,,,ambiguous,True,,
+gpt-5,True,,AB05,,,False,,AB,,,,en,,,,,,,,,,,,,,unsupported,True,,
+gpt-5,True,,AB06,,,False,,AB,,,,zh,,,,,,,,,,,,,,unsupported,True,,
+gpt-5,True,,AB07,,,False,,AB,,,,en,,,,,,,,,,,,,,unsupported,True,,
+gpt-5,True,,AB08,,,False,,AB,,,,zh,,,,,,,,,,,,,,unsupported,True,,
+gpt-5,True,,AB09,,,False,,AB,,,,en,,,,,,,,,,,,,,unsupported,True,,
+gpt-5,True,,AB10,,,False,,AB,,,,en,,,,,,,,,,,,,,no_match,True,,
+gpt-5,True,,AB11,,,False,,AB,,,,zh,,,,,,,,,,,,,,no_match,True,,
+gpt-5,True,,AB12,,,False,,AB,,,,en,,,,,,,,,,,,,,unsupported,True,,
+gpt-5,False,,AB13,,,True,,AB,,,,zh,,,,,,,,,,,,,,propose,False,,
+gpt-5,False,,AB14,,,True,,AB,,,,zh,,,,,,,,,,,,,,propose,False,,

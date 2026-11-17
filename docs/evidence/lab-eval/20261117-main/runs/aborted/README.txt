@@ -1,0 +1,1 @@
+Attempt 1 of llama3.1:8b aborted at 2026-11-17 ~03:00 UTC: NL02 ran away (1,779+ output tokens at 4 tok/s, no output cap, client retry). Restarted from scratch with LOCAL_MAX_TOKENS=2048 and no retry for local calls. Hosted runs unaffected (already finished).

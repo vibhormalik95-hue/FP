@@ -1,0 +1,67 @@
+{
+ "title": "Parser test bank re-run (RE-USE of the frozen 100-case bank, not new evidence)",
+ "status_note": "The 100-case parser bank was used before (Experiment 1). It was re-sent unchanged, with the original prompt, schema and validator, with no tuning. The frozen Llama 3.1 8B result (79/100) is unchanged; the re-run reproduced it. Strict scores are primary. The frozen prompt states the rule 'Use strength 0.25 for boost, 1.0 for mute, 0.0 for reset/clarify'; gpt-5 and gpt-5-mini broke it on most reset/clarify cases. The post-hoc, format-lenient score ignores only the strength field on reset/clarify replies (run 2, where raw replies were saved).",
+ "tables": [
+  {
+   "title": "Exact accuracy on the 100-case bank (target 85%)",
+   "columns": [
+    "Model",
+    "Strict, run 1 (primary)",
+    "Wilson 95%",
+    "Meets 85%",
+    "Operational errors",
+    "Clarify correct",
+    "Strict, run 2",
+    "Post-hoc format-lenient, run 2",
+    "Cost USD (run 1)"
+   ],
+   "rows": [
+    [
+     "llama3.1_8b",
+     "79/100",
+     "[0.700, 0.858]",
+     "no",
+     0,
+     "9/30",
+     "not run",
+     "79/100 (0 errors)",
+     0
+    ],
+    [
+     "qwen2.5-coder_7b-instruct",
+     "74/100",
+     "[0.646, 0.816]",
+     "no",
+     9,
+     "10/30",
+     "not run",
+     "n/a (raw replies not saved)",
+     0
+    ],
+    [
+     "gpt-5-mini",
+     "60/100",
+     "[0.502, 0.691]",
+     "no",
+     36,
+     "0/30",
+     "60/100",
+     "95/100",
+     0.035
+    ],
+    [
+     "gpt-5",
+     "60/100",
+     "[0.502, 0.691]",
+     "no",
+     35,
+     "0/30",
+     "60/100",
+     "96/100",
+     0.188
+    ]
+   ],
+   "note": "Local models through Ollama (temperature 0, seed 42); hosted through the OpenAI API, effort low. Frozen E1: Llama 79/100, rules 81/100."
+  }
+ ]
+}

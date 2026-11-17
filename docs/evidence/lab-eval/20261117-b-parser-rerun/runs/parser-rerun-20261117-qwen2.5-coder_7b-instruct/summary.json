@@ -1,0 +1,29 @@
+{
+  "label": "Re-use of the previously used 100-case parser test bank, unchanged, with no tuning. Not new unseen evidence. The frozen Llama 3.1 8B result (79/100) is unchanged.",
+  "bank_sha256": "836b6e0e1fc4ccfc2174c99426db052115caddc6c63a5da764381d7c8e01eed6",
+  "provider": "ollama",
+  "model": "qwen2.5-coder:7b-instruct",
+  "effort": "low",
+  "cases": 100,
+  "correct": 74,
+  "exact_accuracy": 0.74,
+  "exact_accuracy_wilson_95": [
+    0.6462901055081282,
+    0.8159530153525186
+  ],
+  "target": 0.85,
+  "meets_85_target_point_estimate": false,
+  "operation_accuracy": 0.74,
+  "operational_errors": 9,
+  "clarify_recall": "10/30",
+  "per_group": {
+    "adversarial": "4/10",
+    "ambiguous_or_unsupported": "6/20",
+    "negative": "30/30",
+    "positive": "27/30",
+    "reset": "7/10"
+  },
+  "cost_usd": 0,
+  "elapsed_s": 85.5,
+  "median_latency_s": 0.781
+}

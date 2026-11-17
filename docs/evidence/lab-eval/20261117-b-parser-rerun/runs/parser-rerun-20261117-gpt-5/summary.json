@@ -1,0 +1,29 @@
+{
+  "label": "Re-use of the previously used 100-case parser test bank, unchanged, with no tuning. Not new unseen evidence. The frozen Llama 3.1 8B result (79/100) is unchanged.",
+  "bank_sha256": "836b6e0e1fc4ccfc2174c99426db052115caddc6c63a5da764381d7c8e01eed6",
+  "provider": "openai",
+  "model": "gpt-5",
+  "effort": "low",
+  "cases": 100,
+  "correct": 60,
+  "exact_accuracy": 0.6,
+  "exact_accuracy_wilson_95": [
+    0.5020025867910618,
+    0.6905987135675411
+  ],
+  "target": 0.85,
+  "meets_85_target_point_estimate": false,
+  "operation_accuracy": 0.6,
+  "operational_errors": 35,
+  "clarify_recall": "0/30",
+  "per_group": {
+    "adversarial": "0/10",
+    "ambiguous_or_unsupported": "0/20",
+    "negative": "30/30",
+    "positive": "30/30",
+    "reset": "0/10"
+  },
+  "cost_usd": 0.187625,
+  "elapsed_s": 251.3,
+  "median_latency_s": 2.265
+}
