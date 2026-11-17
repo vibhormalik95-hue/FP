@@ -1,6 +1,6 @@
 # Paper sources
 
-**Draft, not ready for submission.** The current revision is `research-paper-2026-11-17.tex` (17 November 2026). It reports the integrated application on real KuaiRec and Experiment 3: the language controls measured on a frozen set of 40 cases, AI-drafted (Claude Opus 5.5) and human-reviewed, with three hosted models. The local Llama 3.1 8B run of Experiment 3 completed 21 of 40 cases before it was paused; it is being resumed, and its table rows read "pending (run in progress)" until next week's update (see below). The downstream values were re-scored on 17 November with each model's exact controls, and the parser re-run applies the grounding rule of the frozen parser.
+**Draft, not ready for submission.** The current revision is `research-paper-2026-11-17.tex` (17 November 2026). It reports the integrated application on real KuaiRec and Experiment 3: the language controls measured on a frozen set of 40 cases, AI-drafted (Claude Opus 5.5) and human-reviewed, with three hosted and two local models (Llama 3.1 8B and Qwen2.5-Coder 7B Instruct through Ollama). Each table names the prediction commits (hosted `8dd978f`, local `9071f05`) and the scoring commit (`d9dd6cc`); every code change after the freeze is listed in `docs/evidence/lab-eval/POST-FREEZE-AUDIT.md`. The downstream values were re-scored on 17 November with each model's exact controls, and the parser re-run applies the grounding rule of the frozen parser.
 
 | File | Content |
 | --- | --- |
@@ -33,12 +33,13 @@ Every number is copied from a recorded file. Nothing is a placeholder: the `\TBF
 | Parser bank re-run (re-use of the Experiment 1 bank, not new evidence) | `docs/evidence/lab-eval/20261117-b-parser-rerun/summary.json` |
 | Construction, review and freeze of the evaluation set | `docs/evidence/lab-eval-set-20261117/README.md` and `FROZEN.json` |
 | Windows replay of Experiment 1 (16 November) | `FINAL2/AUDIT.md`, section 4 (outside the repository) |
-| Models not run or deferred | `FINAL2/BLOCKERS.md` (outside the repository) |
+| gemma4:31b probe (not run) | `docs/evidence/lab-eval/20261117-main/runs/local-chain.log` |
+| Popularity concentration of the seed-42 ranker (items 8958, 1116) | `docs/evidence/2026-11-17-popularity/top10-concentration-seed42.json` (only 27 distinct items appear in any of the 865 top tens) |
 | Experiments 1 and 2, practice evaluation, 4 November study, development records | Unchanged from `research-paper-2026-11-14.tex` |
 
-## Filling the Llama rows
+## Local models
 
-Every line of `research-paper-2026-11-17.tex` and `presentation-bcit/presentation-2026-11-17.tex` that waits for the local Llama 3.1 8B run of Experiment 3 ends with the comment `% LLAMA-PENDING`. Find them with `grep -n "LLAMA-PENDING"`. When `lab_eval.py score` has been run with the Llama results, copy its values from the new `RESULTS.md` into those lines, remove the comments, and read again the sentences on the local-model arm in the abstract, Section VIII-B, Section X ("Models not measured") and the conclusion, which state that the arm is incomplete.
+The Llama 3.1 8B and Qwen2.5-Coder 7B rows of Experiment 3 are filled from `RESULTS.md` (scoring commit `d9dd6cc`); no placeholder remains. Gemma4 31B was probed but not run (Section X, "Models not measured").
 
 ## One sentence for the student
 

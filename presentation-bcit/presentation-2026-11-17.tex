@@ -7,9 +7,10 @@
 % docs/evidence/lab-eval/20261117-b-parser-rerun/summary.json,
 % docs/evidence/lab-eval-set-20261117/README.md and FROZEN.json,
 % FINAL2/AUDIT.md, FINAL2/BLOCKERS.md, FINAL2/conference-options-verified.md.
-% The llama3.1:8b run of Experiment 3 completed 21 of 40 cases before it was
-% paused; it is being resumed on commit 9071f05. Each line to fill from it
-% carries the comment LLAMA-PENDING. Downstream values re-scored 17 Nov with the
+% All five models measured: hosted predictions at commit 8dd978f, local
+% (llama3.1:8b, qwen2.5-coder:7b-instruct) at 9071f05, scored at d9dd6cc
+% (docs/evidence/lab-eval/POST-FREEZE-AUDIT.md). gemma4:31b probe only:
+% runs/local-chain.log. Downstream values re-scored 17 Nov with the
 % exact controls. Video facts: docs/evidence/2026-11-17-video/ and
 % FINAL2/recording/take-11/check.json. Generalization check:
 % runs/generalization-gpt5/summary.md and runs/generalization-gpt5-nc/summary.md.
@@ -53,7 +54,6 @@
 \setlength{\metropolis@progressinheadfoot@linewidth}{2pt}
 \makeatother
 \newcommand{\src}[1]{\vfill{\tiny\color{bcitgray}#1}}
-\newcommand{\Pending}{\emph{pending (21 of 40 cases; resumed)}}
 \title[COMP 9500: Natural-language controls]{Natural-Language Controls for\\Short-Video Recommenders}
 \subtitle{An offline study of controllability}
 \author{Vibhor Malik}
@@ -92,7 +92,7 @@ Request & How it is answered & Measured result\\\midrule
 2. A new category from natural language that feeds the filter & Definition $\to$ person reviews $\to$ membership with quotations $\to$ separate evidence check $\to$ filter & Member F1 0.875--0.936 (6 cases, 150-item pool)\\[0.15cm]
 3. Indirect intent matched to existing categories and tags & One call maps any wording (EN or ZH) to the 467 existing KuaiRec terms & Exact intended profile 16--17 of 20; abstention 7--12 of 14\\\bottomrule
 \end{tabular}\par
-\src{Experiment 3, frozen AI-drafted and human-reviewed set, three hosted models. Llama 3.1 8B: 21 of 40 cases, resumed, results next week. Small $n$: wide intervals.}
+\src{Experiment 3, frozen AI-drafted and human-reviewed set, three hosted models (two local 7--8B models: 0 of 20 exact). Small $n$: wide intervals.}
 \end{frame}
 
 \section{Related work}
@@ -523,7 +523,8 @@ Model & NL exact & 95\% CI & Label F1 & AB abst. & False acc.\\\midrule
 Claude Sonnet 5.5 & 17/20 & [0.640, 0.948] & 0.917 & 12/14 & 2\\
 GPT-5 & 17/20 & [0.640, 0.948] & 0.943 & 10/14 & 4\\
 GPT-5 mini & 16/20 & [0.584, 0.919] & 0.930 & 7/14 & 7\\
-Llama 3.1 8B & \multicolumn{5}{c}{\Pending}\\ % LLAMA-PENDING
+Llama 3.1 8B (local) & 0/20 & [0.000, 0.161] & 0.040 & 11/14 & 0\\
+Qwen2.5-Coder 7B (local) & 0/20 & [0.000, 0.161] & 0.000 & 9/14 & 0\\
 \bottomrule
 \end{tabular}\par
 \vspace{0.3cm}
@@ -531,8 +532,9 @@ Llama 3.1 8B & \multicolumn{5}{c}{\Pending}\\ % LLAMA-PENDING
 \item Label precision / recall: Claude 0.950 / 0.900; GPT-5 0.943 / 0.975; GPT-5 mini 0.916 / 0.950.
 \item Missed required labels: 4, 1, 2. Action correct: 95\%, 100\%, 95\%.
 \item GPT-5 mini proposed a control for half of the requests that should change nothing.
+\item Local models declined almost everything (Llama 17 of 20 NL, Qwen 20 of 20): their AB scores are not judgement.
 \end{itemize}
-\src{Claude Sonnet 5.5 through the Claude CLI; GPT models through the OpenAI API. Wilson intervals; they overlap almost completely.}
+\src{Claude Sonnet 5.5 through the Claude CLI; GPT models through the OpenAI API; local models through Ollama. Predictions at 8dd978f (hosted), 9071f05 (local); scored at d9dd6cc.}
 \end{frame}
 
 \begin{frame}{Results: new categories (NC)}
@@ -543,7 +545,8 @@ Model & Precision & Recall & Member F1 & Raw F1 & Missed\\\midrule
 Claude Sonnet 5.5 & 1.000 & 0.793 & 0.875 & 0.970 & 21\\
 GPT-5 mini & 0.942 & 0.934 & 0.936 & 0.962 & 6\\
 GPT-5 & 0.958 & 0.894 & 0.918 & 0.953 & 11\\
-Llama 3.1 8B & \multicolumn{5}{c}{\Pending}\\ % LLAMA-PENDING
+Llama 3.1 8B (local) & 0.291 & 0.131 & 0.179 & 0.171 & 83\\
+Qwen2.5-Coder 7B (local) & 0.972 & 0.330 & 0.469 & 0.621 & 64\\
 \bottomrule
 \end{tabular}\par
 \vspace{0.3cm}
@@ -552,11 +555,11 @@ Llama 3.1 8B & \multicolumn{5}{c}{\Pending}\\ % LLAMA-PENDING
 \item Claude: no wrong member, but the checks removed members its classifier had found (raw F1 0.970).
 \item Every model used the reviewed reference definition.
 \end{itemize}
-\src{F1 95\% CI: Claude [0.791, 0.959]; GPT-5 mini [0.887, 0.982]; GPT-5 [0.851, 0.976].}
+\src{F1 95\% CI: Claude [0.791, 0.959]; GPT-5 mini [0.887, 0.982]; GPT-5 [0.851, 0.976]; Llama [0.000, 0.385]; Qwen [0.307, 0.628]. Scored at d9dd6cc.}
 \end{frame}
 
 \begin{frame}{Results: downstream on the trained SASRec ranking}
-\small
+\footnotesize
 \begin{tabular}{@{}lrrrr@{}}
 \toprule
 Control & TCP@10 & TCER@10 & NDCG@10 & HR@1\\\midrule
@@ -565,34 +568,36 @@ Reviewed reference & 0.5290 & 0.0000 & 0.0153 & 0.0062\\
 Claude Sonnet 5.5 & 0.5625 & 0.0000 & 0.0144 & 0.0040\\
 GPT-5 & 0.5521 & 0.0000 & 0.0156 & 0.0056\\
 GPT-5 mini & 0.5178 & 0.0000 & 0.0145 & 0.0044\\
-Llama 3.1 8B & \multicolumn{4}{c}{\Pending}\\ % LLAMA-PENDING
+Llama 3.1 8B (local) & 0.0167 & 0.0109 & 0.0237 & 0.0050\\
+Qwen2.5-Coder 7B (local) & 0.0585 & 0.0118 & 0.0217 & 0.0048\\
 \bottomrule
 \end{tabular}\par
 \vspace{0.25cm}
 \begin{itemize}
-\item Model vs reviewed control: TCP diff $+0.0335$, $+0.0231$, $-0.0111$; \textbf{not significant} (BH Wilcoxon $p$ 0.6543 each).
-\item Exact controls applied with the app's policy (strength, mixed actions, ``only'' groups); re-scored on 17 Nov after an independent review.
+\item Hosted vs reviewed control: TCP diff $+0.0335$, $+0.0231$, $-0.0111$; \textbf{not significant} (BH Wilcoxon $p$ 0.6214, 0.6543, 0.6214). Local: $-0.5122$, $-0.4704$ (BH $p$ 0.0001).
+\item Exact controls applied with the app's policy; re-scored on 17 Nov after an independent review.
 \item NDCG@10 falls, as in Experiments 1 and 2.
 \end{itemize}
 \src{200 users, seed 2026. TCP: 16 boost/only cases. TCER: 10 hide/reduce cases. TCP/TCER count the reference target set.}
 \end{frame}
 
 \begin{frame}{Results: non-inferiority, model comparison, cost}
-\footnotesize
+\scriptsize
 \begin{tabular}{@{}lrrcc@{}}
 \toprule
 Model & HR@1 diff & CI lower & Relative 10\% & Absolute 0.10\\\midrule
 Claude Sonnet 5.5 & $-0.0010$ & $-0.0027$ & fails & passes\\
 GPT-5 & $0.0006$ & $-0.0023$ & fails & passes\\
 GPT-5 mini & $-0.0006$ & $-0.0021$ & fails & passes\\
-Llama 3.1 8B & \multicolumn{4}{c}{\Pending}\\ % LLAMA-PENDING
+Llama 3.1 8B (local) & $0.0000$ & $0.0000$ & passes$^{*}$ & passes\\
+Qwen2.5-Coder 7B (local) & $-0.0002$ & $-0.0006$ & fails & passes\\
 \bottomrule
 \end{tabular}\par
 \vspace{0.2cm}
 \begin{itemize}
-\item Base HR@1 0.0050: relative margin is 0.0005, so it fails; the absolute margin passes trivially.
-\item Successes over 40 cases: Claude 33, GPT-5 32, GPT-5 mini 29. \textbf{No pairwise difference is significant} (McNemar BH $p$ 1.000, 0.762, 0.762; Wilcoxon BH $p$ 0.571, 0.269, 0.269).
-\item 411 calls, no errors. Median s/call: 6.6, 12.5, 11.7. Cost USD 5.86 (CLI-reported), 2.39, 0.47.
+\item Base HR@1 0.0050: relative margin is 0.0005; the absolute margin passes trivially. $^{*}$Llama passes only because it applied almost no control.
+\item Successes of 40: Claude 33, GPT-5 32, GPT-5 mini 29, Llama 11, Qwen 9. \textbf{No hosted pair differs} (McNemar BH $p$ 1.000, 0.554, 0.635); every hosted model beats both local ($p\leq0.0024$).
+\item Hosted: 411 calls, no errors; median s/call 6.6, 12.5, 11.7; USD 5.86 (CLI-reported), 2.39, 0.47. Local: free, median 126 and 109\,s/call, 13 and 10 call errors.
 \end{itemize}
 \end{frame}
 
@@ -605,9 +610,9 @@ Llama 3.1 8B & \multicolumn{4}{c}{\Pending}\\ % LLAMA-PENDING
 \item Chinese requests judged through an English machine-translation gloss.
 \item Small $n$ (20 / 14 / 6): wide intervals; pairwise differences not significant.
 \item HR@1 base rate $\approx$0.5\%: relative 10\% margin fails, absolute passes.
-\item Llama 3.1 8B: 21 of 40 cases, paused, resumed on commit 9071f05; results next week. Qwen evaluation deferred. gemma4:31b not attempted (memory held by the Llama run; 19\,GB model, 8\,GB GPU, 32k context needed). Anthropic API never run live. % LLAMA-PENDING
+\item Local models on one laptop only. gemma4:31b fit (37\,GB, 89\% CPU) but generated 0.90 tokens/s: not run. Anthropic API never run live.
 \item Frontier models are a declared departure from the proposal's local-model-only design.
-\item No user study; weak backbone; the set is now exposed.
+\item No user study; weak backbone (items 8958 and 1116 in the top ten of 865 and 862 of 865 users, seed 42); the set is now exposed.
 \end{itemize}
 \end{frame}
 
@@ -626,7 +631,7 @@ ACM SIGIR 2027, demo & \textbf{11 Feb 2027} (abstract 4 Feb) & $\leq$4 pages; ne
 \begin{frame}{Next steps}
 \small
 \begin{enumerate}
-\item Fill the Llama 3.1 8B rows next week (resumed run); run the Qwen evaluation; try gemma4:31b with free memory.
+\item Run gemma4:31b on a faster machine; test the Anthropic API route live.
 \item A larger, independently human-written reference set; a reader of Chinese.
 \item Measure the definition step of new categories, not only membership.
 \item A stronger recommender backbone and a meaningful quality margin.
