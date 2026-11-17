@@ -17,10 +17,25 @@ IDENTITY = {'backend': 'synthetic-callable', 'model_id': 'fixture', 'model_revis
 
 @pytest.fixture(autouse=True)
 def no_network(monkeypatch):
-    def forbidden(*args, **kwargs):
-        raise AssertionError('Network prohibited in synthetic provider tests')
-    monkeypatch.setattr(socket.socket, 'connect', forbidden)
-    monkeypatch.setattr(socket, 'create_connection', forbidden)
+    # Loopback stays allowed: asyncio on Windows builds its self-pipe with socket.connect to
+    # 127.0.0.1. Any other address is network and is refused.
+    real_connect, real_create = socket.socket.connect, socket.create_connection
+
+    def loopback(address):
+        host = address[0] if isinstance(address, tuple) else address
+        return isinstance(host, str) and (host in ('localhost', '::1') or host.startswith('127.'))
+
+    def connect(self, address, *args, **kwargs):
+        if not loopback(address):
+            raise AssertionError('Network prohibited in synthetic provider tests')
+        return real_connect(self, address, *args, **kwargs)
+
+    def create_connection(address, *args, **kwargs):
+        if not loopback(address):
+            raise AssertionError('Network prohibited in synthetic provider tests')
+        return real_create(address, *args, **kwargs)
+    monkeypatch.setattr(socket.socket, 'connect', connect)
+    monkeypatch.setattr(socket, 'create_connection', create_connection)
 
 
 class Fake:

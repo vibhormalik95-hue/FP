@@ -13,7 +13,7 @@ import re
 STOP = set("a an and any are as at be but by for from i i'm im in into is it its me more my no not of on or "
            "please remove show less hide only the them these this to videos video with without want stuff all "
            "that what which who where about some anything everything clips clip makes make feed less fewer".split())
-CJK = re.compile(r"[㐀-鿿]+")
+CJK = re.compile("[\u3400-\u9fff]+")
 
 
 def tokens(text):

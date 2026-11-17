@@ -77,8 +77,8 @@ def item_matches(item, target, custom):
     if kind == "tag":
         return value in item.get("tags", [])
     if kind == "custom":
-        cat = custom.get(value)
-        return bool(cat and cat["members"].get(str(item["item_id"]), {}).get("selected"))
+        entry = custom.get(value)
+        return bool(entry and entry["members"].get(str(item["item_id"]), {}).get("selected"))
     return False
 
 
@@ -177,10 +177,10 @@ class KuaiRecLab:
                 extra.update(("category", v) for v in item["kuairec_categories"])
                 extra.update(("tag", v) for v in item["tags"])
             terms = [{**t, "item_count": t["item_count"] + extra.get((t["kind"], t["value"]), 0)} for t in terms]
-        for label, cat in sorted(lab.custom.items()):
+        for label, entry in sorted(lab.custom.items()):
             terms.append({"term_id": f"custom:{label}", "kind": "custom", "value": label,
-                          "item_count": sum(1 for e in cat["members"].values() if e.get("selected")),
-                          "definition": cat["definition"]})
+                          "item_count": sum(1 for e in entry["members"].values() if e.get("selected")),
+                          "definition": entry["definition"]})
         return terms
 
     # ----- feed -----------------------------------------------------------
