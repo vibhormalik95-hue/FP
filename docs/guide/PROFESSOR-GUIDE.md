@@ -20,16 +20,23 @@ You need:
 - **Python 3.12** (3.11 also works).
 - **Node.js 22** only if the folder `web/dist` is missing (the built page is normally included). The test runner also uses Node for the browser checks.
 - **Google Chrome** for the browser checks of `run-all-tests.cmd` (not for normal use; any browser opens the page).
-- The **private research files**. They are not in the repository. They come in the private archive that the student sends you. Copy them into the source folder at these paths:
+- The **KuaiRec assets**: the processed data, the KuaiRec caption table, the English gloss and the trained checkpoints. They are not in the git tree; they are published as a GitHub Release asset under CC BY-SA 4.0 (attribution in `notices/KUAIREC-ASSETS-ATTRIBUTION.md`). One command downloads them and checks every SHA-256:
+
+```
+fetch-assets.cmd          (Windows)
+./fetch-assets.sh         (macOS / Linux)
+```
+
+It needs only Python (no virtual environment yet) and writes these files:
 
 | File or folder | What it is |
 | --- | --- |
 | `data/processed.json` | The processed KuaiRec subset (865 users, 2,593 items) |
-| `data/raw/kuairec_caption_category.csv` | KuaiRec captions, categories and tags |
-| `results/models/seed_42/` (with `model.pt`) | The trained SASRec checkpoint |
-| `data/kuairec_gloss_en.json` (optional) | English machine translation of the Chinese item text |
+| `data/raw/kuairec_caption_category.csv` | KuaiRec captions, categories and tags (unchanged official file) |
+| `data/kuairec_gloss_en.json` | English machine translation of the Chinese item text |
+| `results/models/seed_42/`, `seed_43/`, `seed_44/` | The trained SASRec checkpoints (the app uses seed 42) |
 
-The raw KuaiRec data itself is public: `scripts/fetch_data.py` downloads the official archive from Zenodo and preprocesses it into a new file. The application expects the reviewed copies from the private archive.
+If a file is already there with a different hash, it is reported and left alone (`--force` replaces it).
 
 Open a terminal in the source folder (the folder that holds `pyproject.toml`) and run:
 
@@ -250,7 +257,7 @@ One Python test is reported separately as *frozen by design* (a frozen 11 Novemb
 | What you see | What to do |
 | --- | --- |
 | `address already in use` / the server stops at once | Another program (or an earlier server) uses port 8765. Close it, or start with `--port 8770` and open `http://127.0.0.1:8770`. |
-| `Missing private research files (they are not in the repository)` followed by a list | Copy the listed files from the private archive to exactly those paths (section 2). |
+| `Missing private research files (they are not in the repository)` followed by a list | Run `fetch-assets.cmd` (section 2). |
 | The status says `gloss: missing` | `data/kuairec_gloss_en.json` is absent. Everything works; only the English translation lines are missing. |
 | `First install: py -3.12 -m venv .venv ...` | The virtual environment does not exist yet. Run the install commands of section 2. |
 | `The Python package for ... is not installed` | Install with the `providers` extra: `pip install -e ".[test,recommender,providers]"`. |

@@ -288,7 +288,7 @@ def cmd_score(args):
         {"title": "New category membership on a shared pool of %d KuaiRec items (NC, %d cases)" % (len(data["pool"]), summaries[names[0]]["nc_cases"]),
          "columns": ["Model", "Member precision", "Member recall", "Member F1", "F1 95% CI", "Raw-verdict F1", "Missed members"],
          "rows": [[n, s["nc_member_precision"], s["nc_member_recall"], s["nc_member_f1"], str(s["nc_member_f1_ci"]), s["nc_raw_f1"], s["retrieval_misses_members"]] for n, s in summaries.items()],
-         "note": "Selected = verdict match, quotation found in the item, and the independent check supports it. Every model used the reviewed reference definition."},
+         "note": "Selected = verdict match, quotation found in the item, and the independent check supports it. Every model used the reviewed reference definition. Measured with the freeze-time quotation rule; the shipped app is stricter since 1de3955 (quotations of 2+ characters, 3+ letters for Latin text, whole tags)."},
         {"title": "Downstream effect on the trained SASRec ranking (%d sampled users, seed %d)" % (len(sample), args.seed),
          "columns": ["Control", "TCP@10 (boost/only cases)", "TCER@10 (hide/reduce cases)", "NDCG@10", "HR@1"],
          "rows": eff_rows, "note": "TCP/TCER: share of the top ten that is in the REFERENCE target set. none = no control; reference = the reviewed control."},
