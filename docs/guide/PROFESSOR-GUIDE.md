@@ -10,6 +10,8 @@ It runs on your laptop and shows the real KuaiRec data (865 users, 2,593 items),
 The view **Original study (A to E)** holds the five conditions of the original proposal. The view **Language controls** lets you change a user's feed in plain English or Chinese.
 In every language control a model only *proposes*. The server checks the proposal, you review it, **Apply** changes exactly what you reviewed, and **Undo** restores the previous feed.
 The view **Results** shows the measured results of the offline evaluation, read from the result files.
+The page opens in **English**: the Chinese KuaiRec text is shown as an English machine translation, labelled as such. Untick **English** (next to **Auto-apply**, at the right of the tabs) to see the original Chinese text.
+A 9:23 demonstration video, `COMP9500-Feed-Control-Lab-demo.mp4` (sent separately, not in the repository), shows the workflows with OpenAI gpt-5 in the English display mode.
 
 # 2. Install (once)
 
@@ -78,7 +80,7 @@ Useful options (the same on both systems; on Windows add them after `run-app.cmd
 | --- | --- |
 | `--port 8770` | Use another port |
 | `--provider openai --model gpt-5-mini` | Start with OpenAI already selected (the key comes from `OPENAI_API_KEY`) |
-| `--budget-usd 1.00` | Stop all model calls once this much has been spent in this server session |
+| `--budget-usd 1.00` | Stop model calls once this much has been spent in this server session. The limit is checked before each call, so calls already running in parallel can pass it slightly, and a failed call is booked at zero cost |
 
 The server listens on `127.0.0.1` only, so nothing is reachable from other computers. Applied controls last until the server stops or you press **Reset this user**.
 
@@ -106,14 +108,14 @@ macOS:    export OPENAI_API_KEY=...
 **Other providers.**
 
 - **Mock (no AI, for tests)** needs no key and costs nothing. It only matches literal words, so it cannot read indirect requests. Use it to look at the screens and for the test runner.
-- **Ollama (local model on this computer)** needs no key. Start Ollama yourself with a large context window (`OLLAMA_CONTEXT_LENGTH=32768`) and pull a model, for example `qwen2.5-coder:7b-instruct`. Local models are slower and less accurate than gpt-5-mini.
-- **Anthropic API** works in the same way as OpenAI, with `ANTHROPIC_API_KEY`.
+- **Ollama (local model on this computer)** needs no key. Start Ollama yourself with a large context window (`OLLAMA_CONTEXT_LENGTH=32768`) and pull a model, for example `qwen2.5-coder:7b-instruct`. Local models are slower; their accuracy on the frozen evaluation set is still pending (the llama3.1:8b run will be added in the next update).
+- **Anthropic API:** a route exists (key from `ANTHROPIC_API_KEY`), but it has not been tested with a live key. Claude was measured only through the Claude command-line program.
 
 With gpt-5-mini, an interpretation costs a fraction of a US cent, and a new category on 20 items about one cent. All the screenshots with a model in this guide together cost USD 0.034. Every review shows the calls, seconds, tokens and the estimated cost.
 
 # 5. The workflows
 
-The screenshots below are from the real application on KuaiRec, research user 14. The shots of the manual control and of conditions A to E use the mock provider (no model is called there anyway); the shots of the requests in your own words, the new category and the new item use OpenAI gpt-5-mini.
+The screenshots below are from the real application on KuaiRec, research user 14. The shots of the manual control and of conditions A to E use the mock provider (no model is called there anyway); the shots of the requests in your own words, the new category and the new item use OpenAI gpt-5-mini. Most were taken before the English display became the default, so they show the original Chinese text with the English translation beside it.
 
 ## 5.1 Original study (A to E)
 
@@ -127,7 +129,7 @@ The tab **Compare A to E** shows the first ten items of each condition for the s
 
 ## 5.2 Language controls: the common pattern
 
-Open **Language controls**. The left side has four tabs: **1 · Choose a category**, **2 · Say it your way**, **3 · New category** and **4 · New items**. The right side always shows the feed: the top ten of the chosen research user, ranked by the trained SASRec model. Chinese text is the original KuaiRec text; the blue-labelled lines are English machine translation.
+Open **Language controls**. The left side has four tabs: **1 · Choose a category**, **2 · Say it your way**, **3 · New category** and **4 · New items**. The right side always shows the feed: the top ten of the chosen research user, ranked by the trained SASRec model. By default the page shows English machine translation in place of the Chinese text; untick **English** to see the original KuaiRec text.
 
 Every workflow ends in a **Review** with three blocks:
 
@@ -171,13 +173,13 @@ Read the three blocks, then **Apply** or **Discard**. Other examples to try: `Sh
 
 ## 5.5 A new category
 
-Tab **3 · New category**. Describe a category that KuaiRec does not have, for example `Videos filmed outdoors in nature: mountains, rivers, fields or the sea.` Set the scope (this user's top N items; 20 to 40 is enough for a demonstration) and press **Propose a definition**.
+Tab **3 · New category**. Describe a category that KuaiRec does not have, for example `Videos filmed outdoors in nature: mountains, rivers, fields or the sea.` Set the scope (this user's top N items, 40 by default and at most 200; 20 to 40 is enough for a demonstration) and press **Propose a definition**.
 
-**Step 1 — review the definition.** The model proposes a label and a precise definition from the user's top items, with quotations that the server has found in the item text (ticks). You may edit the label and the definition. Choose what Apply should do (**Show only**, **Show more**, **Show less**, **Hide**).
+**Step 1 — review the definition.** The model proposes a label and a precise definition, with quotations from the user's top items that the server has found in the item text (ticks). If none of the sampled items fits the description, the model still proposes a definition from the description alone. You may edit the label and the definition. Choose what Apply should do (**Show only**, **Show more**, **Show less**, **Hide**).
 
 ![Step 1: the proposed label 自然风光/户外景观 and its definition, with verified quotations from three items.](images/07-category-definition.png)
 
-**Step 2 — classification and evidence.** Press **Approve the definition and classify**. The model classifies every item in the scope and must quote the exact words it relies on; a separate call checks each cited quotation without seeing the verdict. Only items whose quotation exists *and* passed the check are selected. The table shows, for each item: the KuaiRec text with its translation, the verdict, the quotation (found or not), the evidence check and whether it is selected.
+**Step 2 — classification and evidence.** Press **Approve the definition and classify**. The model classifies every item in the scope and must quote the exact words it relies on; a separate call checks each quotation cited for a match, without seeing the verdict. A quotation counts only if it has at least two characters and occurs in the named field (a tag must match a whole tag). Only items whose quotation exists *and* passed the check are selected. The table shows, for each item: the KuaiRec text with its translation, the verdict, the quotation (found or not), the evidence check and whether it is selected.
 
 ![Step 2: the classification evidence table. Item 2894 (a mountain-top sea of clouds) is the one selected match; the other items are rejected with reasons.](images/08-category-review.png)
 
@@ -207,7 +209,9 @@ After **Apply** the item is listed under **Applied now** as an added item (ID 90
 
 The tab **Results** shows the measured results of the offline evaluation of the language controls. It reads the file `summary.json` of each run folder under `docs/evidence/lab-eval/<run>/` and shows each table with its run, test set and models. If no run has been written yet, the page says so.
 
-![The Results page before an evaluation run has been written.](images/10-results-empty.png)
+![The Results page with the run 20261117-main: the frozen 40-case set and the three hosted models (the tables continue below the fold).](images/10-results.png)
+
+The run `20261117-main` measured gpt-5, gpt-5-mini and Claude Sonnet 5.5 on a frozen set of 40 cases that Claude (Opus 5.5) drafted and Vibhor Malik reviewed row by row (1,211 rows, 24 corrections). Claude is therefore both the drafter's family and a measured model. The local llama3.1:8b run completed 21 of 40 cases before it was paused; it is being resumed and will be added in the next update. The downstream tables apply each model's exact controls with the application's own policy.
 
 # 7. Run all tests
 
@@ -225,7 +229,7 @@ run-all-tests.cmd
 
 It runs, in order:
 
-1. the Python tests (`pytest` on `tests/`);
+1. the Python tests (`pytest` on `tests/`; the root-level `test_*.py` files and the `tools/hosted_validation*` tests are outside the runner);
 2. the Node unit tests of the page (`web/tests/*.test.mjs`);
 3. the application on real KuaiRec in a child process on a free port;
 4. the browser flows in Chrome through Playwright (`tests/browser/lab_flows.cjs`): A to E, manual preview / Apply / Undo, the requests in your own words, a new category, a new item, auto-apply, reset and the Results page;
@@ -258,4 +262,4 @@ One Python test is reported separately as *frozen by design* (a frozen 11 Novemb
 
 # 9. What the application does not claim
 
-The study is offline on KuaiRec with no user study, and its test set was drafted with AI assistance and reviewed by a person; the **Results** page states what was measured and its limits.
+The study is offline on KuaiRec with no user study. Its test set was drafted by an AI (Claude Opus 5.5) and reviewed row by row by a person, and a Claude model is also one of the measured models, which can favour Claude. The **Results** page states what was measured and its limits.

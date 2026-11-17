@@ -7,8 +7,13 @@
 % docs/evidence/lab-eval/20261117-b-parser-rerun/summary.json,
 % docs/evidence/lab-eval-set-20261117/README.md and FROZEN.json,
 % FINAL2/AUDIT.md, FINAL2/BLOCKERS.md, FINAL2/conference-options-verified.md.
-% The llama3.1:8b run of Experiment 3 was still running at build time.
-% Each line to fill from it carries the comment LLAMA-PENDING.
+% The llama3.1:8b run of Experiment 3 completed 21 of 40 cases before it was
+% paused; it is being resumed on commit 9071f05. Each line to fill from it
+% carries the comment LLAMA-PENDING. Downstream values re-scored 17 Nov with the
+% exact controls. Video facts: docs/evidence/2026-11-17-video/ and
+% FINAL2/recording/take-11/check.json. Generalization check:
+% runs/generalization-gpt5/summary.md and runs/generalization-gpt5-nc/summary.md.
+% 4 Nov study: deliverables/2026-11-04-prospective-evaluation/PROTOCOL-AND-RESULTS.md.
 \usetheme[progressbar=head,numbering=fraction,sectionpage=none]{metropolis}
 \IfFileExists{appendixnumberbeamer.sty}{\usepackage{appendixnumberbeamer}}{}
 \usepackage{array,amsmath,graphicx,tikz}
@@ -48,7 +53,7 @@
 \setlength{\metropolis@progressinheadfoot@linewidth}{2pt}
 \makeatother
 \newcommand{\src}[1]{\vfill{\tiny\color{bcitgray}#1}}
-\newcommand{\Pending}{\emph{pending (run in progress)}}
+\newcommand{\Pending}{\emph{pending (21 of 40 cases; resumed)}}
 \title[COMP 9500: Natural-language controls]{Natural-Language Controls for\\Short-Video Recommenders}
 \subtitle{An offline study of controllability}
 \author{Vibhor Malik}
@@ -71,7 +76,7 @@
 \begin{enumerate}
 \item How much does a deterministic category control change exposure, and what does it cost in next-item ranking quality?
 \item How reliably does a language model interpret a request as a control?
-\item Can control go beyond fixed category IDs, to existing KuaiRec category and tag names reached through indirect wording, and to new categories? How accurate are models against a human-reviewed reference?
+\item Can control go beyond fixed category IDs, to existing KuaiRec category and tag names reached through indirect wording, and to new categories? How accurate are models against an AI-drafted, human-reviewed reference?
 \end{enumerate}
 \vspace{0.2cm}
 The model proposes; a person reviews; a fixed policy applies exactly the approved change.
@@ -83,11 +88,11 @@ The model proposes; a person reviews; a fixed policy applies exactly the approve
 \begin{tabular}{@{}P{3.2cm}P{4.1cm}P{2.7cm}@{}}
 \toprule
 Request & How it is answered & Measured result\\\midrule
-1. Manual category control with measured performance & Manual workflow on real KuaiRec labels; no model. Same policy as the language controls & Reviewed reference control: TCP@10 0.0063 $\to$ 0.4447 (200 users)\\[0.15cm]
+1. Manual category control with measured performance & Manual workflow on real KuaiRec labels; no model. Same policy as the language controls & Reviewed reference control: TCP@10 0.0063 $\to$ 0.5290; model controls 0.5178--0.5625 (200 users)\\[0.15cm]
 2. A new category from natural language that feeds the filter & Definition $\to$ person reviews $\to$ membership with quotations $\to$ separate evidence check $\to$ filter & Member F1 0.875--0.936 (6 cases, 150-item pool)\\[0.15cm]
 3. Indirect intent matched to existing categories and tags & One call maps any wording (EN or ZH) to the 467 existing KuaiRec terms & Exact intended profile 16--17 of 20; abstention 7--12 of 14\\\bottomrule
 \end{tabular}\par
-\src{Experiment 3, frozen human-reviewed set, three hosted models. Llama 3.1 8B run in progress. Small $n$: wide intervals.}
+\src{Experiment 3, frozen AI-drafted and human-reviewed set, three hosted models. Llama 3.1 8B: 21 of 40 cases, resumed, results next week. Small $n$: wide intervals.}
 \end{frame}
 
 \section{Related work}
@@ -233,19 +238,19 @@ The absolute 10 percentage point non-inferiority margin is uninformative at this
 \begin{tabular}{@{}lrrrrr@{}}
 \toprule
 Model & Strict, run 1 & Wilson 95\% & Op. errors & Clarify & Lenient, run 2\\\midrule
-Llama 3.1 8B & 79/100 & [0.700, 0.858] & 0 & 9/30 & 79/100 (0 err.)\\
-Qwen2.5-Coder 7B & 74/100 & [0.646, 0.816] & 9 & 10/30 & n/a\\
+Llama 3.1 8B & 79/100 & [0.700, 0.858] & 7 & 9/30 & n/a\\
+Qwen2.5-Coder 7B & 74/100 & [0.646, 0.816] & 13 & 10/30 & n/a\\
 GPT-5 mini & 60/100 & [0.502, 0.691] & 36 & 0/30 & 95/100\\
 GPT-5 & 60/100 & [0.502, 0.691] & 35 & 0/30 & 96/100\\\bottomrule
 \end{tabular}\par
 \vspace{0.25cm}
 \begin{itemize}
-\item Same exposed 100-case bank, prompt, schema and validator; no tuning.
-\item Strict score is primary: \textbf{no model meets 85\%}. Llama reproduces 79/100.
+\item Same exposed 100-case bank, prompt, schema, validator and grounding rule (applied by re-scoring the saved predictions); no tuning.
+\item Strict score is primary: \textbf{no model meets 85\%}. Llama reproduces 79/100 with 7 operational errors, as frozen.
 \item GPT models broke the frozen rule ``strength 0.0 for reset/clarify''.
 \item Format-lenient score is \textbf{post hoc}: ignores only that strength field.
 \end{itemize}
-\src{Strict run 2 of GPT-5 mini and GPT-5: 60/100 each. Qwen raw replies not saved. Every bank case uses the same 4 of 31 opaque IDs.}
+\src{Strict run 2 of GPT-5 mini and GPT-5: 60/100 each. Local raw replies not saved in run 1. Every bank case uses the same 4 of 31 opaque IDs.}
 \end{frame}
 
 \begin{frame}{Experiment 1 conclusion}
@@ -255,7 +260,7 @@ GPT-5 & 60/100 & [0.502, 0.691] & 35 & 0/30 & 96/100\\\bottomrule
 \item All 10/10 explanation fact selections equal the template.
 \item Boost NDCG@10 falls 45.7\%. Non-inferiority is uninformative.
 \item Backbone HR@1 is 0.0--0.46\%, below recency popularity's 8.0\%.
-\item Windows replay: all metrics reproduce; full-ranking hashes do not.
+\item Windows replay of the rule arm: all metrics reproduce; full-ranking hashes do not. (Llama rankings equal the rule arm in the frozen records.)
 \end{enumerate}
 \src{The study establishes bounded enforcement and its limitations. It does not establish an LLM advantage or useful quality preservation.}
 \end{frame}
@@ -400,6 +405,21 @@ Llama 73/100 and rules 18/100. The worksheet has not\\
 been adjudicated into a human-reference set.
 \end{frame}
 
+\begin{frame}{Synthetic-language study, 4 November: a negative finding}
+\small
+\begin{itemize}
+\item Earlier pipeline (reviewed topic profile), local Qwen2.5-Coder 7B Instruct.
+\item AI-written requests and references: 100 supported, 20 ambiguous or unsupported.
+\item \textbf{Complete intended profile: 48 of 100} supported requests.
+\item Correct clarification: \textbf{19 of 20} diagnostic requests.
+\item 120 invocations: 49 ready proposals, 61 clarifications, 5 grounding errors, 5 parser or schema rejections.
+\item By stratum: boosts 11/20, reductions 7/20, exclusions 8/20, two topics 15/20, profile replacement 1/10, single subject with context 6/10.
+\end{itemize}
+\vspace{0.1cm}
+A negative finding for autonomous use: a person must review each proposal.
+\src{deliverables/2026-11-04-prospective-evaluation/PROTOCOL-AND-RESULTS.md. Requests quoted literal Chinese source phrases. The bank is now exposed.}
+\end{frame}
+
 \section{The integrated application}
 \begin{frame}{One application on real KuaiRec}
 \footnotesize
@@ -426,7 +446,7 @@ been adjudicated into a human-reference set.
 \end{center}
 \begin{itemize}
 \item One app serves the study view A--E and the language controls on the same data.
-\item KuaiRec text joined: caption, cover text, tags, 3 levels of category names; Chinese, with an English gloss labelled machine translation.
+\item KuaiRec text joined: caption, cover text, tags, 3 levels of category names. The page opens in English (machine translation of the Chinese text, labelled); one switch shows the original.
 \item Policy: hide, only, boost/reduce by 0.10 / 0.25 / 0.40 on the normalized score.
 \end{itemize}
 \src{Item text covers all 2,593 items; 2,513 have a caption or cover text. The model sees 467 terms: 266 category names and 201 tags carried by at least 3 items.}
@@ -439,12 +459,28 @@ been adjudicated into a human-reference set.
 Workflow & What happens & Calls\\\midrule
 1. Manual & Person picks an existing label and an action. & 0\\[0.12cm]
 2. Request to existing labels & Any wording, EN or ZH, plus the 467 terms (no item text) $\to$ controls with exact terms, a verbatim span and a relation; or ambiguous / no match / unsupported. & 1\\[0.12cm]
-3. New category & Definition (label $\leq$60, definition $\leq$600 characters) $\to$ person reviews $\to$ membership of each item in scope with a quotation $\to$ separate check that never sees the verdict. & 1 + batches\\[0.12cm]
+3. New category & Definition (label $\leq$60, definition $\leq$600 characters) $\to$ person reviews $\to$ membership of each item in scope ($\leq$200) with a quotation $\to$ verdict-blind check of match quotations. & 1 + batches\\[0.12cm]
 4. New items & Title + description $\to$ existing categories, tags and new-category verdicts, then the same check. Score: median of the user's base scores. & 1 + check\\\bottomrule
 \end{tabular}\par
-\vspace{0.2cm}
-Preview changes nothing. Apply needs the preview of the current state. Undo restores it.
-\src{The same functions run in the app and in the measurement script. A test checks that they hold no example-specific logic.}
+Preview changes nothing; Apply needs the preview of the current state; Undo restores it.
+\src{Same functions in the app and the measurement script; a test checks code and prompts for example-specific logic. Since 17 Nov a quotation needs $\geq$2 characters or a whole tag (measured runs: earlier rule).}
+\end{frame}
+
+\begin{frame}{Demo video and a check on new domains}
+\footnotesize
+\textbf{Demo video} \texttt{COMP9500-Feed-Control-Lab-demo.mp4}
+\begin{itemize}
+\item 9:23, 1920$\times$1080, one take; Kokoro af\_heart narration.
+\item GPT-5 through the OpenAI API (key from the environment, never shown); English display mode.
+\item Checks: no silence $\geq$5\,s at $-45$\,dB; transcript matches 96/96 script sentences (similarity 0.936); one frame every 30\,s.
+\end{itemize}
+\textbf{New-domain check} (software check, not evaluation data; GPT-5)
+\begin{itemize}
+\item 6/6 new requests (family-safe, travel, mood, fitness, vehicles, celebrity) mapped to existing labels.
+\item 2 new descriptions (music, kindness): a definition is now proposed even when the sampled items do not fit; classification of 100 items selected 0 for each.
+\item 2 new items classified to existing categories and tags.
+\end{itemize}
+\src{docs/evidence/2026-11-17-video/; tools/generalization\_examples.json; runs/generalization-gpt5*/summary.md (local). The define step is not part of the measured evaluation.}
 \end{frame}
 
 \section{Experiment 3}
@@ -525,16 +561,17 @@ Llama 3.1 8B & \multicolumn{5}{c}{\Pending}\\ % LLAMA-PENDING
 \toprule
 Control & TCP@10 & TCER@10 & NDCG@10 & HR@1\\\midrule
 None & 0.0063 & 0.0118 & 0.0242 & 0.0050\\
-Reviewed reference & 0.4447 & 0.0000 & 0.0160 & 0.0058\\
-Claude Sonnet 5.5 & 0.3583 & 0.0000 & 0.0173 & 0.0042\\
-GPT-5 & 0.3810 & 0.0000 & 0.0184 & 0.0056\\
-GPT-5 mini & 0.3282 & 0.0000 & 0.0175 & 0.0044\\
+Reviewed reference & 0.5290 & 0.0000 & 0.0153 & 0.0062\\
+Claude Sonnet 5.5 & 0.5625 & 0.0000 & 0.0144 & 0.0040\\
+GPT-5 & 0.5521 & 0.0000 & 0.0156 & 0.0056\\
+GPT-5 mini & 0.5178 & 0.0000 & 0.0145 & 0.0044\\
 Llama 3.1 8B & \multicolumn{4}{c}{\Pending}\\ % LLAMA-PENDING
 \bottomrule
 \end{tabular}\par
 \vspace{0.25cm}
 \begin{itemize}
-\item Model controls stay below the reviewed control: TCP diff $-0.0864$, $-0.0637$, $-0.1165$ (BH Wilcoxon $p$ 0.0054, 0.0050, 0.0050).
+\item Model vs reviewed control: TCP diff $+0.0335$, $+0.0231$, $-0.0111$; \textbf{not significant} (BH Wilcoxon $p$ 0.6543 each).
+\item Exact controls applied with the app's policy (strength, mixed actions, ``only'' groups); re-scored on 17 Nov after an independent review.
 \item NDCG@10 falls, as in Experiments 1 and 2.
 \end{itemize}
 \src{200 users, seed 2026. TCP: 16 boost/only cases. TCER: 10 hide/reduce cases. TCP/TCER count the reference target set.}
@@ -545,7 +582,7 @@ Llama 3.1 8B & \multicolumn{4}{c}{\Pending}\\ % LLAMA-PENDING
 \begin{tabular}{@{}lrrcc@{}}
 \toprule
 Model & HR@1 diff & CI lower & Relative 10\% & Absolute 0.10\\\midrule
-Claude Sonnet 5.5 & $-0.0008$ & $-0.0023$ & fails & passes\\
+Claude Sonnet 5.5 & $-0.0010$ & $-0.0027$ & fails & passes\\
 GPT-5 & $0.0006$ & $-0.0023$ & fails & passes\\
 GPT-5 mini & $-0.0006$ & $-0.0021$ & fails & passes\\
 Llama 3.1 8B & \multicolumn{4}{c}{\Pending}\\ % LLAMA-PENDING
@@ -568,7 +605,7 @@ Llama 3.1 8B & \multicolumn{4}{c}{\Pending}\\ % LLAMA-PENDING
 \item Chinese requests judged through an English machine-translation gloss.
 \item Small $n$ (20 / 14 / 6): wide intervals; pairwise differences not significant.
 \item HR@1 base rate $\approx$0.5\%: relative 10\% margin fails, absolute passes.
-\item Not run: gemma4:31b (does not fit in memory); Qwen evaluation deferred; Llama 3.1 8B evaluation still running; Anthropic API not run live. % LLAMA-PENDING
+\item Llama 3.1 8B: 21 of 40 cases, paused, resumed on commit 9071f05; results next week. Qwen evaluation deferred. gemma4:31b not attempted (memory held by the Llama run; 19\,GB model, 8\,GB GPU, 32k context needed). Anthropic API never run live. % LLAMA-PENDING
 \item Frontier models are a declared departure from the proposal's local-model-only design.
 \item No user study; weak backbone; the set is now exposed.
 \end{itemize}
@@ -589,7 +626,7 @@ ACM SIGIR 2027, demo & \textbf{11 Feb 2027} (abstract 4 Feb) & $\leq$4 pages; ne
 \begin{frame}{Next steps}
 \small
 \begin{enumerate}
-\item Fill the Llama 3.1 8B rows when its run finishes; run the Qwen evaluation.
+\item Fill the Llama 3.1 8B rows next week (resumed run); run the Qwen evaluation; try gemma4:31b with free memory.
 \item A larger, independently human-written reference set; a reader of Chinese.
 \item Measure the definition step of new categories, not only membership.
 \item A stronger recommender backbone and a meaningful quality margin.
@@ -670,7 +707,7 @@ Experiment 2: 100 requests and 200 retained parser responses;\\
 Experiment 3: frozen set \texttt{docs/evidence/lab-eval-set-20261117/};\\
 results \texttt{docs/evidence/lab-eval/20261117-main/};\\
 parser re-run \texttt{docs/evidence/lab-eval/20261117-b-parser-rerun/}.\\[0.3cm]
-E1 Windows replay (16 Nov): all metrics reproduce; full-ranking hashes differ.
+E1 Windows replay of the rule arm (16 Nov): all metrics reproduce; full-ranking hashes differ.
 \src{Review files contain KuaiRec item text and stay private.}
 \end{frame}
 

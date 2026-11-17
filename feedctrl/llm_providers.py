@@ -155,7 +155,10 @@ class OpenAICompatibleProvider(Provider):
         self.base_url = base_url or "https://api.openai.com/v1"
 
     def describe(self):
-        return {**super().describe(), "base_url": self.base_url, "effort": self.effort}
+        from urllib.parse import urlsplit, urlunsplit
+        parts = urlsplit(self.base_url)
+        shown = urlunsplit((parts.scheme, parts.hostname + (f":{parts.port}" if parts.port else ""), parts.path, "", ""))
+        return {**super().describe(), "base_url": shown, "effort": self.effort}   # never show user:password@
 
     def complete(self, task, system, payload, schema):
         import openai

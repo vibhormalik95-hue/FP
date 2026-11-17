@@ -1,10 +1,10 @@
 # Paper sources
 
-**Draft, not ready for submission.** The current revision is `research-paper-2026-11-17.tex` (17 November 2026). It reports the integrated application on real KuaiRec and Experiment 3: the language controls measured on a frozen, human-reviewed set of 40 cases with three hosted models. The local Llama 3.1 8B run of Experiment 3 was still running when this revision was built; its table rows read "pending (run in progress)" (see below).
+**Draft, not ready for submission.** The current revision is `research-paper-2026-11-17.tex` (17 November 2026). It reports the integrated application on real KuaiRec and Experiment 3: the language controls measured on a frozen set of 40 cases, AI-drafted (Claude Opus 5.5) and human-reviewed, with three hosted models. The local Llama 3.1 8B run of Experiment 3 completed 21 of 40 cases before it was paused; it is being resumed, and its table rows read "pending (run in progress)" until next week's update (see below). The downstream values were re-scored on 17 November with each model's exact controls, and the parser re-run applies the grounding rule of the frozen parser.
 
 | File | Content |
 | --- | --- |
-| `research-paper-2026-11-17.tex`, `research-paper-2026-11-17.pdf` | **Current revision** (8 pages with the references, IEEE conference format). |
+| `research-paper-2026-11-17.tex`, `research-paper-2026-11-17.pdf` | **Current revision** (8 pages with the references, IEEE conference format). The deck of the same date has 43 pages. |
 | `research-paper-2026-11-14.tex`, `research-paper-2026-11-14.pdf` | Revision of 14 November 2026: demonstration runs on invented scenarios, filled with the runs on the integrated revision `ff92666` (records: `docs/evidence/2026-11-14-integrated/`). A dated record; it stays as it is. An earlier build held the values of revision `b7c5a91` (records: `docs/evidence/2026-11-14/`). |
 | `references-2026-11-14.bib` | Complete bibliography (22 entries). Both the 14 and the 17 November revisions use this file only. |
 | `references.bib` | Bibliography of the October paper. Unchanged. |
@@ -15,7 +15,7 @@ The presentation of the same date is `presentation-bcit/presentation-2026-11-17.
 
 ## Build
 
-Run this command in this folder. It needs `pdflatex` and `bibtex` (MiKTeX or TeX Live) and the packages `mathptmx`, `microtype`, `booktabs` and `tikz`.
+Run this command in this folder. It needs `pdflatex` and `bibtex` (MiKTeX or TeX Live) and the packages `mathptmx`, `microtype`, `booktabs` and `tikz`. `latexmk` needs Perl; on Windows the Perl of Git for Windows works (`C:\Program Files\Git\usr\bin` on the `PATH`).
 
 ```
 latexmk -pdf research-paper-2026-11-17
