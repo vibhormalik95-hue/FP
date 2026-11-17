@@ -23,6 +23,7 @@ from __future__ import annotations
 import argparse
 import array
 import ctypes
+import ctypes.wintypes
 import hashlib
 import json
 import math
@@ -171,7 +172,7 @@ def focus_chrome():
         if u32.IsWindowVisible(hwnd):
             buf = ctypes.create_unicode_buffer(512)
             u32.GetWindowTextW(hwnd, buf, 512)
-            if buf.value.endswith("Google Chrome"):
+            if buf.value.startswith("Feed Control Lab") and buf.value.endswith("Google Chrome"):
                 found.append(hwnd)
         return True
     u32.EnumWindows(visit, 0)
@@ -195,21 +196,30 @@ class Director:
         self.calibrate()
 
     def ensure_front(self):
-        """Every click and keystroke must reach Chrome. Refocus up to three times; abort the take otherwise."""
+        """Every click and keystroke must reach the recording window. Another window in front is minimized
+        (never clicked); a focusing click is made only on a point that belongs to the recording window."""
+        u32 = ctypes.windll.user32
         for attempt in range(4):
-            if "Chrome" in foreground_title():
+            if foreground_title().startswith("Feed Control Lab"):
                 if attempt:
                     self.events.append({"t": round(self.cap.now(), 2), "refocused": attempt})
                 return
+            other = u32.GetForegroundWindow()
+            if other and foreground_title():
+                u32.ShowWindow(other, 6)          # SW_MINIMIZE the window that took the focus
             focus_chrome()
             time.sleep(0.5)
-            if "Chrome" not in foreground_title() and hasattr(self, "dpr"):
-                # A real click always activates a window: click the blank left margin of the page.
-                back = pyautogui.position()
-                pyautogui.click(*self.screen(6, 6))   # top-left corner of the page: blank, nothing to select
-                pyautogui.moveTo(*back)
-                time.sleep(0.4)
-        raise NotInFront(f"Foreground window is '{foreground_title()}', not Chrome; the take is aborted.")
+            if not foreground_title().startswith("Feed Control Lab") and hasattr(self, "dpr"):
+                x, y = self.screen(6, 6)
+                hwnd = u32.GetAncestor(u32.WindowFromPoint(ctypes.wintypes.POINT(x, y)), 2)   # GA_ROOT
+                buf = ctypes.create_unicode_buffer(512)
+                u32.GetWindowTextW(hwnd, buf, 512)
+                if buf.value.startswith("Feed Control Lab"):
+                    back = pyautogui.position()
+                    pyautogui.click(x, y)             # blank top-left corner of the recording page
+                    pyautogui.moveTo(*back)
+                    time.sleep(0.4)
+        raise NotInFront(f"Foreground window is '{foreground_title()}', not the recording window; the take is aborted.")
 
     # -- coordinates
     def calibrate(self):
