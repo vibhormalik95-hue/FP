@@ -98,11 +98,11 @@ def workflows(base, user, examples):
                if st == 200 else str(p.get("detail"))[:300], ok)
     label = None
     for ex in examples["new_category"]:
-        st, d, sec = call(base, "/api/lab/define", {"user_id": user, "description": ex["description"], "scope_size": 30})
+        st, d, sec = call(base, "/api/lab/define", {"user_id": user, "description": ex["description"], "scope_size": 100})
         record("new-category: define", ex, st, d, sec, f"{d.get('status')}: {d.get('label')}" if st == 200 else str(d.get("detail")), st == 200)
         if st == 200 and d.get("status") == "propose":
             st, p, sec = call(base, "/api/lab/classify", {"user_id": user, "label": d["label"], "definition": d["definition"],
-                                                          "action": "boost", "strength": "strong", "scope_size": 30})
+                                                          "action": "boost", "strength": "strong", "scope_size": 100})
             selected = [r["item_id"] for r in p.get("evidence", []) if r.get("selected")] if st == 200 else []
             ok = st == 200 and all(r["quote_verified"] or r["verdict"] == "unknown" for r in p.get("evidence", [])
                                    if r.get("selected"))
@@ -132,6 +132,7 @@ def main(argv=None):
     ap.add_argument("--user", type=int, default=14)
     ap.add_argument("--skip-browser", action="store_true")
     ap.add_argument("--only-workflows", action="store_true", help="skip the test suites and the browser")
+    ap.add_argument("--examples", default="tools/demo_examples.json")
     ap.add_argument("--out")
     args = ap.parse_args(argv)
     stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
@@ -186,7 +187,7 @@ def main(argv=None):
             summary["steps"]["browser"] = {"exit": code, "seconds": sec, "ok": code == 0,
                                            "result": f"{r.get('passed', 0)} passed, {r.get('failed', '?')} failed"}
             call(base, "/api/lab/reset", {"user_id": args.user})
-        examples = json.loads((ROOT / "tools/demo_examples.json").read_text(encoding="utf-8"))
+        examples = json.loads((ROOT / args.examples).read_text(encoding="utf-8"))
         started = time.monotonic()
         rows, _ = workflows(base, args.user, examples)
         _, calls, _ = call(base, "/api/lab/calls")

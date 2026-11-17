@@ -189,14 +189,14 @@ def mount_lab(app, *, gloss_path=None, results_dir=None, budget_usd=None, lab=No
     def define(body: dict = Body(...)):
         return guarded(lambda: wf.define_category(need_lab(), slot.provider, slot.ledger, int(body["user_id"]),
                                                   body.get("description", ""),
-                                                  int(body.get("scope_size", wf.DEFAULT_SCOPE))))
+                                                  max(10, min(200, int(body.get("scope_size", wf.DEFAULT_SCOPE))))))
 
     @app.post("/api/lab/classify")
     def classify(body: dict = Body(...)):
         return guarded(lambda: wf.classify_category(need_lab(), slot.provider, slot.ledger, int(body["user_id"]),
                                                     body.get("label"), body.get("definition"),
                                                     body.get("action", "only"), body.get("strength", "standard"),
-                                                    int(body.get("scope_size", wf.DEFAULT_SCOPE))))
+                                                    max(10, min(200, int(body.get("scope_size", wf.DEFAULT_SCOPE))))))
 
     @app.post("/api/lab/new-items")
     def new_items(body: dict = Body(...)):

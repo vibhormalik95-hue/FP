@@ -1,0 +1,31 @@
+{
+  "note": "Extra examples in new domains, never used in the video or the measured set, to check that the app handles arbitrary requests. Software check, not evaluation data.",
+  "requests": [
+    "My kids are watching with me tonight, so nothing scary or violent please.",
+    "I'm planning a road trip next month and want to see beautiful places.",
+    "Too many sad stories lately, cheer me up.",
+    "I want to get back in shape after the holidays.",
+    "Only cars and motorbikes for now.",
+    "Show me less celebrity gossip."
+  ],
+  "interpret": [
+    {"domain": "family-safe", "language": "en", "kind": "nonliteral", "request": "My kids are watching with me tonight, so nothing scary or violent please."},
+    {"domain": "travel", "language": "en", "kind": "nonliteral", "request": "I'm planning a road trip next month and want to see beautiful places."},
+    {"domain": "mood", "language": "en", "kind": "nonliteral", "request": "Too many sad stories lately, cheer me up."},
+    {"domain": "fitness", "language": "en", "kind": "nonliteral", "request": "I want to get back in shape after the holidays."},
+    {"domain": "vehicles", "language": "en", "kind": "literal", "request": "Only cars and motorbikes for now."},
+    {"domain": "celebrity", "language": "en", "kind": "literal", "request": "Show me less celebrity gossip."}
+  ],
+  "new_category": [
+    {"domain": "music", "description": "Videos where someone is singing or playing an instrument."},
+    {"domain": "kindness", "description": "Videos showing a stranger helping someone in need."}
+  ],
+  "new_items": [
+    {"domain": "music", "items": [{"title": "Acoustic guitar cover at the park", "description": "A street musician plays a slow guitar version of a pop song while people stop to listen."}]},
+    {"domain": "kindness", "items": [{"title": "Bus driver waits for an elderly passenger", "description": "The driver gets out to help an old man with his shopping bags onto the bus."}]}
+  ],
+  "manual": [
+    {"domain": "cars", "kind": "category", "value": "汽车", "action": "only"},
+    {"domain": "comedy", "kind": "category", "value": "喜剧", "action": "reduce", "strength": "light"}
+  ]
+}
