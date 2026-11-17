@@ -54,6 +54,10 @@
     {
       "domain": "skills",
       "description": "Videos that teach someone a practical skill step by step."
+    },
+    {
+      "domain": "dogs",
+      "description": "Videos about dogs: a pet dog, a puppy or a named dog is part of the story."
     }
   ],
   "new_items": [
@@ -72,6 +76,15 @@
         {
           "title": "Tomato and egg stir-fry in three minutes",
           "description": "A home-style recipe, simple and easy for beginners."
+        }
+      ]
+    },
+    {
+      "domain": "puppy",
+      "items": [
+        {
+          "title": "Our puppy's first walk in the park",
+          "description": "Max, our golden retriever puppy, meets other dogs on his first walk and chases a ball."
         }
       ]
     }

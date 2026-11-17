@@ -88,7 +88,9 @@ natural-language description. {DATA_NOTE} Use only the supplied item metadata as
 A new category may overlap existing categories, but a renamed existing category is not new.
 Do not classify the whole catalogue yet. Give a short label (at most 60 characters) and a self-contained
 one-paragraph definition (at most 600 characters) that states the conditions an item must meet; write the
-label, the definition and the rationale in English. Cite up to five items whose fields support the
+label, the definition and the rationale in English. State every condition so that the item text (title,
+description, tags) can establish it; do not require what text cannot show, such as what the picture mainly
+shows. Cite up to five items whose fields support the
 definition, copying each quote EXACTLY from the named field (title, description or tags).
 Membership rules the definition must allow: a match needs affirmative evidence for every condition; a
 non-match needs evidence that a condition is false; missing information is unknown.
@@ -374,7 +376,7 @@ def classify_category(lab, provider, ledger, user_id, label, definition, action=
     members = {str(r["item_id"]): {k: r[k] for k in ("verdict", "field", "quote", "reason", "quote_verified",
                                                      "assessment", "selected")} for r in rows}
     new_custom = {"label": label, "definition": definition, "members": members,
-                  "scope": f"top {scope_size} items of user {user_id} plus added items"}
+                  "scope": f"top {scope_size} items of the current feed of user {user_id} (after applied controls) plus added items"}
     control = make_control("new-category", action, {"kind": "custom", "value": label}, strength)
     selected = [r["item_id"] for r in rows if r["selected"]]
     counts = {v: sum(1 for r in rows if r["verdict"] == v) for v in ("match", "not_match", "unknown")}
@@ -382,7 +384,7 @@ def classify_category(lab, provider, ledger, user_id, label, definition, action=
         {"check": f"Every item received a verdict ({len(memberships)}/{len(rows)})", "ok": len(memberships) == len(rows)},
         {"check": "Every match/not-match quote occurs in the cited field", "ok": all(r["quote_verified"] for r in rows)},
         {"check": f"Independent evidence check run on {len(assessments)} cited match(es)", "ok": True}]
-    notes = [f"Scope: this user's top {scope_size} recommended items (plus added items). Items outside the scope "
+    notes = [f"Scope: the top {scope_size} items of this user's current feed, after the applied controls (plus added items). Items outside the scope "
              "were not classified and are not members.",
              f"Classifier: {counts['match']} match, {counts['not_match']} not match, {counts['unknown']} unknown.",
              f"Selected after the quote check and the independent evidence check: {len(selected)} item(s)."]
@@ -455,6 +457,14 @@ def add_items_preview(lab, provider, ledger, user_id, new_items):
             a = assessments.get(e["label"], {}).get(str(c["item_id"]))
             e["assessment"] = a
             e["selected"] = e["verdict"] == "match" and e["quote_verified"] and bool(a and a.get("supports") is True)
+            if e["verdict"] == "match":
+                check = ("not run (quotation not found)" if not e["quote_verified"] else
+                         "supports" if a and a.get("supports") is True else
+                         "does not support" if a else "returned nothing")
+                checks.append({"check": f"{c['item_id']}: new category '{e['label']}': verdict match, quotation "
+                                        f"{'found' if e['quote_verified'] else 'not found'}, independent check {check}"
+                                        f" -> {'selected' if e['selected'] else 'not selected'}",
+                               "ok": e["selected"]})
             custom_updates.setdefault(e["label"], {})[str(c["item_id"])] = {
                 k: e[k] for k in ("verdict", "field", "quote", "reason", "quote_verified", "assessment", "selected")}
         evidence.append({"item_id": c["item_id"], "title": c["title"], "categories": item["kuairec_categories"],

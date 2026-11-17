@@ -282,3 +282,45 @@ def test_manual_several_labels_in_one_preview_and_one_undo():
     assert lab.undo(7)["feed"]["eligible"] == 5
     with pytest.raises(LabError):
         wf.manual_preview(lab, 7, "category", None, "hide", values=["home", "no-such-label"])
+
+
+def test_scope_is_the_current_feed_so_hidden_items_are_not_classified():
+    # Take 13: five of the ten scope items were items the user had already hidden.
+    lab = _lab()
+    p = wf.manual_preview(lab, 7, "tag", "river", "hide")
+    lab.apply(7, p["preview_id"])                       # hides items 1, 3 and 5
+    assert [i["item_id"] for i in lab.scope(7, 10)] == [2, 4]
+    assert [i["item_id"] for i in lab.scope(7, 1)] == [2]
+    lab.undo(7)
+    assert [i["item_id"] for i in lab.scope(7, 3)] == [1, 2, 3]
+
+
+def test_new_item_review_reports_the_independent_check_of_a_new_category_match():
+    # Take 13: the hike item showed "match" with a quotation and "1 of 1 checks passed", yet "not selected";
+    # the reason (the independent check did not support it) was not shown.
+    class Fake(Provider):
+        name = "fake"
+        def complete(self, task, system, payload, schema):
+            if task == "new-items":
+                return {"items": [{"item_id": i["item_id"], "categories": [], "category_reason": "", "tags": [],
+                                   "new_categories": [{"label": "Waterside", "verdict": "match", "quote": "river path",
+                                                       "reason": ""}]} for i in payload["new_items"]]}, {"task": task}
+            if task == "assess":
+                return {"assessments": [{"item_id": i["item_id"], "supports": i["title"].startswith("Yes"),
+                                         "reason": "checked"} for i in payload["items"]]}, {"task": task}
+            raise AssertionError(task)
+    lab = _lab()
+    lab.user(7).custom["Waterside"] = {"definition": "Items set by a river.", "members": {}, "action": "boost"}
+    p = wf.add_items_preview(lab, Fake("m"), Ledger(), 7, [{"title": "Yes walk", "description": "a river path"},
+                                                          {"title": "No walk", "description": "a river path"}])
+    verdicts = {e["title"]: e["new_categories"][0] for e in p["evidence"]}
+    assert verdicts["Yes walk"]["selected"] and not verdicts["No walk"]["selected"]
+    assert verdicts["No walk"]["assessment"]["supports"] is False
+    lines = [c for c in p["checks"] if "new category" in c["check"]]
+    assert len(lines) == 2
+    assert any("independent check does not support -> not selected" in c["check"] and not c["ok"] for c in lines)
+    assert any("independent check supports -> selected" in c["check"] and c["ok"] for c in lines)
+
+
+def test_define_prompt_asks_for_conditions_the_text_can_establish():
+    assert "item text (title,\ndescription, tags) can establish it" in wf.DEFINE_PROMPT

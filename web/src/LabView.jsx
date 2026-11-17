@@ -69,7 +69,7 @@ function EvidenceRows({preview}) {
   if (preview.kind === 'interpret') return <div className="lab-evidence">{preview.evidence.map((e, i) => <div key={i} className="lab-ev"><b>{ACTIONS[e.action] || e.action}{e.strength && ['boost', 'reduce'].includes(e.action) ? ` (${e.strength})` : ''}</b> for “{e.intent_span}”<p>{e.relation}</p></div>)}</div>;
   if (preview.kind === 'new-category') return <div className="lab-table-wrap"><table className="lab-table"><thead><tr><th>Item</th><th>Text (KuaiRec, English)</th><th>Verdict</th><th>Quotation</th><th>Evidence check</th><th>Selected</th></tr></thead><tbody>
     {preview.evidence.map(r => <tr key={r.item_id} className={r.selected ? 'sel' : ''}><td>{r.item_id}</td><td>{r.title || r.caption || '(no text)'}</td><td>{r.verdict}</td><td>{r.quote ? <><q>{r.quote}</q> <small>{r.field}{r.quote_verified ? ' · found' : ' · NOT FOUND'}</small></> : '-'}<small className="lab-reason">{r.reason}</small></td><td>{r.assessment ? (r.assessment.supports ? 'supports' : 'does not support') : '-'}<small className="lab-reason">{r.assessment?.reason}</small></td><td>{r.selected ? 'yes' : 'no'}</td></tr>)}</tbody></table></div>;
-  if (preview.kind === 'new-items') return <div className="lab-evidence">{preview.evidence.map(e => <div key={e.item_id} className="lab-ev"><b>{e.title}</b> → categories: {e.categories.length ? e.categories.map(c => <code key={c}>{c}</code>) : 'none'}; tags: {e.tags.length ? e.tags.map(t => <code key={t}>#{t}</code>) : 'none'}<p>{e.category_reason}</p>{e.new_categories.map(n => <p key={n.label}>New category <b>{n.label}</b>: {n.verdict}{n.quote ? <> · <q>{n.quote}</q></> : ''} · {n.selected ? 'selected' : 'not selected'}</p>)}</div>)}</div>;
+  if (preview.kind === 'new-items') return <div className="lab-evidence">{preview.evidence.map(e => <div key={e.item_id} className="lab-ev"><b>{e.title}</b> → categories: {e.categories.length ? e.categories.map(c => <code key={c}>{c}</code>) : 'none'}; tags: {e.tags.length ? e.tags.map(t => <code key={t}>#{t}</code>) : 'none'}<p>{e.category_reason}</p>{e.new_categories.map(n => <p key={n.label}>New category <b>{n.label}</b>: {n.verdict}{n.quote ? <> · <q>{n.quote}</q></> : ''}{n.verdict === 'match' ? ` · independent check: ${!n.quote_verified ? 'not run, quotation not found' : n.assessment ? (n.assessment.supports ? 'supports' : 'does not support') : 'no answer'}` : ''} · {n.selected ? 'selected' : 'not selected'}{n.assessment?.reason ? <small className="lab-reason">{n.assessment.reason}</small> : null}</p>)}</div>)}</div>;
   return null;
 }
 
@@ -133,7 +133,7 @@ export function LabView({api, user, status, onStatus}) {
   const [kind, setKind] = useState('category'), [values, setValues] = useState([]), value = values[values.length - 1] || '', setValue = v => setValues(v ? [v] : []), addValue = v => setValues(vs => vs.includes(v) ? vs : [...vs, v]), [action, setAction] = useState('hide'), [strength, setStrength] = useState('standard');
   const [request, setRequest] = useState(''), [description, setDescription] = useState(''), [definition, setDefinition] = useState(null);
   const [catAction, setCatAction] = useState('only'), [scope, setScope] = useState(40);
-  const SCOPES = [10, 20, 40, 80, 120, 200];
+  const SCOPES = [10, 20, 40, 50, 80, 120, 200];
   const [newItems, setNewItems] = useState([{title: '', description: ''}]);
   const timer = useRef(null);
 
@@ -148,7 +148,7 @@ export function LabView({api, user, status, onStatus}) {
     if (lines.length) timer.current = setInterval(() => { const s = Math.round((Date.now() - started) / 1000); setStage({text: lines[Math.min(Math.floor(s / 6), lines.length - 1)], s}); }, 1000);
     try { const r = await fn(); after(r); window.labDone = (window.labDone || 0) + 1; } catch (e) { setError(e.message); window.labLastError = e.message; window.labDone = (window.labDone || 0) + 1; } finally { clearInterval(timer.current); setStage(null); setBusy(false); onStatus(); }
   }
-  const showPreview = async p => { window.labLastPreview = {id: p.preview_id, kind: p.kind, changes: p.changes, calls: p.calls, controls: p.controls.map(c => c.text), notes: p.notes, applicable: p.applicable, selected: (p.evidence || []).filter(r => r.selected).length, rows: (p.evidence || []).length}; setPreview(p); setSide('after'); if (auto && p.applicable) await apply(p); };
+  const showPreview = async p => { window.labLastPreview = {id: p.preview_id, kind: p.kind, changes: p.changes, calls: p.calls, controls: p.controls.map(c => c.text), notes: p.notes, applicable: p.applicable, selected: (p.evidence || []).filter(r => r.selected).length, rows: (p.evidence || []).length, joined: (p.evidence || []).flatMap(e => e.new_categories || []).filter(n => n.selected).length}; setPreview(p); setSide('after'); if (auto && p.applicable) await apply(p); };
   async function apply(p = preview) { await run('apply', () => api('lab/apply', {user_id: user, preview_id: p.preview_id}), s => { setState(s); setPreview(null); setValues([]); }); }
   const undo = () => run('undo', () => api('lab/undo', {user_id: user}), s => { setState(s); setPreview(null); });
   const reset = () => run('reset', () => api('lab/reset', {user_id: user}), s => { setState(s); setPreview(null); setDefinition(null); });
