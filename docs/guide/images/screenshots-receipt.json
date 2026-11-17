@@ -1,0 +1,23 @@
+{
+ "base": "http://127.0.0.1:8766",
+ "user": "14",
+ "shots": [
+  "01-ae-condition-c.png",
+  "11-compare-a-to-e.png",
+  "02-provider-key-field.png",
+  "03-manual-preview-after.png",
+  "04-manual-preview-before.png",
+  "12-manual-applied-undo.png",
+  "05-interpret-food.png",
+  "06-interpret-news.png",
+  "07-category-definition.png",
+  "08-category-review.png",
+  "09-new-items-review.png",
+  "14-new-item-applied.png",
+  "13-auto-apply.png",
+  "10-results.png"
+ ],
+ "model_calls": 8,
+ "cost_usd": 0.023354,
+ "cjk": "none visible in any shot"
+}

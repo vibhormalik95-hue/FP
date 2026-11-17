@@ -29,20 +29,21 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from feedctrl import lab_metrics as lm  # noqa: E402
 from feedctrl import lab_workflows as wf  # noqa: E402
-from feedctrl.kuairec_catalog import build_catalog, load_gloss, read_caption_table, term_members  # noqa: E402
+from feedctrl.kuairec_catalog import build_catalog, read_caption_table, read_english_layer, term_members  # noqa: E402
 from feedctrl.lab import STRENGTHS, KuaiRecLab, UserLab, LabError  # noqa: E402
 from feedctrl.llm_providers import Ledger, build_provider  # noqa: E402
 
 CAPTIONS = ROOT / "data/raw/kuairec_caption_category.csv"
 PROCESSED = ROOT / "data/processed.json"
-GLOSS = ROOT / "data/kuairec_gloss_en.json"
+ENGLISH = ROOT / "data/kuairec_text_en-v1.json"
 
 
-def load_catalog():
-    rows, _ = read_caption_table(CAPTIONS)
+def load_catalog(text="original"):
+    """The item catalogue. "original" is the KuaiRec source text that the 17 Nov run used (scoring that run
+    only; never shown or sent to a model by the app). "english" is the English text layer the app uses."""
+    rows, _ = read_english_layer(ENGLISH) if text == "english" else read_caption_table(CAPTIONS)
     processed = json.loads(PROCESSED.read_text(encoding="utf-8"))
-    gloss = load_gloss(GLOSS)
-    return processed, build_catalog(processed, rows, gloss), gloss
+    return processed, build_catalog(processed, rows), None
 
 
 def load_set(path):
@@ -69,8 +70,11 @@ def git_commit():
 # ------------------------------------------------------------------ run
 def cmd_run(args):
     data, set_sha = load_set(args.set)
-    _, catalog, gloss = load_catalog()
-    lab = KuaiRecLab(catalog, scorer=lambda u: {}, users={}, gloss=gloss)
+    if args.text == "english" and not data.get("input_text") == "english":
+        raise SystemExit("--text english needs the English version of the set (requests and labels in English); "
+                         "the frozen set holds the original text.")
+    _, catalog, _ = load_catalog(args.text)
+    lab = KuaiRecLab(catalog, scorer=lambda u: {}, users={})
     vocabulary = lab.vocabulary(UserLab(), for_model=True)
     pool = [catalog[int(i)] for i in data["pool"]]
     out = ROOT / args.out
@@ -208,7 +212,7 @@ def downstream(data, preds_by_model, catalog, users, n_users, seed):
 # ------------------------------------------------------------------ score
 def cmd_score(args):
     data, set_sha = load_set(args.set)
-    processed, catalog, _ = load_catalog()
+    processed, catalog, _ = load_catalog(args.text)
     run = ROOT / args.run
     cases = {c["id"]: c for c in data["cases"]}
     preds_by_model, rows_by_model, calls_by_model, meta = {}, {}, {}, {}
@@ -314,7 +318,7 @@ def cmd_score(args):
                "scoring_commit": scoring_commit,
                "set_sha256": set_sha, "models": meta, "summaries": summaries, "paired_tests": tests,
                "downstream": {"users": sample, "cases": effects}, "tables": tables,
-               "scored_utc": datetime.now(timezone.utc).isoformat(timespec="seconds")}
+               "scored_utc": datetime.now(timezone.utc).isoformat(timespec="seconds"), "input_text": args.text}
     pub = ROOT / args.publish
     pub.mkdir(parents=True, exist_ok=True)
     (pub / "summary.json").write_text(json.dumps(summary, ensure_ascii=False, indent=1, default=float), encoding="utf-8")
@@ -395,10 +399,13 @@ def main(argv=None):
     r.add_argument("--timeout", type=float)
     r.add_argument("--budget-usd", type=float)
     r.add_argument("--out", required=True)
+    r.add_argument("--text", choices=("original", "english"), default="original")
     s = sub.add_parser("score")
     s.add_argument("--set", required=True)
     s.add_argument("--run", required=True)
     s.add_argument("--publish", required=True)
+    s.add_argument("--text", choices=("original", "english"), default="original",
+                   help="the item text the run used: original (17 Nov run) or english")
     s.add_argument("--users", type=int, default=200)
     s.add_argument("--seed", type=int, default=2026)
     args = ap.parse_args(argv)

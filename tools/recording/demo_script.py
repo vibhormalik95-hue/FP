@@ -97,11 +97,8 @@ def api(path):
 
 
 def glosses():
-    out = {}
-    for t in api("lab/labels?user_id=14&limit=2000")["labels"]:
-        if t.get("gloss_en"):
-            out[t["value"]] = t["gloss_en"]
-    return out
+    """Spoken names of the labels. The labels are English already, so each name is the label itself."""
+    return {t["value"]: t["value"] for t in api("lab/labels?user_id=14&limit=2000")["labels"]}
 
 
 def spoken_controls(texts, gloss, limit=4):
@@ -111,7 +108,7 @@ def spoken_controls(texts, gloss, limit=4):
         if not m:
             continue
         action, _, kind, value = m.groups()
-        name = gloss.get(value, "a label")
+        name = gloss.get(value, value)
         words.append(f"{action.lower()} {kind.replace('KuaiRec ', '')} {name}")
     if not words:
         return "no control"
@@ -187,3 +184,17 @@ def test_clip(d, page, cfg):
     source = api("lab/status")["provider"].get("key_source", "")
     d.events.append({"key_source": source})
     d.say("The key is held in memory." if "memory" in source else "The key was not accepted.")
+    d.click("[data-tab='manual']", "The manual tab.")
+    d.click("[data-role='label-filter']", "I search for incident.")
+    d.page.fill("[data-role='label-filter']", "")
+    say_while_typing(d, "incident", "Labels are English.")
+    time.sleep(0.8)
+    d.click("[data-role='label-list'] option[value='Social incident']", "I pick Social incident.")
+    d.click("[data-tab='category']", "The new category tab.")
+    d.choose("[data-role='scope']", "The scope is a list now: ten.", "10")
+    d.events.append({"scope": d.page.locator("[data-role='scope']").input_value()})
+    d.click("[data-view='results']", "The Results page.")
+    d.page.wait_for_selector("[data-role='results']")
+    d.point("[data-role='text-label']", "Each run says which text it was measured on.")
+    d.check_cjk("end of test clip")
+    d.events.append({"cjk_checks": d.cjk_checks, "cjk_hits": 0})

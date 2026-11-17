@@ -31,13 +31,16 @@ All five models therefore ran the same prompts, schemas, item views and quotatio
 | `d093815` | Base URL refused without scheme; Latin quotations need 3+ letters (app); line endings | No (same as `1de3955`) | No |
 | `04d21ed` | Budget reservation before parallel calls; failed calls charged their reservation | No (no reported run hit a budget; failed hosted calls: none) | No |
 | `e1851ac` | Results tables name their commits; fetch-assets | No | No (labels only) |
+| r4 (English only) | The app, the prompts and the screen use the English text layer `data/kuairec_text_en-v1.json` (machine translation of KuaiRec, SHA-256 `034f5ac9…`) instead of the Chinese source text and the gloss; prompts say the text is English; no gloss field; quotations need at least 3 characters; the study-view topic prompt asks for English aliases | Not for any reported run: every reported prediction used the original text. A new run on the English layer is a separate run (`lab_eval.py run --text english`) | No: the 17 Nov runs are scored on the original text (`lab_eval.py score --text original`, the default) |
 
 ## Consequence for the tables
+
+- Since the English-only change (r4), the Results page labels every run that used the original text: "Measured on the original-text run (17 Nov); English-input re-run pending." The result files themselves are frozen and are not edited.
 
 - Every results table states the prediction commit of each model and the scoring commit (`scripts/lab_eval.py` adds the line to each table note and to `summary.json`).
 - All rows of a table are scored by the same scoring code at the same commit, from predictions produced by prediction code that is identical across models (except the local-only cap). No table mixes scoring versions.
 - The define change and the quotation-rule changes do not touch any reported number. The downstream re-score does; it is applied to all models at one scoring commit, so no model was re-run.
-- The shipped app is stricter than the measured code in one respect: quotations must be at least two characters (three for Latin text) and tags must match whole. The measured member selections used the freeze-time rule; this is stated beside the new-category table.
+- The shipped app is stricter than the measured code in one respect: quotations must be at least three characters (since r4; two, or three for Latin text, before) and tags must match whole. The measured member selections used the freeze-time rule; this is stated beside the new-category table.
 
 ## Notes on the local runs
 

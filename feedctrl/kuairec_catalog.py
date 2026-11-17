@@ -23,9 +23,13 @@ CAPTION_COLUMNS = ("video_id", "manual_cover_text", "caption", "topic_tag",
 CATEGORY_LEVELS = ("first_level_category_name", "second_level_category_name", "third_level_category_name")
 MISSING = {"", "UNKNOWN", "[]"}
 GLOSS_NOTE = "English gloss: machine translation, not source text"
+ENGLISH_LABEL = "machine translation of KuaiRec (CC BY-SA 4.0)"
+ENGLISH_VERSION = "v1"
 
 
-def _tags(raw: str) -> list[str]:
+def _tags(raw) -> list[str]:
+    if isinstance(raw, list):
+        raw = ",".join(raw)
     raw = (raw or "").strip()
     if raw.startswith("[") and raw.endswith("]"):
         raw = raw[1:-1]
@@ -68,6 +72,37 @@ def read_caption_table(path: str | Path) -> tuple[dict[int, dict], dict]:
             rows[item_id] = record
     return rows, {"path_name": path.name, "sha256": hashlib.sha256(raw).hexdigest(),
                   "rows": len(rows), "skipped_non_item_rows": skipped}
+
+
+def read_english_layer(path: str | Path) -> tuple[dict[int, dict], dict]:
+    """Read the English text layer (scripts/build_kuairec_english.py). Same row shape as the caption table.
+
+    This is what the app loads: English cover text, caption, topic tags and category names for every
+    processed item, labelled machine translation of KuaiRec. The Chinese source table is not read.
+    """
+    path = Path(path)
+    raw = path.read_bytes()
+    data = json.loads(raw.decode("utf-8"))
+    if data.get("label") != ENGLISH_LABEL:
+        raise ValueError("The English text layer must carry the label " + repr(ENGLISH_LABEL))
+    rows = {int(key): {"video_id": key, **value} for key, value in data["items"].items()}
+    return rows, {"path_name": path.name, "sha256": hashlib.sha256(raw).hexdigest(), "rows": len(rows),
+                  "label": ENGLISH_LABEL, "version": data.get("version"), "source": data.get("source", {})}
+
+
+def write_english_csv(rows: dict[int, dict], path: str | Path) -> Path:
+    """Write the English layer in the caption-table CSV format, for the study view's topic index."""
+    path = Path(path)
+    with path.open("w", encoding="utf-8", newline="") as handle:
+        writer = csv.writer(handle, lineterminator="\n")
+        writer.writerow(CAPTION_COLUMNS)
+        for item_id in sorted(rows):
+            row = rows[item_id]
+            tags = row.get("topic_tag") or []
+            writer.writerow([item_id, row.get("manual_cover_text", ""), row.get("caption", ""),
+                             "[" + ",".join(tags) + "]" if tags else "[]",
+                             *(row.get(level, "") for level in CATEGORY_LEVELS)])
+    return path
 
 
 def item_record(item_id: int, feature_ids: list[str], row: dict | None) -> dict:

@@ -1,7 +1,6 @@
 """Deterministic answers for the mock provider. Not an AI.
 
-It matches text literally: English words of three or more letters and Chinese character
-pairs. It therefore cannot understand a nonliteral request and returns ``no_match`` when no
+It matches text literally: English words of three or more letters. It therefore cannot understand a nonliteral request and returns ``no_match`` when no
 label word occurs in the request. It knows no example request, label or item. It exists so
 that the tests and ``run-all-tests.cmd`` can drive every workflow with no key and no cost;
 its results are plumbing checks, never evidence of interpretation quality.
@@ -13,7 +12,6 @@ import re
 STOP = set("a an and any are as at be but by for from i i'm im in into is it its me more my no not of on or "
            "please remove show less hide only the them these this to videos video with without want stuff all "
            "that what which who where about some anything everything clips clip makes make feed less fewer".split())
-CJK = re.compile("[\u3400-\u9fff]+")
 
 
 def tokens(text):
@@ -25,31 +23,27 @@ def tokens(text):
         out.add(w)
         if w.endswith("s") and len(w) > 4:
             out.add(w[:-1])
-    for run in CJK.findall(text):
-        out.update(run[i:i + 2] for i in range(len(run) - 1))
-        if len(run) == 1:
-            out.add(run)
     return out
 
 
 def _action(text):
     low = text.lower()
-    if any(n in low for n in ("hide", "remove", "without", "no more", "不要", "屏蔽", "去掉")):
+    if any(n in low for n in ("hide", "remove", "without", "no more")):
         return "hide"
-    if any(n in low for n in ("less", "fewer", "少")):
+    if any(n in low for n in ("less", "fewer")):
         return "reduce"
-    if "only" in low or "只看" in low:
+    if "only" in low:
         return "only"
     return "boost"
 
 
 def answer(task, payload):
     return {"interpret": _interpret, "define": _define, "classify": _classify, "assess": _assess,
-            "new-items": _new_items, "gloss": _gloss}[task](payload)
+            "new-items": _new_items, "translate": _translate, "gloss": _translate}[task](payload)
 
 
 def _label_tokens(label):
-    return tokens(label["value"]) | tokens(label.get("gloss_en", ""))
+    return tokens(label["value"])
 
 
 def _interpret(p):
@@ -67,8 +61,7 @@ def _interpret(p):
 
 def _item_fields(item):
     return [("title", item.get("title", "")), ("description", item.get("description", "")),
-            *[("tags", t) for t in item.get("tags", [])],
-            ("gloss", " ".join(str(v) for v in (item.get("gloss_en") or {}).values()))]
+            *[("tags", t) for t in item.get("tags", [])]]
 
 
 def _first_hit(item, keys):
@@ -141,5 +134,5 @@ def _new_items(p):
     return {"items": out}
 
 
-def _gloss(p):
-    return {"translations": [{"id": t["id"], "en": "[mock gloss] " + t["text"]} for t in p["texts"]]}
+def _translate(p):
+    return {"translations": [{"id": t["id"], "en": "[mock translation] " + t["text"]} for t in p["texts"]]}

@@ -54,6 +54,7 @@ SCALE = 1.3333          # Chrome device scale: 2560 physical px -> 1920 CSS px v
 FPS = 30
 HERE = Path(__file__).parent
 REPO = HERE.parent.parent
+CJK_PROBE = (REPO / "tests" / "browser" / "cjk_probe.js").read_text(encoding="utf-8").strip()
 
 OVERLAY_JS = r"""
 (() => {
@@ -193,7 +194,16 @@ class Director:
         self.page, self.voice, self.cap, self.events = page, voice, capture, events
         self.timeline = []
         self.speech_end = 0.0
+        self.cjk_checks = 0
         self.calibrate()
+
+    def check_cjk(self, where):
+        """Live check during the take: any visible CJK character on the page fails the take at once."""
+        hits = self.page.evaluate(f"({CJK_PROBE})()")
+        self.cjk_checks += 1
+        if hits:
+            self.events.append({"t": round(self.cap.now(), 2), "cjk_hit": where, "hits": hits[:5]})
+            raise RuntimeError(f"Visible CJK characters at '{where}': {hits[:3]}; the take is failed.")
 
     def ensure_front(self):
         """Every click and keystroke must reach the recording window. Another window in front is minimized
@@ -308,11 +318,13 @@ class Director:
 
     def hold(self, secs):
         # The result stays on screen while it is narrated; the silent part of a hold stays well under five seconds.
+        self.check_cjk("hold")
         self.wait_speech(); time.sleep(min(secs, 1.0))
 
     # -- actions
     def point(self, sel, text, min_ring=1.6):
         """Narrate, glide to the target, ring it while the narration names it."""
+        self.check_cjk(sel)
         self.voice.synth(speakable(text))
         self.say(text, wait=False)          # speech starts first; scrolling and gliding happen while it plays
         b = self.ensure_visible(sel)
@@ -552,6 +564,10 @@ def main():
         voice.close()
         set_toasts(True if old_toasts in (None, 1) else False)
         subprocess.run(["powershell", "-NoProfile", "-Command", "(New-Object -ComObject Shell.Application).UndoMinimizeALL()"])
+        if sys.exc_info()[0] is not None:
+            # A failed take keeps its record (for example the CJK hit that failed it).
+            (out / "timeline.json").write_text(json.dumps({"timeline": [], "events": events, "duration": None,
+                                                           "failed": repr(sys.exc_info()[1])}, indent=2))
     duration = probe_duration(out / "video-raw.mp4")
     mix_audio(timeline, duration, out / "narration.wav")
     final = out / ("test-clip.mp4" if args.test_clip else "COMP9500-Feed-Control-Lab-demo.mp4")
