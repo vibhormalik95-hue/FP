@@ -22,8 +22,6 @@ def run_demo(d, page, cfg, events, model_label, results_line):
     page.wait_for_selector(".active-instruction", timeout=30000)
     d.say("The ranking changed, and each card explains the boost.")
     d.hold(3.0)
-    d.click("button:has-text('Compare A to E')", "Compare A to E shows all five conditions side by side.")
-    d.hold(3.5)
     # Language controls
     d.click("[data-view='lab']", "Now the language controls.")
     page.wait_for_selector(".lab-card")
@@ -63,8 +61,6 @@ def run_demo(d, page, cfg, events, model_label, results_line):
     wait_done(d, b, "manual", "[data-role='manual-preview']")
     ch = page.evaluate("window.labLastPreview")["changes"]
     d.say(f"Five hide controls: {ch['eligible_before'] - ch['eligible_after']} videos would leave the feed, and {len(ch['left'])} leave the top ten.")
-    d.click(".lab-feed .view-tabs button:has-text('Before')", "Before")
-    d.click(".lab-feed .view-tabs button:has-text('After')", "and after.")
     d.click("[data-role='apply']", "Apply changes exactly the reviewed set. These stay applied for the rest of this video.")
     page.wait_for_function("!document.querySelector('[data-role=review]')")
     d.say("The news and incident categories are now listed under Applied now.")
@@ -117,6 +113,7 @@ def run_demo(d, page, cfg, events, model_label, results_line):
     d.click("[data-tab='category']", "Workflow three: a new category that KuaiRec does not have.")
     d.click("[data-role='category-description']", "I describe it.")
     say_while_typing(d, cfg.new_category, "Plain English, no existing label.", interval=0.035)
+    d.type_into("[data-role='scope']", "20", "For this demo, the scope is this user's top twenty videos.")
     b = done_count(page)
     d.click("[data-role='define']", "Step one: propose a definition.")
     wait_done(d, b, "define", "[data-role='define']")

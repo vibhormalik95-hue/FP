@@ -207,7 +207,7 @@ export function LabView({api, user, status, onStatus}) {
           <form onSubmit={e => { e.preventDefault(); run('define', () => api('lab/define', {user_id: user, description, scope_size: scope}), d => { window.labLastDefinition = {label: d.label, status: d.status, evidence: d.evidence.length, calls: d.calls}; setDefinition(d); }); }}>
             <p className="help">Describe a category KuaiRec does not have.</p>
             <textarea value={description} onChange={e => setDescription(e.target.value)} rows={3} maxLength={1000} placeholder="Describe the new category" data-role="category-description"/>
-            <label className="lab-inline">Scope: this user's top <input type="number" min={10} max={200} step={10} value={scope} onChange={e => setScope(Number(e.target.value))}/> items</label>
+            <label className="lab-inline">Scope: this user's top <input type="number" min={10} max={200} step={10} value={scope} onChange={e => setScope(Number(e.target.value))} data-role="scope"/> items</label>
             <button className="primary" disabled={busy || !description.trim()} data-role="define">Propose a definition <span>↗</span></button></form>
           {definition && <form className="lab-definition" data-role="definition" onSubmit={e => { e.preventDefault(); run('classify', () => api('lab/classify', {user_id: user, label: definition.label, definition: definition.definition, action: catAction, scope_size: scope}), showPreview); }}>
             <p className="eyebrow">STEP 1 RESULT · REVIEW THE DEFINITION</p>

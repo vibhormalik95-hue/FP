@@ -19,7 +19,7 @@ SPOKEN_MODEL = {"gpt-5-mini": "GPT five mini", "gpt-5": "GPT five", "claude-sonn
 WAIT_LINES = {
     "interpret": ["The model reads the request and the list of existing labels. It sees no video text.",
                   "Next, the server checks that every label exists and that the quoted words are in the request."],
-    "define": ["The model reads the description and this user's top forty videos.",
+    "define": ["The model reads the description and this user's top twenty videos.",
                "It drafts a label and a definition, and cites example videos with exact quotations."],
     "classify": ["Each video in scope is classified under the definition, ten per call, four calls in parallel.",
                  "Every match must quote the video's own text.",
