@@ -12,9 +12,8 @@ What it does
 
 Usage (from the repository root, app venv):
     python tools/recording/record_demo.py --tts-python <py with kokoro> --out <folder> [--test-clip]
-The API key comes from OPENAI_API_KEY in this process; the script puts it on the clipboard,
-pastes it into the masked field with Ctrl+V and clears the clipboard at once. The server
-process gets no key in its environment, so the page's key is the one used.
+The API key comes from OPENAI_API_KEY, which the app server reads from its environment; the
+key is never typed, pasted, put on the clipboard or shown on screen.
 Do not touch the mouse or keyboard while it runs. Moving the pointer into a screen corner aborts.
 """
 from __future__ import annotations
@@ -453,7 +452,7 @@ def main():
     env = {k: v for k, v in os.environ.items() if k != "ANTHROPIC_API_KEY"}   # the server reads OPENAI_API_KEY itself
     args.key = os.environ.get("OPENAI_API_KEY", "")
     if not args.key and not args.test_clip:  # noqa
-        raise SystemExit("OPENAI_API_KEY is needed for the take (it is pasted into the masked field).")
+        raise SystemExit("OPENAI_API_KEY is needed for the take (the app server reads it from the environment).")
     examples = json.loads((REPO / "tools/demo_examples.json").read_text(encoding="utf-8"))
     args.manual_value = examples["manual"][1]["value"]
     args.interpret = [{**examples["interpret"][2], "say": "I just ate, and do not want to be tempted by food."},

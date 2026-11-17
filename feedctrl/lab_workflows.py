@@ -150,7 +150,8 @@ def quote_found(item, field, quote):
     """True when the quote occurs in the named field (case and whitespace insensitive)."""
     quote = _norm(quote).strip(" .\"'“”#")
     # At least two characters (one Chinese word) or one whole tag; a single letter proves nothing.
-    if len(quote) < 2:
+    # A Chinese quotation needs two characters; a Latin one needs a whole word of three or more letters.
+    if len(quote) < 2 or (quote.isascii() and len(quote) < 3):
         return False
     if field == "tags":
         return any(quote == _norm(t) for t in item.get("tags", []))
