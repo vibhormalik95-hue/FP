@@ -71,6 +71,13 @@ def type_text(text, interval=0.05):
     clipboard("")
 
 
+def say_while_typing(d, text, line, interval=0.04):
+    """Start a sentence, type while it plays, then wait for it to end: typing is never silent."""
+    d.say(line, wait=False)
+    type_text(text, interval=interval)
+    d.wait_speech()
+
+
 def api(path):
     with urllib.request.urlopen("http://127.0.0.1:8765/api/" + path, timeout=30) as r:
         return json.loads(r.read())
@@ -165,7 +172,7 @@ def run_demo(d, page, cfg, events, model_label, results_line):
     d.say("On the right is the feed for this user, ranked by the trained model. Each card shows the original Chinese text from KuaiRec and an English line, clearly labelled machine translation.")
     d.hold(3.0)
     d.choose("[data-role='provider-kind']", "I choose the model provider. The professor can use any OpenAI key here.", "Op")
-    d.type_into("[data-role='provider-model']", cfg.model, f"The model is {spoken_model}, the best model in my measurements that needs only an API key.")
+    d.type_into("[data-role='provider-model']", cfg.model, f"The model is {spoken_model}: in my measurements it is the strongest model that needs only an API key.")
     d.click("[data-role='api-key']", "I paste the key. The field is masked, and the server keeps the key in memory only. It is never written to disk or shown again.")
     clipboard(cfg.key)
     pyautogui.hotkey("ctrl", "v")
@@ -176,11 +183,11 @@ def run_demo(d, page, cfg, events, model_label, results_line):
     # ---------------------------------------------------------------- manual
     d.click("[data-tab='manual']", "Workflow one is the reference: a manual category control, with no model at all.")
     d.click("[data-role='label-filter']", "I filter the KuaiRec categories.")
-    type_text(cfg.manual_value)
+    say_while_typing(d, cfg.manual_value, "Labels can be found in Chinese or in English.")
     time.sleep(0.8)
     d.click(f"[data-role='label-list'] option[value='{cfg.manual_value}']", f"I pick the category {gloss.get(cfg.manual_value, 'pets')}.")
-    d.choose("[data-role='manual-action']", "The action is Show more.", "Sh")
-    d.choose("[data-role='lab-strength']", "Strength strong: plus zero point four on the normalized score.", "st")
+    d.choose("[data-role='manual-action']", "The action is Show more.", "Show m")
+    d.choose("[data-role='lab-strength']", "Strength strong: plus zero point four on the normalized score.", "str")
     b = done_count(page)
     d.click("[data-role='manual-preview']", "Preview. A preview never changes the feed.")
     wait_done(d, b, "manual")
@@ -201,7 +208,7 @@ def run_demo(d, page, cfg, events, model_label, results_line):
         d.click("[data-tab='interpret']", "Workflow two maps a request in my own words to existing KuaiRec categories and tags." if apply_it and ex is cfg.interpret[0]
                 else "A second request, in a different domain, written in Chinese.")
         d.click("[data-role='request']", ex["say"])
-        type_text(ex["request"], interval=0.04)
+        say_while_typing(d, ex["request"], "I type it character by character, exactly as a user would.")
         time.sleep(0.5)
         b = done_count(page)
         d.click("[data-role='interpret-preview']", "Interpret and preview.")
@@ -229,7 +236,7 @@ def run_demo(d, page, cfg, events, model_label, results_line):
     # ---------------------------------------------------------------- new category
     d.click("[data-tab='category']", "Workflow three creates a category that KuaiRec does not have, from a description.")
     d.click("[data-role='category-description']", "I describe it in plain English.")
-    type_text(cfg.new_category, interval=0.035)
+    say_while_typing(d, cfg.new_category, "The description names the idea, not any existing KuaiRec label.", interval=0.035)
     b = done_count(page)
     d.click("[data-role='define']", "Step one: propose a definition.")
     err = wait_done(d, b, "define")
@@ -238,7 +245,7 @@ def run_demo(d, page, cfg, events, model_label, results_line):
     d.say(f"The model proposed a label and a definition with explicit conditions, and cited {defn['evidence']} example items. Each quotation shows a check mark when it was found in the item's text.")
     d.hold(3.5)
     d.say("I review the definition. I could edit the label or the conditions before anything is classified.")
-    d.choose("[data-role='category-action']", "When applied, I want to see more of these videos.", "Sh")
+    d.choose("[data-role='category-action']", "When applied, I want to see more of these videos.", "Show m")
     b = done_count(page)
     d.click("[data-role='classify']", "I approve the definition, and the model classifies every item in scope.")
     err = wait_done(d, b, "classify")
@@ -257,9 +264,9 @@ def run_demo(d, page, cfg, events, model_label, results_line):
     # ---------------------------------------------------------------- new items
     d.click("[data-tab='items']", "Workflow four adds new videos that are not in KuaiRec.")
     d.click("[data-role='new-title-0']", "A title")
-    type_text(cfg.new_item["title"], interval=0.035)
+    say_while_typing(d, cfg.new_item["title"], "The title of a video about a mountain hike.", interval=0.035)
     d.click("[data-role='new-description-0']", "and a description.")
-    type_text(cfg.new_item["description"], interval=0.03)
+    say_while_typing(d, cfg.new_item["description"], "The description says what the video shows. The model sees only these words.", interval=0.03)
     b = done_count(page)
     d.click("[data-role='new-items-preview']", "Classify and preview.")
     wait_done(d, b, "new-items")
@@ -281,6 +288,9 @@ def run_demo(d, page, cfg, events, model_label, results_line):
             d.ensure_visible(line["selector"])
         d.say(line["say"])
         d.hold(3.0)
+    d.ensure_visible("[data-role='results'] .panel >> nth=1")
+    d.say("Below, the old one-hundred-case parser bank is re-used, and labelled as re-use, not new evidence. Strict scores are primary; Llama again reached seventy-nine, the frozen result, still short of the eighty-five percent target.")
+    d.hold(3.0)
     d.say("The reference answers were drafted by an AI and reviewed row by row by me. Claude is both the drafter's family and one of the measured models, which the report states.")
     d.say("Everything shown is in the repository, with run-all-tests to repeat the checks. Thank you.")
     d.hold(2.0)
@@ -292,5 +302,5 @@ def test_clip(d, page, cfg):
     page.wait_for_selector(".lab-card")
     d.click("[data-tab='interpret']", "I open workflow two.")
     d.click("[data-role='request']", "I type a request into the box.")
-    type_text("Show me more 篮球", interval=0.05)
+    say_while_typing(d, "Show me more 篮球", "English and Chinese characters both type in.")
     d.hold(1.0)

@@ -274,6 +274,12 @@ class Director:
         time.sleep(0.35)
         pyautogui.press("enter")
         time.sleep(0.5)
+        # Typeahead can land on a neighbour (two options with the same first letters): correct it.
+        want = self.page.evaluate("([s, t]) => { const o = [...document.querySelector(s).options].find(o => o.text.toLowerCase().startsWith(t.toLowerCase())); return o ? o.value : null; }", [sel, typed])
+        if want is not None and self.page.locator(sel).first.input_value() != want:
+            self.page.select_option(sel, want)
+            self.events.append({"t": round(self.cap.now(), 2), "choose_corrected": sel})
+            time.sleep(0.4)
 
     def type_into(self, sel, text, narration, interval=0.05):
         self.click(sel, narration)
@@ -352,7 +358,8 @@ def static_lines(extra=()):
     tree = ast.parse((Path(__file__).parent / "demo_script.py").read_text(encoding="utf-8"))
     texts = set(extra) | set(demo_script.WAIT_LINES_ALL) | {demo_script.FILLER}
     for node in ast.walk(tree):
-        if isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute) and node.func.attr in ("say", "click", "choose", "type_into", "point"):
+        name = node.func.attr if isinstance(getattr(node, "func", None), ast.Attribute) else getattr(getattr(node, "func", None), "id", None)
+        if isinstance(node, ast.Call) and name in ("say", "click", "choose", "type_into", "point", "say_while_typing"):
             for arg in node.args:
                 if isinstance(arg, ast.Constant) and isinstance(arg.value, str) and " " in arg.value and not arg.value.startswith(("[", "#", ".")):
                     texts.add(arg.value)
@@ -377,7 +384,7 @@ def main():
     ap.add_argument("--results", default="docs/evidence/lab-eval")
     ap.add_argument("--voice", default="af_heart")
     ap.add_argument("--provider", default="openai", choices=["openai", "anthropic"])
-    ap.add_argument("--model", default="gpt-5-mini")
+    ap.add_argument("--model", default="gpt-5")
     ap.add_argument("--effort", default="low")
     args = ap.parse_args()
     out = Path(args.out); out.mkdir(parents=True, exist_ok=True)
@@ -400,6 +407,15 @@ def main():
     args.new_item = examples["new_items"][0]["items"][0]
     server = subprocess.Popen([args.app_python, "scripts/run_app.py", "--port", "8765", "--provider", "mock"],
                               cwd=REPO, env=env)
+    import urllib.request
+    for _ in range(240):   # the app must answer before Chrome opens it
+        try:
+            urllib.request.urlopen(URL + "api/lab/status", timeout=2).read()
+            break
+        except OSError:
+            time.sleep(0.5)
+    else:
+        raise SystemExit("The app did not start.")
     profile = out / "chrome-profile"
     (profile / "Default").mkdir(parents=True, exist_ok=True)
     (profile / "Default" / "Preferences").write_text(json.dumps({
@@ -421,7 +437,10 @@ def main():
                     break
                 except Exception:
                     time.sleep(0.5)
-            page = next(pg for ctx in browser.contexts for pg in ctx.pages if pg.url.startswith(URL))
+            pages = [pg for ctx in browser.contexts for pg in ctx.pages]
+            page = next((pg for pg in pages if pg.url.startswith(URL)), pages[0])
+            if not page.url.startswith(URL):
+                page.goto(URL)
             page.wait_for_selector("[data-view='lab']", timeout=60000)
             page.bring_to_front()
             time.sleep(1.5)
