@@ -118,24 +118,6 @@ def ndcg_hr(order, test_items, k=10):
     return (dcg / ideal if ideal else 0.0), (1.0 if order and order[0] in test else 0.0)
 
 
-def ranked(scores, item_set, action, strength="standard"):
-    rows = []
-    delta = STRENGTHS.get(strength, STRENGTHS["standard"])
-    for item, s in scores.items():
-        hit = item in item_set
-        if action == "hide" and hit:
-            continue
-        if action == "only" and not hit:
-            continue
-        if action == "boost" and hit:
-            s += delta
-        if action == "reduce" and hit:
-            s -= delta
-        rows.append((item, s))
-    rows.sort(key=lambda r: (-r[1], r[0]))
-    return [r[0] for r in rows]
-
-
 def downstream(data, preds_by_model, catalog, users, n_users, seed):
     from feedctrl.controls import normalize_scores
     from feedctrl.model import load_model
@@ -159,10 +141,24 @@ def downstream(data, preds_by_model, catalog, users, n_users, seed):
                 pass
         return out
 
-    def measure(item_set, action, target):
+    from feedctrl.lab import apply_controls, make_control
+
+    def label_controls(controls, group="case"):
+        """The exact controls, applied by the application's own policy (strength, mixed actions, 'only' groups)."""
+        out = []
+        for c in controls:
+            kind, _, value = c["term_id"].partition(":")
+            out.append(make_control("eval", c["action"], {"kind": kind, "value": value}, c.get("strength", "standard"), group=group))
+        return out
+
+    def set_controls(members, action="boost"):
+        custom = {"eval-set": {"label": "eval-set", "definition": "", "members": {str(i): {"selected": True} for i in members}}}
+        return [make_control("eval", action, {"kind": "custom", "value": "eval-set"})], custom
+
+    def measure(controls, custom, target):
         tp, nd, hr = [], [], []
         for uid in sample:
-            order = ranked(scores[uid], item_set, action) if action else ranked(scores[uid], set(), "boost")
+            order = [r[0] for r in apply_controls(scores[uid], catalog, controls, custom)]
             top = order[:10]
             tp.append(sum(i in target for i in top) / 10)
             n, h = ndcg_hr(order, by_id[uid]["test"])
@@ -176,23 +172,21 @@ def downstream(data, preds_by_model, catalog, users, n_users, seed):
             continue
         if case["group"] == "NL":
             target, action = items_of(case["required"]), case["action"]
+            ref_controls, ref_custom = label_controls([{"term_id": t, "action": action} for t in case["required"]]), {}
         else:
             target, action = {int(i) for i in case["members"]} - {int(i) for i in case.get("excluded", [])}, "boost"
-        base = measure(set(), None, target)
-        ref = measure(target, action, target)
+            ref_controls, ref_custom = set_controls(target)
+        base = measure([], {}, target)
+        ref = measure(ref_controls, ref_custom, target)
         per_model = {}
         for name, preds in preds_by_model.items():
             p = preds.get(case["id"], {})
             if case["group"] == "NL":
-                controls = p.get("controls") or []
-                actions = {c["action"] for c in controls}
-                m_action = actions.pop() if len(actions) == 1 else (None if not controls else "mixed")
-                m_set = items_of(c["term_id"] for c in controls)
-                if m_action == "mixed":   # apply each control's own action
-                    m_action = sorted({c["action"] for c in controls})[0]
+                controls, custom = label_controls(p.get("controls") or []), {}
             else:
-                m_set, m_action = {int(i) for i in p.get("selected", [])}, "boost"
-            per_model[name] = measure(m_set, m_action, target) if m_set and m_action else dict(base)
+                selected = {int(i) for i in p.get("selected", [])}
+                controls, custom = set_controls(selected) if selected else ([], {})
+            per_model[name] = measure(controls, custom, target) if controls else dict(base)
         results[case["id"]] = {"action": action, "target_items": len(target), "none": base, "reference": ref,
                                "models": per_model}
     return sample, results

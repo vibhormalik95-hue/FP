@@ -84,7 +84,8 @@ class AnthropicProvider(Provider):
             raise ProviderError("An Anthropic API key is required.")
         import anthropic
         self._secret = api_key.strip()
-        kwargs = {"api_key": self._secret, "timeout": CALL_TIMEOUT_S, "max_retries": 1}
+        kwargs = {"api_key": self._secret, "timeout": CALL_TIMEOUT_S, "max_retries": 1,
+                  "base_url": "https://api.anthropic.com"}
         if http_client is not None:
             kwargs["http_client"] = http_client
         self._client = anthropic.Anthropic(**kwargs)
@@ -145,9 +146,9 @@ class OpenAICompatibleProvider(Provider):
         self.effort = effort if effort in ("low", "medium", "high") and re.match(r"^(gpt-5|o\d)", self.model) else None
         from openai import OpenAI
         self._secret = (api_key or "").strip()
-        kwargs = {"api_key": self._secret or "not-needed", "timeout": self.timeout, "max_retries": 1}
-        if base_url:
-            kwargs["base_url"] = base_url
+        # Always explicit: an OPENAI_BASE_URL in the environment must never redirect the key.
+        kwargs = {"api_key": self._secret or "not-needed", "timeout": self.timeout, "max_retries": 1,
+                  "base_url": base_url or "https://api.openai.com/v1"}
         if http_client is not None:
             kwargs["http_client"] = http_client
         self._client = OpenAI(**kwargs)
@@ -219,6 +220,8 @@ class ClaudeCLIProvider(Provider):
     def __init__(self, model=DEFAULT_ANTHROPIC_MODEL, effort=DEFAULT_EFFORT, executable=None):
         super().__init__(model or DEFAULT_ANTHROPIC_MODEL)
         self.effort = effort or DEFAULT_EFFORT
+        if not re.fullmatch(r"[A-Za-z0-9._:\-]{1,80}", self.model or "") or self.effort not in ("low", "medium", "high", "xhigh", "max"):
+            raise ProviderError("Invalid model name or effort for the Claude CLI.")
         self.executable = executable or shutil.which("claude")
         if not self.executable:
             raise ProviderError("The claude command was not found on PATH.")

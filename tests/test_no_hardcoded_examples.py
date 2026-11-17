@@ -48,9 +48,18 @@ def _requests():
 
 def _code(path):
     text = (ROOT / path).read_text(encoding="utf-8")
-    if path.endswith(".py"):   # docstrings and comments may explain; code may not decide
-        text = re.sub(r'"""[\s\S]*?"""', "", text)
-        text = re.sub(r"#[^\n]*", "", text)
+    if path.endswith(".py"):   # docstrings and comments may explain; code and prompts may not decide
+        import ast
+        lines = text.splitlines(keepends=True)
+        drop = []
+        for node in ast.walk(ast.parse(text)):
+            if isinstance(node, (ast.Module, ast.FunctionDef, ast.ClassDef, ast.AsyncFunctionDef)) and node.body:
+                first = node.body[0]
+                if isinstance(first, ast.Expr) and isinstance(first.value, ast.Constant) and isinstance(first.value.value, str):
+                    drop.append((first.lineno, first.end_lineno))
+        for start, end in sorted(drop, reverse=True):
+            del lines[start - 1:end]
+        text = re.sub(r"#[^\n]*", "", "".join(lines))
     else:
         text = re.sub(r"//[^\n]*", "", text)
     return text

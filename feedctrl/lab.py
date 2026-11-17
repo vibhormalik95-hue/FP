@@ -136,7 +136,10 @@ class KuaiRecLab:
 
     def reset(self, user_id):
         with self._lock:
-            self._state[user_id] = UserLab()
+            old = self._state.get(user_id)
+            fresh = UserLab()
+            fresh.version = (old.version + 1) if old else 0   # a stale preview can never match again
+            self._state[user_id] = fresh
 
     def base_scores(self, user_id):
         with self._lock:
@@ -169,6 +172,10 @@ class KuaiRecLab:
 
     # ----- vocabulary ---------------------------------------------------
     def vocabulary(self, lab, *, for_model=False):
+        with self._lock:
+            return self._vocabulary(lab, for_model=for_model)
+
+    def _vocabulary(self, lab, *, for_model=False):
         terms = [t for t in self.base_vocabulary
                  if not (for_model and (t["kind"] == "feature" or (t["kind"] == "tag" and t["item_count"] < MIN_TAG_ITEMS)))]
         if lab.added:   # added items carry existing labels; keep counts honest
@@ -226,7 +233,8 @@ class KuaiRecLab:
         lab = self.user(user_id)
         base = self.base_scores(user_id)
         top = sorted(base, key=lambda i: (-base[i], i))[:size]
-        return [self.catalog[i] for i in top] + list(lab.added.values())
+        with self._lock:
+            return [self.catalog[i] for i in top] + list(lab.added.values())
 
     # ----- previews ---------------------------------------------------------
     def new_preview(self, user_id, kind, summary, *, controls=(), new_custom=None, new_items=None,

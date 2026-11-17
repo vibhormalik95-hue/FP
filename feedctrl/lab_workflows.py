@@ -146,10 +146,11 @@ def field_text(item, field):
 def quote_found(item, field, quote):
     """True when the quote occurs in the named field (case and whitespace insensitive)."""
     quote = _norm(quote).strip(" .\"'“”#")
-    if not quote:
+    # At least two characters (one Chinese word) or one whole tag; a single letter proves nothing.
+    if len(quote) < 2:
         return False
     if field == "tags":
-        return any(quote == _norm(t) or quote in _norm(t) for t in item.get("tags", []))
+        return any(quote == _norm(t) for t in item.get("tags", []))
     if field in ("title", "description", "gloss"):
         return quote in _norm(field_text(item, field))
     return False

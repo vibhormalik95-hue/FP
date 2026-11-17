@@ -89,6 +89,8 @@ def score_nc(case, pred):
     selected = {int(i) for i in pred.get("selected", [])} - dropped
     raw = {int(i) for i in pred.get("raw_match", [])} - dropped
     p, r, f = prf(selected, reference)
+    if pred.get("error"):          # a failed case scores zero, never a vacuous 1.0
+        p = r = f = 0.0
     rp, rr, rf = prf(raw, reference)
     return {"case_id": case["id"], "group": "NC", "language": case["language"], "error": pred.get("error"),
             "reference_members": len(reference), "selected": len(selected), "member_precision": p,
@@ -111,7 +113,8 @@ def summarize(rows, calls):
         "nl_label_precision": _mean(r["label_precision"] for r in nl),
         "nl_label_recall": _mean(r["label_recall"] for r in nl), "nl_label_f1": _mean(r["label_f1"] for r in nl),
         "nl_label_f1_ci": bootstrap_ci([r["label_f1"] for r in nl]),
-        "nl_unwanted_clarification": sum(not r["proposed"] for r in nl),
+        "nl_unwanted_clarification": sum(not r["proposed"] and not r.get("error") for r in nl),
+        "nl_errors": sum(bool(r.get("error")) for r in nl),
         "ab_cases": len(ab), "ab_abstained": sum(r["abstained"] for r in ab),
         "ab_abstention_rate": sum(r["abstained"] for r in ab) / len(ab) if ab else None,
         "ab_abstention_wilson": wilson(sum(r["abstained"] for r in ab), len(ab)),
