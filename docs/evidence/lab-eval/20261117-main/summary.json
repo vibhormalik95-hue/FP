@@ -1,7 +1,7 @@
 {
  "title": "KuaiRec language controls: local vs frontier models on the frozen reviewed set",
- "status_note": "Set lab-eval-set-20261117-frozen (SHA-256 d4af21e6ed311448…), reviewed by Vibhor Malik at 2026-11-17T02:27:25+00:00. Review CSV SHA-256 384c47777bef2984…. Predictions produced at commit: claude-sonnet-5-5-cli 8dd978f; gpt-5 8dd978f; gpt-5-mini 8dd978f; llama3.1_8b 9071f05; qwen2.5-coder_7b-instruct 9071f05. Scored at commit d9dd6cc.",
- "scoring_commit": "d9dd6cc",
+ "status_note": "Set lab-eval-set-20261117-frozen (SHA-256 d4af21e6ed311448…), reviewed by Vibhor Malik at 2026-11-17T02:27:25+00:00. Review CSV SHA-256 384c47777bef2984…. Predictions produced at commit: claude-sonnet-5-5-cli 8dd978f; gpt-5 8dd978f; gpt-5-mini 8dd978f; llama3.1_8b 9071f05; qwen2.5-coder_7b-instruct 9071f05. Scored at commit fbb3e59.",
+ "scoring_commit": "fbb3e59",
  "set_sha256": "d4af21e6ed311448c79fabc7286a7dc00eba62cb3ec5c45dde60d8a01f233a82",
  "models": {
   "claude-sonnet-5-5-cli": {
@@ -1778,7 +1778,7 @@
      20
     ]
    ],
-   "note": "Exact: the reference action and every required label, no label outside required + acceptable. Predictions produced at commit: claude-sonnet-5-5-cli 8dd978f; gpt-5 8dd978f; gpt-5-mini 8dd978f; llama3.1_8b 9071f05; qwen2.5-coder_7b-instruct 9071f05. Scored at commit d9dd6cc."
+   "note": "Exact: the reference action and every required label, no label outside required + acceptable. Predictions produced at commit: claude-sonnet-5-5-cli 8dd978f; gpt-5 8dd978f; gpt-5-mini 8dd978f; llama3.1_8b 9071f05; qwen2.5-coder_7b-instruct 9071f05. Scored at commit fbb3e59."
   },
   {
    "title": "Should not propose: ambiguous, unsupported, no match (AB, 14 cases)",
@@ -1826,7 +1826,7 @@
      3
     ]
    ],
-   "note": "Predictions produced at commit: claude-sonnet-5-5-cli 8dd978f; gpt-5 8dd978f; gpt-5-mini 8dd978f; llama3.1_8b 9071f05; qwen2.5-coder_7b-instruct 9071f05. Scored at commit d9dd6cc."
+   "note": "Predictions produced at commit: claude-sonnet-5-5-cli 8dd978f; gpt-5 8dd978f; gpt-5-mini 8dd978f; llama3.1_8b 9071f05; qwen2.5-coder_7b-instruct 9071f05. Scored at commit fbb3e59."
   },
   {
    "title": "New category membership on a shared pool of 150 KuaiRec items (NC, 6 cases)",
@@ -1886,7 +1886,7 @@
      64
     ]
    ],
-   "note": "Selected = verdict match, quotation found in the item, and the independent check supports it. Every model used the reviewed reference definition. Measured with the freeze-time quotation rule; the shipped app is stricter since 1de3955 (quotations of 2+ characters, 3+ letters for Latin text, whole tags). Predictions produced at commit: claude-sonnet-5-5-cli 8dd978f; gpt-5 8dd978f; gpt-5-mini 8dd978f; llama3.1_8b 9071f05; qwen2.5-coder_7b-instruct 9071f05. Scored at commit d9dd6cc."
+   "note": "Selected = verdict match, quotation found in the item, and the independent check supports it. Every model used the reviewed reference definition. Measured with the freeze-time quotation rule; the shipped app is stricter since 1de3955 (quotations of 2+ characters, 3+ letters for Latin text, whole tags). Predictions produced at commit: claude-sonnet-5-5-cli 8dd978f; gpt-5 8dd978f; gpt-5-mini 8dd978f; llama3.1_8b 9071f05; qwen2.5-coder_7b-instruct 9071f05. Scored at commit fbb3e59."
   },
   {
    "title": "Downstream effect on the trained SASRec ranking (200 sampled users, seed 2026)",
@@ -1948,7 +1948,7 @@
      0.004807692307692308
     ]
    ],
-   "note": "TCP/TCER: share of the top ten that is in the REFERENCE target set. none = no control; reference = the reviewed control. Predictions produced at commit: claude-sonnet-5-5-cli 8dd978f; gpt-5 8dd978f; gpt-5-mini 8dd978f; llama3.1_8b 9071f05; qwen2.5-coder_7b-instruct 9071f05. Scored at commit d9dd6cc."
+   "note": "TCP/TCER: share of the top ten that is in the REFERENCE target set. none = no control; reference = the reviewed control. Predictions produced at commit: claude-sonnet-5-5-cli 8dd978f; gpt-5 8dd978f; gpt-5-mini 8dd978f; llama3.1_8b 9071f05; qwen2.5-coder_7b-instruct 9071f05. Scored at commit fbb3e59."
   },
   {
    "title": "HR@1 non-inferiority against no control (proposal margin 10%)",
@@ -2008,7 +2008,7 @@
      -0.002441237614915984
     ]
    ],
-   "note": "Bootstrap over cases. HR@1 of the base ranking is very low, so the relative margin is tiny. Predictions produced at commit: claude-sonnet-5-5-cli 8dd978f; gpt-5 8dd978f; gpt-5-mini 8dd978f; llama3.1_8b 9071f05; qwen2.5-coder_7b-instruct 9071f05. Scored at commit d9dd6cc."
+   "note": "Bootstrap over cases. HR@1 of the base ranking is very low, so the relative margin is tiny. Predictions produced at commit: claude-sonnet-5-5-cli 8dd978f; gpt-5 8dd978f; gpt-5-mini 8dd978f; llama3.1_8b 9071f05; qwen2.5-coder_7b-instruct 9071f05. Scored at commit fbb3e59."
   },
   {
    "title": "TCP@10 fidelity: model control vs reviewed control (boost/only cases)",
@@ -2056,7 +2056,7 @@
      7.62939453125e-05
     ]
    ],
-   "note": "Predictions produced at commit: claude-sonnet-5-5-cli 8dd978f; gpt-5 8dd978f; gpt-5-mini 8dd978f; llama3.1_8b 9071f05; qwen2.5-coder_7b-instruct 9071f05. Scored at commit d9dd6cc."
+   "note": "Predictions produced at commit: claude-sonnet-5-5-cli 8dd978f; gpt-5 8dd978f; gpt-5-mini 8dd978f; llama3.1_8b 9071f05; qwen2.5-coder_7b-instruct 9071f05. Scored at commit fbb3e59."
   },
   {
    "title": "Paired comparisons between models (all 40 cases)",
@@ -2183,7 +2183,7 @@
      0.6081722534234125
     ]
    ],
-   "note": "Success: exact profile (NL), abstention (AB), member F1 >= 0.8 (NC). Score: label F1, abstention, member F1. Predictions produced at commit: claude-sonnet-5-5-cli 8dd978f; gpt-5 8dd978f; gpt-5-mini 8dd978f; llama3.1_8b 9071f05; qwen2.5-coder_7b-instruct 9071f05. Scored at commit d9dd6cc."
+   "note": "Success: exact profile (NL), abstention (AB), member F1 >= 0.8 (NC). Score: label F1, abstention, member F1. Predictions produced at commit: claude-sonnet-5-5-cli 8dd978f; gpt-5 8dd978f; gpt-5-mini 8dd978f; llama3.1_8b 9071f05; qwen2.5-coder_7b-instruct 9071f05. Scored at commit fbb3e59."
   },
   {
    "title": "Latency, cost and failures",
@@ -2243,8 +2243,8 @@
      0
     ]
    ],
-   "note": "Cost: list price x tokens (OpenAI, Anthropic), as reported (Claude CLI), zero for local models (electricity not counted). Predictions produced at commit: claude-sonnet-5-5-cli 8dd978f; gpt-5 8dd978f; gpt-5-mini 8dd978f; llama3.1_8b 9071f05; qwen2.5-coder_7b-instruct 9071f05. Scored at commit d9dd6cc."
+   "note": "Cost: list price x tokens (OpenAI, Anthropic), as reported (Claude CLI), zero for local models (electricity not counted). Predictions produced at commit: claude-sonnet-5-5-cli 8dd978f; gpt-5 8dd978f; gpt-5-mini 8dd978f; llama3.1_8b 9071f05; qwen2.5-coder_7b-instruct 9071f05. Scored at commit fbb3e59."
   }
  ],
- "scored_utc": "2026-11-17T11:27:34+00:00"
+ "scored_utc": "2026-11-17T11:52:07+00:00"
 }
