@@ -1,0 +1,20 @@
+{
+ "duration_s": 563.2,
+ "streams": [
+  {
+   "codec_type": "video",
+   "width": 1920,
+   "height": 1080
+  },
+  {
+   "codec_type": "audio"
+  }
+ ],
+ "silences_5s": [],
+ "silence_pass": true,
+ "transcript_similarity": 0.936,
+ "sentences_found": "96/96",
+ "transcript_pass": true,
+ "frames": 19,
+ "duration_pass": true
+}

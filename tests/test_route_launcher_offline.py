@@ -241,10 +241,14 @@ def test_quickstart_setup_and_doctor_are_the_route_tool(tmp_path, capsys):
 def test_the_earlier_quick_start_steps_still_parse():
     parser_error = None
     try:
-        quickstart.main(['rehearse', '--scenario', 'not-a-scenario'])
+        quickstart.main(['manual', '--scenario', 'not-a-scenario'])
     except SystemExit as stopped:
         parser_error = stopped.code
     assert parser_error == 2
+    # The rehearsal step with hand-written replies was removed.
+    with pytest.raises(SystemExit) as stopped:
+        quickstart.main(['rehearse'])
+    assert stopped.value.code == 2
     assert sorted(run_demo.SCENARIOS) == sorted(set(run_demo.SCENARIOS)) and 'category' in run_demo.SCENARIOS
 
 
@@ -400,14 +404,14 @@ def test_f20_the_readiness_probe_never_uses_a_proxy(monkeypatch):
         server.server_close()
 
 
-def test_lead_11_rehearse_on_a_busy_port_fails_with_a_clear_message():
+def test_lead_11_manual_on_a_busy_port_fails_with_a_clear_message():
     import socket
     import subprocess
     with socket.socket() as busy:
         busy.bind(('127.0.0.1', 0))
         busy.listen(1)
         port = busy.getsockname()[1]
-        done = subprocess.run([sys.executable, str(ROOT / 'scripts' / 'quickstart.py'), 'rehearse', '--port', str(port)],
+        done = subprocess.run([sys.executable, str(ROOT / 'scripts' / 'quickstart.py'), 'manual', '--port', str(port)],
                               capture_output=True, text=True, timeout=60, cwd=str(ROOT))
     assert done.returncode != 0 and f'Port {port}' in done.stderr and 'in use' in done.stderr
     assert 'keeps running' not in done.stdout
@@ -471,7 +475,7 @@ def test_f05_a_stop_signal_to_the_launcher_alone_also_stops_the_server():
     with socket.socket() as probe:
         probe.bind(('127.0.0.1', 0))
         port = probe.getsockname()[1]
-    launcher = subprocess.Popen([sys.executable, str(ROOT / 'scripts' / 'quickstart.py'), 'rehearse', '--scenario', 'hunger',
+    launcher = subprocess.Popen([sys.executable, str(ROOT / 'scripts' / 'quickstart.py'), 'manual', '--scenario', 'hunger',
                                  '--port', str(port)], cwd=str(ROOT), stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                                 env={**os.environ, 'PYTHONUNBUFFERED': '1'})
     children = []

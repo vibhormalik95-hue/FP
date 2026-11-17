@@ -34,7 +34,7 @@ How the conditions relate to interpretation and to filtering:
 - **Explanations.** They change the display only. They change no ranking.
 
 These conditions keep the meaning of the frozen Experiment 1 ([protocol](evaluation-protocol.md)). Item feedback affects only A and B. Categories are opaque dataset identifiers; the application does not invent names for them.
-The parser of C, D and E reads category IDs of the form `category_N` only. The bundled scenarios `tags`, `category` and `hunger` have named categories. On them the instruction and the profile are disabled, the page gives the reason, and C, D and E show the list of the scorer. The scenario `conditions` serves the built-in fixture (36 items, `category_0` to `category_5`, three users), where they work: `python scripts/quickstart.py rehearse --scenario conditions` or `python scripts/run_demo.py --scenario conditions`.
+The parser of C, D and E reads category IDs of the form `category_N` only. The bundled scenarios `tags`, `category` and `hunger` have named categories. On them the instruction and the profile are disabled, the page gives the reason, and C, D and E show the list of the scorer. The scenario `conditions` serves the built-in fixture (36 items, `category_0` to `category_5`, three users), where they work: `python scripts/quickstart.py manual --scenario conditions` or `python scripts/run_demo.py --scenario conditions`.
 A model error leaves the controls unchanged. The application does not replace a failed model result by a rule result.
 
 ## Language controls
@@ -46,7 +46,7 @@ Every language control follows one workflow. The five methods differ in how the 
 | 1. Request | The person writes a request or chooses a category. The evidence scope is the first 6 or the first 10 items of the starting list. No other item is used. | `web/src/SemanticPanel.jsx` |
 | 2. Model output | The provider gets an instruction with input data and a JSON schema. It returns one JSON object. The structured reply and hashes can be recorded by the selected route. The reviewed personal transport does not retain the raw CLI stream. | `feedctrl/model_routes.py`, `feedctrl/demo_providers.py` |
 | 3. Application checks | Structure and bounds of the reply; item identifiers exist; each quotation is an exact part of the text of its own item; each category or tag name exists with exactly the supplied value; the quoted part of the request is an exact part of the request; the selection is not too broad. A reply that fails gives an error, and nothing is proposed. | `feedctrl/indirect_grounding.py`, `feedctrl/vocabulary_grounding.py`, `feedctrl/staged_induction.py`, `feedctrl/evidence_audit.py` |
-| 4. Review | The page shows what came back (the model output, an authored reply, or your own selection), the application checks and the decision in three blocks, a row for every item in the scope, and the first ten items now and after approval. The applied feed does not change. | `web/src/ReviewBoard.jsx`, `web/src/ReviewTable.jsx` |
+| 4. Review | The page shows what came back (the model output or your own selection), the application checks and the decision in three blocks, a row for every item in the scope, and the first ten items now and after approval. The applied feed does not change. | `web/src/ReviewBoard.jsx`, `web/src/ReviewTable.jsx` |
 | 5. Sealed group | Each control becomes one sealed record (see below). The server keeps the plan. | `feedctrl/semantic_review.py` |
 | 6. Policy | On Apply, the server validates the plan again against the current source and applies exactly the approved set. | `rank_groups` in `feedctrl/semantic_review.py` |
 | 7. Undo | The undo is previewed, then approved. The server keeps up to ten earlier states. | `feedctrl/semantic_review.py` |
@@ -62,7 +62,7 @@ Every language control follows one workflow. The five methods differ in how the 
 | A new category from my description, in stages (model) | Call 1 proposes a definition, and the person reviews it or rejects it. Call 2 classifies every item. Call 3 assesses the evidence without seeing the classifications. A member needs agreement of both. An item on which they disagree gets no decision and is not selected. | 3 | `feedctrl/staged_routes.py`, `feedctrl/staged_induction.py`, `feedctrl/evidence_audit.py`, `feedctrl/source_constraints.py` |
 
 The page also offers two earlier methods. "A new category in one call (earlier method)" makes a new category in one model call. "My request, matched to item descriptions (local model NAME)" uses a local Ollama model, where the server allows local models.
-With the hand-written replies the method names end with "(authored replies, no model)". On a server with no provider, the model methods are listed as disabled, marked "(needs a model provider)".
+On a server with no provider, the model methods are listed as disabled, marked "(needs a model provider)".
 The method with categories and tags names each control from its action and its names, for example `Remove: category "Cooking", tag "street food"` or `Show more: category "Music"`. A name longer than 80 characters is cut and ends with `... [hash6]`. A name that is in use gets ` (2)`.
 
 ### When the application proposes nothing
@@ -132,12 +132,13 @@ The provider identity is a declaration by the route. The application records it.
 
 ## Providers
 
+There is no provider with hand-written replies. To try the language-control screens with no key, use Feed Control Studio (`run-studio.cmd`, **Mock** provider; see the [Studio guide](studio-guide.md)).
+
 The server gets its provider at start. A request from the page cannot supply a provider address, a credential or a provider choice.
 
 | Provider | Meaning |
 | --- | --- |
 | none (`manual`) | Only the manual method works. The page lists the model methods as disabled, with the commands that start a provider. The scenario `conditions` accepts this provider only. |
-| `scripted` | Replies that a person wrote for the bundled requests. Not a model. |
 | a [model route](model-routes.md) | A command-line program, a hosted API, a model server on this computer, or the file relay. |
 | `personal-cli` | The historical Windows driver uses a frozen profile. A separate [explicit personal binding](../diagnostic/README.md) supports the current combined route through an operator-supplied caller. |
 

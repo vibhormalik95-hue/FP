@@ -3,8 +3,11 @@
     python scripts/quickstart.py check
         Print the source fingerprint and the versions that matter.
 
-    python scripts/quickstart.py rehearse --scenario tags
-        Serve the app with hand-written replies. No model. Use it to learn the screens.
+    python scripts/quickstart.py manual --scenario tags
+        Serve the app with no model: only the manual category control (with
+        --scenario conditions: the original conditions A to E). To try the
+        language-control screens with no key, use Feed Control Studio instead:
+        run-studio.cmd and its mock provider (docs/studio-guide.md).
 
     python scripts/quickstart.py setup
     python scripts/quickstart.py doctor
@@ -182,22 +185,22 @@ def check(_):
     print('built interface: present')
 
 
-def rehearse(args):
+def manual(args):
+    """Serve the app with no model provider: the manual controls only."""
     require_free_port(args.port)
     sys.path.insert(0, str(ROOT / 'scripts'))
     import run_demo as launcher
-    # The fixture scenario for the original conditions has no language controls
-    # and therefore no replies of any kind: it is served with no provider.
     fixture = args.scenario in launcher.FIXTURE_SCENARIOS
-    server = run_demo('--scenario', args.scenario, '--provider', 'manual' if fixture else 'scripted',
-                      '--port', str(args.port))
+    server = run_demo('--scenario', args.scenario, '--provider', 'manual', '--port', str(args.port))
     try:
         wait_until_served(args.port, server)
         if fixture:
             print(f'The original conditions A to E on the built-in fixture (no model). '
                   f'Open http://127.0.0.1:{args.port}', flush=True)
         else:
-            print(f'Rehearsal with hand-written replies (no model). Open http://127.0.0.1:{args.port}', flush=True)
+            print(f'No model: the manual category control only. Open http://127.0.0.1:{args.port}\n'
+                  'To try the language controls with no key, use Feed Control Studio (run-studio.cmd, mock provider).',
+                  flush=True)
         serve_until_stopped(server)
     finally:
         stop_server(server)
@@ -315,9 +318,9 @@ def main(argv=None):
     sys.path.insert(0, str(ROOT / 'scripts'))
     import run_demo as launcher
     scenarios = sorted(launcher.SCENARIOS)
-    for name, function in (('rehearse', rehearse), ('live', live)):
+    for name, function in (('manual', manual), ('live', live)):
         step = steps.add_parser(name)
-        if name == 'rehearse':
+        if name == 'manual':
             step.add_argument('--scenario', choices=sorted([*scenarios, *launcher.FIXTURE_SCENARIOS]),
                               default='tags' if 'tags' in scenarios else 'category')
         else:
@@ -342,7 +345,7 @@ def main(argv=None):
     step.add_argument('--record-dir', help='a new folder for the call records, or "none"; default: a new folder under runs/')
     step.set_defaults(run=start)
     args = parser.parse_args(argv)
-    if args.run in (rehearse, live, start) and __name__ == '__main__':
+    if args.run in (manual, live, start) and __name__ == '__main__':
         # A stop signal to this launcher alone (for example from a process
         # manager) ends it through its "finally" steps, which stop the server.
         signal.signal(signal.SIGTERM, _ended_by_signal)

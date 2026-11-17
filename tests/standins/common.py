@@ -1,8 +1,8 @@
 """Shared parts of the stand-in servers and programs.
 
-A stand-in is not a model. It answers with the hand-written rehearsal replies
-of ``scripts/demo_scripted_replies.py`` or with a fixed object for the
-connection test. Each one says so in its output. They exist so that the wire
+A stand-in is not a model. It answers with the fixed test replies of
+``tests/standins/authored_replies.py`` (a test double) or with a fixed object
+for the connection test. Each one says so in its output. They exist so that the wire
 format and the failure handling of a route can be tested without a provider.
 """
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
@@ -56,11 +56,11 @@ def reply_for(payload, schema, replies):
     if sorted(schema.get('required', [])) == ['ok'] and set(schema.get('properties', {})) == {'ok'}:
         return {'ok': True}  # the connection test of feedctrl.model_routes.check_route
     if replies == 'scripted':
-        scripts = str(ROOT / 'scripts')
-        if scripts not in sys.path:
-            sys.path.insert(0, scripts)
-        import demo_scripted_replies
-        return demo_scripted_replies.lookup(payload, schema)
+        folder = str(Path(__file__).resolve().parent)
+        if folder not in sys.path:
+            sys.path.insert(0, folder)
+        import authored_replies   # a test double; no launcher imports it
+        return authored_replies.lookup(payload, schema)
     return None
 
 

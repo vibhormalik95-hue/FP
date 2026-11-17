@@ -15,7 +15,7 @@ Open the view **Language controls**. Under **Fictional items (separate list)**, 
 4. Read the draft under "Review the fictional item before you add it": the wording, the model and the hashes. A preview adds nothing to a list.
 5. If the draft is suitable, press **Approve and add to the list of fictional items**.
 
-With the hand-written replies of `rehearse`, the draft is an authored reply for the exact example description, and the page says that no model wrote it. A server without a provider says that no draft can be written.
+A server without a provider says that no draft can be written. To try the screens with no key, use Feed Control Studio (`run-studio.cmd`, **Mock** provider).
 
 A valid reply and a recorded origin do not make the wording suitable. Review it before you admit it.
 
@@ -46,7 +46,7 @@ The API cannot change the origin label.
 
 ## Providers
 
-The draft uses the provider that the server was started with: the hand-written replies of `rehearse`, a [model route](model-routes.md), the relay, or the reviewed Claude Code CLI connection. A draft counts toward the same call allowance as the other calls.
+The draft uses the provider that the server was started with: a [model route](model-routes.md), the relay, or the reviewed Claude Code CLI connection. A draft counts toward the same call allowance as the other calls.
 Only the drafting instruction, the brief and the reply schema go to the provider. The catalogue, the history and existing fictional records do not.
 A server without a provider cannot draft.
 

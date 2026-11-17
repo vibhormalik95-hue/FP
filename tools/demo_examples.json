@@ -1,0 +1,31 @@
+{
+  "note": "Demonstration and software-test examples for run-all-tests and the video. They are NOT evaluation data: the measured test set is separate, reviewed and frozen, and must not overlap these texts. The application code may not contain them (tests/test_no_hardcoded_examples.py).",
+  "requests": [
+    "少一点明星娱乐",
+    "Show me more 篮球",
+    "I just ate dinner, so stop tempting me with snacks and cooking clips.",
+    "最近负面新闻太多了，让我清净几天",
+    "My cat is at the vet and I cannot bear to see animals right now.",
+    "I am training for a marathon and could use some motivation."
+  ],
+  "interpret": [
+    {"domain": "celebrity", "language": "zh", "kind": "literal", "request": "少一点明星娱乐"},
+    {"domain": "sports", "language": "mixed", "kind": "literal", "request": "Show me more 篮球"},
+    {"domain": "food", "language": "en", "kind": "nonliteral", "request": "I just ate dinner, so stop tempting me with snacks and cooking clips."},
+    {"domain": "news", "language": "zh", "kind": "nonliteral", "request": "最近负面新闻太多了，让我清净几天"},
+    {"domain": "pets", "language": "en", "kind": "nonliteral", "request": "My cat is at the vet and I cannot bear to see animals right now."},
+    {"domain": "fitness", "language": "en", "kind": "nonliteral", "request": "I am training for a marathon and could use some motivation."}
+  ],
+  "new_category": [
+    {"domain": "outdoors", "description": "Videos filmed outdoors in nature: mountains, rivers, fields or the sea."},
+    {"domain": "skills", "description": "教别人一步一步学会某个实用技能的视频"}
+  ],
+  "new_items": [
+    {"domain": "hiking", "items": [{"title": "Weekend hike up the mountain", "description": "A steep forest trail and a view over the city from the summit."}]},
+    {"domain": "cooking", "items": [{"title": "三分钟学会番茄炒蛋", "description": "家常做法，简单易学，适合新手。"}]}
+  ],
+  "manual": [
+    {"domain": "pets", "kind": "category", "value": "宠物", "action": "hide"},
+    {"domain": "dance", "kind": "category", "value": "舞蹈", "action": "boost", "strength": "strong"}
+  ]
+}

@@ -17,6 +17,7 @@ from copy import deepcopy
 import hashlib
 import http.client
 import socket
+import sys
 import ssl
 import threading
 import time
@@ -138,6 +139,15 @@ class _Connections:
             try:
                 action()
             except (OSError, ValueError):
+                pass
+        # On Windows neither a shutdown nor a deferred close wakes a recv that waits in another
+        # thread; closing the operating-system handle does (WSAECONNABORTED in the reader).
+        if sys.platform == 'win32':
+            try:
+                handle = socket.socket.detach(connection)
+                if handle != -1:
+                    socket.close(handle)
+            except (OSError, ValueError, AttributeError):
                 pass
 
     def add(self, connection):

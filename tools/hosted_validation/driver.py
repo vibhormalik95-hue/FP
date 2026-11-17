@@ -112,7 +112,7 @@ def build(config, source, bundle, runner, report, checkpoint=lambda:None):
     budget=HostedRunBudget(CAPS[config['scenario']])
     kwargs={k:config[k] for k in (*GATES,*BOUNDS,'executable','workdir','model','effort',
                  'estimated_per_invocation_usd','output_mode','reviewed_cli_version')}
-    app=create_claude_personal_app(operator_token=config['operator_token'],
+    app=create_claude_personal_app(
         allowed_origin='http://127.0.0.1:8765',fixture=False,
         data_path=bundle['folder']/'app-data.json',semantic_path=bundle['folder']/'metadata.csv',
         run_budget=budget,process_runner=capturing_runner(runner,bundle,report,checkpoint),**kwargs)
@@ -285,7 +285,7 @@ def redact(value, config):
         return out
     if isinstance(value,list): return [redact(v,config) for v in value]
     if isinstance(value,str):
-        for key in ('executable','workdir','operator_token'):
+        for key in ('executable','workdir'):
             value=value.replace(config[key],'[redacted]')
     return value
 

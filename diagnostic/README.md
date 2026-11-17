@@ -50,7 +50,7 @@ All five values are explicit; no home or CLI path is hard-coded. The working dir
 
 ## Direct-app binding after separate approval
 
-The implementation is a Python app-construction API, not a packaged turnkey web server. No public launcher or browser workflow is claimed. A reviewed caller supplies an operator token, canonical loopback origin, model and effort, per-call CLI estimated threshold, explicit output mode and CLI version, a fresh marker, and the six distinct existing authorization/review flags. It must also give exact SHA-256 pins for the absolute data and caption-sidecar files in `reviewed_files`. The app verifies those inputs before construction and before each invocation. No private path or context value is included in this source.
+The implementation is a Python app-construction API, not a packaged turnkey web server. No public launcher or browser workflow is claimed. A reviewed caller supplies a canonical loopback origin, model and effort, per-call CLI estimated threshold, explicit output mode and CLI version, a fresh marker, and the six distinct existing authorization/review flags. It must also give exact SHA-256 pins for the absolute data and caption-sidecar files in `reviewed_files`. The app verifies those inputs before construction and before each invocation. No private path or context value is included in this source.
 
 For the two-call indirect mode, independently review the exact request, the candidate IDs and the canonical catalogue digest. Calculate the latter in a **separate Python process** from the reviewed data and sidecar, using the current source's `load_topic_index`, `scoped_index`, `_catalogue` and `diagnostic.flow_guard._digest`. Do not import `feedctrl` in the later binding process before binding: the bootstrap intentionally rejects preloaded application modules. `max_calls=2` requires the first prompt/schema to be the existing action interpreter, validates its returned action against that exact request, then permits only the existing grounding prompt/schema, that request and validated action, and the reviewed catalogue digest. A refusal, invalid first response or runner error latches the flow closed. A clarification ends the flow without grounding. `max_calls=1` retains the original one-call option.
 
@@ -88,7 +88,7 @@ Review the IDs, captions, hashes and intended disclosure independently. Close th
 The following direct-route outline is executable after replacing **all** placeholders and placing it in a separately reviewed caller script. Run it from a fresh approved process with the reviewed virtual-environment interpreter using `-I -B`; it starts no HTTP server. The placeholder catalogue digest must be calculated in the separate process described above, and the file hashes and provider disclosure must be reviewed before typing `AUTHORIZE`. This outline has not been executed against a provider.
 
 ```python
-import hashlib, json, secrets, sys
+import hashlib, json, sys
 from pathlib import Path
 ROOT = Path(r"ABS_SOURCE_ROOT")
 # Compare these values to independently distributed/reviewed hashes first.
@@ -114,7 +114,7 @@ if input("After reviewing the exact disclosure, context and spend, type AUTHORIZ
 approvals = {key: True for key in app_binding._APPROVALS}
 app, observations = app_binding.construct(
     enable_live=True, context=context, marker=Path(r"NEW_ABS_MARKER"),
-    operator_token=secrets.token_urlsafe(32), allowed_origin="http://127.0.0.1:8000",
+    allowed_origin="http://127.0.0.1:8000",
     model="REVIEWED_FULL_MODEL_ID", effort="max", estimated_per_invocation_usd=5.0,
     output_mode="plain_json", reviewed_cli_version="2.1.321", approvals=approvals,
     reviewed_files=files, max_calls=2, request=request, catalogue_sha256=catalogue_sha,

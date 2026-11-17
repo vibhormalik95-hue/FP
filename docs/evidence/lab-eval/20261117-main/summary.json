@@ -1,0 +1,1574 @@
+{
+ "title": "KuaiRec language controls: local vs frontier models on the frozen reviewed set",
+ "status_note": "Set lab-eval-set-20261117-frozen (SHA-256 d4af21e6ed311448…), reviewed by Vibhor Malik at 2026-11-17T02:27:25+00:00. Review CSV SHA-256 384c47777bef2984…",
+ "set_sha256": "d4af21e6ed311448c79fabc7286a7dc00eba62cb3ec5c45dde60d8a01f233a82",
+ "models": {
+  "claude-sonnet-5-5-cli": {
+   "name": "claude-sonnet-5-5-cli",
+   "provider": "claude-cli",
+   "model": "claude-sonnet-5-5",
+   "effort": "low",
+   "set_sha256": "d4af21e6ed311448c79fabc7286a7dc00eba62cb3ec5c45dde60d8a01f233a82",
+   "started_utc": "2026-11-17T02:28:10+00:00",
+   "missing_cases": []
+  },
+  "gpt-5-mini": {
+   "name": "gpt-5-mini",
+   "provider": "openai",
+   "model": "gpt-5-mini",
+   "effort": "low",
+   "set_sha256": "d4af21e6ed311448c79fabc7286a7dc00eba62cb3ec5c45dde60d8a01f233a82",
+   "started_utc": "2026-11-17T02:28:11+00:00",
+   "missing_cases": []
+  },
+  "gpt-5": {
+   "name": "gpt-5",
+   "provider": "openai",
+   "model": "gpt-5",
+   "effort": "low",
+   "set_sha256": "d4af21e6ed311448c79fabc7286a7dc00eba62cb3ec5c45dde60d8a01f233a82",
+   "started_utc": "2026-11-17T02:28:11+00:00",
+   "missing_cases": []
+  }
+ },
+ "summaries": {
+  "claude-sonnet-5-5-cli": {
+   "nl_cases": 20,
+   "nl_exact": 17,
+   "nl_exact_rate": 0.85,
+   "nl_exact_wilson": [
+    0.6396,
+    0.9476
+   ],
+   "nl_action_rate": 0.95,
+   "nl_label_precision": 0.95,
+   "nl_label_recall": 0.9,
+   "nl_label_f1": 0.9166666666666666,
+   "nl_label_f1_ci": [
+    0.8,
+    1.0
+   ],
+   "nl_unwanted_clarification": 1,
+   "nl_errors": 0,
+   "ab_cases": 14,
+   "ab_abstained": 12,
+   "ab_abstention_rate": 0.8571428571428571,
+   "ab_abstention_wilson": [
+    0.6006,
+    0.9599
+   ],
+   "false_acceptance": 2,
+   "ab_status_match": 12,
+   "nc_cases": 6,
+   "nc_member_precision": 1.0,
+   "nc_member_recall": 0.7931308049535604,
+   "nc_member_f1": 0.874958183990442,
+   "nc_member_f1_ci": [
+    0.7907,
+    0.9593
+   ],
+   "nc_raw_f1": 0.9695945253754584,
+   "retrieval_misses_labels": 4,
+   "retrieval_misses_members": 21,
+   "errors": 0,
+   "calls": 136,
+   "call_errors": 0,
+   "cost_usd": 5.8624,
+   "latency_median_s": 6.578,
+   "latency_p90_s": 7.75
+  },
+  "gpt-5-mini": {
+   "nl_cases": 20,
+   "nl_exact": 16,
+   "nl_exact_rate": 0.8,
+   "nl_exact_wilson": [
+    0.584,
+    0.9193
+   ],
+   "nl_action_rate": 0.95,
+   "nl_label_precision": 0.9158279220779221,
+   "nl_label_recall": 0.95,
+   "nl_label_f1": 0.9304385964912282,
+   "nl_label_f1_ci": [
+    0.823,
+    0.9967
+   ],
+   "nl_unwanted_clarification": 1,
+   "nl_errors": 0,
+   "ab_cases": 14,
+   "ab_abstained": 7,
+   "ab_abstention_rate": 0.5,
+   "ab_abstention_wilson": [
+    0.268,
+    0.732
+   ],
+   "false_acceptance": 7,
+   "ab_status_match": 6,
+   "nc_cases": 6,
+   "nc_member_precision": 0.9421296296296297,
+   "nc_member_recall": 0.9336426000899686,
+   "nc_member_f1": 0.935520748020748,
+   "nc_member_f1_ci": [
+    0.887,
+    0.9816
+   ],
+   "nc_raw_f1": 0.9618329383035266,
+   "retrieval_misses_labels": 2,
+   "retrieval_misses_members": 6,
+   "errors": 0,
+   "calls": 138,
+   "call_errors": 0,
+   "cost_usd": 0.4749,
+   "latency_median_s": 11.656,
+   "latency_p90_s": 16.719
+  },
+  "gpt-5": {
+   "nl_cases": 20,
+   "nl_exact": 17,
+   "nl_exact_rate": 0.85,
+   "nl_exact_wilson": [
+    0.6396,
+    0.9476
+   ],
+   "nl_action_rate": 1.0,
+   "nl_label_precision": 0.9431623931623931,
+   "nl_label_recall": 0.975,
+   "nl_label_f1": 0.9425770308123249,
+   "nl_label_f1_ci": [
+    0.8732,
+    1.0
+   ],
+   "nl_unwanted_clarification": 0,
+   "nl_errors": 0,
+   "ab_cases": 14,
+   "ab_abstained": 10,
+   "ab_abstention_rate": 0.7142857142857143,
+   "ab_abstention_wilson": [
+    0.4535,
+    0.8828
+   ],
+   "false_acceptance": 4,
+   "ab_status_match": 10,
+   "nc_cases": 6,
+   "nc_member_precision": 0.9577677224736049,
+   "nc_member_recall": 0.8938315339631129,
+   "nc_member_f1": 0.9176006341328922,
+   "nc_member_f1_ci": [
+    0.8511,
+    0.9761
+   ],
+   "nc_raw_f1": 0.9526234567901235,
+   "retrieval_misses_labels": 1,
+   "retrieval_misses_members": 11,
+   "errors": 0,
+   "calls": 137,
+   "call_errors": 0,
+   "cost_usd": 2.3888,
+   "latency_median_s": 12.516,
+   "latency_p90_s": 23.875
+  }
+ },
+ "paired_tests": [
+  {
+   "a": "claude-sonnet-5-5-cli",
+   "b": "gpt-5",
+   "cases": 40,
+   "success_a": 33,
+   "success_b": 32,
+   "only_a": 5,
+   "only_b": 4,
+   "mcnemar_p": 1.0,
+   "mean_score_diff": 0.030648450405803346,
+   "wilcoxon_p": 0.5711544403484945,
+   "mcnemar_p_bh": 1.0,
+   "wilcoxon_p_bh": 0.5711544403484945
+  },
+  {
+   "a": "claude-sonnet-5-5-cli",
+   "b": "gpt-5-mini",
+   "cases": 40,
+   "success_a": 33,
+   "success_b": 29,
+   "only_a": 8,
+   "only_b": 4,
+   "mcnemar_p": 0.3876953125,
+   "mean_score_diff": 0.1090296504831734,
+   "wilcoxon_p": 0.17941499252549664,
+   "mcnemar_p_bh": 0.76171875,
+   "wilcoxon_p_bh": 0.26912248878824496
+  },
+  {
+   "a": "gpt-5",
+   "b": "gpt-5-mini",
+   "cases": 40,
+   "success_a": 32,
+   "success_b": 29,
+   "only_a": 6,
+   "only_b": 3,
+   "mcnemar_p": 0.5078125,
+   "mean_score_diff": 0.07838120007737005,
+   "wilcoxon_p": 0.17823273870494272,
+   "mcnemar_p_bh": 0.76171875,
+   "wilcoxon_p_bh": 0.26912248878824496
+  }
+ ],
+ "downstream": {
+  "users": [
+   1109,
+   2671,
+   4317,
+   4402,
+   5477,
+   986,
+   1928,
+   5033,
+   5250,
+   4741,
+   3569,
+   6550,
+   4868,
+   4676,
+   6117,
+   6449,
+   6376,
+   4258,
+   6274,
+   6434,
+   4950,
+   3760,
+   2057,
+   21,
+   5181,
+   814,
+   1043,
+   2438,
+   6899,
+   970,
+   3837,
+   131,
+   5755,
+   7057,
+   5709,
+   2626,
+   1817,
+   3406,
+   2141,
+   2901,
+   3019,
+   3218,
+   6235,
+   4404,
+   5394,
+   785,
+   6039,
+   2812,
+   877,
+   4752,
+   4632,
+   2451,
+   6911,
+   3895,
+   1257,
+   5460,
+   5878,
+   5979,
+   4887,
+   2592,
+   262,
+   5924,
+   3155,
+   3121,
+   3921,
+   3610,
+   890,
+   3423,
+   4937,
+   4723,
+   4307,
+   1104,
+   3628,
+   4344,
+   6266,
+   5026,
+   6850,
+   3411,
+   4461,
+   2186,
+   7100,
+   4784,
+   4151,
+   6759,
+   4423,
+   6563,
+   4882,
+   1944,
+   1160,
+   506,
+   5885,
+   4445,
+   5624,
+   7133,
+   5982,
+   5265,
+   3660,
+   4012,
+   1261,
+   4169,
+   1984,
+   1117,
+   5305,
+   5864,
+   3885,
+   5658,
+   3993,
+   5956,
+   4672,
+   6782,
+   4766,
+   3458,
+   5622,
+   2585,
+   4681,
+   7135,
+   4313,
+   5854,
+   6356,
+   6190,
+   3688,
+   1761,
+   2468,
+   2272,
+   73,
+   332,
+   1314,
+   5533,
+   5008,
+   3898,
+   6301,
+   4240,
+   3069,
+   1747,
+   2205,
+   5803,
+   4197,
+   3984,
+   4396,
+   4306,
+   3689,
+   4756,
+   5582,
+   335,
+   2444,
+   2641,
+   6653,
+   6893,
+   3735,
+   5791,
+   4414,
+   2201,
+   3862,
+   1643,
+   6435,
+   6102,
+   632,
+   5487,
+   2255,
+   6440,
+   3170,
+   951,
+   1698,
+   3515,
+   1278,
+   6868,
+   172,
+   925,
+   14,
+   3850,
+   4910,
+   4673,
+   839,
+   5085,
+   1737,
+   2121,
+   1112,
+   5241,
+   442,
+   5696,
+   2259,
+   5368,
+   6773,
+   1375,
+   37,
+   2625,
+   4930,
+   4877,
+   4270,
+   1199,
+   6204,
+   7132,
+   4053,
+   4957,
+   1164,
+   5020,
+   4329,
+   6627,
+   846,
+   3559
+  ],
+  "cases": {
+   "NL01": {
+    "action": "boost",
+    "target_items": 37,
+    "none": {
+     "target_share": 0.0,
+     "ndcg10": 0.024160992169872907,
+     "hr1": 0.005
+    },
+    "reference": {
+     "target_share": 0.603,
+     "ndcg10": 0.003943985852070201,
+     "hr1": 0.0
+    },
+    "models": {
+     "claude-sonnet-5-5-cli": {
+      "target_share": 1.0,
+      "ndcg10": 0.0012177613510506175,
+      "hr1": 0.0
+     },
+     "gpt-5-mini": {
+      "target_share": 0.9,
+      "ndcg10": 0.0015977481378246041,
+      "hr1": 0.0
+     },
+     "gpt-5": {
+      "target_share": 0.9690000000000001,
+      "ndcg10": 0.0007139757201806865,
+      "hr1": 0.0
+     }
+    }
+   },
+   "NL02": {
+    "action": "reduce",
+    "target_items": 59,
+    "none": {
+     "target_share": 0.001,
+     "ndcg10": 0.024160992169872907,
+     "hr1": 0.005
+    },
+    "reference": {
+     "target_share": 0.0,
+     "ndcg10": 0.024160992169872907,
+     "hr1": 0.005
+    },
+    "models": {
+     "claude-sonnet-5-5-cli": {
+      "target_share": 0.0,
+      "ndcg10": 0.024160992169872907,
+      "hr1": 0.005
+     },
+     "gpt-5-mini": {
+      "target_share": 0.0,
+      "ndcg10": 0.024160992169872907,
+      "hr1": 0.005
+     },
+     "gpt-5": {
+      "target_share": 0.0,
+      "ndcg10": 0.024160992169872907,
+      "hr1": 0.005
+     }
+    }
+   },
+   "NL03": {
+    "action": "reduce",
+    "target_items": 110,
+    "none": {
+     "target_share": 0.0005,
+     "ndcg10": 0.024160992169872907,
+     "hr1": 0.005
+    },
+    "reference": {
+     "target_share": 0.0,
+     "ndcg10": 0.024160992169872907,
+     "hr1": 0.005
+    },
+    "models": {
+     "claude-sonnet-5-5-cli": {
+      "target_share": 0.0,
+      "ndcg10": 0.024160992169872907,
+      "hr1": 0.005
+     },
+     "gpt-5-mini": {
+      "target_share": 0.0,
+      "ndcg10": 0.024160992169872907,
+      "hr1": 0.005
+     },
+     "gpt-5": {
+      "target_share": 0.0,
+      "ndcg10": 0.024160992169872907,
+      "hr1": 0.005
+     }
+    }
+   },
+   "NL04": {
+    "action": "hide",
+    "target_items": 25,
+    "none": {
+     "target_share": 0.009000000000000001,
+     "ndcg10": 0.024160992169872907,
+     "hr1": 0.005
+    },
+    "reference": {
+     "target_share": 0.0,
+     "ndcg10": 0.024160992169872907,
+     "hr1": 0.005
+    },
+    "models": {
+     "claude-sonnet-5-5-cli": {
+      "target_share": 0.0,
+      "ndcg10": 0.024160992169872907,
+      "hr1": 0.005
+     },
+     "gpt-5-mini": {
+      "target_share": 0.0,
+      "ndcg10": 0.024160992169872907,
+      "hr1": 0.005
+     },
+     "gpt-5": {
+      "target_share": 0.0,
+      "ndcg10": 0.024160992169872907,
+      "hr1": 0.005
+     }
+    }
+   },
+   "NL05": {
+    "action": "reduce",
+    "target_items": 6,
+    "none": {
+     "target_share": 0.0,
+     "ndcg10": 0.024160992169872907,
+     "hr1": 0.005
+    },
+    "reference": {
+     "target_share": 0.0,
+     "ndcg10": 0.024160992169872907,
+     "hr1": 0.005
+    },
+    "models": {
+     "claude-sonnet-5-5-cli": {
+      "target_share": 0.0,
+      "ndcg10": 0.024160992169872907,
+      "hr1": 0.005
+     },
+     "gpt-5-mini": {
+      "target_share": 0.0,
+      "ndcg10": 0.024160992169872907,
+      "hr1": 0.005
+     },
+     "gpt-5": {
+      "target_share": 0.0,
+      "ndcg10": 0.024160992169872907,
+      "hr1": 0.005
+     }
+    }
+   },
+   "NL06": {
+    "action": "only",
+    "target_items": 67,
+    "none": {
+     "target_share": 0.099,
+     "ndcg10": 0.024160992169872907,
+     "hr1": 0.005
+    },
+    "reference": {
+     "target_share": 1.0,
+     "ndcg10": 0.03027972726036661,
+     "hr1": 0.045
+    },
+    "models": {
+     "claude-sonnet-5-5-cli": {
+      "target_share": 0.099,
+      "ndcg10": 0.024160992169872907,
+      "hr1": 0.005
+     },
+     "gpt-5-mini": {
+      "target_share": 0.099,
+      "ndcg10": 0.024160992169872907,
+      "hr1": 0.005
+     },
+     "gpt-5": {
+      "target_share": 0.665,
+      "ndcg10": 0.03487114837863793,
+      "hr1": 0.045
+     }
+    }
+   },
+   "NL07": {
+    "action": "reduce",
+    "target_items": 58,
+    "none": {
+     "target_share": 0.007000000000000001,
+     "ndcg10": 0.024160992169872907,
+     "hr1": 0.005
+    },
+    "reference": {
+     "target_share": 0.0,
+     "ndcg10": 0.024160992169872907,
+     "hr1": 0.005
+    },
+    "models": {
+     "claude-sonnet-5-5-cli": {
+      "target_share": 0.0,
+      "ndcg10": 0.024160992169872907,
+      "hr1": 0.005
+     },
+     "gpt-5-mini": {
+      "target_share": 0.0,
+      "ndcg10": 0.024160992169872907,
+      "hr1": 0.005
+     },
+     "gpt-5": {
+      "target_share": 0.0,
+      "ndcg10": 0.024160992169872907,
+      "hr1": 0.005
+     }
+    }
+   },
+   "NL08": {
+    "action": "only",
+    "target_items": 21,
+    "none": {
+     "target_share": 0.001,
+     "ndcg10": 0.024160992169872907,
+     "hr1": 0.005
+    },
+    "reference": {
+     "target_share": 1.0,
+     "ndcg10": 0.003759668338826187,
+     "hr1": 0.0
+    },
+    "models": {
+     "claude-sonnet-5-5-cli": {
+      "target_share": 1.0,
+      "ndcg10": 0.003759668338826187,
+      "hr1": 0.0
+     },
+     "gpt-5-mini": {
+      "target_share": 1.0,
+      "ndcg10": 0.003759668338826187,
+      "hr1": 0.0
+     },
+     "gpt-5": {
+      "target_share": 1.0,
+      "ndcg10": 0.003759668338826187,
+      "hr1": 0.0
+     }
+    }
+   },
+   "NL09": {
+    "action": "boost",
+    "target_items": 27,
+    "none": {
+     "target_share": 0.0,
+     "ndcg10": 0.024160992169872907,
+     "hr1": 0.005
+    },
+    "reference": {
+     "target_share": 0.7585,
+     "ndcg10": 0.006612537197807348,
+     "hr1": 0.015
+    },
+    "models": {
+     "claude-sonnet-5-5-cli": {
+      "target_share": 0.91,
+      "ndcg10": 0.0021813041217200162,
+      "hr1": 0.0
+     },
+     "gpt-5-mini": {
+      "target_share": 1.0,
+      "ndcg10": 0.0,
+      "hr1": 0.0
+     },
+     "gpt-5": {
+      "target_share": 0.21150000000000002,
+      "ndcg10": 0.007114116499159746,
+      "hr1": 0.0
+     }
+    }
+   },
+   "NL10": {
+    "action": "hide",
+    "target_items": 35,
+    "none": {
+     "target_share": 0.09450000000000001,
+     "ndcg10": 0.024160992169872907,
+     "hr1": 0.005
+    },
+    "reference": {
+     "target_share": 0.0,
+     "ndcg10": 0.041601822927306985,
+     "hr1": 0.005
+    },
+    "models": {
+     "claude-sonnet-5-5-cli": {
+      "target_share": 0.0,
+      "ndcg10": 0.041601822927306985,
+      "hr1": 0.005
+     },
+     "gpt-5-mini": {
+      "target_share": 0.0,
+      "ndcg10": 0.041601822927306985,
+      "hr1": 0.005
+     },
+     "gpt-5": {
+      "target_share": 0.0,
+      "ndcg10": 0.041601822927306985,
+      "hr1": 0.005
+     }
+    }
+   },
+   "NL11": {
+    "action": "boost",
+    "target_items": 15,
+    "none": {
+     "target_share": 0.0,
+     "ndcg10": 0.024160992169872907,
+     "hr1": 0.005
+    },
+    "reference": {
+     "target_share": 0.7559999999999999,
+     "ndcg10": 0.012691861190076998,
+     "hr1": 0.025
+    },
+    "models": {
+     "claude-sonnet-5-5-cli": {
+      "target_share": 1.0,
+      "ndcg10": 0.01111267623284607,
+      "hr1": 0.025
+     },
+     "gpt-5-mini": {
+      "target_share": 0.9995,
+      "ndcg10": 0.01111267623284607,
+      "hr1": 0.025
+     },
+     "gpt-5": {
+      "target_share": 0.9995,
+      "ndcg10": 0.01111267623284607,
+      "hr1": 0.025
+     }
+    }
+   },
+   "NL12": {
+    "action": "hide",
+    "target_items": 131,
+    "none": {
+     "target_share": 0.0,
+     "ndcg10": 0.024160992169872907,
+     "hr1": 0.005
+    },
+    "reference": {
+     "target_share": 0.0,
+     "ndcg10": 0.024160992169872907,
+     "hr1": 0.005
+    },
+    "models": {
+     "claude-sonnet-5-5-cli": {
+      "target_share": 0.0,
+      "ndcg10": 0.024160992169872907,
+      "hr1": 0.005
+     },
+     "gpt-5-mini": {
+      "target_share": 0.0,
+      "ndcg10": 0.024160992169872907,
+      "hr1": 0.005
+     },
+     "gpt-5": {
+      "target_share": 0.0,
+      "ndcg10": 0.024160992169872907,
+      "hr1": 0.005
+     }
+    }
+   },
+   "NL13": {
+    "action": "reduce",
+    "target_items": 3,
+    "none": {
+     "target_share": 0.0,
+     "ndcg10": 0.024160992169872907,
+     "hr1": 0.005
+    },
+    "reference": {
+     "target_share": 0.0,
+     "ndcg10": 0.024160992169872907,
+     "hr1": 0.005
+    },
+    "models": {
+     "claude-sonnet-5-5-cli": {
+      "target_share": 0.0,
+      "ndcg10": 0.024160992169872907,
+      "hr1": 0.005
+     },
+     "gpt-5-mini": {
+      "target_share": 0.0,
+      "ndcg10": 0.024160992169872907,
+      "hr1": 0.005
+     },
+     "gpt-5": {
+      "target_share": 0.0,
+      "ndcg10": 0.024160992169872907,
+      "hr1": 0.005
+     }
+    }
+   },
+   "NL14": {
+    "action": "boost",
+    "target_items": 13,
+    "none": {
+     "target_share": 0.0,
+     "ndcg10": 0.024160992169872907,
+     "hr1": 0.005
+    },
+    "reference": {
+     "target_share": 0.2005,
+     "ndcg10": 0.008152534909546452,
+     "hr1": 0.0
+    },
+    "models": {
+     "claude-sonnet-5-5-cli": {
+      "target_share": 0.2005,
+      "ndcg10": 0.008631615082538936,
+      "hr1": 0.005
+     },
+     "gpt-5-mini": {
+      "target_share": 0.2895,
+      "ndcg10": 0.0007139757201806865,
+      "hr1": 0.0
+     },
+     "gpt-5": {
+      "target_share": 0.31,
+      "ndcg10": 0.00468422340841504,
+      "hr1": 0.005
+     }
+    }
+   },
+   "NL15": {
+    "action": "only",
+    "target_items": 63,
+    "none": {
+     "target_share": 0.0,
+     "ndcg10": 0.024160992169872907,
+     "hr1": 0.005
+    },
+    "reference": {
+     "target_share": 1.0,
+     "ndcg10": 0.003973517072996181,
+     "hr1": 0.0
+    },
+    "models": {
+     "claude-sonnet-5-5-cli": {
+      "target_share": 1.0,
+      "ndcg10": 0.003973517072996181,
+      "hr1": 0.0
+     },
+     "gpt-5-mini": {
+      "target_share": 0.5579999999999999,
+      "ndcg10": 0.010597835037803049,
+      "hr1": 0.005
+     },
+     "gpt-5": {
+      "target_share": 1.0,
+      "ndcg10": 0.003973517072996181,
+      "hr1": 0.0
+     }
+    }
+   },
+   "NL16": {
+    "action": "reduce",
+    "target_items": 12,
+    "none": {
+     "target_share": 0.0,
+     "ndcg10": 0.024160992169872907,
+     "hr1": 0.005
+    },
+    "reference": {
+     "target_share": 0.0,
+     "ndcg10": 0.024160992169872907,
+     "hr1": 0.005
+    },
+    "models": {
+     "claude-sonnet-5-5-cli": {
+      "target_share": 0.0,
+      "ndcg10": 0.024160992169872907,
+      "hr1": 0.005
+     },
+     "gpt-5-mini": {
+      "target_share": 0.0,
+      "ndcg10": 0.024160992169872907,
+      "hr1": 0.005
+     },
+     "gpt-5": {
+      "target_share": 0.0,
+      "ndcg10": 0.024160992169872907,
+      "hr1": 0.005
+     }
+    }
+   },
+   "NL17": {
+    "action": "boost",
+    "target_items": 16,
+    "none": {
+     "target_share": 0.0,
+     "ndcg10": 0.024160992169872907,
+     "hr1": 0.005
+    },
+    "reference": {
+     "target_share": 0.20350000000000001,
+     "ndcg10": 0.012862394125744359,
+     "hr1": 0.005
+    },
+    "models": {
+     "claude-sonnet-5-5-cli": {
+      "target_share": 0.5905,
+      "ndcg10": 0.003342672185668505,
+      "hr1": 0.0
+     },
+     "gpt-5-mini": {
+      "target_share": 0.2625,
+      "ndcg10": 0.009181713584639171,
+      "hr1": 0.005
+     },
+     "gpt-5": {
+      "target_share": 0.2625,
+      "ndcg10": 0.009181713584639171,
+      "hr1": 0.005
+     }
+    }
+   },
+   "NL18": {
+    "action": "boost",
+    "target_items": 12,
+    "none": {
+     "target_share": 0.0,
+     "ndcg10": 0.024160992169872907,
+     "hr1": 0.005
+    },
+    "reference": {
+     "target_share": 0.201,
+     "ndcg10": 0.011525279292791308,
+     "hr1": 0.005
+    },
+    "models": {
+     "claude-sonnet-5-5-cli": {
+      "target_share": 0.4365,
+      "ndcg10": 0.014236752664689671,
+      "hr1": 0.01
+     },
+     "gpt-5-mini": {
+      "target_share": 0.4365,
+      "ndcg10": 0.014236752664689671,
+      "hr1": 0.01
+     },
+     "gpt-5": {
+      "target_share": 0.4365,
+      "ndcg10": 0.014236752664689671,
+      "hr1": 0.01
+     }
+    }
+   },
+   "NL19": {
+    "action": "hide",
+    "target_items": 38,
+    "none": {
+     "target_share": 0.006000000000000001,
+     "ndcg10": 0.024160992169872907,
+     "hr1": 0.005
+    },
+    "reference": {
+     "target_share": 0.0,
+     "ndcg10": 0.02314207968497465,
+     "hr1": 0.005
+    },
+    "models": {
+     "claude-sonnet-5-5-cli": {
+      "target_share": 0.0,
+      "ndcg10": 0.02314207968497465,
+      "hr1": 0.005
+     },
+     "gpt-5-mini": {
+      "target_share": 0.0,
+      "ndcg10": 0.02314207968497465,
+      "hr1": 0.005
+     },
+     "gpt-5": {
+      "target_share": 0.0,
+      "ndcg10": 0.042070121713667134,
+      "hr1": 0.0
+     }
+    }
+   },
+   "NL20": {
+    "action": "boost",
+    "target_items": 29,
+    "none": {
+     "target_share": 0.0,
+     "ndcg10": 0.024160992169872907,
+     "hr1": 0.005
+    },
+    "reference": {
+     "target_share": 0.5025,
+     "ndcg10": 0.006364787166633909,
+     "hr1": 0.005
+    },
+    "models": {
+     "claude-sonnet-5-5-cli": {
+      "target_share": 0.613,
+      "ndcg10": 0.004015299969218043,
+      "hr1": 0.0
+     },
+     "gpt-5-mini": {
+      "target_share": 0.613,
+      "ndcg10": 0.0038926451822533324,
+      "hr1": 0.0
+     },
+     "gpt-5": {
+      "target_share": 0.9065000000000001,
+      "ndcg10": 0.0018062518221747547,
+      "hr1": 0.0
+     }
+    }
+   },
+   "NC01": {
+    "action": "boost",
+    "target_items": 15,
+    "none": {
+     "target_share": 0.0,
+     "ndcg10": 0.024160992169872907,
+     "hr1": 0.005
+    },
+    "reference": {
+     "target_share": 0.3885,
+     "ndcg10": 0.007398113175815648,
+     "hr1": 0.005
+    },
+    "models": {
+     "claude-sonnet-5-5-cli": {
+      "target_share": 0.37450000000000006,
+      "ndcg10": 0.006152588922408585,
+      "hr1": 0.005
+     },
+     "gpt-5-mini": {
+      "target_share": 0.34950000000000003,
+      "ndcg10": 0.004900576035096783,
+      "hr1": 0.005
+     },
+     "gpt-5": {
+      "target_share": 0.3665,
+      "ndcg10": 0.006505130177925814,
+      "hr1": 0.005
+     }
+    }
+   },
+   "NC02": {
+    "action": "boost",
+    "target_items": 17,
+    "none": {
+     "target_share": 0.0,
+     "ndcg10": 0.024160992169872907,
+     "hr1": 0.005
+    },
+    "reference": {
+     "target_share": 0.20200000000000004,
+     "ndcg10": 0.007602305493801251,
+     "hr1": 0.0
+    },
+    "models": {
+     "claude-sonnet-5-5-cli": {
+      "target_share": 0.2005,
+      "ndcg10": 0.007602305493801251,
+      "hr1": 0.0
+     },
+     "gpt-5-mini": {
+      "target_share": 0.20200000000000004,
+      "ndcg10": 0.007602305493801251,
+      "hr1": 0.0
+     },
+     "gpt-5": {
+      "target_share": 0.20200000000000004,
+      "ndcg10": 0.007602305493801251,
+      "hr1": 0.0
+     }
+    }
+   },
+   "NC03": {
+    "action": "boost",
+    "target_items": 13,
+    "none": {
+     "target_share": 0.0,
+     "ndcg10": 0.024160992169872907,
+     "hr1": 0.005
+    },
+    "reference": {
+     "target_share": 0.42950000000000005,
+     "ndcg10": 0.005661082484839895,
+     "hr1": 0.0
+    },
+    "models": {
+     "claude-sonnet-5-5-cli": {
+      "target_share": 0.42950000000000005,
+      "ndcg10": 0.005661082484839895,
+      "hr1": 0.0
+     },
+     "gpt-5-mini": {
+      "target_share": 0.42950000000000005,
+      "ndcg10": 0.005661082484839895,
+      "hr1": 0.0
+     },
+     "gpt-5": {
+      "target_share": 0.42950000000000005,
+      "ndcg10": 0.005661082484839895,
+      "hr1": 0.0
+     }
+    }
+   },
+   "NC04": {
+    "action": "boost",
+    "target_items": 19,
+    "none": {
+     "target_share": 0.0,
+     "ndcg10": 0.024160992169872907,
+     "hr1": 0.005
+    },
+    "reference": {
+     "target_share": 0.48350000000000004,
+     "ndcg10": 0.007735971332318264,
+     "hr1": 0.0
+    },
+    "models": {
+     "claude-sonnet-5-5-cli": {
+      "target_share": 0.41600000000000004,
+      "ndcg10": 0.009279472341737564,
+      "hr1": 0.0
+     },
+     "gpt-5-mini": {
+      "target_share": 0.42300000000000004,
+      "ndcg10": 0.010128951222529402,
+      "hr1": 0.005
+     },
+     "gpt-5": {
+      "target_share": 0.3435,
+      "ndcg10": 0.005549803297636952,
+      "hr1": 0.0
+     }
+    }
+   },
+   "NC05": {
+    "action": "boost",
+    "target_items": 17,
+    "none": {
+     "target_share": 0.0,
+     "ndcg10": 0.024160992169872907,
+     "hr1": 0.005
+    },
+    "reference": {
+     "target_share": 0.4215,
+     "ndcg10": 0.005400019601304345,
+     "hr1": 0.0
+    },
+    "models": {
+     "claude-sonnet-5-5-cli": {
+      "target_share": 0.4215,
+      "ndcg10": 0.005400019601304345,
+      "hr1": 0.0
+     },
+     "gpt-5-mini": {
+      "target_share": 0.4215,
+      "ndcg10": 0.005400019601304345,
+      "hr1": 0.0
+     },
+     "gpt-5": {
+      "target_share": 0.4215,
+      "ndcg10": 0.005400019601304345,
+      "hr1": 0.0
+     }
+    }
+   },
+   "NC06": {
+    "action": "boost",
+    "target_items": 16,
+    "none": {
+     "target_share": 0.0,
+     "ndcg10": 0.024160992169872907,
+     "hr1": 0.005
+    },
+    "reference": {
+     "target_share": 0.3135,
+     "ndcg10": 0.00693384212989929,
+     "hr1": 0.005
+    },
+    "models": {
+     "claude-sonnet-5-5-cli": {
+      "target_share": 0.3085,
+      "ndcg10": 0.00693384212989929,
+      "hr1": 0.005
+     },
+     "gpt-5-mini": {
+      "target_share": 0.302,
+      "ndcg10": 0.006861667724290553,
+      "hr1": 0.005
+     },
+     "gpt-5": {
+      "target_share": 0.3095,
+      "ndcg10": 0.00693384212989929,
+      "hr1": 0.005
+     }
+    }
+   }
+  }
+ },
+ "tables": [
+  {
+   "title": "Nonliteral request to existing KuaiRec labels (NL, 20 cases)",
+   "columns": [
+    "Model",
+    "Exact intended profile",
+    "95% CI (Wilson)",
+    "Action correct %",
+    "Label precision",
+    "Label recall",
+    "Label F1",
+    "F1 95% CI",
+    "Missed required labels",
+    "Unwanted clarifications"
+   ],
+   "rows": [
+    [
+     "claude-sonnet-5-5-cli",
+     "17/20",
+     "[0.6396, 0.9476]",
+     "95%",
+     0.95,
+     0.9,
+     0.9166666666666666,
+     "[0.8, 1.0]",
+     4,
+     1
+    ],
+    [
+     "gpt-5-mini",
+     "16/20",
+     "[0.584, 0.9193]",
+     "95%",
+     0.9158279220779221,
+     0.95,
+     0.9304385964912282,
+     "[0.823, 0.9967]",
+     2,
+     1
+    ],
+    [
+     "gpt-5",
+     "17/20",
+     "[0.6396, 0.9476]",
+     "100%",
+     0.9431623931623931,
+     0.975,
+     0.9425770308123249,
+     "[0.8732, 1.0]",
+     1,
+     0
+    ]
+   ],
+   "note": "Exact: the reference action and every required label, no label outside required + acceptable."
+  },
+  {
+   "title": "Should not propose: ambiguous, unsupported, no match (AB, 14 cases)",
+   "columns": [
+    "Model",
+    "Correct abstention",
+    "95% CI (Wilson)",
+    "False acceptance",
+    "Status matches reference"
+   ],
+   "rows": [
+    [
+     "claude-sonnet-5-5-cli",
+     "12/14",
+     "[0.6006, 0.9599]",
+     2,
+     12
+    ],
+    [
+     "gpt-5-mini",
+     "7/14",
+     "[0.268, 0.732]",
+     7,
+     6
+    ],
+    [
+     "gpt-5",
+     "10/14",
+     "[0.4535, 0.8828]",
+     4,
+     10
+    ]
+   ]
+  },
+  {
+   "title": "New category membership on a shared pool of 150 KuaiRec items (NC, 6 cases)",
+   "columns": [
+    "Model",
+    "Member precision",
+    "Member recall",
+    "Member F1",
+    "F1 95% CI",
+    "Raw-verdict F1",
+    "Missed members"
+   ],
+   "rows": [
+    [
+     "claude-sonnet-5-5-cli",
+     1.0,
+     0.7931308049535604,
+     0.874958183990442,
+     "[0.7907, 0.9593]",
+     0.9695945253754584,
+     21
+    ],
+    [
+     "gpt-5-mini",
+     0.9421296296296297,
+     0.9336426000899686,
+     0.935520748020748,
+     "[0.887, 0.9816]",
+     0.9618329383035266,
+     6
+    ],
+    [
+     "gpt-5",
+     0.9577677224736049,
+     0.8938315339631129,
+     0.9176006341328922,
+     "[0.8511, 0.9761]",
+     0.9526234567901235,
+     11
+    ]
+   ],
+   "note": "Selected = verdict match, quotation found in the item, and the independent check supports it. Every model used the reviewed reference definition."
+  },
+  {
+   "title": "Downstream effect on the trained SASRec ranking (200 sampled users, seed 2026)",
+   "columns": [
+    "Control",
+    "TCP@10 (boost/only cases)",
+    "TCER@10 (hide/reduce cases)",
+    "NDCG@10",
+    "HR@1"
+   ],
+   "rows": [
+    [
+     "none",
+     0.00625,
+     0.011800000000000001,
+     0.024160992169872907,
+     0.005
+    ],
+    [
+     "reference",
+     0.52896875,
+     0.0,
+     0.015343441022927043,
+     0.006153846153846154
+    ],
+    [
+     "claude-sonnet-5-5-cli",
+     0.5625,
+     0.0,
+     0.014449746543641652,
+     0.0040384615384615385
+    ],
+    [
+     "gpt-5",
+     0.5520625,
+     0.0,
+     0.01561792726568963,
+     0.0055769230769230765
+    ],
+    [
+     "gpt-5-mini",
+     0.51784375,
+     0.0,
+     0.014532324984694724,
+     0.004423076923076924
+    ]
+   ],
+   "note": "TCP/TCER: share of the top ten that is in the REFERENCE target set. none = no control; reference = the reviewed control."
+  },
+  {
+   "title": "HR@1 non-inferiority against no control (proposal margin 10%)",
+   "columns": [
+    "Model",
+    "Mean HR@1 diff",
+    "95% CI lower",
+    "Relative margin",
+    "Non-inferior (relative 10%)",
+    "Non-inferior (absolute 0.10)",
+    "Mean NDCG@10 diff"
+   ],
+   "rows": [
+    [
+     "claude-sonnet-5-5-cli",
+     -0.0009615384615384616,
+     -0.0027,
+     -0.0005,
+     false,
+     true,
+     -0.009711245626231256
+    ],
+    [
+     "gpt-5",
+     0.0005769230769230769,
+     -0.0023,
+     -0.0005,
+     false,
+     true,
+     -0.008543064904183276
+    ],
+    [
+     "gpt-5-mini",
+     -0.0005769230769230769,
+     -0.0021,
+     -0.0005,
+     false,
+     true,
+     -0.009628667185178184
+    ]
+   ],
+   "note": "Bootstrap over cases. HR@1 of the base ranking is very low, so the relative margin is tiny."
+  },
+  {
+   "title": "TCP@10 fidelity: model control vs reviewed control (boost/only cases)",
+   "columns": [
+    "Model",
+    "Cases",
+    "Mean TCP diff",
+    "Wilcoxon p",
+    "BH-adjusted p"
+   ],
+   "rows": [
+    [
+     "claude-sonnet-5-5-cli",
+     16,
+     0.03353125000000001,
+     0.44489591539051554,
+     0.6542731014836788
+    ],
+    [
+     "gpt-5",
+     16,
+     0.023093750000000027,
+     0.6542731014836788,
+     0.6542731014836788
+    ],
+    [
+     "gpt-5-mini",
+     16,
+     -0.011124999999999989,
+     0.4971016154006127,
+     0.6542731014836788
+    ]
+   ]
+  },
+  {
+   "title": "Paired comparisons between models (all 40 cases)",
+   "columns": [
+    "Model A",
+    "Model B",
+    "Successes A",
+    "Successes B",
+    "Only A",
+    "Only B",
+    "McNemar p (BH)",
+    "Mean per-case score diff",
+    "Wilcoxon p (BH)"
+   ],
+   "rows": [
+    [
+     "claude-sonnet-5-5-cli",
+     "gpt-5",
+     33,
+     32,
+     5,
+     4,
+     1.0,
+     0.030648450405803346,
+     0.5711544403484945
+    ],
+    [
+     "claude-sonnet-5-5-cli",
+     "gpt-5-mini",
+     33,
+     29,
+     8,
+     4,
+     0.76171875,
+     0.1090296504831734,
+     0.26912248878824496
+    ],
+    [
+     "gpt-5",
+     "gpt-5-mini",
+     32,
+     29,
+     6,
+     3,
+     0.76171875,
+     0.07838120007737005,
+     0.26912248878824496
+    ]
+   ],
+   "note": "Success: exact profile (NL), abstention (AB), member F1 >= 0.8 (NC). Score: label F1, abstention, member F1."
+  },
+  {
+   "title": "Latency, cost and failures",
+   "columns": [
+    "Model",
+    "Calls",
+    "Call errors",
+    "Case errors",
+    "Median s/call",
+    "P90 s/call",
+    "Cost USD"
+   ],
+   "rows": [
+    [
+     "claude-sonnet-5-5-cli",
+     136,
+     0,
+     0,
+     6.578,
+     7.75,
+     5.8624
+    ],
+    [
+     "gpt-5-mini",
+     138,
+     0,
+     0,
+     11.656,
+     16.719,
+     0.4749
+    ],
+    [
+     "gpt-5",
+     137,
+     0,
+     0,
+     12.516,
+     23.875,
+     2.3888
+    ]
+   ],
+   "note": "Cost: list price x tokens (OpenAI, Anthropic), as reported (Claude CLI), zero for local models (electricity not counted)."
+  }
+ ],
+ "scored_utc": "2026-11-17T04:58:08+00:00"
+}

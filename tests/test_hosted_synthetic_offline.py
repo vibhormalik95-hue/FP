@@ -137,7 +137,7 @@ def constructors():
             if kind=='openai':
                 app=create_openai_hosted_app(api_key='placeholder',model='offline',reasoning_effort='medium',run_budget=HostedRunBudget(1),spend_guard=object(),fixture=True)
             else:
-                app=create_claude_personal_app(operator_token='a'*32,allowed_origin='http://127.0.0.1:8000',fixture=True)
+                app=create_claude_personal_app(allowed_origin='http://127.0.0.1:8000',fixture=True)
             # Call route directly to avoid bypassing or changing personal boundary policy.
             def route(path):return next(r.endpoint for r in app.routes if getattr(r,'path',None)==path)
             sid=route('/api/session')()['session_id']

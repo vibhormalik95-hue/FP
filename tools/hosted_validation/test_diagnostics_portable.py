@@ -12,7 +12,7 @@ ADAPTER = ROOT / 'feedctrl' / 'claude_personal.py'
 DRIVER = ROOT / 'tools' / 'hosted_validation' / 'driver.py'
 EXPECTED = {
     ADAPTER: '5971daefba03dd88fbf3b6b9b107fcb05371210cd660914d9022553e78af3113',
-    DRIVER: '8d1cc561b4d466d93c780aa85223f47b82a087539c18f5f0cb371607fbc0d2f5',
+    DRIVER: 'eed6a7eaffef11dd4b06e081a24accb07ffe91bdcc4f5240a02892b9499b9b85',
 }
 for path, expected in EXPECTED.items():
     if hashlib.sha256(path.read_bytes()).hexdigest() != expected:

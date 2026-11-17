@@ -82,7 +82,7 @@ class Checks(unittest.TestCase):
   wrapped=transport.DiagnosticRunner(loop,runtime_mode='reviewed_hooks');bound=q._BoundCalls(wrapped,self.context,self.marker,2)
   approvals={k:True for k in app_binding._APPROVALS}
   with patch.object(app_binding.bootstrap,'bind_once',return_value=(bound,[])):
-   app,_=app_binding.construct(enable_live=True,context=self.context,marker=self.marker,operator_token='x'*32,allowed_origin='http://127.0.0.1:8000',model=MODEL,effort='max',estimated_per_invocation_usd=5,output_mode='plain_json',reviewed_cli_version='2.1.321',approvals=approvals,reviewed_files=self.files,max_calls=2,request=REQUEST,catalogue_sha256=self.catalogue_sha,fixture=False,data_path=self.data,semantic_path=self.sidecar)
+   app,_=app_binding.construct(enable_live=True,context=self.context,marker=self.marker,allowed_origin='http://127.0.0.1:8000',model=MODEL,effort='max',estimated_per_invocation_usd=5,output_mode='plain_json',reviewed_cli_version='2.1.321',approvals=approvals,reviewed_files=self.files,max_calls=2,request=REQUEST,catalogue_sha256=self.catalogue_sha,fixture=False,data_path=self.data,semantic_path=self.sidecar)
   return app,backend
  def preview(self,app):
   session=app.state.demo.create_session();route=routes(app);before=full_feed(app,session)

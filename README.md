@@ -15,9 +15,24 @@ The project does not claim that a language model makes recommendations more accu
 The study is offline. It uses the KuaiRec dataset (865 users and 2,593 items in the processed subset). There is no user study.
 The repository holds a research application named Feed Control Lab (React and FastAPI), its tests, the experiment protocols and results, and the paper.
 
-## What the application shows
+## Current state (17 November 2026)
 
-The view **Language controls** has five methods. Each one follows the same stages: request, interpretation, evidence, preview, Apply, Undo.
+This is the final state of the COMP 9500 work: branch `final/comp9500`, merged to `main` and tagged `comp9500-final-2026-11`.
+
+- **One application on real KuaiRec.** `run-app.cmd` (Windows) or `python scripts/run_app.py` starts it at <http://127.0.0.1:8765>. It serves 865 users and 2,593 items, ranked by the trained SASRec seed-42 checkpoint, in three views: **Original study (A to E)**, **Language controls** (choose a category; a request in your own words, English or Chinese; a new category from a description; new items with descriptions) and **Results**. In every language control a model only proposes; the server checks the proposal, a person reviews it, Apply changes exactly what was reviewed and Undo restores the previous feed. The page opens in English (machine translation of the Chinese KuaiRec text, labelled); one switch shows the original text. The app needs the private research files (processed data, checkpoint, captions), which are not in this repository.
+- **Guide for the supervisor:** [docs/guide/PROFESSOR-GUIDE.md](docs/guide/PROFESSOR-GUIDE.md) (also as PDF): install, start, providers and keys, every workflow with screenshots, the Results page, the tests and troubleshooting.
+- **Tests:** `run-all-tests.cmd` runs the Python tests, the page tests, the browser flows in Chrome and every workflow through the HTTP API, and writes receipts to `runs/all-tests-<UTC>/`. It uses the mock provider by default (no key, no cost); `run-all-tests.cmd --provider openai --model gpt-5-mini` uses a real model. The root-level `test_*.py` files and the `tools/hosted_validation*` tests are outside it. The last recorded full run (mock, 2026-11-17T01:14Z) gave pytest 1,745 passed, 76 skipped and 1 failed (frozen by design), page tests 126/126, browser 29/29 and workflows 13/13; it predates the evaluation code, and a full run on the final head has not been recorded.
+- **Experiment 3** measures the language controls on a frozen set of 40 new cases (20 English, 20 Chinese). Claude (Opus 5.5) drafted the cases and all 1,211 reference judgements; the student reviewed every row and corrected 24; the set was frozen before any prediction. Results are in [RESULTS.md](docs/evidence/lab-eval/20261117-main/RESULTS.md) and below.
+- **Demo video:** `COMP9500-Feed-Control-Lab-demo.mp4` (sent separately, not in this repository): 9:23, 1920x1080, narrated, with gpt-5 through the OpenAI API in the English display mode. Its checks are in [docs/evidence/2026-11-17-video/](docs/evidence/2026-11-17-video/README.md).
+- **Paper and slides:** `paper/research-paper-2026-11-17.pdf` (8 pages, draft) and `presentation-bcit/presentation-2026-11-17.pdf`.
+- **Pending:** the local llama3.1:8b run on the frozen set completed 21 of 40 cases before it was paused; it is being resumed on the measurement commit `9071f05`, and its results will be added in next week's update. The qwen2.5-coder:7b evaluation is deferred, gemma4:31b was not attempted (the memory was held by the llama run), and the Anthropic API route has never been run with a live key.
+- **Requirements and evidence:** [docs/requirements-and-evidence.md](docs/requirements-and-evidence.md) maps each request of the supervisor and each proposal clause to code and evidence; the full audit is [deliverables/2026-11-17-completion/PROJECT-COMPLETION-AUDIT.md](deliverables/2026-11-17-completion/PROJECT-COMPLETION-AUDIT.md).
+
+## The earlier demonstrator (14 November, invented scenarios)
+
+Before the integrated application, a separate page served the language controls on small invented scenarios. This section describes it as history; the scripts still exist.
+
+The view **Language controls** of that page has five methods. Each one follows the same stages: request, interpretation, evidence, preview, Apply, Undo.
 
 | Method | What happens | Model calls |
 | --- | --- | --- |
@@ -30,7 +45,7 @@ The view **Language controls** has five methods. Each one follows the same stage
 For every method:
 
 - a proposal does not change the feed;
-- the review shows what came back, the application checks and your decision in three separate blocks (with the hand-written replies of a rehearsal, the first block is "Authored reply (written by hand, not a model)");
+- the review shows what came back, the application checks and your decision in three separate blocks;
 - a table shows each item in the scope and why it is selected or not selected;
 - Apply uses exactly the reviewed set, and a two-step Undo restores the earlier feed.
 
@@ -46,10 +61,9 @@ The application also shows these things:
 - **Model routes.** The application can reach a model through a command-line program, a hosted API with your own key, a model server on your computer, or by hand. See [model routes](docs/model-routes.md).
 - **The original study.** The views "Original study (A to E)" and "Compare A to E" hold the five conditions of the original proposal. They are item feedback, explanations, a free-text category instruction, an editable profile, and all channels. The rule parser of C, D and E reads category IDs of the form `category_N` only. On the bundled scenarios, which have named categories, the instruction and the profile are disabled, and the page says why. The scenario `conditions` serves the built-in fixture, where they work.
 
-The supervisor asked for three of these things in a meeting. The student supplied the transcript of that meeting on 4 November 2026. The three things are the manual category control with measured performance, a new category from natural language, and requests that do not use the literal category words.
-[Requirements and evidence](docs/requirements-and-evidence.md) maps each request to code and to evidence.
+The supervisor asked for three of these things in a meeting. The student supplied the transcript of that meeting on 4 November 2026. The three things are the manual category control with measured performance, a new category from natural language, and requests that do not use the literal category words. The integrated application and Experiment 3 now answer all three on real KuaiRec data.
 
-## Run it in five steps
+### Run the earlier demonstrator in five steps
 
 You need Python 3.11 or newer. [Install and run](docs/install-and-run.md) gives every command for Windows and for macOS.
 
@@ -61,8 +75,8 @@ You need Python 3.11 or newer. [Install and run](docs/install-and-run.md) gives 
 
 Three more commands help:
 
-- `python scripts/quickstart.py rehearse --scenario tags` serves the page with hand-written replies. No model is used. Use it to learn the screens.
-- `python scripts/quickstart.py rehearse --scenario conditions` serves the original conditions A to E on the built-in fixture (36 items, categories `category_0` to `category_5`, three users). It uses no model and has no language controls.
+- `python scripts/quickstart.py manual --scenario tags` serves the page with no model: only the manual category control works. To try the language controls with no key and no cost, use the integrated application (`run-app.cmd`) with its default **mock** provider.
+- `python scripts/quickstart.py manual --scenario conditions` serves the original conditions A to E on the built-in fixture (36 items, categories `category_0` to `category_5`, three users). It uses no model and has no language controls.
 - `python scripts/quickstart.py try --scenario tags` runs the bundled requests through your route without the browser. See [route trial](docs/route-trial.md).
 
 The general CLI, hosted API and local-server routes have stand-in test records from Linux; full native Windows and macOS verification remains open. A separate [Windows fictional-item run on 15 November](docs/fictional-lifecycle-2026-11-15.json) used Fable 5.2 through a task-local transport and a modified personal adapter. It completed draft, admit, remove, restore and reset. That run did not test the general quickstart route, category discovery or the later publication candidate.
@@ -76,6 +90,16 @@ A separate [combined descriptions-and-labels check](docs/evidence/2026-11-15-win
 ## Experiments and results
 
 Every number below is copied from the document that is named after it.
+
+**Experiment 3: language controls on a reviewed KuaiRec set (17 November).** Set and freeze: [docs/evidence/lab-eval-set-20261117/](docs/evidence/lab-eval-set-20261117/README.md). Results: [docs/evidence/lab-eval/20261117-main/RESULTS.md](docs/evidence/lab-eval/20261117-main/RESULTS.md).
+
+- 20 nonliteral requests to existing KuaiRec labels (exact intended label profile): gpt-5 17, Claude Sonnet 5.5 17, gpt-5-mini 16 of 20.
+- 14 requests that should change nothing (correct abstention): Claude Sonnet 5.5 12, gpt-5 10, gpt-5-mini 7 of 14. gpt-5-mini proposed a control for 7 of them.
+- 6 new categories over a shared pool of 150 items (member F1, reviewed definition): gpt-5-mini 0.936, gpt-5 0.918, Claude Sonnet 5.5 0.875.
+- Downstream on 200 users with the trained ranker: the reviewed reference control raises the target share of the top ten (TCP@10) from 0.0063 to 0.5290, and the model controls reach 0.5178 to 0.5625; no model differs significantly from the reviewed control (Wilcoxon, BH p 0.6543). These values apply each model's exact controls with the application's own policy; they were re-scored on 17 November after an independent code review, with the same predictions. Hide and reduce bring TCER@10 from 0.0118 to zero.
+- Negative: NDCG@10 falls from 0.0242 to 0.0144–0.0156; HR@1 non-inferiority fails the relative 10% margin for every model (the absolute 0.10 margin passes trivially at a base HR@1 of 0.0050). No pair of models differs significantly (McNemar BH p ≥ 0.76).
+- The set is AI-drafted and human-reviewed, not human-written. Claude is both the drafter's family and a measured model, which can favour Claude. Using hosted frontier models is a declared departure from the proposal's local-only plan. The llama3.1:8b rows are pending.
+- Parser bank re-run (re-use of the exposed Experiment 1 bank, not new evidence; original prompt, schema, validator and grounding rule): llama3.1:8b 79/100 with 7 operational errors, as frozen; qwen2.5-coder:7b 74/100; gpt-5 and gpt-5-mini 60/100 strict, 96 and 95 under a post-hoc format-lenient score ([summary.json](docs/evidence/lab-eval/20261117-b-parser-rerun/summary.json)). No model meets the 85% target.
 
 **Experiment 1 (frozen).** Protocol: [docs/evaluation-protocol.md](docs/evaluation-protocol.md).
 
@@ -100,13 +124,13 @@ Every number below is copied from the document that is named after it.
 
 The complete cases, model responses, ranking outputs and recommender checkpoints are in a separate research archive. They are not in this repository.
 
-The paper is in [`paper/`](paper/README.md). The current draft is `paper/research-paper-2026-11-14.pdf`. It reports the runs of 14 November on the integrated revision `ff92666`, and it is not ready for submission. The paper of 19 October is a dated record in `deliverables/2026-10-19/`.
+The paper is in [`paper/`](paper/README.md). The current draft is `paper/research-paper-2026-11-17.pdf` (8 pages). It reports Experiments 1 to 3 and the integrated application; the llama3.1:8b rows are pending, and it is not ready for submission. The revisions of 14 November and 19 October are dated records.
 
 ## Experiment evidence and demonstration evidence
 
 Keep three kinds of evidence apart.
 
-**Experiment evidence** comes from a study with a protocol that was fixed before the run: Experiment 1, Experiment 2 and the 4 November study. Their inputs, prompts, labels and results stay as they are.
+**Experiment evidence** comes from a study with a protocol that was fixed before the run: Experiment 1, Experiment 2, the 4 November study and Experiment 3. Their inputs, prompts, labels and results stay as they are.
 
 **Demonstration evidence** is a recorded run of the application on a small invented scenario. It shows that a control ran from request to Undo. It is not an accuracy result.
 
@@ -114,27 +138,30 @@ Keep three kinds of evidence apart.
 - *14 November 2026, the package line before the merge.* On revision `b7c5a91` (source fingerprint `ab1a9d846b33...`), every method completed in a real browser with real model output through the file relay: the request matched to existing categories and tags, a mixed request, the request matched to item descriptions, the new category in stages and the fictional item, with the manual control as reference (13 model calls, 308 script checks passed). Four requests that must change nothing changed nothing. An AI operator made all 19 review decisions; no person has reviewed a run. The model name is declared, not attested. Records: [docs/evidence/2026-11-14/](docs/evidence/2026-11-14/README.md).
 - *14 November 2026, the integrated revision.* The published work branch and the package line were merged (`e797ce1`). A comparison of every line of the published branch and two independent reviews of the merge gave corrections (revision `ff92666`, source fingerprint `22ba794e2091...`). The revision has the prompts of the published branch for the new category and the page and routes of the package line. Between 20:05 and 20:13 UTC every method completed on it in a real browser with real model output through the file relay (13 model calls, 321 script checks passed), and the four requests that must change nothing changed nothing. An AI operator made all 19 review decisions; no person has reviewed a run. The model name is declared, not attested. Two earlier passes of the same runs on the merged source selected the same items. Records: [docs/evidence/2026-11-14-integrated/](docs/evidence/2026-11-14-integrated/README.md).
 
-**Software tests** use hand-written replies, stand-in servers and stand-in programs. They check program behaviour. They are not model evidence.
+**Software tests** use test doubles with fixed replies (under `tests/` only), stand-in servers and stand-in programs. They check program behaviour. They are not model evidence.
 
 ## Limits
 
-- The demonstration scenarios use invented item descriptions and a labelled diagnostic scorer. They do not use the trained recommender.
+- The demonstration scenarios of 13–14 November used invented item descriptions and a labelled diagnostic scorer, not the trained recommender. The integrated application and Experiment 3 use real KuaiRec data and the trained ranker.
 - There is no user study. Requests in the experiments are synthetic. The ranking measure is a historical next-item proxy.
 - A quotation or a category name shows that words exist in the item data. It does not show that a membership decision is right. Two model calls can agree and both be wrong.
 - The development examples are small and exposed. They cannot serve as an unseen test.
 - The manual control check shows that a control is enforced and can be reversed. It does not show that recommendations are better.
-- A like-for-like comparison of a local model and a stronger model has not been run. The earlier six-case comparison used different transports and settings.
+- A like-for-like comparison of a local model and stronger models on the same frozen set is not complete: three hosted models are measured, and the local llama3.1:8b run is pending. The earlier six-case comparison used different transports and settings.
+- Experiment 3 has small groups (20, 14 and 6 cases) with wide intervals, an AI-drafted reference, and Chinese requests judged through an English machine-translation gloss.
 - A fictional item is authored demonstration data. It is not a new playable item of the research dataset.
 
 ## AI assistance and attribution
 
-- Research provenance and the use of AI assistance: [docs/academic-use.md](docs/academic-use.md) and [the code and contribution map](deliverables/2026-10-27-feedback/CODE-MAP-AND-AI-ASSISTANCE.md). The recent application work, its tests and its documentation were produced with substantial AI assistance, and an AI agent made the review decisions in the 13 November runs and wrote their records. Those documents state what the student did himself.
+- Research provenance and the use of AI assistance: [docs/academic-use.md](docs/academic-use.md) and [the code and contribution map](deliverables/2026-10-27-feedback/CODE-MAP-AND-AI-ASSISTANCE.md). The recent application work, its tests and its documentation were produced with substantial AI assistance (Claude Code), and an AI agent made the review decisions in the 13 November runs and wrote their records. The Experiment 3 reference set was drafted by Claude Opus 5.5 and reviewed row by row by the student. Those documents state what the student did himself.
 - Third-party data and software: [NOTICE.md](NOTICE.md). KuaiRec licence: [notices/KuaiRec-LICENSE.txt](notices/KuaiRec-LICENSE.txt).
 
 ## Map of the repository
 
 | Path | Content |
 | --- | --- |
+| `run-app.cmd`, `run-all-tests.cmd` | Start the integrated application; run every test suite and workflow (Windows). |
+| `docs/guide/` | The guide for the supervisor (Markdown, PDF, screenshots). |
 | `feedctrl/` | The application and the experiment code (Python). |
 | `web/` | The interface source and the built interface (`web/dist`). |
 | `scripts/` | The quick start, the launcher, the route tool, the relay tools, the checks of the source list and of the built interface, and the experiment scripts. |

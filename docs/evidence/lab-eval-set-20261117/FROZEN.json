@@ -1,0 +1,11 @@
+{
+ "reviewed_by": "Vibhor Malik",
+ "frozen_utc": "2026-11-17T02:27:25+00:00",
+ "files": {
+  "review_human.csv": "384c47777bef2984eeb088a482543473690d63057503dfc4db614a0210a150b2",
+  "review.csv (AI draft)": "d44f3b923268de96cd660b64812b5884ad6a34a7d11aeafe7071bd01a8d8fc64",
+  "cases.reviewed.json": "b819850e41afa44fd5c24331959061fe08af843476364bdbad27ae5e099836b4",
+  "cases.frozen.json": "d4af21e6ed311448c79fabc7286a7dc00eba62cb3ec5c45dde60d8a01f233a82"
+ },
+ "statement": "Committed before any measured prediction. The review CSVs contain KuaiRec item text and stay private (FINAL2/eval-review and data/)."
+}

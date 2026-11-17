@@ -17,7 +17,7 @@ class _ModelPinnedRunner:
 _APPROVALS=frozenset(('runtime_authorized','data_authorized','subscription_and_usage_authorized',
                       'executable_reviewed','managed_runtime_reviewed','process_containment_reviewed'))
 
-def construct(*, enable_live=False, context, marker, operator_token, allowed_origin,
+def construct(*, enable_live=False, context, marker, allowed_origin,
               model, effort, estimated_per_invocation_usd, output_mode, reviewed_cli_version,
               approvals, reviewed_files, max_calls=1, request=None, catalogue_sha256=None,
               flow_mode=None, source_sha256=None, candidate_ids=None,
@@ -50,7 +50,7 @@ def construct(*, enable_live=False, context, marker, operator_token, allowed_ori
         return FlowGuard(infer,max_calls=max_calls,request=request,catalogue_sha256=catalogue_sha256,
                          files=reviewed_files,file_digest=qualification._digest,mode=flow_mode,
                          source_sha256=source_sha256,candidate_ids=candidate_ids,model=model,scope_timeout=timeout)
-    app=create_claude_personal_app(operator_token=operator_token,allowed_origin=allowed_origin,
+    app=create_claude_personal_app(allowed_origin=allowed_origin,
         data_path=data_path,semantic_path=semantic_path,fixture=fixture,infer_wrapper=wrap,
         executable=str(context['cli']),workdir=str(context['workdir']),model=model,effort=effort,
         run_budget=HostedRunBudget(max_calls),estimated_per_invocation_usd=estimated_per_invocation_usd,

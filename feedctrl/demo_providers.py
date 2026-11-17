@@ -1,9 +1,4 @@
-"""Two labelled stand-ins for a model connection. Neither one is a model.
-
-``scripted``
-    Returns replies that were written by hand for exact, known requests. It
-    lets anyone exercise the review screens, Apply and Undo without any
-    inference. It refuses every request it has no authored reply for.
+"""A labelled stand-in for a model connection: the operator relay. It is not a model.
 
 ``relay``
     Writes each request to a folder and waits for a reply file. An operator
@@ -11,10 +6,14 @@
     app and saves the reply unchanged. The model name is the operator's
     declaration; this transport cannot attest it.
 
-Both announce themselves. Their backend name appears in ``/api/status``, in the
+It announces itself. Its backend name appears in ``/api/status``, in the
 status strip of the interface and in the provenance line of every review, so
-that an authored or relayed reply cannot be mistaken for an automatic call.
-The normal validators still check every reply; nothing here approves anything.
+that a relayed reply cannot be mistaken for an automatic call. The normal
+validators still check every reply; nothing here approves anything.
+
+The earlier "scripted" provider, which returned hand-written replies keyed to
+the exact bundled requests, was removed. The application holds no reply that
+was written for an example request.
 """
 from __future__ import annotations
 
@@ -34,13 +33,11 @@ from feedctrl.hosted_app import category_payload
 from feedctrl.indirect_grounding import _response_snapshot
 from feedctrl.model_adapters import _decode, _hash, _json
 
-SCRIPTED_BACKEND = 'scripted-authored-replies'
 RELAY_BACKEND = 'operator-relay-file-queue'
-NOT_A_MODEL = 'none (replies written by hand)'
 
 
 class ProviderMessage(ParserOperationalError):
-    """A failure of one of these two stand-ins, written for the person at the page.
+    """A failure of a stand-in provider, written for the person at the page.
 
     ``page_safe`` tells the review routes that the sentence holds no provider,
     program or model text and no credential, and that it says what to do. Only
@@ -49,10 +46,6 @@ class ProviderMessage(ParserOperationalError):
     page_safe = True
 
 
-SCRIPTED_REFUSAL = ('This server has no model. It holds hand-written replies for the bundled requests with the '
-                    'complete bundled scope. It has no reply for this request. Nothing was interpreted and '
-                    'nothing was applied. Use "Insert the bundled scenario request" and keep the complete scope, '
-                    'or start the server with a model route (docs/model-routes.md).')
 RELAY_FAILURES = {
     'TimeoutError': ('No reply file arrived in the relay folder in time. Nothing was applied. Send the request '
                      'again. Give the new request to the model with "scripts/relay_tools.py show", then deliver '
@@ -93,40 +86,6 @@ def bind_factories(infer, identity):
     semantic_factory.model_identity = deepcopy(identity)
     category_factory.model_identity = deepcopy(identity)
     return semantic_factory, category_factory
-
-
-# --------------------------------------------------------------------------
-# Scripted provider
-# --------------------------------------------------------------------------
-
-def scripted_provider(lookup, table):
-    """Return ``(infer, identity, receipts)`` for hand-written rehearsal replies.
-
-    ``lookup(payload, schema)`` returns the authored reply for one exact request,
-    or ``None``. The reply text lives with the demonstration scripts, outside
-    this package, so that no example-specific wording becomes part of the
-    application logic. ``table`` is the JSON form of all authored replies; its
-    hash identifies the set that was used.
-    """
-    if not callable(lookup):
-        raise ValueError('A lookup function for authored replies is required')
-    identity = {'backend': SCRIPTED_BACKEND, 'model': NOT_A_MODEL,
-                'digest': _hash(json.loads(json.dumps(table))),
-                'digest_kind': 'sha256 of the authored reply table',
-                'live_model': False}
-    receipts, lock = [], threading.Lock()
-
-    def infer(payload, schema):
-        reply = lookup(deepcopy(payload), deepcopy(schema))
-        with lock:
-            receipts.append({'ordinal': len(receipts) + 1, 'request_sha256': _hash(payload),
-                             'schema_sha256': _hash(schema), 'answered': reply is not None,
-                             'utc': _utc()})
-        if reply is None:
-            raise ProviderMessage(SCRIPTED_REFUSAL)
-        return deepcopy(reply)
-
-    return infer, identity, receipts
 
 
 # --------------------------------------------------------------------------

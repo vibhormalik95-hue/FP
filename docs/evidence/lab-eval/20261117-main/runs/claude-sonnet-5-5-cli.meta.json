@@ -1,0 +1,8 @@
+{
+  "name": "claude-sonnet-5-5-cli",
+  "provider": "claude-cli",
+  "model": "claude-sonnet-5-5",
+  "effort": "low",
+  "set_sha256": "d4af21e6ed311448c79fabc7286a7dc00eba62cb3ec5c45dde60d8a01f233a82",
+  "started_utc": "2026-11-17T02:28:10+00:00"
+}

@@ -87,7 +87,7 @@ class EvidenceContextTests(unittest.TestCase):
 
     def test_existing_frontend_renders_field_and_warnings(self):
         # The review board renders the cited source context since the page was restructured.
-        ui = (SOURCE.parents[1] / "web/src/ReviewBoard.jsx").read_text()
+        ui = (SOURCE.parents[1] / "web/src/ReviewBoard.jsx").read_text(encoding="utf-8")
         self.assertIn("e.supplied_field_text??", ui)
         self.assertIn("e.truncated?", ui)
         self.assertIn("e.quote_present?", ui)

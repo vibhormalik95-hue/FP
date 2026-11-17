@@ -8,6 +8,7 @@ import SyntheticDraftPanel from './SyntheticDraftPanel';
 import { createApiClient } from './personalApi';
 import {describeResearchMode} from './researchLabels.js';
 import { categoryIdsReadable, controlLines, plural } from './reviewModel.js';
+import { LabView, ResultsView } from './LabView';
 
 const conditions = {
   A: ['Item feedback', 'Direct feedback on individual items.'],
@@ -27,7 +28,7 @@ function parserWords(message) {
   return message;
 }
 
-function App({client, personal, onLock}) {
+function App({client}) {
   const [status, setStatus] = useState(null), [users, setUsers] = useState([]), [cats, setCats] = useState([]);
   const [user, setUser] = useState(null), [condition, setCondition] = useState('E');
   const [backend, setBackend] = useState('rule'), [feed, setFeed] = useState(null), [comparison, setComparison] = useState(null);
@@ -44,6 +45,9 @@ function App({client, personal, onLock}) {
   // Each message stands next to the control that caused it: the instruction, the profile, the topic preview, or the page.
   const [messages, setMessages] = useState({});
   const [showSignals, setShowSignals] = useState(true), [view, setView] = useState('feed');
+  const [labStatus, setLabStatus] = useState(null);
+  const loadLab = () => api('lab/status').then(setLabStatus).catch(() => setLabStatus(null));
+  const labView = view === 'lab' || view === 'results';
   // On a one-column layout the review stays directly below the panel; on a wide layout it is in the main area.
   const [narrow, setNarrow] = useState(() => typeof window !== 'undefined' && Boolean(window.matchMedia?.('(max-width: 760px)').matches));
   useEffect(() => { const query = window.matchMedia?.('(max-width: 760px)'); if (!query) return undefined;
@@ -75,7 +79,7 @@ function App({client, personal, onLock}) {
     try {
       const [s, u, c] = await Promise.all([api('status'), api('users'), api('categories')]);
       token.current = (await api('session', {})).session_id;
-      setStatus(s); setUsers(u); setCats(c.categories); setUser(u[0].user_id);
+      setStatus(s); setUsers(u); setCats(c.categories); setUser(u[0].user_id); loadLab();
       // A bundled scenario is served for the language controls: open that view first.
       if (s.scenario_requests && Object.keys(s.scenario_requests).length) setView('steering');
       await refresh(u[0].user_id, 'E', true);
@@ -155,9 +159,11 @@ function App({client, personal, onLock}) {
   const cardLines = item => semanticTool ? controlLines(semanticGroups, item.item_id) : item.explanation;
 
   return <div className="app-shell">
-    <header className="header"><a href="#main" className="brand"><span className="brand-mark">f<span>↗</span></span><span>feed control<span className="brand-sub">RESEARCH LAB</span></span></a><div className="header-right"><span className="research-tag">COMP 9500 · OFFLINE PROTOTYPE</span>{personal && <button type="button" className="text-button" onClick={onLock}>Lock session</button>}</div></header>
+    <header className="header"><a href="#main" className="brand"><span className="brand-mark">f<span>↗</span></span><span>feed control<span className="brand-sub">RESEARCH LAB</span></span></a><div className="header-right"><span className="research-tag">COMP 9500 · OFFLINE PROTOTYPE</span></div></header>
     <main id="main">
-      {language
+      {labView
+        ? <section className="intro compact"><div><p className="eyebrow">{view === 'lab' ? 'LANGUAGE CONTROLS · REAL KUAIREC FEED · TRAINED RECOMMENDER' : 'MEASURED RESULTS'}</p><h1>{view === 'lab' ? 'Say what you want. Review it. Apply it. Undo it.' : 'How well the language model works, measured.'}</h1></div></section>
+        : language
         ? <section className="intro compact"><div><p className="eyebrow">LANGUAGE CONTROLS</p><h1>Say what you want. Review it. Apply it. Undo it.</h1></div></section>
         : <section className="intro"><div><p className="eyebrow">YOUR PREFERENCES, MADE VISIBLE</p><h1>A feed you can <br/><em>steer.</em></h1><p className="lede">Explore how explanations, natural-language instructions and an editable profile change a recommendation list.</p></div><div className="intro-note"><span className="big-number">05</span><span>conditions.<br/>One scorer.<br/>Every control visible.</span></div></section>}
       {status && <section className="status-strip" aria-label="Research environment"><span className={`status-chip ${status.data_mode === 'fixture' ? 'fixture' : ''}`}><i/>{researchMode.data === 'Authored fixture' ? 'FIXTURE DATA' : researchMode.data === 'Dataset mode' ? 'PROCESSED DATASET' : 'DATA NOT VERIFIED'}{dataKind === 'scenario' ? ' · INVENTED ITEMS' : ''}</span>
@@ -165,12 +171,12 @@ function App({client, personal, onLock}) {
         {status.provider ? <span className={`status-chip ${authored ? 'fixture' : ''}`} data-role="provider"><i/>{authored ? 'AUTHORED REPLIES · NO MODEL' : `PROVIDER · ${status.provider.backend} · ${status.provider.model}`}</span> : status.local_models_allowed === false && <span data-role="provider">{languageMissing ? 'No model provider' : 'No model provider · manual controls only'}</span>}</section>}
       <p className="disclosure">{disclosure}</p>
       {lost && <div className="alert error" role="alert">{lost === 'network' ? 'The page cannot reach the server. Check that the server runs, then reload the page. A server that was started again has no applied controls.' : 'The session has ended. The server was started again, or the session expired. The controls that this page shows are no longer on the server.'} <button type="button" className="text-button" onClick={() => window.location.reload()}>Reload the page</button></div>}
-      <div className="toolbar"><label className="user-select">Research user<select value={user ?? ''} onChange={e => selectUser(e.target.value)} disabled={busy || !users.length}>{users.map(u => <option key={u.user_id} value={u.user_id}>User {u.user_id} · {plural(u.history_items, 'history item')}</option>)}</select></label><div className="view-tabs" role="group" aria-label="View"><button aria-pressed={view === 'feed'} className={view === 'feed' ? 'active' : ''} onClick={() => setView('feed')}>Original study (A to E)</button><button aria-pressed={view === 'compare'} className={view === 'compare' ? 'active' : ''} onClick={() => setView('compare')}>Compare A to E</button><button aria-pressed={language} className={language ? 'active' : ''} disabled={!languageReady} onClick={() => {setMessages({}); setView('steering');}}>Language controls</button></div>
+      <div className="toolbar"><label className="user-select">Research user<select value={user ?? ''} onChange={e => selectUser(e.target.value)} disabled={busy || !users.length}>{users.map(u => <option key={u.user_id} value={u.user_id}>User {u.user_id} · {plural(u.history_items, 'history item')}</option>)}</select></label><div className="view-tabs" role="group" aria-label="View"><button aria-pressed={view === 'feed'} className={view === 'feed' ? 'active' : ''} onClick={() => setView('feed')}>Original study (A to E)</button><button aria-pressed={view === 'compare'} className={view === 'compare' ? 'active' : ''} onClick={() => setView('compare')}>Compare A to E</button>{!labStatus?.available && <button aria-pressed={language} className={language ? 'active' : ''} disabled={!languageReady} onClick={() => {setMessages({}); setView('steering');}}>Language controls</button>}{labStatus?.available && <><button aria-pressed={view === 'lab'} className={view === 'lab' ? 'active' : ''} data-view="lab" onClick={() => setView('lab')}>Language controls</button><button aria-pressed={view === 'results'} className={view === 'results' ? 'active' : ''} data-view="results" onClick={() => setView('results')}>Results</button></>}</div>
         {confirmReset ? <span className="confirm-reset" role="group" aria-label="Confirm the reset"><span>Remove every control and all feedback of this user? You cannot undo this.</span> <button type="button" className="text-button" onClick={resetUser}>Yes, remove everything</button> <button type="button" className="text-button" onClick={() => setConfirmReset(false)}>Keep everything</button></span>
           : <button type="button" className="text-button" disabled={busy || user === null} onClick={() => setConfirmReset(true)}>Reset this user ↺</button>}</div>
-      {languageMissing && <p className="help tab-note" data-role="language-unavailable">The view "Language controls" is not available here: no item descriptions are loaded, so there is nothing to match a request with. To use it, start a bundled scenario, for example <code>python scripts/quickstart.py rehearse --scenario tags</code>.</p>}
-      <p className="view-intro" data-role="view-intro">{viewIntro}</p>
-      <div className={`workspace ${language ? 'language' : ''}`}>
+      {languageMissing && <p className="help tab-note" data-role="language-unavailable">The view "Language controls" is not available here: no item descriptions are loaded, so there is nothing to match a request with. To use it, start a bundled scenario, for example <code>python scripts/quickstart.py start --scenario tags</code>.</p>}
+      <p className="view-intro" data-role="view-intro">{view === 'lab' ? 'Real KuaiRec feed, ranked by the trained recommender. English text is machine-translated from Chinese.' : view === 'results' ? 'Measured results, read from the result files of the evaluation runs. Each table names its run, its test set and its models.' : viewIntro}</p>
+      {labView ? (view === 'lab' ? <LabView api={api} user={user} status={labStatus} onStatus={loadLab}/> : <ResultsView api={api}/>) : <div className={`workspace ${language ? 'language' : ''}`}>
         <aside className="controls">
           {!language && <>
           <section className="panel"><div className="section-heading"><span className="step">01</span><h2>Choose a condition</h2></div><div className="conditions">{Object.entries(conditions).map(([key, [label]]) => <button key={key} aria-pressed={condition === key} className={`condition ${condition === key ? 'selected' : ''}`} disabled={busy || user === null} onClick={() => selectCondition(key)}><b>{key}</b><span>{label}</span><span className="radio-dot"/></button>)}</div><p className="help">{conditions[condition][1]}</p></section>
@@ -252,38 +258,16 @@ function App({client, personal, onLock}) {
           {!language && view === 'feed' && showSignals && templateInexact && ['B', 'E'].includes(condition) && <p className="help" data-role="template-note">The explanation lines are templates that were written for the research dataset, where categories are opaque IDs and a trained model gives the scores. On this {dataKind === 'scenario' ? 'invented scenario' : 'data'} they are not exact: {dataKind === 'scenario' ? 'the category names are known here, and ' : ''}the scores come from the diagnostic scorer.</p>}
           {view !== 'compare' ? <><div className="feed-grid">{shownFeed?.items.map(item => { const lines = cardLines(item) || []; return <article className="item-card" key={item.item_id}><div className="item-art" style={{'--category-color':color(item.categories[0])}}><span className="rank">{String(item.rank).padStart(2,'0')}</span><div className="art-lines"><i/><i/><i/></div><span className="asset-type">ITEM METADATA</span><strong>{String(item.item_id).padStart(4,'0')}</strong></div><div className="item-body"><div className="item-title"><h3>Item {item.item_id}</h3><span>#{item.rank}</span></div><div className="category-pills">{item.categories.map(c => <span key={c}><i style={{background:color(c)}}/>{c}</span>)}</div>{language && item.source_text && <p className="item-source">{item.source_text}</p>}{showSignals && <div className="signals">{lines.length > 0 && <span className="explanation-origin">{language ? (feedTool === 'steering' ? 'Earlier topic tool' : 'Applied language control') : item.explanation_source === 'ollama_constrained_fact_selection' ? 'Cached LLM selection of template facts' : templateInexact ? 'Template text for the research dataset · not exact here' : 'Template text · no LLM'}</span>}{lines.length ? lines.map((s,i) => <p key={i}>{s}</p>) : <p>{language ? 'No applied control changes this item.' : 'Explanations are available in B and E. Showing this panel does not change ranking.'}</p>}</div>}<div className="item-footer"><span>{scoreLine(item)}</span><div style={{display:language ? 'none' : undefined}}><button disabled={busy} aria-label={`Like item ${item.item_id}`} title="Boost only this item" onClick={() => act(() => api('feedback', {user_id:user,item_id:item.item_id,direction:'like'}), `Positive feedback saved for item ${item.item_id} only. A and B use it.`)}>＋</button><button disabled={busy} aria-label={`Dislike item ${item.item_id}`} title="Remove only this item from A and B" onClick={() => act(() => api('feedback', {user_id:user,item_id:item.item_id,direction:'dislike'}), `Item ${item.item_id} is removed from A and B.`)}>−</button></div></div></div></article>; })}</div>{shownFeed && !shownFeed.items.length && <div className="empty-state"><h3>No eligible items remain.</h3><p>{language ? 'The applied controls remove every item. Undo the last change, or remove the applied controls.' : 'Your mute preferences remove every item. Remove a preference or reset this user.'}</p></div>}</> : <div className="comparison"><p className="help">This is a preview of current inputs, not an experimental result. A and B must have identical item IDs. Exposure counts may overlap for multi-category items.</p><div className="comparison-scroll" tabIndex={0} role="region" aria-label="Comparison of the five conditions. It can scroll sideways."><table><thead><tr><th scope="col">Condition</th><th scope="col">First 10 item IDs</th><th scope="col">Category counts</th><th scope="col">Fill</th></tr></thead><tbody>{Object.entries(comparison || {}).map(([c,f]) => <tr key={c}><th scope="row"><b>{c}</b>{conditions[c][0]}</th><td>{f.items.map(i => i.item_id).join(' · ') || 'Empty'}</td><td>{Object.entries(f.category_exposure).map(([cat,count]) => <span className="table-category" key={cat}><i style={{background:color(cat)}}/>{cat}: {count}</span>)}</td><td>{(100*f.fill_rate).toFixed(0)}%</td></tr>)}</tbody></table></div><p className="help narrow-only">The table is wider than the screen. Move it sideways.</p><div className="comparison-check">A and B have the same item IDs in the same order: <strong>{comparison && JSON.stringify(comparison.A.items.map(i=>i.item_id)) === JSON.stringify(comparison.B.items.map(i=>i.item_id)) ? 'yes, in this preview' : 'no'}</strong></div></div>}
         </section>
-      </div>
+      </div>}
       <footer><span>Feed Control Lab · Research demonstrator</span><span>Session state is temporary. A reload of the page starts a new session without the applied controls.</span></footer>
     </main>
   </div>;
 }
 
 function PersonalEntry() {
-  const personal = document.documentElement.dataset.personalAuth === 'required';
+  const personal = document.documentElement.dataset.personalMode === 'loopback';
   const [client] = useState(() => createApiClient({personal}));
-  const [unlocked, setUnlocked] = useState(!personal);
-  const [draft, setDraft] = useState('');
-  const [checking, setChecking] = useState(false);
-  const [authError, setAuthError] = useState('');
-  async function submit(event) {
-    event.preventDefault();
-    if (!draft || checking) return;
-    setChecking(true); setAuthError('');
-    const ok = await client.unlock(draft);
-    setDraft(''); setChecking(false);
-    if (ok) setUnlocked(true); else setAuthError('Could not unlock this personal session. Check the token and try again.');
-  }
-  function lock() {client.lock(); setDraft(''); setAuthError(''); setUnlocked(false);}
-  if (unlocked) return <App client={client} personal={personal} onLock={lock}/>;
-  return <main className="personal-entry"><section className="panel" aria-labelledby="personal-title">
-    <p className="eyebrow">PERSONAL LOOPBACK SESSION</p><h1 id="personal-title">Unlock the research app</h1>
-    <p className="help">Enter the operator token supplied for this local session. It stays in this page’s memory and is cleared when you lock or reload.</p>
-    <form onSubmit={submit} autoComplete="off"><label className="field-label" htmlFor="personal-token">Operator token</label>
-      <input id="personal-token" type="password" autoComplete="off" spellCheck={false} value={draft}
-        onChange={e => setDraft(e.target.value)} disabled={checking} />
-      <button type="submit" className="primary" disabled={checking || !draft}>{checking ? 'Checking…' : 'Unlock'}</button>
-    </form>{authError && <p role="alert" className="alert error">{authError}</p>}
-  </section></main>;
+  return <App client={client}/>;
 }
 
 createRoot(document.getElementById('root')).render(<PersonalEntry/>);

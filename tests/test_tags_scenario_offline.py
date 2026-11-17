@@ -1,10 +1,11 @@
-"""Scenario "tags" with the hand-written rehearsal replies. No model, no listener.
+"""Scenario "tags" with fixed test replies (a test double). No model, no listener.
 
 The scenario holds ten invented items with categories and tags. These tests
 check the application behaviour for each bundled request: the class of the
 result, that a preview changes nothing, that Apply uses exactly the reviewed
 members and that Undo restores the identical feed. They say nothing about how
-a model maps a request.
+a model maps a request. The fixed replies live in tests/standins/authored_replies.py;
+no launcher has hand-written replies.
 """
 import argparse
 import csv
@@ -17,7 +18,8 @@ from fastapi.testclient import TestClient
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'scripts'))
-import demo_scripted_replies  # noqa: E402
+sys.path.insert(0, str(ROOT / 'tests' / 'standins'))
+import authored_replies  # noqa: E402  (test double)
 import run_demo  # noqa: E402
 
 IDS = list(range(61001, 61011))
@@ -25,14 +27,15 @@ FOLDER = ROOT / 'scenarios' / 'categories-and-tags'
 
 
 def options(**values):
-    base = dict(provider='scripted', scenario='tags', port=None, reviewed_config=None, report=None,
+    base = dict(provider='route', scenario='tags', port=None, reviewed_config=None, report=None,
                 relay_dir=None, declared_model=None, transport_note=None, relay_timeout=600, max_calls=None)
     base.update(values)
     return argparse.Namespace(**base)
 
 
 @pytest.fixture
-def served():
+def served(monkeypatch):
+    authored_replies.install(monkeypatch, run_demo)
     app, _, summary, _ = run_demo.build_app(options())
     assert summary['scenario'] == 'tags' and summary['identity']['live_model'] is False
     with TestClient(app) as client:
@@ -88,7 +91,7 @@ def test_the_scenario_files_agree_with_each_other():
     # Every bundled vocabulary request has an authored reply, except the one the guard answers.
     for key, text in requests().items():
         if key.startswith('vocabulary') and key != 'vocabulary:negated':
-            assert text in demo_scripted_replies._TAGS_REPLIES, key
+            assert text in authored_replies._TAGS_REPLIES, key
     assert all(text.isascii() for text in requests().values())
 
 
@@ -96,8 +99,8 @@ def test_status_names_the_scenario_requests_and_the_authored_provider(served):
     client, headers, _ = served
     status = client.get('/api/status').json()
     assert status['items'] == 10 and status['data_mode'] == 'fixture' and status['categories'] == 4
-    assert status['provider'] == {'backend': 'scripted-authored-replies',
-                                  'model': 'none (replies written by hand)', 'live_model': False}
+    assert status['provider'] == {'backend': authored_replies.BACKEND,
+                                  'model': authored_replies.MODEL, 'live_model': False}
     assert status['scenario_requests'] == requests()
     assert sorted(key for key in requests() if ':' not in key) == ['configured_model', 'label', 'synthetic', 'vocabulary']
     groups = saved(client, headers)
@@ -115,7 +118,7 @@ def test_the_vocabulary_of_the_ten_items(served):
     body = client.post('/api/semantic/vocabulary/terms', headers=headers,
                        json={'user_id': 1, 'candidate_ids': IDS}).json()
     assert [[t['kind'], t['level'], t['value'], len(t['item_ids'])] for t in body['terms']] \
-        == demo_scripted_replies._TAGS_VOCABULARY
+        == authored_replies._TAGS_VOCABULARY
     assert not any(61010 in t['item_ids'] for t in body['terms']) and calls(app) == 0
 
 
@@ -211,16 +214,16 @@ def test_requests_that_cannot_be_applied_change_nothing(served, key, status, pro
                        json={'user_id': 1, 'plan_id': 'none'}).status_code == 409
 
 
-def test_a_request_or_a_scope_without_an_authored_reply_is_refused(served):
+def test_a_provider_failure_for_a_request_or_a_scope_is_reported_and_page_safe(served):
     client, headers, _ = served
     other = client.post('/api/semantic/vocabulary/preview', headers=headers, json={
         'user_id': 1, 'text': 'Hide the Repair category, please.', 'candidate_ids': IDS}).json()
     # One page-safe sentence that says what to do; a call was begun and no usable reply came back.
-    assert other['ready'] is False and other['status'] == 'error' and other['reason'].startswith('This server has no model.')
+    assert other['ready'] is False and other['status'] == 'error' and other['reason'].startswith('Test double: no fixed reply')
     assert other['outcome_source'] == 'provider_failure' and other['calls_attempted'] == 1
     narrow = client.post('/api/semantic/vocabulary/preview', headers=headers, json={
         'user_id': 1, 'text': requests()['vocabulary:literal'], 'candidate_ids': IDS[:6]}).json()
-    assert narrow['ready'] is False and narrow['status'] == 'error' and 'complete bundled scope' in narrow['reason']
+    assert narrow['ready'] is False and narrow['status'] == 'error' and narrow['reason'].startswith('Test double: no fixed reply')
 
 
 def test_the_description_request_uses_the_separate_route_and_finds_what_labels_do_not(served):
@@ -281,8 +284,8 @@ def test_the_fictional_brief_is_drafted_reviewed_admitted_and_removed(served):
     client, headers, app = served
     before, compare = saved(client, headers), client.get('/api/compare?user_id=1', headers=headers).json()
     state = client.get('/api/synthetic/items?user_id=1', headers=headers).json()
-    assert state['generation_available'] and state['generation_provider'] == 'scripted-authored-replies'
-    assert state['configured_model'] == 'none (replies written by hand)' and state['items'] == []
+    assert state['generation_available'] and state['generation_provider'] == authored_replies.BACKEND
+    assert state['configured_model'] == authored_replies.MODEL and state['items'] == []
     draft = client.post('/api/synthetic/preview', headers=headers, json={
         'user_id': 1, 'brief': requests()['synthetic'], 'synthetic_acknowledged': True}).json()
     assert draft['ready'] and draft['admitted'] is False and calls(app) == 1
@@ -290,7 +293,7 @@ def test_the_fictional_brief_is_drafted_reviewed_admitted_and_removed(served):
     assert record['title'].endswith('(authored rehearsal)') and record['category_label'].endswith('(authored rehearsal)')
     assert record['description'].startswith('Authored rehearsal reply') and record['is_synthetic'] is True
     assert record['origin'] == 'model_generated_synthetic' and record['media_asset'] is None
-    assert record['provenance']['model']['backend'] == 'scripted-authored-replies'
+    assert record['provenance']['model']['backend'] == authored_replies.BACKEND
     assert client.get('/api/synthetic/items?user_id=1', headers=headers).json()['items'] == []  # a draft adds nothing
     admitted = client.post('/api/synthetic/admit', headers=headers,
                            json={'user_id': 1, 'plan_id': draft['plan_id']}).json()
@@ -304,7 +307,7 @@ def test_the_fictional_brief_is_drafted_reviewed_admitted_and_removed(served):
     assert removed['items'] == [] and calls(app) == 1
     other = client.post('/api/synthetic/preview', headers=headers, json={
         'user_id': 1, 'brief': 'Another fictional brief.', 'synthetic_acknowledged': True}).json()
-    assert other['ready'] is False and other['reason'].startswith('This server has no model.')
+    assert other['ready'] is False and other['reason'].startswith('Test double: no fixed reply')
     assert other['outcome_source'] == 'provider_failure' and other['calls_attempted'] == 1
 
 
@@ -355,7 +358,7 @@ def test_a_relayed_reply_to_the_vocabulary_request_is_checked_against_its_schema
         assert request['system'] == vocabulary_grounding.PROMPT and request['schema'] == vocabulary_grounding.SCHEMA
         assert set(request['payload']) == {'request', 'scope_item_count', 'vocabulary'}
         assert 'Episode' not in json.dumps(request['payload'])  # no description leaves the application
-        reply = demo_scripted_replies.lookup(request['payload'], request['schema'])
+        reply = authored_replies.lookup(request['payload'], request['schema'])
         partial = spool / 'answer.partial'
         partial.write_text(json.dumps(reply), encoding='utf-8')
         os.replace(partial, spool / 'response-0001.json')
@@ -373,8 +376,7 @@ def test_the_fingerprint_covers_the_scenario_folder(tmp_path):
     for folder in ('feedctrl', 'web/dist', 'tools/hosted_validation_current/inputs', 'scenarios'):
         shutil.copytree(ROOT / folder, copy / folder)
     (copy / 'scripts').mkdir()
-    for name in ('run_demo.py', 'demo_scripted_replies.py'):
-        shutil.copy(ROOT / 'scripts' / name, copy / 'scripts' / name)
+    shutil.copy(ROOT / 'scripts' / 'run_demo.py', copy / 'scripts' / 'run_demo.py')
     first = run_demo.source_fingerprint(copy)
     assert first == run_demo.source_fingerprint()
     with open(copy / 'scenarios' / 'categories-and-tags' / 'metadata.csv', 'ab') as handle:

@@ -13,9 +13,8 @@
   "executable": null,
   "executable_sha256": null,
   "workdir": null,
-  "operator_token": null,
   "reviewer_reference": null,
-  "driver_sha256": "8d1cc561b4d466d93c780aa85223f47b82a087539c18f5f0cb371607fbc0d2f5",
+  "driver_sha256": "eed6a7eaffef11dd4b06e081a24accb07ffe91bdcc4f5240a02892b9499b9b85",
   "source_sha256": {
     "feedctrl/__init__.py": "eaabd38e85dd5a5f07362331ac61fb03de4b808055144d328d12e9f8fe5fce39",
     "feedctrl/api.py": "408f49ddf6f8060e683886c1a3bce3d92fd2271c3cc78e1ae630faf5c084a74f",

@@ -20,7 +20,7 @@ One command gives you a table and two files.
 ## What the trial does not show
 
 - **It is not an accuracy study.** The requests are exposed development requests. The items are invented. A scenario has nine cases at most, and each case runs one time.
-- **It has no reference labels.** The last column compares a reply with one hand-written rehearsal reply for the same request. "The same" does not mean "correct", and "other" does not mean "wrong". A clarification can be a good answer to a request.
+- **It has no reference labels.** The trial does not compare a reply with any hand-written answer. A clarification can be a good answer to a request.
 - **It does not review meaning.** The application's checks are mechanical. A passed check shows that a category name, a tag, an item number or a quotation exists in the item data. A person must still judge the meaning in the page.
 - **It does not measure recommendation quality or human satisfaction.**
 - **It does not attest the model.** The model name is the name that the route declares.
@@ -41,7 +41,6 @@ This is the same as `python scripts/route_trial.py run --scenario tags`. It uses
 | --- | --- |
 | `--scenario tags` | The scenario. `tags` has nine cases. `hunger` and `category` have one case each. |
 | `--route-file FILE` | Another route file than `model-route.json`. |
-| `--provider scripted` | Use the hand-written rehearsal replies. No model is called. Use this to see the tool work. |
 | `--cases a,b` | Run only these cases. `python scripts/route_trial.py cases --scenario tags` lists them. |
 | `--out FOLDER` | A new folder for the records. The default is a new folder under `runs/`. |
 
@@ -83,21 +82,21 @@ Press Ctrl+C. The trial records the cases that are finished and stops. A model c
 ## Read the table
 
 This is the table of a run through the `openai-compatible` route against the stand-in server of the tests.
-The stand-in answers with the hand-written rehearsal replies. It is not a model, so every row is the same as the rehearsal reply, and each call takes almost no time.
+The stand-in answers with fixed test replies (a test double under `tests/`). It is not a model, so each call takes almost no time.
 A run with a model shows the same columns.
 
 ```
-Case                    Method in the page    Calls  Outcome      Same as authored rehearsal reply  Seconds
-----------------------  --------------------  -----  -----------  --------------------------------  -------
-vocabulary              categories and tags   1      review       same outcome, same selection      0.1
-vocabulary:literal      categories and tags   1      review       same outcome, same selection      0.1
-vocabulary:mixed        categories and tags   1      review       same outcome, same selection      0.1
-vocabulary:ambiguous    categories and tags   1      clarify      same outcome                      0.1
-vocabulary:unsupported  categories and tags   1      unsupported  same outcome                      0.1
-vocabulary:negated      categories and tags   0      clarify      same outcome                      0.0
-vocabulary:no_match     categories and tags   1      no match     same outcome                      0.1
-configured_model        item descriptions     2      review       same outcome, same selection      0.1
-synthetic               fictional item draft  1      draft ready  same outcome                      0.0
+Case                    Method in the page    Calls  Outcome      Seconds
+----------------------  --------------------  -----  -----------  -------
+vocabulary              categories and tags   1      review       0.1
+vocabulary:literal      categories and tags   1      review       0.1
+vocabulary:mixed        categories and tags   1      review       0.1
+vocabulary:ambiguous    categories and tags   1      clarify      0.1
+vocabulary:unsupported  categories and tags   1      unsupported  0.1
+vocabulary:negated      categories and tags   0      clarify      0.0
+vocabulary:no_match     categories and tags   1      no match     0.1
+configured_model        item descriptions     2      review       0.1
+synthetic               fictional item draft  1      draft ready  0.0
 ```
 
 **Calls.** The number of model calls that the case made. The case `vocabulary:negated` makes no call: the request matches the negated-command pattern (a negated hide, exclude, remove, reduce or boost, or a negated "show ... more" or "show ... less"), and the application stops it with its own check before any call.
@@ -118,12 +117,7 @@ synthetic               fictional item draft  1      draft ready  same outcome  
 
 **Application checks.** For the category and tag route the application returns a list of named checks. The line gives the number that passed.
 
-**Same as the authored rehearsal reply.** The trial runs each case a second time with the hand-written rehearsal reply, in a second copy of the application with no model.
-
-- `same outcome`: the outcome class is the same.
-- `same selection`: both are reviews, and each control has the same action and the same items.
-- `other selection`: both are reviews, and the action or the items differ. Read both. Neither is marked as right.
-- `no (rehearsal: ...)`: the outcome class differs.
+There is no column that compares a reply with a hand-written answer: the application holds no answer for any request. To put two runs side by side, use `compare` (below).
 
 **Exit code.** 0: no case ended in an error. 2: at least one case ended in an error. 1: the trial could not start, was interrupted, or could not state that nothing was applied.
 
@@ -160,7 +154,7 @@ Each trial writes into its own folder. The trial refuses a folder that is not em
 | File | Content |
 | --- | --- |
 | `trial.md` | The table, the route identity, the source fingerprint, the times in UTC and the limits. |
-| `trial.json` | The complete record: each request text and its hash, the outcome, the controls, the chosen names or quotations, the selected items, the application's checks, every raw model reply, the route's receipt of each call, the comparison with the rehearsal reply and the applied state after the case. |
+| `trial.json` | The complete record: each request text and its hash, the outcome, the controls, the chosen names or quotations, the selected items, the application's checks, every raw model reply, the route's receipt of each call and the applied state after the case. |
 | `route-calls/` | With an HTTP or command-line route: the exact request body and the raw reply of each call, written by the route. No header and no key. |
 | `relay/` | With the relay route: the request, reply and receipt files. |
 
@@ -168,4 +162,4 @@ The route and trial redact the configured key from recorded text. Inspect reques
 
 ## How this tool was tested
 
-The tests of this tool use the hand-written rehearsal replies and a stand-in server that answers in the documented format. They show that the tool reports each outcome class, stops before a review, applies nothing, counts the calls before it starts, reports a failing route with a text that says what to do, and writes no credential. They are not evidence about any model.
+The tests of this tool use a stand-in server that answers in the documented format with fixed test replies (a test double in `tests/standins/`, not used by any launcher). They show that the tool reports each outcome class, stops before a review, applies nothing, counts the calls before it starts, reports a failing route with a text that says what to do, and writes no credential. They are not evidence about any model.

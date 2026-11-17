@@ -1,0 +1,726 @@
+\documentclass[10pt]{beamer}
+% Adapted from the supervisor-supplied BCIT Beamer template.
+% Original 4:3 aspect ratio, theme, colours and logo placement retained.
+% Revision of 17 November 2026, based on ai-reference-main.tex (20 October 2026).
+% Every number is copied from: paper/research-paper-2026-11-17.tex sources, i.e.
+% docs/evidence/lab-eval/20261117-main/RESULTS.md and summary.json,
+% docs/evidence/lab-eval/20261117-b-parser-rerun/summary.json,
+% docs/evidence/lab-eval-set-20261117/README.md and FROZEN.json,
+% FINAL2/AUDIT.md, FINAL2/BLOCKERS.md, FINAL2/conference-options-verified.md.
+% The llama3.1:8b run of Experiment 3 completed 21 of 40 cases before it was
+% paused; it is being resumed on commit 9071f05. Each line to fill from it
+% carries the comment LLAMA-PENDING. Downstream values re-scored 17 Nov with the
+% exact controls. Video facts: docs/evidence/2026-11-17-video/ and
+% FINAL2/recording/take-11/check.json. Generalization check:
+% runs/generalization-gpt5/summary.md and runs/generalization-gpt5-nc/summary.md.
+% 4 Nov study: deliverables/2026-11-04-prospective-evaluation/PROTOCOL-AND-RESULTS.md.
+\usetheme[progressbar=head,numbering=fraction,sectionpage=none]{metropolis}
+\IfFileExists{appendixnumberbeamer.sty}{\usepackage{appendixnumberbeamer}}{}
+\usepackage{array,amsmath,graphicx,tikz}
+\usetikzlibrary{positioning,arrows.meta}
+\IfFileExists{booktabs.sty}{\usepackage{booktabs}}{
+  \newcommand{\toprule}{\hline}
+  \newcommand{\midrule}{\hline}
+  \newcommand{\bottomrule}{\hline}
+}
+\newcolumntype{P}[1]{>{\raggedright\arraybackslash}p{#1}}
+\definecolor{bcitblue}{HTML}{003C71}
+\definecolor{bcityellow}{HTML}{FFEA2E}
+\definecolor{bcitlight}{HTML}{F8F9FF}
+\definecolor{bcitgray}{HTML}{6E6E6E}
+\setbeamercolor{palette primary}{bg=bcitblue,fg=bcitlight}
+\setbeamercolor{progress bar}{fg=bcityellow,bg=bcitblue!30}
+\setbeamercolor{progress bar in head/foot}{fg=bcityellow,bg=bcitblue!30}
+\setbeamercolor{frametitle}{bg=bcitblue,fg=bcitlight}
+\setbeamercolor{item}{fg=bcitblue}
+\setbeamercolor{itemize item}{fg=bcitblue}
+% Fit the template title content inside the plain frame's available height.
+\setbeamertemplate{title page}{
+  \begin{minipage}[b][\textheight]{\textwidth}
+  \vfill
+  \usebeamertemplate*{title}
+  \usebeamertemplate*{subtitle}
+  \usebeamertemplate*{title separator}
+  \usebeamertemplate*{author}
+  \usebeamertemplate*{date}
+  \usebeamertemplate*{institute}
+  \vfill
+  \end{minipage}
+}
+\setbeamertemplate{frame footer}{\raisebox{-0.1cm}{\includegraphics[height=0.4cm]{bcit_logo.png}}\hspace{0.4cm}\tiny\insertshorttitle}
+\makeatletter
+\setlength{\metropolis@progressonsectionpage@linewidth}{2pt}
+\setlength{\metropolis@progressinheadfoot@linewidth}{2pt}
+\makeatother
+\newcommand{\src}[1]{\vfill{\tiny\color{bcitgray}#1}}
+\newcommand{\Pending}{\emph{pending (21 of 40 cases; resumed)}}
+\title[COMP 9500: Natural-language controls]{Natural-Language Controls for\\Short-Video Recommenders}
+\subtitle{An offline study of controllability}
+\author{Vibhor Malik}
+\date{17 November 2026}
+\institute{COMP 9500, M.Sc. Research Project\\British Columbia Institute of Technology\\Supervisor: Borna Noureddin}
+\begin{document}
+
+{\setbeamertemplate{frame footer}{}
+\setbeamertemplate{background}{\begin{tikzpicture}[remember picture,overlay]
+\node[anchor=north east,xshift=-0.5cm,yshift=-0.5cm] at (current page.north east){\includegraphics[height=0.8cm]{bcit_logo.png}};
+\end{tikzpicture}}
+\begin{frame}[plain]
+
+\maketitle
+\end{frame}}
+
+\section{Research question}
+\begin{frame}{Research questions}
+\small
+\begin{enumerate}
+\item How much does a deterministic category control change exposure, and what does it cost in next-item ranking quality?
+\item How reliably does a language model interpret a request as a control?
+\item Can control go beyond fixed category IDs, to existing KuaiRec category and tag names reached through indirect wording, and to new categories? How accurate are models against an AI-drafted, human-reviewed reference?
+\end{enumerate}
+\vspace{0.2cm}
+The model proposes; a person reviews; a fixed policy applies exactly the approved change.
+\src{Offline study. No participants. No claim of better accuracy or satisfaction.}
+\end{frame}
+
+\begin{frame}{The supervisor's three requests and the answers}
+\footnotesize
+\begin{tabular}{@{}P{3.2cm}P{4.1cm}P{2.7cm}@{}}
+\toprule
+Request & How it is answered & Measured result\\\midrule
+1. Manual category control with measured performance & Manual workflow on real KuaiRec labels; no model. Same policy as the language controls & Reviewed reference control: TCP@10 0.0063 $\to$ 0.5290; model controls 0.5178--0.5625 (200 users)\\[0.15cm]
+2. A new category from natural language that feeds the filter & Definition $\to$ person reviews $\to$ membership with quotations $\to$ separate evidence check $\to$ filter & Member F1 0.875--0.936 (6 cases, 150-item pool)\\[0.15cm]
+3. Indirect intent matched to existing categories and tags & One call maps any wording (EN or ZH) to the 467 existing KuaiRec terms & Exact intended profile 16--17 of 20; abstention 7--12 of 14\\\bottomrule
+\end{tabular}\par
+\src{Experiment 3, frozen AI-drafted and human-reviewed set, three hosted models. Llama 3.1 8B: 21 of 40 cases, resumed, results next week. Small $n$: wide intervals.}
+\end{frame}
+
+\section{Related work}
+\begin{frame}{Prior work supports a control question}
+\small
+\begin{tabular}{@{}P{2.1cm}P{8.0cm}@{}}
+\toprule
+Source & Relevant evidence\\\midrule
+Mozilla, 2022 & Dislike prevented 12\% of unwanted recommendations and Not interested 11\%, relative to no feedback.\\[0.15cm]
+Ramos et al., 2024 & Positive profile edits raised target Coverage@10 without further fine-tuning. Amazon-MT RMSE: 0.941 versus MF 0.925, where lower is better.\\[0.15cm]
+Sanner et al., 2023 & Language preferences were competitive in a near cold-start movie setting.\\[0.15cm]
+Chen and Pu, 2012 & Critiquing systems already studied richer explicit preference feedback.\\\bottomrule
+\end{tabular}\par
+\src{Historical results in different settings. Bibliographic details are in paper/references-2026-11-14.bib.}
+\end{frame}
+
+\section{Experiment 1}
+\begin{frame}{Translation and enforcement are separate}
+\begin{tabular}{@{}P{2.2cm}P{7.9cm}@{}}
+\toprule
+Stage & Role\\\midrule
+Recommender & Frozen SASRec-style scores for the candidate catalogue.\\[0.18cm]
+Translator & Llama 3.1 8B or rules compile language into a validated command.\\[0.18cm]
+Enforcer & Shared deterministic reranking applies the command.\\[0.18cm]
+Explanation & Verified facts describe the displayed item and control.\\\bottomrule
+\end{tabular}\par
+\vspace{0.35cm}
+A correct hard exclusion comes from the enforcement code. It does not demonstrate language understanding.
+\end{frame}
+
+\begin{frame}{Data and information boundaries}
+\begin{itemize}
+\item KuaiRec cohort: \textbf{865 users}, \textbf{2,593 candidates}, 31 opaque category identifiers.
+\item Positive event: watch ratio $>2$, an engagement proxy.
+\item Global chronological windows: nominal 70\% training, 15\% request history, 15\% held-out evaluation.
+\item Requests use training and request history only.
+\item Quality target: first eligible held-out positive item.
+\end{itemize}
+\vspace{0.2cm}
+Synthetic requests and numeric category labels limit claims about real preferences and language.
+\src{Filtered cohort counts, not the upstream KuaiRec matrix size. The candidate list could include items users had already seen.}
+\end{frame}
+
+\begin{frame}{Five matched configurations}
+\small
+\begin{tabular}{@{}cP{8.9cm}@{}}
+\toprule
+ID & Mechanism\\\midrule
+A & One simulated reaction changes one historical exemplar item.\\[0.15cm]
+B & A plus display-only explanations.\\[0.15cm]
+C & Free text compiles into a category control.\\[0.15cm]
+D & An editable preference sentence compiles into a category control.\\[0.15cm]
+E & Text, profile and explanations, with duplicate commands removed.\\\bottomrule
+\end{tabular}\par
+\vspace{0.25cm}
+One boost and one mute request per user, under seeds 42, 43 and 44. The item-feedback proxy is an explicit design choice.
+\src{A is not a reconstruction of a commercial feedback algorithm. B must rank identically to A.}
+\end{frame}
+
+\begin{frame}{Parser results on synthetic language}
+\begin{tabular}{@{}lrr@{}}
+\toprule
+Language material & Llama correct & Meaning\\\midrule
+Templated inputs & 120/120 & Canonical task\\
+Broader synthetic set & 79/100 & Below 85\% target\\
+Adversarial subset & 2/10 & Major weakness\\\bottomrule
+\end{tabular}\par
+\vspace{0.3cm}
+\begin{itemize}
+\item 79\% exceeds the 70\% floor. It misses the 85\% target.
+\item The rule parser scores 81/100 on the same broader set.
+\item The 120 canonical wording patterns informed development.
+\end{itemize}
+\src{The adversarial subset belongs to the 100 cases. These finite synthetic sets do not establish general language reliability.}
+\end{frame}
+
+\begin{frame}{Experiment 1: category enforcement}
+\begin{tabular}{@{}lrr@{}}
+\toprule
+Top-10 exposure & A & C, D and E\\\midrule
+Boost target share, TCP & 11.6\% & 79.2\%\\[0.15cm]
+Muted target share, TCER & 6.1\% & 0.0\%\\\bottomrule
+\end{tabular}\par
+\vspace{0.4cm}
+\begin{itemize}
+\item Hard exclusion guarantees zero exposure when parsed correctly.
+\item Category-wide boosts affect more items than A's single-item adjustment.
+\item Rule and LLM paths produce identical feeds for these canonical Experiment 1 requests.
+\end{itemize}
+\src{Averages over 865 users and three seeds. This is enforcement evidence, not an LLM advantage.}
+\end{frame}
+
+\begin{frame}{Steering has a predictive quality cost}
+\begin{tabular}{@{}lrr@{}}
+\toprule
+Boost requests & A & C\\\midrule
+NDCG@10 & 0.03012 & 0.01637\\\bottomrule
+\end{tabular}\par
+\vspace{0.35cm}
+\textbf{45.7\% relative decrease.}
+\vspace{0.3cm}
+
+Paired mean change: $-0.01375$\par
+95\% user-bootstrap interval: $[-0.02086,-0.00655]$.
+\vspace{0.3cm}
+
+This post-hoc secondary contrast measures agreement with a historical next item. It does not measure user dissatisfaction after steering.
+\src{Post-hoc exploratory interval, outside the frozen primary BH family.}
+\end{frame}
+
+\begin{frame}{A weak backbone limits the quality claim}
+\begin{tabular}{@{}lr@{}}
+\toprule
+Uncontrolled ranking & HR@1\\\midrule
+SASRec, seed 42 & 0.000\%\\
+SASRec, seed 43 & 0.347\%\\
+SASRec, seed 44 & 0.462\%\\
+Recency popularity & 7.977\%\\\bottomrule
+\end{tabular}\par
+\vspace{0.3cm}
+Recency pools all users' request history. The model's weights use the older training window. This comparison is descriptive.
+\vspace{0.2cm}
+The absolute 10 percentage point non-inferiority margin is uninformative at this baseline.
+\src{Post-hoc uncontrolled baselines. A pooled HR@1 interval includes zero. No accuracy gain is established.}
+\end{frame}
+
+\begin{frame}{Experiment 1 replay on Windows, 16 November}
+\small
+\begin{itemize}
+\item Frozen manifest: 288 of 288 files match.
+\item Rule arm replayed from the checkpoints (Python 3.12.10, PyTorch 2.5.1+cpu) into a new folder.
+\item \textbf{All 399 numeric values} of the combined summary are identical.
+\item Every metric column identical in all 25,950 request rows.
+\item \textbf{Negative:} full-ranking hashes still differ in 605 / 506 / 661 rows (seeds 42 / 43 / 44); score hashes differ in all 1,730 records per seed.
+\item The Llama arm was not replayed (needs the frozen parse cache).
+\end{itemize}
+\src{Earlier recomputation: 2,009 full-ranking and all 5,190 score hashes differed. Reported metrics reproduce; bit-identical full rankings do not. Cause unresolved.}
+\end{frame}
+
+\begin{frame}{Parser bank re-run: RE-USE, not new evidence}
+\footnotesize
+\setlength{\tabcolsep}{3pt}
+\begin{tabular}{@{}lrrrrr@{}}
+\toprule
+Model & Strict, run 1 & Wilson 95\% & Op. errors & Clarify & Lenient, run 2\\\midrule
+Llama 3.1 8B & 79/100 & [0.700, 0.858] & 7 & 9/30 & n/a\\
+Qwen2.5-Coder 7B & 74/100 & [0.646, 0.816] & 13 & 10/30 & n/a\\
+GPT-5 mini & 60/100 & [0.502, 0.691] & 36 & 0/30 & 95/100\\
+GPT-5 & 60/100 & [0.502, 0.691] & 35 & 0/30 & 96/100\\\bottomrule
+\end{tabular}\par
+\vspace{0.25cm}
+\begin{itemize}
+\item Same exposed 100-case bank, prompt, schema, validator and grounding rule (applied by re-scoring the saved predictions); no tuning.
+\item Strict score is primary: \textbf{no model meets 85\%}. Llama reproduces 79/100 with 7 operational errors, as frozen.
+\item GPT models broke the frozen rule ``strength 0.0 for reset/clarify''.
+\item Format-lenient score is \textbf{post hoc}: ignores only that strength field.
+\end{itemize}
+\src{Strict run 2 of GPT-5 mini and GPT-5: 60/100 each. Local raw replies not saved in run 1. Every bank case uses the same 4 of 31 opaque IDs.}
+\end{frame}
+
+\begin{frame}{Experiment 1 conclusion}
+\begin{enumerate}
+\item Deterministic category control works: TCP 11.6\% to 79.2\%, TCER 6.1\% to zero.
+\item Llama parsed 120/120 templated inputs, 79/100 broader synthetic inputs and 2/10 adversarial cases.
+\item All 10/10 explanation fact selections equal the template.
+\item Boost NDCG@10 falls 45.7\%. Non-inferiority is uninformative.
+\item Backbone HR@1 is 0.0--0.46\%, below recency popularity's 8.0\%.
+\item Windows replay of the rule arm: all metrics reproduce; full-ranking hashes do not. (Llama rankings equal the rule arm in the frozen records.)
+\end{enumerate}
+\src{The study establishes bounded enforcement and its limitations. It does not establish an LLM advantage or useful quality preservation.}
+\end{frame}
+
+\section{Experiment 2}
+\begin{frame}{What the fresh experiment tests}
+\small
+\begin{itemize}
+\item Control success versus rules and item feedback.
+\item Requested exposure movement versus item feedback.
+\item Historical next-item accuracy as a separate outcome.
+\item Earlier practice results were used during development and are separate from the fresh test.
+\item Synthetic requests do not measure human experience.
+\end{itemize}
+\vfill
+\tiny These claims concern this fixed system and model-generated references.
+\end{frame}
+
+\begin{frame}{Four classes of intent}
+\small
+\begin{tabular}{@{}P{2.0cm}P{4.0cm}P{3.7cm}@{}}
+\toprule
+Class & Illustrative request & Top-10 requirement\\\midrule
+Compound & More X and less Y & $n(X)\geq2$, $n(Y)\leq1$\\[0.18cm]
+Graded & A bit more X & $2\leq n(X)\leq4$\\
+ & Much less X / none of X & $n(X)\leq1$ / $n(X)=0$\\[0.18cm]
+Floor & Less X, but not zero & $1\leq n(X)\leq2$\\[0.18cm]
+Conditional & More X only if also Y & $n(X\cap Y)\geq2$ and no increase in $X\setminus Y$ count\\\bottomrule
+\end{tabular}\par
+\vspace{0.25cm}
+Success also requires a full list and positive intended movement. Bands are operational conventions.
+\src{X and Y denote opaque categories. Conditional means the same item carries both labels. These are examples, not test requests.}
+\end{frame}
+
+\begin{frame}{A matched interaction budget}
+\begin{itemize}
+\item A gets one positive or negative reaction on one historical exemplar.
+\item Rule and LLM get the complete utterance once and share the same ranker.
+\item Assignments use only earlier history and a committed SHA-256 scheme.
+\item Channels share permitted pre-test information. Recency and SASRec use that information differently.
+\end{itemize}
+\vspace{0.3cm}
+The budget matches interaction count. It does not equalize semantic content, user effort or every possible feedback algorithm.
+\end{frame}
+
+\begin{frame}{Prospective design}
+\small
+The evaluation procedure was fixed before the 100 new requests were created.
+
+100 balanced requests across four classes.\\
+Two separate model annotation passes.\\
+Reference labels saved before comparison.
+
+Agreement measures model consistency, not human validity.
+\vfill
+\tiny Both passes used the same reported model family.
+\end{frame}
+
+\begin{frame}{Fresh requests and reference labels}
+\small
+100 selected requests, 25 in each of four classes.\\
+31 target category IDs covered by the fixed plan.
+
+Screened against 100 exposed and 48 development texts.\\
+No duplicate or frozen close-paraphrase flags selected.
+
+Two passes with the same model family agreed\\
+on all 100 initial commands.\\
+No human adjudication was performed.
+\vfill
+\tiny Lexical screening does not prove semantic or pretraining novelty. Model agreement is not human ground truth.
+\end{frame}
+
+\begin{frame}{Earlier development results}
+\small
+Validated model-reference agreement: Llama 73/100; rules 18/100.\\
+All 24 Llama validation errors remain counted.
+
+Induced success: Llama 23.81\%; rules 8.40\%;\\
+item feedback 3.92\%.\\
+NDCG@10: Llama 0.02461; item feedback 0.03128.
+
+41,508 ranking records were checked.
+\vfill
+\tiny These earlier questions had been seen during development and do not supply an unseen test.
+\end{frame}
+
+\begin{frame}{Prespecified analysis}
+\small
+User is the analysis unit. Average three seeds within\\
+each request/class, then equal eligible classes per user.
+
+5,000 paired user bootstrap samples, seed 2026.\\
+Pratt one-sided Wilcoxon with joint BH over 11 tests.
+
+Keep failures, infeasibility and exclusions visible.\\
+Report control, HR@1 and NDCG@10 together.
+\vfill
+\tiny Analysis choices were fixed before reviewing results and were not tuned to them.
+\end{frame}
+
+\begin{frame}{Experiment 2 results}
+\small
+100 fresh synthetic requests with model-generated references.\\
+Llama: 76 exact, 23 rejected, one accepted mismatch.\\
+Rules: 11/100 exact matches.
+
+Intended-control success combines requested counts\\
+with a change in ranked category exposure.\\
+Llama: 20.145\%; rules 3.854\%; item feedback: 3.815\%.\\
+Conditional requests: no control successes.\\
+NDCG@10: 0.02580 Llama versus 0.03184 item feedback.
+
+41,520 ranking rows; 2,595 full score vectors.
+\vfill
+\tiny The earlier exposed practice score of 73/100 is separate. Model-generated references are not human validation.
+\end{frame}
+
+\begin{frame}{Interpretation of Experiment 2}
+\small
+\begin{itemize}
+\item Language translated richer multi-category requests.
+\item Deterministic rules applied validated controls.
+\item Pooled control gains came with lower next-item NDCG@10.
+\item Conditional requests had no successful controls.
+\item Synthetic wording and model references limit generalization.
+\end{itemize}
+\vfill
+\tiny Category control and historical next-item prediction are separate outcomes.
+\end{frame}
+
+\begin{frame}{Student response check, 20 October}
+\small
+Vibhor reports completing and submitting all 100\\
+worksheet responses without seeing reference answers.\\[0.2cm]
+Under the study's stated annotation rules, his responses\\
+matched 99 of 100 initial AI-authored labels.\\[0.2cm]
+This is a descriptive student-versus-AI comparison,\\
+not agreement between independent human annotators.\\[0.2cm]
+A parser-only check against his labels gives\\
+Llama 73/100 and rules 18/100. The worksheet has not\\
+been adjudicated into a human-reference set.
+\end{frame}
+
+\begin{frame}{Synthetic-language study, 4 November: a negative finding}
+\small
+\begin{itemize}
+\item Earlier pipeline (reviewed topic profile), local Qwen2.5-Coder 7B Instruct.
+\item AI-written requests and references: 100 supported, 20 ambiguous or unsupported.
+\item \textbf{Complete intended profile: 48 of 100} supported requests.
+\item Correct clarification: \textbf{19 of 20} diagnostic requests.
+\item 120 invocations: 49 ready proposals, 61 clarifications, 5 grounding errors, 5 parser or schema rejections.
+\item By stratum: boosts 11/20, reductions 7/20, exclusions 8/20, two topics 15/20, profile replacement 1/10, single subject with context 6/10.
+\end{itemize}
+\vspace{0.1cm}
+A negative finding for autonomous use: a person must review each proposal.
+\src{deliverables/2026-11-04-prospective-evaluation/PROTOCOL-AND-RESULTS.md. Requests quoted literal Chinese source phrases. The bank is now exposed.}
+\end{frame}
+
+\section{The integrated application}
+\begin{frame}{One application on real KuaiRec}
+\footnotesize
+\begin{center}
+\resizebox{\textwidth}{!}{%
+\begin{tikzpicture}[font=\scriptsize, node distance=2.2mm,
+  st/.style={draw=bcitblue, thick, rounded corners=2pt, align=center, minimum width=12mm, minimum height=7.5mm, inner sep=1pt},
+  ar/.style={-{Latex[length=1.6mm]}, bcitblue, thick}]
+\node[st] (a) {Request\\EN or ZH};
+\node[st, right=of a] (b) {Proposal\\model};
+\node[st, right=of b] (c) {Checks\\application};
+\node[st, right=of c] (d) {Review\\person};
+\node[st, right=of d] (e) {Preview\\no change};
+\node[st, right=of e] (f) {Apply\\policy};
+\node[st, right=of f] (g) {Undo};
+\foreach \x/\y in {a/b,b/c,c/d,d/e,e/f,f/g} \draw[ar] (\x)--(\y);
+\node[draw, rounded corners=2pt, above=3.5mm of e, align=center] (s) {Trained SASRec, seed 42: scores all 2,593 items for the chosen user (865 users)};
+\draw[ar] (s.south -| f) -- (f.north);
+\node[draw, dashed, rounded corners=2pt, below=3.5mm of c, align=center] (h) {Ambiguous / no match / unsupported / failed check / rejected: nothing applied};
+\draw[ar, dashed] (b.south) -- (b.south |- h.north);
+\draw[ar, dashed] (c.south) -- (h.north);
+\draw[ar, dashed] (d.south) -- (d.south |- h.north);
+\end{tikzpicture}}
+\end{center}
+\begin{itemize}
+\item One app serves the study view A--E and the language controls on the same data.
+\item KuaiRec text joined: caption, cover text, tags, 3 levels of category names. The page opens in English (machine translation of the Chinese text, labelled); one switch shows the original.
+\item Policy: hide, only, boost/reduce by 0.10 / 0.25 / 0.40 on the normalized score.
+\end{itemize}
+\src{Item text covers all 2,593 items; 2,513 have a caption or cover text. The model sees 467 terms: 266 category names and 201 tags carried by at least 3 items.}
+\end{frame}
+
+\begin{frame}{Four language workflows}
+\footnotesize
+\begin{tabular}{@{}P{2.6cm}P{6.2cm}P{1.2cm}@{}}
+\toprule
+Workflow & What happens & Calls\\\midrule
+1. Manual & Person picks an existing label and an action. & 0\\[0.12cm]
+2. Request to existing labels & Any wording, EN or ZH, plus the 467 terms (no item text) $\to$ controls with exact terms, a verbatim span and a relation; or ambiguous / no match / unsupported. & 1\\[0.12cm]
+3. New category & Definition (label $\leq$60, definition $\leq$600 characters) $\to$ person reviews $\to$ membership of each item in scope ($\leq$200) with a quotation $\to$ verdict-blind check of match quotations. & 1 + batches\\[0.12cm]
+4. New items & Title + description $\to$ existing categories, tags and new-category verdicts, then the same check. Score: median of the user's base scores. & 1 + check\\\bottomrule
+\end{tabular}\par
+Preview changes nothing; Apply needs the preview of the current state; Undo restores it.
+\src{Same functions in the app and the measurement script; a test checks code and prompts for example-specific logic. Since 17 Nov a quotation needs $\geq$2 characters or a whole tag (measured runs: earlier rule).}
+\end{frame}
+
+\begin{frame}{Demo video and a check on new domains}
+\footnotesize
+\textbf{Demo video} \texttt{COMP9500-Feed-Control-Lab-demo.mp4}
+\begin{itemize}
+\item 9:23, 1920$\times$1080, one take; Kokoro af\_heart narration.
+\item GPT-5 through the OpenAI API (key from the environment, never shown); English display mode.
+\item Checks: no silence $\geq$5\,s at $-45$\,dB; transcript matches 96/96 script sentences (similarity 0.936); one frame every 30\,s.
+\end{itemize}
+\textbf{New-domain check} (software check, not evaluation data; GPT-5)
+\begin{itemize}
+\item 6/6 new requests (family-safe, travel, mood, fitness, vehicles, celebrity) mapped to existing labels.
+\item 2 new descriptions (music, kindness): a definition is now proposed even when the sampled items do not fit; classification of 100 items selected 0 for each.
+\item 2 new items classified to existing categories and tags.
+\end{itemize}
+\src{docs/evidence/2026-11-17-video/; tools/generalization\_examples.json; runs/generalization-gpt5*/summary.md (local). The define step is not part of the measured evaluation.}
+\end{frame}
+
+\section{Experiment 3}
+\begin{frame}{Evaluation design: 40 new cases}
+\small
+\begin{tabular}{@{}P{1.4cm}rrP{6.0cm}@{}}
+\toprule
+Group & EN & ZH & Reference\\\midrule
+NL (20) & 10 & 10 & Nonliteral request $\to$ action + required and acceptable KuaiRec labels\\[0.1cm]
+NC (6) & 3 & 3 & New category: label, definition, members of one shared 150-item pool\\[0.1cm]
+AB (14) & 7 & 7 & Should not propose: ambiguous, unsupported, no match\\\bottomrule
+\end{tabular}\par
+\vspace{0.2cm}
+\begin{itemize}
+\item Metrics: exact intended profile ($R\subseteq S\subseteq R\cup A$), label and member P/R/F1, abstention and false acceptance, retrieval misses.
+\item Downstream on 200 sampled users: TCP@10, TCER@10, NDCG@10, HR@1; 10\% non-inferiority.
+\item Wilson and bootstrap intervals; McNemar and Wilcoxon with BH.
+\end{itemize}
+\src{Pool: 125 purposive items + 25 random (seed 20261117). Overlap check vs 3,404 earlier segments: highest trigram Jaccard 0.222.}
+\end{frame}
+
+\begin{frame}{Review and freeze before any prediction}
+\small
+\begin{itemize}
+\item Drafted by an AI: Claude Opus 5.5. 1,211 judgements.
+\item Reviewed row by row by \textbf{Vibhor Malik}: all 1,211 rows, not a sample.
+\item 1,187 agreed; \textbf{24 corrected} (label 9, member 10, definition 2, status 3).
+\item Stop rule met formally (3 of 796 unflagged ``no'' rows wrong); resolved by the full review.
+\item Chinese requests judged through the English gloss.
+\item Frozen and hash-committed 2026-11-17 02:27:25 UTC (set SHA-256 \texttt{d4af21e6ed31\ldots}); first prediction run started 02:28:10 UTC.
+\end{itemize}
+\src{Nine items marked ``either'' are excluded from scoring for every model. Three AB cases accept any abstaining status.}
+\end{frame}
+
+\begin{frame}{Results: requests to existing labels (NL) and abstention (AB)}
+\footnotesize
+\begin{tabular}{@{}lrrrrr@{}}
+\toprule
+Model & NL exact & 95\% CI & Label F1 & AB abst. & False acc.\\\midrule
+Claude Sonnet 5.5 & 17/20 & [0.640, 0.948] & 0.917 & 12/14 & 2\\
+GPT-5 & 17/20 & [0.640, 0.948] & 0.943 & 10/14 & 4\\
+GPT-5 mini & 16/20 & [0.584, 0.919] & 0.930 & 7/14 & 7\\
+Llama 3.1 8B & \multicolumn{5}{c}{\Pending}\\ % LLAMA-PENDING
+\bottomrule
+\end{tabular}\par
+\vspace{0.3cm}
+\begin{itemize}
+\item Label precision / recall: Claude 0.950 / 0.900; GPT-5 0.943 / 0.975; GPT-5 mini 0.916 / 0.950.
+\item Missed required labels: 4, 1, 2. Action correct: 95\%, 100\%, 95\%.
+\item GPT-5 mini proposed a control for half of the requests that should change nothing.
+\end{itemize}
+\src{Claude Sonnet 5.5 through the Claude CLI; GPT models through the OpenAI API. Wilson intervals; they overlap almost completely.}
+\end{frame}
+
+\begin{frame}{Results: new categories (NC)}
+\small
+\begin{tabular}{@{}lrrrrr@{}}
+\toprule
+Model & Precision & Recall & Member F1 & Raw F1 & Missed\\\midrule
+Claude Sonnet 5.5 & 1.000 & 0.793 & 0.875 & 0.970 & 21\\
+GPT-5 mini & 0.942 & 0.934 & 0.936 & 0.962 & 6\\
+GPT-5 & 0.958 & 0.894 & 0.918 & 0.953 & 11\\
+Llama 3.1 8B & \multicolumn{5}{c}{\Pending}\\ % LLAMA-PENDING
+\bottomrule
+\end{tabular}\par
+\vspace{0.3cm}
+\begin{itemize}
+\item Selected = verdict match + quotation found + separate check supports.
+\item Claude: no wrong member, but the checks removed members its classifier had found (raw F1 0.970).
+\item Every model used the reviewed reference definition.
+\end{itemize}
+\src{F1 95\% CI: Claude [0.791, 0.959]; GPT-5 mini [0.887, 0.982]; GPT-5 [0.851, 0.976].}
+\end{frame}
+
+\begin{frame}{Results: downstream on the trained SASRec ranking}
+\small
+\begin{tabular}{@{}lrrrr@{}}
+\toprule
+Control & TCP@10 & TCER@10 & NDCG@10 & HR@1\\\midrule
+None & 0.0063 & 0.0118 & 0.0242 & 0.0050\\
+Reviewed reference & 0.5290 & 0.0000 & 0.0153 & 0.0062\\
+Claude Sonnet 5.5 & 0.5625 & 0.0000 & 0.0144 & 0.0040\\
+GPT-5 & 0.5521 & 0.0000 & 0.0156 & 0.0056\\
+GPT-5 mini & 0.5178 & 0.0000 & 0.0145 & 0.0044\\
+Llama 3.1 8B & \multicolumn{4}{c}{\Pending}\\ % LLAMA-PENDING
+\bottomrule
+\end{tabular}\par
+\vspace{0.25cm}
+\begin{itemize}
+\item Model vs reviewed control: TCP diff $+0.0335$, $+0.0231$, $-0.0111$; \textbf{not significant} (BH Wilcoxon $p$ 0.6543 each).
+\item Exact controls applied with the app's policy (strength, mixed actions, ``only'' groups); re-scored on 17 Nov after an independent review.
+\item NDCG@10 falls, as in Experiments 1 and 2.
+\end{itemize}
+\src{200 users, seed 2026. TCP: 16 boost/only cases. TCER: 10 hide/reduce cases. TCP/TCER count the reference target set.}
+\end{frame}
+
+\begin{frame}{Results: non-inferiority, model comparison, cost}
+\footnotesize
+\begin{tabular}{@{}lrrcc@{}}
+\toprule
+Model & HR@1 diff & CI lower & Relative 10\% & Absolute 0.10\\\midrule
+Claude Sonnet 5.5 & $-0.0010$ & $-0.0027$ & fails & passes\\
+GPT-5 & $0.0006$ & $-0.0023$ & fails & passes\\
+GPT-5 mini & $-0.0006$ & $-0.0021$ & fails & passes\\
+Llama 3.1 8B & \multicolumn{4}{c}{\Pending}\\ % LLAMA-PENDING
+\bottomrule
+\end{tabular}\par
+\vspace{0.2cm}
+\begin{itemize}
+\item Base HR@1 0.0050: relative margin is 0.0005, so it fails; the absolute margin passes trivially.
+\item Successes over 40 cases: Claude 33, GPT-5 32, GPT-5 mini 29. \textbf{No pairwise difference is significant} (McNemar BH $p$ 1.000, 0.762, 0.762; Wilcoxon BH $p$ 0.571, 0.269, 0.269).
+\item 411 calls, no errors. Median s/call: 6.6, 12.5, 11.7. Cost USD 5.86 (CLI-reported), 2.39, 0.47.
+\end{itemize}
+\end{frame}
+
+\section{Limits and next steps}
+\begin{frame}{Limits}
+\small
+\begin{itemize}
+\item Reference AI-drafted (Claude Opus 5.5), then human-reviewed, not human-written.
+\item Claude is both the drafter's family and a measured model (Sonnet 5.5 via CLI): possible bias.
+\item Chinese requests judged through an English machine-translation gloss.
+\item Small $n$ (20 / 14 / 6): wide intervals; pairwise differences not significant.
+\item HR@1 base rate $\approx$0.5\%: relative 10\% margin fails, absolute passes.
+\item Llama 3.1 8B: 21 of 40 cases, paused, resumed on commit 9071f05; results next week. Qwen evaluation deferred. gemma4:31b not attempted (memory held by the Llama run; 19\,GB model, 8\,GB GPU, 32k context needed). Anthropic API never run live. % LLAMA-PENDING
+\item Frontier models are a declared departure from the proposal's local-model-only design.
+\item No user study; weak backbone; the set is now exposed.
+\end{itemize}
+\end{frame}
+
+\begin{frame}{Conference options (verified 16--17 Nov 2026)}
+\small
+\begin{tabular}{@{}P{3.0cm}P{2.6cm}P{4.4cm}@{}}
+\toprule
+Venue & Paper deadline (AoE) & Format and fit\\\midrule
+ACM UMAP 2027, full/short & \textbf{29 Jan 2027} (abstract 22 Jan) & 8+2 or 4+2 pages, acmart, double-blind. Best fit: user control, editable user models, LLMs.\\[0.12cm]
+ACM SIGIR 2027, full & \textbf{21 Jan 2027} (abstract 14 Jan) & $\leq$9 pages + refs, double-anonymous. Harder target for an offline study.\\[0.12cm]
+ACM SIGIR 2027, demo & \textbf{11 Feb 2027} (abstract 4 Feb) & $\leq$4 pages; needs a video or live interface. Fallback: present the system.\\\bottomrule
+\end{tabular}\par
+\src{Source: FINAL2/conference-options-verified.md. Read the call again on the day of decision. Submissions need an anonymous ACM version of the paper.}
+\end{frame}
+
+\begin{frame}{Next steps}
+\small
+\begin{enumerate}
+\item Fill the Llama 3.1 8B rows next week (resumed run); run the Qwen evaluation; try gemma4:31b with free memory.
+\item A larger, independently human-written reference set; a reader of Chinese.
+\item Measure the definition step of new categories, not only membership.
+\item A stronger recommender backbone and a meaningful quality margin.
+\item A user study of the review step.
+\item An anonymous ACM version for UMAP 2027 (29 Jan) or SIGIR 2027.
+\end{enumerate}
+\end{frame}
+
+\pdfstringdefDisableCommands{\def\translate#1{#1}}
+\appendix
+\begin{frame}{Backup: metric definitions}
+\begin{description}
+\item[TCP@10] Target-category items divided by ten for boost requests.
+\item[TCER@10] Target-category items divided by ten for mute requests.
+\item[HR@1] One if the first item equals the held-out target, otherwise zero.
+\item[NDCG@10] For one relevant item at rank $r\leq10$, $1/\log_2(r+1)$. Zero if absent.
+\end{description}
+\vspace{0.3cm}
+Both exposure metrics have the same arithmetic and opposite desired directions. Historical quality does not directly measure preference satisfaction after intervention.
+\end{frame}
+
+\begin{frame}{Backup: backbone and control settings}
+\begin{tabular}{@{}P{3.8cm}P{6.0cm}@{}}
+\toprule
+Backbone & Compact SASRec-style implementation\\\midrule
+Hidden size / context & 32 / 50 items\\
+Attention & Two blocks, one head\\
+Training & 20 epochs, Adam, learning rate 0.001\\
+Batch / dropout & 64 / 0.2\\
+Training seeds & 42, 43, 44\\
+Experiment 1 control & Normalized score +0.25, or hard mute\\
+Experiment 2 strengths & 0.10, 0.25, 0.50\\
+Application strengths & 0.10, 0.25, 0.40; hide; only\\
+Language backend (E1, E2) & Llama 3.1 8B, temperature 0\\\bottomrule
+\end{tabular}\par
+\src{The backbone is independently implemented. The study does not claim an exact SASRec paper reproduction.}
+\end{frame}
+
+\begin{frame}{Backup: why non-inferiority is uninformative (Experiment 1)}
+\small
+\begin{tabular}{@{}P{6.6cm}r@{}}
+\toprule
+Pooled Experiment 1 quantity & Value\\\midrule
+A HR@1 baseline & 0.2505\%\\
+C minus A, mean & +0.193 pp\\
+Paired 95\% interval & $[-0.058,+0.501]$ pp\\
+Simultaneous lower bound & $-0.07707$ pp\\
+Absolute proposed threshold & $-10$ pp\\
+Relative 10\% loss threshold & $-0.02505$ pp\\\bottomrule
+\end{tabular}\par
+\vspace{0.3cm}
+The absolute reading numerically passes while allowing the entire small baseline to disappear. The relative reading fails. Only eight of 865 users have nonzero paired HR@1 differences.
+\src{Both operations pooled, distinct from the boost-only NDCG contrast. pp means percentage points.}
+\end{frame}
+
+\begin{frame}{Backup: intended-direction movement (Experiment 2)}
+\small
+\[
+D(S)=\frac{\sum_{r=1}^{10}\mathbf{1}[i_r\in S]/\log_2(r+1)}{\sum_{r=1}^{10}1/\log_2(r+1)}
+\]
+$\Delta D$ is the channel value minus its uncontrolled value.
+\begin{tabular}{@{}P{2.7cm}P{7.0cm}@{}}
+\toprule
+Class & Signed movement $M$\\\midrule
+Compound & $\min(\Delta D(X),-\Delta D(Y))$\\
+Boost / reduction & $\Delta D(X)$ / $-\Delta D(X)$\\
+Floor & $-\Delta D(X)$, zero if the floor is violated\\
+Conditional & $\Delta D(X\cap Y)-\max(0,\Delta D(X\setminus Y))$\\\bottomrule
+\end{tabular}\par
+\vspace{0.25cm}
+Induced satisfaction requires a full list, the class band and $M>10^{-12}$. This operational measure is not Shannon information.
+\end{frame}
+
+\begin{frame}{Backup: study records}
+\small
+Experiment 2: 100 requests and 200 retained parser responses;\\
+3,460 assigned user/request pairs; 41,520 ranking rows; 2,595 score vectors.\\[0.3cm]
+Experiment 3: frozen set \texttt{docs/evidence/lab-eval-set-20261117/};\\
+results \texttt{docs/evidence/lab-eval/20261117-main/};\\
+parser re-run \texttt{docs/evidence/lab-eval/20261117-b-parser-rerun/}.\\[0.3cm]
+E1 Windows replay of the rule arm (16 Nov): all metrics reproduce; full-ranking hashes differ.
+\src{Review files contain KuaiRec item text and stay private.}
+\end{frame}
+
+\begin{frame}{Backup: selected references}
+\footnotesize
+\begin{itemize}
+\item Ricks and McCrosky (Mozilla), 2022. \emph{Does this button work? Investigating YouTube's ineffective user controls.}
+\item Ramos et al., 2024. \emph{Transparent and Scrutable Recommendations Using Natural Language User Profiles}. arXiv:2402.05810.
+\item Sanner et al., RecSys 2023. \emph{Large Language Models are Competitive Near Cold-start Recommenders for Language- and Item-based Preferences}. arXiv:2307.14225.
+\item Chen and Pu, 2012. \emph{Critiquing-based recommenders: survey and emerging trends}. UMUAI 22, 125--150.
+\item Kang and McAuley, ICDM 2018. \emph{Self-Attentive Sequential Recommendation}.
+\item Gao et al., CIKM 2022. \emph{KuaiRec: A Fully-observed Dataset and Insights for Evaluating Recommender Systems}.
+\end{itemize}
+\src{Complete bibliographic records and source links: paper/references-2026-11-14.bib.}
+\end{frame}
+\end{document}
