@@ -57,7 +57,7 @@
     },
     {
       "domain": "dogs",
-      "description": "Videos about dogs: a pet dog, a puppy or a named dog is part of the story."
+      "description": "Videos about dogs. Any video whose title, description or tags mention a dog or a puppy belongs to the category."
     }
   ],
   "new_items": [

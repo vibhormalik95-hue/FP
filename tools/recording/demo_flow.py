@@ -162,11 +162,14 @@ def run_demo(d, page, cfg, events, model_label, results_line):
     b = done_count(page)
     d.click("[data-role='new-items-preview']", "Classify and preview.")
     wait_done(d, b, "new-items", "[data-role='new-items-preview']")
+    d.say("The answer is back.", wait=False)
     d.ensure_visible("[data-role='review']")
     q = page.evaluate("window.labLastPreview")
     d.events.append({"new_item": {"joined": q.get("joined", 0)}})
-    d.say("It got existing categories and tags. For my new category: a match, with a quotation and a passed independent check, so it joins the category."
-          if q.get("joined") else "It got existing categories and tags. For my new category it was not selected; the review says why.")
+    if q.get("joined"):
+        d.say("It got existing categories and tags. For my new category: a match, with a quotation and a passed independent check, so it joins the category.")
+    else:
+        d.say("It got existing categories and tags. For my new category it was not selected; the review says why.")
     d.hold(4.0)
     d.click("[data-role='apply']", "Apply. It starts at this user's median score, since the recommender has no history for it, so it does not reach the top ten by itself.")
     page.wait_for_function("!document.querySelector('[data-role=review]')")
