@@ -17,23 +17,18 @@ import pyautogui
 
 SPOKEN_MODEL = {"gpt-5-mini": "GPT five mini", "gpt-5": "GPT five", "claude-sonnet-5-5": "Claude Sonnet five point five"}
 WAIT_LINES = {
-    "interpret": ["The model now reads the request and the list of existing labels. It sees no item text.",
-                  "It must copy each label exactly, and quote the words of the request that express the preference.",
-                  "When it answers, the server checks every label and the quoted span before anything is shown."],
-    "define": ["The model reads the description and the text of this user's forty top items.",
-               "It drafts a short label and a definition with conditions, and cites example items with exact quotations.",
-               "The server will check that every quotation really occurs in the cited item."],
-    "classify": ["Now every item in scope is classified under the reviewed definition, ten items per call, four calls at a time.",
-                 "Each match must come with an exact quotation from the item's own Chinese text.",
-                 "A separate model call then checks each quotation without seeing the verdict.",
-                 "Only items whose quotation exists and passes this independent check are selected.",
-                 "Nothing is applied yet. The result comes back as a preview for review."],
-    "new-items": ["The model reads the new item's title and description and the existing KuaiRec categories and tags.",
-                  "It may only choose labels that exist, and it judges the new category with a quotation.",
-                  "The server drops any label that does not exist before the preview is shown."],
+    "interpret": ["The model reads the request and the list of existing labels. It sees no video text.",
+                  "Next, the server checks that every label exists and that the quoted words are in the request."],
+    "define": ["The model reads the description and this user's top forty videos.",
+               "It drafts a label and a definition, and cites example videos with exact quotations."],
+    "classify": ["Each video in scope is classified under the definition, ten per call, four calls in parallel.",
+                 "Every match must quote the video's own text.",
+                 "A separate call checks each quotation without seeing the verdict.",
+                 "Only matches that pass both checks are selected."],
+    "new-items": ["The model assigns existing categories and tags, and judges the new category with a quotation."],
 }
 WAIT_LINES_ALL = [line for lines in WAIT_LINES.values() for line in lines]
-FILLER = "The model is still working. Long waits are normal for hosted models; the stage line on the page counts the seconds."
+FILLER = "The model is still working."
 
 
 def clipboard(text):
@@ -157,147 +152,6 @@ def wait_done(d, before, task, trigger=None, limit=360):
 
 def done_count(page):
     return page.evaluate("window.labDone || 0")
-
-
-def run_demo(d, page, cfg, events, model_label, results_line):
-    gloss = glosses()
-    spoken_model = SPOKEN_MODEL.get(cfg.model, cfg.model)
-    # ---------------------------------------------------------------- intro and A to E
-    d.say("This is the Feed Control Lab for my COMP 9500 project: natural-language controls for a short-video recommender.")
-    d.say("Everything runs on this laptop, on the real KuaiRec dataset: eight hundred sixty-five users and two thousand five hundred ninety-three videos.")
-    d.say("A SASRec model that I trained on KuaiRec ranks the videos. The language model never ranks anything. It only proposes a change that I review.")
-    d.click("button.condition:has-text('Free text')", "First, the original study view with conditions A to E. I choose condition C, the free-text category instruction.")
-    d.type_into("#control", "Show me more category_5", "I type an instruction that names one KuaiRec category by its opaque ID.")
-    before = page.evaluate("document.querySelector('.feed-grid')?.innerText || ''")
-    d.click("button:has-text('Apply instruction')", "Apply instruction. The rule parser reads category five, and a fixed policy adds a quarter point to those items' normalized scores.")
-    page.wait_for_selector(".active-instruction", timeout=30000)
-    d.say("The ranking changed: the cards now show the active category boost, and the latest instruction is listed above the feed.")
-    d.hold(3.0)
-    d.say("This is the frozen baseline of the study. It only understands opaque category IDs. The language controls add what my supervisor asked for.")
-    # ---------------------------------------------------------------- provider
-    d.click("[data-view='lab']", "I open the Language controls view.")
-    page.wait_for_selector(".lab-card")
-    d.say("On the right is the feed for this user, ranked by the trained model. Each card shows the original Chinese text from KuaiRec and an English line, clearly labelled machine translation.")
-    d.hold(3.0)
-    d.choose("[data-role='provider-kind']", "I choose the model provider. The professor can use any OpenAI key here.", "Op")
-    d.type_into("[data-role='provider-model']", cfg.model, f"The model is {spoken_model}: in my measurements it is the strongest model that needs only an API key.")
-    d.point("[data-role='api-key']", "This masked field takes an API key. A key typed here stays in the server's memory only. For this recording the key comes from an environment variable, so the field stays empty and no key appears on screen.")
-    d.click("[data-role='provider-save']", "Use this provider.")
-    d.hold(2.0)
-    # ---------------------------------------------------------------- manual
-    d.click("[data-tab='manual']", "Workflow one is the reference: a manual category control, with no model at all.")
-    d.click("[data-role='label-filter']", "I filter the KuaiRec categories.")
-    say_while_typing(d, cfg.manual_value, "Labels can be found in Chinese or in English.")
-    time.sleep(0.8)
-    d.click(f"[data-role='label-list'] option[value='{cfg.manual_value}']", f"I pick the category {gloss.get(cfg.manual_value, 'pets')}.")
-    d.choose("[data-role='manual-action']", "The action is Show more.", "Show m")
-    d.choose("[data-role='lab-strength']", "Strength strong: plus zero point four on the normalized score.", "str")
-    b = done_count(page)
-    d.click("[data-role='manual-preview']", "Preview. A preview never changes the feed.")
-    wait_done(d, b, "manual", "[data-role='manual-preview']")
-    p = page.evaluate("window.labLastPreview")
-    ch = p["changes"]
-    d.say(f"The review shows the control, the checks, and the effect: {len(ch['entered'])} videos would enter the top ten, and {len(ch['left'])} would leave it.")
-    d.click(".lab-feed .view-tabs button:has-text('Before')", "On the right I can compare the feed before")
-    d.click(".lab-feed .view-tabs button:has-text('After')", "and after Apply.")
-    d.hold(2.0)
-    d.click("[data-role='apply']", "I approve it. Apply changes exactly the reviewed set, nothing else.")
-    page.wait_for_function("!document.querySelector('[data-role=review]')")
-    d.say("The dance videos moved up, each card names the control that moved it, and the control is listed under Applied now.")
-    d.hold(3.0)
-    d.click("[data-role='undo']", "Undo restores the previous state exactly.")
-    d.hold(3.0)
-    # ---------------------------------------------------------------- nonliteral requests
-    for ex, apply_it in ((cfg.interpret[0], True), (cfg.interpret[1], True)):
-        d.click("[data-tab='interpret']", "Workflow two maps a request in my own words to existing KuaiRec categories and tags." if apply_it and ex is cfg.interpret[0]
-                else "A second request, in a different domain, written in Chinese.")
-        d.click("[data-role='request']", ex["say"])
-        say_while_typing(d, ex["request"], "I type it character by character, exactly as a user would.")
-        time.sleep(0.5)
-        b = done_count(page)
-        d.click("[data-role='interpret-preview']", "Interpret and preview.")
-        err = wait_done(d, b, "interpret", "[data-role='interpret-preview']")
-        if err:
-            d.say("The model call failed, and the page shows the error. Nothing was changed.")
-            d.hold(3.0)
-            continue
-        p = page.evaluate("window.labLastPreview")
-        d.say(f"The model proposes: {spoken_controls(p['controls'], gloss)}. That took {calls_line(p)}.")
-        d.ensure_visible("[data-role='review']")
-        d.say("Block one shows what came back, with the model's reason. Block two shows the application's checks: every label exists, and the quoted span is really in my request.")
-        d.hold(3.0)
-        d.say(f"The feed on the right previews the result: eligible videos go from {p['changes']['eligible_before']} to {p['changes']['eligible_after']}.")
-        d.hold(3.0)
-        if p["applicable"]:
-            d.click("[data-role='apply']", "I apply it.")
-            page.wait_for_function("!document.querySelector('[data-role=review]')")
-            d.say("Applied. The cards now name the control that moved them.")
-            d.hold(3.0)
-            d.click("[data-role='undo']", "And Undo puts the feed back.")
-            d.hold(2.5)
-        else:
-            d.click("[data-role='discard']", "There is nothing to apply, so I discard it.")
-    # ---------------------------------------------------------------- new category
-    d.click("[data-tab='category']", "Workflow three creates a category that KuaiRec does not have, from a description.")
-    d.click("[data-role='category-description']", "I describe it in plain English.")
-    say_while_typing(d, cfg.new_category, "The description names the idea, not any existing KuaiRec label.", interval=0.035)
-    b = done_count(page)
-    d.click("[data-role='define']", "Step one: propose a definition.")
-    err = wait_done(d, b, "define", "[data-role='define']")
-    defn = page.evaluate("window.labLastDefinition")
-    d.ensure_visible("[data-role='definition']")
-    d.say(f"The model proposed a label and a definition with explicit conditions, and cited {defn['evidence']} example items. Each quotation shows a check mark when it was found in the item's text.")
-    d.hold(3.5)
-    d.say("I review the definition. I could edit the label or the conditions before anything is classified.")
-    d.choose("[data-role='category-action']", "When applied, I want to see more of these videos.", "Show m")
-    b = done_count(page)
-    d.click("[data-role='classify']", "I approve the definition, and the model classifies every item in scope.")
-    err = wait_done(d, b, "classify", "[data-role='classify']")
-    p = page.evaluate("window.labLastPreview")
-    d.ensure_visible(".lab-table")
-    d.say(f"The evidence table has one row per item: the verdict, the exact quotation, and the independent check. {p['selected']} of {p['rows']} items were selected. That took {calls_line(p)}.")
-    d.hold(4.0)
-    d.scroll_by(260)
-    d.say("Matches whose quotation was not found, or that the independent check rejected, are not selected. The feed stays visible on the right while I read.")
-    d.hold(3.5)
-    if p["applicable"]:
-        d.click("[data-role='apply']", "I apply the new category.")
-        page.wait_for_function("!document.querySelector('[data-role=review]')")
-        d.say("The new category is now a label of its own, with its members, and its videos are boosted in the feed.")
-        d.hold(3.0)
-    # ---------------------------------------------------------------- new items
-    d.click("[data-tab='items']", "Workflow four adds new videos that are not in KuaiRec.")
-    d.click("[data-role='new-title-0']", "A title")
-    say_while_typing(d, cfg.new_item["title"], "The title of a video about a mountain hike.", interval=0.035)
-    d.click("[data-role='new-description-0']", "and a description.")
-    say_while_typing(d, cfg.new_item["description"], "The description says what the video shows. The model sees only these words.", interval=0.03)
-    b = done_count(page)
-    d.click("[data-role='new-items-preview']", "Classify and preview.")
-    wait_done(d, b, "new-items", "[data-role='new-items-preview']")
-    d.ensure_visible("[data-role='review']")
-    d.say("The model assigned existing KuaiRec categories and tags to the new video, and judged it against my new category with a quotation, checked independently again.")
-    d.hold(4.0)
-    d.click("[data-role='apply']", "I apply it. The video joins the catalogue with a cold-start score, because the trained model has no history for it.")
-    page.wait_for_function("!document.querySelector('[data-role=review]')")
-    d.hold(3.0)
-    d.click("[data-role='undo']", "Undo removes the new video")
-    d.click("[data-role='undo']", "and a second Undo removes the new category.")
-    d.hold(2.5)
-    # ---------------------------------------------------------------- results
-    d.scroll_to_top()
-    d.click("[data-view='results']", "Finally, the Results page. It reads the result files of my measurement.")
-    page.wait_for_selector("[data-role='results']")
-    for line in results_line:
-        if line.get("selector"):
-            d.ensure_visible(line["selector"])
-        d.say(line["say"])
-        d.hold(3.0)
-    d.ensure_visible("[data-role='results'] .panel >> nth=1")
-    d.say("Below, the old one-hundred-case parser bank is re-used, and labelled as re-use, not new evidence. Strict scores are primary; Llama again reached seventy-nine, the frozen result, still short of the eighty-five percent target.")
-    d.hold(3.0)
-    d.say("The reference answers were drafted by an AI and reviewed row by row by me. Claude is both the drafter's family and one of the measured models, which the report states.")
-    d.say("Everything shown is in the repository, with run-all-tests to repeat the checks. Thank you.")
-    d.hold(2.0)
 
 
 def test_clip(d, page, cfg):

@@ -1,4 +1,8 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react';
+
+// English-only display: the machine-translation gloss replaces the original Chinese text (labelled).
+const EnCtx = createContext({on: false, t: v => v, tx: s => s});
+const CJK = /[㐀-鿿]/;
 
 // Language controls over the real KuaiRec feed. The model proposes; the server checks; the
 // person reviews; Apply changes exactly the reviewed set; Undo restores the previous state.
@@ -30,13 +34,17 @@ function Gloss({gloss}) {
 }
 
 function FeedCard({item, mark}) {
+  const en = useContext(EnCtx);
+  const g = item.gloss_en || {};
+  const enText = [g.title, g.description].filter(Boolean).join(' · ') || (CJK.test(item.title + item.caption) ? '(no translation)' : [item.title, item.caption].filter(Boolean).join(' · '));
   return <article className={`lab-card ${mark || ''}`} data-item={item.item_id}>
     <div className="lab-card-head"><b>#{item.rank}</b><span>Item {item.item_id}{item.origin === 'added' ? ' · added by you' : ''}</span><em>{item.score.toFixed(3)}{Math.abs(item.score - item.base_score) > 1e-9 ? ` (base ${item.base_score.toFixed(3)})` : ''}</em></div>
+    {en.on ? <p className="lab-gloss lab-gloss-main"><span>EN · machine translation</span>{item.title || item.caption ? enText : '(no text in KuaiRec)'}</p> : <>
     <p className="lab-zh" lang="zh">{item.title || item.caption || '(no text in KuaiRec)'}</p>
     {item.caption && item.caption !== item.title && <p className="lab-zh small" lang="zh">{item.caption}</p>}
-    <Gloss gloss={item.gloss_en}/>
-    <div className="lab-pills">{item.kuairec_categories.map(c => <span key={c} lang="zh">{c}</span>)}{item.tags.slice(0, 4).map(t => <span key={t} className="tag" lang="zh">#{t}</span>)}{item.feature_ids.map(f => <span key={f} className="feat">{f}</span>)}</div>
-    {item.controls.length > 0 && <p className="lab-ctl">{item.controls.join(' · ')}</p>}
+    <Gloss gloss={item.gloss_en}/></>}
+    <div className="lab-pills">{item.kuairec_categories.map(c => <span key={c} lang="zh">{en.t(c)}</span>)}{item.tags.slice(0, 4).map(t => <span key={t} className="tag" lang="zh">#{en.t(t)}</span>)}{item.feature_ids.map(f => <span key={f} className="feat">{f}</span>)}</div>
+    {item.controls.length > 0 && <p className="lab-ctl">{item.controls.map(en.tx).join(' · ')}</p>}
   </article>;
 }
 
@@ -71,23 +79,26 @@ function Calls({calls}) {
 }
 
 function EvidenceRows({preview}) {
-  if (preview.kind === 'interpret') return <div className="lab-evidence">{preview.evidence.map((e, i) => <div key={i} className="lab-ev"><b>{ACTIONS[e.action] || e.action}{e.strength && ['boost', 'reduce'].includes(e.action) ? ` (${e.strength})` : ''}</b> for “{e.intent_span}”<p>{e.relation}</p><p className="lab-labels">{e.labels.map(l => <code key={l} lang="zh">{l}</code>)}</p></div>)}</div>;
+  const en = useContext(EnCtx);
+  const termEn = l => { const i = l.indexOf(':'); return i < 0 ? l : `${l.slice(0, i)}: ${en.t(l.slice(i + 1))}`; };
+  if (preview.kind === 'interpret') return <div className="lab-evidence">{preview.evidence.map((e, i) => <div key={i} className="lab-ev"><b>{ACTIONS[e.action] || e.action}{e.strength && ['boost', 'reduce'].includes(e.action) ? ` (${e.strength})` : ''}</b> for “{e.intent_span}”<p>{e.relation}</p><p className="lab-labels">{e.labels.map(l => <code key={l} lang="zh">{termEn(l)}</code>)}</p></div>)}</div>;
   if (preview.kind === 'new-category') return <div className="lab-table-wrap"><table className="lab-table"><thead><tr><th>Item</th><th>Text (KuaiRec)</th><th>Verdict</th><th>Quotation</th><th>Evidence check</th><th>Selected</th></tr></thead><tbody>
-    {preview.evidence.map(r => <tr key={r.item_id} className={r.selected ? 'sel' : ''}><td>{r.item_id}</td><td><span lang="zh">{r.title || r.caption}</span>{r.gloss_en && <small className="lab-gloss-inline">EN (MT): {[r.gloss_en.title, r.gloss_en.description].filter(Boolean).join(' · ')}</small>}</td><td>{r.verdict}</td><td>{r.quote ? <><q lang="zh">{r.quote}</q> <small>{r.field}{r.quote_from_translation ? ' (from translation)' : ''}{r.quote_verified ? ' · found' : ' · NOT FOUND'}</small></> : '-'}<small className="lab-reason">{r.reason}</small></td><td>{r.assessment ? (r.assessment.supports ? 'supports' : 'does not support') : '-'}<small className="lab-reason">{r.assessment?.reason}</small></td><td>{r.selected ? 'yes' : 'no'}</td></tr>)}</tbody></table></div>;
-  if (preview.kind === 'new-items') return <div className="lab-evidence">{preview.evidence.map(e => <div key={e.item_id} className="lab-ev"><b>{e.title}</b> → categories: {e.categories.length ? e.categories.map(c => <code key={c} lang="zh">{c}</code>) : 'none'}; tags: {e.tags.length ? e.tags.map(t => <code key={t} lang="zh">#{t}</code>) : 'none'}<p>{e.category_reason}</p>{e.new_categories.map(n => <p key={n.label}>New category <b>{n.label}</b>: {n.verdict}{n.quote ? <> · <q>{n.quote}</q></> : ''} · {n.selected ? 'selected' : 'not selected'}</p>)}</div>)}</div>;
+    {preview.evidence.map(r => <tr key={r.item_id} className={r.selected ? 'sel' : ''}><td>{r.item_id}</td><td>{!en.on && <span lang="zh">{r.title || r.caption}</span>}{r.gloss_en && <small className="lab-gloss-inline">EN (MT): {[r.gloss_en.title, r.gloss_en.description].filter(Boolean).join(' · ')}</small>}</td><td>{r.verdict}</td><td>{r.quote ? <>{en.on && CJK.test(r.quote) ? <i>exact quotation from the original text</i> : <q lang="zh">{r.quote}</q>} <small>{r.field}{r.quote_from_translation ? ' (from translation)' : ''}{r.quote_verified ? ' · found' : ' · NOT FOUND'}</small></> : '-'}<small className="lab-reason">{r.reason}</small></td><td>{r.assessment ? (r.assessment.supports ? 'supports' : 'does not support') : '-'}<small className="lab-reason">{r.assessment?.reason}</small></td><td>{r.selected ? 'yes' : 'no'}</td></tr>)}</tbody></table></div>;
+  if (preview.kind === 'new-items') return <div className="lab-evidence">{preview.evidence.map(e => <div key={e.item_id} className="lab-ev"><b>{e.title}</b> → categories: {e.categories.length ? e.categories.map(c => <code key={c} lang="zh">{en.t(c)}</code>) : 'none'}; tags: {e.tags.length ? e.tags.map(t => <code key={t} lang="zh">#{en.t(t)}</code>) : 'none'}<p>{e.category_reason}</p>{e.new_categories.map(n => <p key={n.label}>New category <b>{n.label}</b>: {n.verdict}{n.quote ? <> · <q>{n.quote}</q></> : ''} · {n.selected ? 'selected' : 'not selected'}</p>)}</div>)}</div>;
   return null;
 }
 
 function Review({preview, onApply, onDiscard, busy, auto}) {
+  const en = useContext(EnCtx);
   return <section className="lab-review" aria-label="Review" data-role="review">
     <p className="eyebrow">REVIEW · {preview.kind.toUpperCase()}</p>
-    <h3>{preview.summary}</h3>
+    <h3>{en.tx(preview.summary)}</h3>
     <div className="lab-blocks">
       <div><h4>1 · What came back</h4>
         {preview.proposal?.status && <p>Model status: <b>{preview.proposal.status}</b>{preview.proposal.reason ? ` · ${preview.proposal.reason}` : ''}</p>}
         <EvidenceRows preview={preview}/>
-        {preview.controls.length > 0 && <><h4>Controls that Apply would add</h4><ul className="lab-controls">{preview.controls.map(c => <li key={c.id} lang="zh">{c.text}</li>)}</ul></>}
-        {preview.affected.map((a, i) => <p key={i} className="help">{a.control}: {a.count} item(s) in the catalogue carry this label.</p>)}
+        {preview.controls.length > 0 && <><h4>Controls that Apply would add</h4><ul className="lab-controls">{preview.controls.map(c => <li key={c.id} lang="zh">{en.tx(c.text)}</li>)}</ul></>}
+        {preview.affected.map((a, i) => <p key={i} className="help">{en.tx(a.control)}: {a.count} item(s) in the catalogue carry this label.</p>)}
       </div>
       <div><h4>2 · What the application checked</h4><Checks checks={preview.checks}/>{preview.notes.map((n, i) => <p key={i} className="help">{n}</p>)}<Calls calls={preview.calls}/></div>
       <div><h4>3 · Your decision</h4>
@@ -124,16 +135,22 @@ function ProviderBar({status, api, onChange}) {
 }
 
 function LabelPicker({api, user, kind, value, onPick}) {
+  const en = useContext(EnCtx);
   const [q, setQ] = useState(''), [labels, setLabels] = useState([]);
   useEffect(() => { let live = true; api(`lab/labels?user_id=${user}&kind=${kind}&q=${encodeURIComponent(q)}&limit=60`).then(r => live && setLabels(r.labels)).catch(() => {}); return () => { live = false; }; }, [kind, q, user]);
   return <div className="lab-picker"><input value={q} onChange={e => setQ(e.target.value)} placeholder="Filter (Chinese or English)" data-role="label-filter"/>
-    <select size={7} value={value} onChange={e => onPick(e.target.value)} data-role="label-list">{labels.map(l => <option key={l.term_id} value={l.value} lang="zh" onClick={() => onPick(l.value)}>{l.value}{l.gloss_en ? ` · ${l.gloss_en}` : ''} · {l.item_count} items</option>)}</select></div>;
+    <select size={7} value={value} onChange={e => onPick(e.target.value)} data-role="label-list">{labels.map(l => <option key={l.term_id} value={l.value} lang="zh" onClick={() => onPick(l.value)}>{en.on ? (l.gloss_en || l.value) : `${l.value}${l.gloss_en ? ` · ${l.gloss_en}` : ''}`} · {l.item_count} items</option>)}</select></div>;
 }
 
 export function LabView({api, user, status, onStatus}) {
   const [tab, setTab] = useState('manual'), [state, setState] = useState(null), [preview, setPreview] = useState(null);
   const [side, setSide] = useState('after'), [busy, setBusy] = useState(false), [error, setError] = useState(''), [stage, setStage] = useState(null);
-  const [auto, setAuto] = useState(false);
+  const [auto, setAuto] = useState(false), [english, setEnglish] = useState(false), [glossMap, setGlossMap] = useState({});
+  useEffect(() => { if (user !== null) api(`lab/labels?user_id=${user}&limit=2000`).then(r => setGlossMap(Object.fromEntries(r.labels.filter(l => l.gloss_en).map(l => [l.value, l.gloss_en])))).catch(() => {}); }, [user]);
+  const enValue = useMemo(() => {
+    const t = v => (english && glossMap[v]) || v;
+    return {on: english, t, tx: s => english ? String(s ?? '').replace(/'([^']+)'/g, (_, v) => `'${t(v)}'`) : s};
+  }, [english, glossMap]);
   const [kind, setKind] = useState('category'), [value, setValue] = useState(''), [action, setAction] = useState('hide'), [strength, setStrength] = useState('standard');
   const [request, setRequest] = useState(''), [description, setDescription] = useState(''), [definition, setDefinition] = useState(null);
   const [catAction, setCatAction] = useState('only'), [scope, setScope] = useState(40);
@@ -157,11 +174,12 @@ export function LabView({api, user, status, onStatus}) {
   const reset = () => run('reset', () => api('lab/reset', {user_id: user}), s => { setState(s); setPreview(null); setDefinition(null); });
 
   const tabs = [['manual', '1 · Choose a category'], ['interpret', '2 · Say it your way'], ['category', '3 · New category'], ['items', '4 · New items']];
-  return <div className="lab">
+  return <EnCtx.Provider value={enValue}><div className="lab">
     <ProviderBar status={status} api={api} onChange={onStatus}/>
     <div className="lab-grid">
       <section className="lab-main">
         <div className="lab-tabs" role="tablist">{tabs.map(([k, label]) => <button key={k} role="tab" aria-selected={tab === k} className={tab === k ? 'active' : ''} onClick={() => { setTab(k); setError(''); }} data-tab={k}>{label}</button>)}
+          <label className="lab-auto"><input type="checkbox" checked={english} onChange={e => setEnglish(e.target.checked)} data-role="english-only"/> English only (machine translation)</label>
           <label className="lab-auto"><input type="checkbox" checked={auto} onChange={e => setAuto(e.target.checked)} data-role="auto-apply"/> Auto-apply</label></div>
 
         {tab === 'manual' && <form className="panel" onSubmit={e => { e.preventDefault(); run('manual', () => api('lab/manual', {user_id: user, kind, value, action, strength}), showPreview); }}>
@@ -190,7 +208,7 @@ export function LabView({api, user, status, onStatus}) {
             <label>Label<input value={definition.label} onChange={e => setDefinition({...definition, label: e.target.value})} data-role="definition-label"/></label>
             <label>Definition<textarea rows={4} value={definition.definition} onChange={e => setDefinition({...definition, definition: e.target.value})} data-role="definition-text"/></label>
             <p className="help">{definition.rationale}</p>
-            <ul className="lab-checks">{definition.evidence.map((ev, i) => <li key={i} className={ev.quote_verified ? 'ok' : 'bad'}>{ev.quote_verified ? '✓' : '✗'} item {ev.item_id}: <q lang="zh">{ev.quote}</q> ({ev.field}) · {ev.reason}</li>)}</ul>
+            <ul className="lab-checks">{definition.evidence.map((ev, i) => <li key={i} className={ev.quote_verified ? 'ok' : 'bad'}>{ev.quote_verified ? '✓' : '✗'} item {ev.item_id}: {english && CJK.test(ev.quote) ? <i>exact quotation from the original text</i> : <q lang="zh">{ev.quote}</q>} ({ev.field}) · {ev.reason}</li>)}</ul>
             <Calls calls={definition.calls}/>
             <label>When applied<select value={catAction} onChange={e => setCatAction(e.target.value)} data-role="category-action">{Object.entries(ACTIONS).map(([k, l]) => <option key={k} value={k}>{l}</option>)}</select></label>
             <button className="primary" disabled={busy || definition.status !== 'propose' || !definition.label || !definition.definition} data-role="classify">Approve the definition and classify <span>↗</span></button></form>}
@@ -207,7 +225,7 @@ export function LabView({api, user, status, onStatus}) {
         {preview && <Review preview={preview} busy={busy} auto={auto} onApply={() => apply()} onDiscard={() => setPreview(null)}/>}
 
         <section className="panel lab-applied" data-role="applied"><h4>Applied now</h4>
-          {state?.controls.length ? <ul className="lab-controls">{state.controls.map(c => <li key={c.id} lang="zh">{c.text} <small>({c.source})</small></li>)}</ul> : <p className="help">No control is applied. The feed is the trained recommender's ranking.</p>}
+          {state?.controls.length ? <ul className="lab-controls">{state.controls.map(c => <li key={c.id} lang="zh">{enValue.tx(c.text)} <small>({c.source})</small></li>)}</ul> : <p className="help">No control is applied. The feed is the trained recommender's ranking.</p>}
           {state && Object.values(state.custom).map(c => <p key={c.label} className="help"><b>{c.label}</b>: {c.members.length} member(s). {c.definition}</p>)}
           {state?.added.length > 0 && <p className="help">Added items: {state.added.map(a => `${a.item_id} ${a.title}`).join(' · ')}</p>}
           <div className="lab-buttons"><button className="secondary" disabled={busy || !state?.can_undo} onClick={undo} data-role="undo">Undo the last change</button><button className="text-button" disabled={busy} onClick={reset} data-role="lab-reset">Reset this user</button></div>
@@ -215,7 +233,7 @@ export function LabView({api, user, status, onStatus}) {
       </section>
       <FeedColumn state={state} preview={preview} side={side} setSide={setSide}/>
     </div>
-  </div>;
+  </div></EnCtx.Provider>;
 }
 
 function Table({table}) {

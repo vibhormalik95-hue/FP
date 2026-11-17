@@ -41,6 +41,7 @@ from playwright.sync_api import sync_playwright
 
 sys.path.insert(0, str(Path(__file__).parent))
 import demo_script  # noqa: E402
+import demo_flow  # noqa: E402
 
 pyautogui.PAUSE = 0
 pyautogui.FAILSAFE = True
@@ -407,7 +408,7 @@ def probe_duration(path):
 def static_lines(extra=()):
     """Every literal narration sentence of demo_script, found by parsing it, so it can be synthesized before capture."""
     import ast
-    tree = ast.parse((Path(__file__).parent / "demo_script.py").read_text(encoding="utf-8"))
+    tree = ast.Module(body=[n for f in ("demo_script.py", "demo_flow.py") for n in ast.parse((Path(__file__).parent / f).read_text(encoding="utf-8")).body], type_ignores=[])
     texts = set(extra) | set(demo_script.WAIT_LINES_ALL) | {demo_script.FILLER}
     for node in ast.walk(tree):
         name = node.func.attr if isinstance(getattr(node, "func", None), ast.Attribute) else getattr(getattr(node, "func", None), "id", None)
@@ -454,8 +455,8 @@ def main():
         raise SystemExit("OPENAI_API_KEY is needed for the take (it is pasted into the masked field).")
     examples = json.loads((REPO / "tools/demo_examples.json").read_text(encoding="utf-8"))
     args.manual_value = examples["manual"][1]["value"]
-    args.interpret = [{**examples["interpret"][2], "say": "I write that I just ate, and do not want to be tempted by food. No category name."},
-                      {**examples["interpret"][3], "say": "In Chinese: there has been too much negative news lately; give me a few quiet days."}]
+    args.interpret = [{**examples["interpret"][2], "say": "I just ate, and do not want to be tempted by food."},
+                      {**examples["interpret"][4], "say": "My cat is at the vet, and I cannot bear to see animals."}]
     args.new_category = examples["new_category"][0]["description"]
     args.new_item = examples["new_items"][0]["items"][0]
     server = subprocess.Popen([args.app_python, "scripts/run_app.py", "--port", "8765", "--provider", "mock"],
@@ -510,7 +511,7 @@ def main():
             if args.test_clip:
                 demo_script.test_clip(d, page, args)
             else:
-                demo_script.run_demo(d, page, args, events, args.model, results_lines(REPO / args.results))
+                demo_flow.run_demo(d, page, args, events, args.model, results_lines(REPO / args.results))
             d.wait_speech(); time.sleep(1.0)
             cap.stop(); cap = None
             timeline = d.timeline
