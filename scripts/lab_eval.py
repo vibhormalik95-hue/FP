@@ -54,6 +54,18 @@ def load_set(path):
     return data, hashlib.sha256(path.read_bytes()).hexdigest()
 
 
+def git_commit():
+    """Short commit of the code that produces predictions, with '+dirty' when it has local changes."""
+    import subprocess
+    try:
+        head = subprocess.run(["git", "rev-parse", "--short", "HEAD"], cwd=ROOT, capture_output=True, text=True).stdout.strip()
+        dirty = subprocess.run(["git", "status", "--porcelain", "--", "feedctrl", "scripts/lab_eval.py"], cwd=ROOT,
+                               capture_output=True, text=True).stdout.strip()
+        return head + ("+dirty" if dirty else "")
+    except OSError:
+        return "unknown"
+
+
 # ------------------------------------------------------------------ run
 def cmd_run(args):
     data, set_sha = load_set(args.set)
@@ -72,6 +84,7 @@ def cmd_run(args):
     provider = build_provider(args.provider, model=args.model, effort=args.effort, timeout=args.timeout)
     ledger = Ledger(budget_usd=args.budget_usd)
     meta = {"name": args.name, "provider": args.provider, "model": args.model, "effort": args.effort,
+            "code_commit": git_commit(),
             "set_sha256": set_sha, "started_utc": datetime.now(timezone.utc).isoformat(timespec="seconds")}
     (out / f"{args.name}.meta.json").write_text(json.dumps(meta, indent=2), encoding="utf-8")
     with pred_path.open("a", encoding="utf-8") as handle:
@@ -199,6 +212,8 @@ def cmd_score(args):
     run = ROOT / args.run
     cases = {c["id"]: c for c in data["cases"]}
     preds_by_model, rows_by_model, calls_by_model, meta = {}, {}, {}, {}
+    prov_path = run / "PROVENANCE.json"
+    provenance = json.loads(prov_path.read_text(encoding="utf-8")) if prov_path.is_file() else {}
     for path in sorted(run.glob("*.jsonl")):
         name = path.stem
         preds = {}
@@ -207,6 +222,9 @@ def cmd_score(args):
             preds[r["case_id"]] = r
         missing = [cid for cid in cases if cid not in preds]
         meta[name] = {**json.loads((run / f"{name}.meta.json").read_text(encoding="utf-8")), "missing_cases": missing}
+        if not meta[name].get("code_commit") and provenance.get(name):
+            meta[name]["code_commit"] = provenance[name]["code_commit"]
+            meta[name]["code_commit_source"] = provenance[name]["source"]
         rows = []
         for cid, case in cases.items():
             p = preds.get(cid, {"error": "not run"})
@@ -255,6 +273,9 @@ def cmd_score(args):
         f.append(a)
 
     names = sorted(rows_by_model)
+    scoring_commit = git_commit()
+    provenance_line = ("Predictions produced at commit: " + "; ".join(f"{n} {meta[n].get('code_commit', 'unknown')}" for n in names)
+                       + f". Scored at commit {scoring_commit}.")
     pct = lambda v: None if v is None else f"{100 * v:.0f}%"
     tables = [
         {"title": "Nonliteral request to existing KuaiRec labels (NL, %d cases)" % summaries[names[0]]["nl_cases"],
@@ -284,9 +305,13 @@ def cmd_score(args):
          "rows": [[n, s["calls"], s["call_errors"], s["errors"], s["latency_median_s"], s["latency_p90_s"], s["cost_usd"]] for n, s in summaries.items()],
          "note": "Cost: list price x tokens (OpenAI, Anthropic), as reported (Claude CLI), zero for local models (electricity not counted)."},
     ]
+    for t in tables:   # every table names the commits that produced it
+        t["note"] = (t.get("note", "") + " " + provenance_line).strip()
     summary = {"title": "KuaiRec language controls: local vs frontier models on the frozen reviewed set",
                "status_note": (f"Set {data.get('version')} (SHA-256 {set_sha[:16]}…), reviewed by {data['frozen']['reviewed_by']} "
-                               f"at {data['frozen']['reviewed_utc']}. Review CSV SHA-256 {data['frozen']['review_csv_sha256'][:16]}…"),
+                               f"at {data['frozen']['reviewed_utc']}. Review CSV SHA-256 {data['frozen']['review_csv_sha256'][:16]}…. "
+                               f"{provenance_line}"),
+               "scoring_commit": scoring_commit,
                "set_sha256": set_sha, "models": meta, "summaries": summaries, "paired_tests": tests,
                "downstream": {"users": sample, "cases": effects}, "tables": tables,
                "scored_utc": datetime.now(timezone.utc).isoformat(timespec="seconds")}
