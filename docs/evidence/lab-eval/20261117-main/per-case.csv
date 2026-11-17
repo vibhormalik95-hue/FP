@@ -119,3 +119,83 @@ gpt-5,True,,AB11,,,False,,AB,,,,zh,,,,,,,,,,,,,,no_match,True,,
 gpt-5,True,,AB12,,,False,,AB,,,,en,,,,,,,,,,,,,,unsupported,True,,
 gpt-5,False,,AB13,,,True,,AB,,,,zh,,,,,,,,,,,,,,propose,False,,
 gpt-5,False,,AB14,,,True,,AB,,,,zh,,,,,,,,,,,,,,propose,False,,
+llama3.1_8b,,False,NL01,,False,,,NL,0.0,0.0,0.0,en,,,,,"[""category:宠物狗""]",False,,,,,,,[],ambiguous,,,[]
+llama3.1_8b,,False,NL02,The model call 'interpret' failed: The local model hit the 2048-token output cap without finishing its reply.,False,,,NL,0.0,0.0,0.0,en,,,,,"[""category:篮球""]",False,,,,,,,[],,,,[]
+llama3.1_8b,,False,NL03,,False,,,NL,0.0,0.0,0.0,en,,,,,"[""category:喜剧"", ""category:喜剧段子"", ""category:搞笑配音"", ""tag:搞笑""]",False,,,,,,,[],ambiguous,,,[]
+llama3.1_8b,,True,NL04,,False,,,NL,0.8,0.6666666666666666,1.0,en,,,,,[],True,,,,,,,"[""category:军事"", ""category:军人生活"", ""category:农业与农民""]",propose,,,"[""category:农业与农民""]"
+llama3.1_8b,,False,NL05,,False,,,NL,0.0,0.0,0.0,en,,,,,"[""category:彩妆""]",False,,,,,,,[],ambiguous,,,[]
+llama3.1_8b,,False,NL06,,False,,,NL,0.0,0.0,0.0,en,,,,,"[""category:旅游"", ""category:旅游种草""]",False,,,,,,,[],ambiguous,,,[]
+llama3.1_8b,,False,NL07,,False,,,NL,0.0,0.0,0.0,en,,,,,"[""category:0至3岁萌宝"", ""category:晒娃""]",False,,,,,,,[],ambiguous,,,[]
+llama3.1_8b,,False,NL08,,False,,,NL,0.0,0.0,0.0,en,,,,,"[""category:汽车""]",False,,,,,,,[],ambiguous,,,[]
+llama3.1_8b,,False,NL09,,False,,,NL,0.0,0.0,0.0,en,,,,,"[""category:保健养生"", ""category:健康""]",False,,,,,,,[],ambiguous,,,[]
+llama3.1_8b,,False,NL10,,False,,,NL,0.0,0.0,0.0,en,,,,,"[""category:亲密关系"", ""category:情感关系""]",False,,,,,,,[],no_match,,,[]
+llama3.1_8b,,False,NL11,,False,,,NL,0.0,0.0,0.0,zh,,,,,"[""category:三农"", ""category:农业与农民""]",False,,,,,,,[],ambiguous,,,[]
+llama3.1_8b,,False,NL12,,False,,,NL,0.0,0.0,0.0,zh,,,,,"[""category:娱乐八卦"", ""category:明星八卦""]",False,,,,,,,[],ambiguous,,,[]
+llama3.1_8b,,False,NL13,,False,,,NL,0.0,0.0,0.0,zh,,,,,"[""category:广场舞""]",False,,,,,,,[],ambiguous,,,[]
+llama3.1_8b,,False,NL14,,False,,,NL,0.0,0.0,0.0,zh,,,,,"[""tag:高考""]",False,,,,,,,[],ambiguous,,,[]
+llama3.1_8b,,False,NL15,The model call 'interpret' failed: The local model hit the 2048-token output cap without finishing its reply.,False,,,NL,0.0,0.0,0.0,zh,,,,,"[""category:二次元""]",False,,,,,,,[],,,,[]
+llama3.1_8b,,False,NL16,,False,,,NL,0.0,0.0,0.0,zh,,,,,"[""category:灾害事故""]",False,,,,,,,[],ambiguous,,,[]
+llama3.1_8b,,False,NL17,,False,,,NL,0.0,0.0,0.0,zh,,,,,"[""category:穿搭""]",False,,,,,,,[],ambiguous,,,[]
+llama3.1_8b,,False,NL18,,False,,,NL,0.0,0.0,0.0,zh,,,,,"[""category:音乐演唱""]",False,,,,,,,[],ambiguous,,,[]
+llama3.1_8b,,False,NL19,,False,,,NL,0.0,0.0,0.0,zh,,,,,"[""category:健身"", ""category:燃脂训练""]",False,,,,,,,[],ambiguous,,,[]
+llama3.1_8b,,False,NL20,,False,,,NL,0.0,0.0,0.0,zh,,,,,"[""category:书法"", ""category:软笔""]",False,,,,,,,[],ambiguous,,,[]
+llama3.1_8b,,,NC01,The model call 'classify' failed: The local model hit the 2048-token output cap without finishing its reply.,False,,[],NC,,,,en,0.0,0.0,0.0,"[543, 557, 622, 777, 914, 945, 1076, 3797, 3810, 3921, 4068, 5853, 7157, 8319, 8937]",,,0,0.0,0.0,0.0,15,0,,,,0,
+llama3.1_8b,,,NC02,,False,,[6812],NC,,,,en,0.6153846153846153,0.8888888888888888,0.47058823529411764,"[203, 745, 873, 4449, 5352, 5466, 7100, 8518, 8806]",,,20,0.5555555555555556,0.40540540540540543,0.8823529411764706,17,9,,,,28,
+llama3.1_8b,,,NC03,The model call 'classify' failed: The local model hit the 2048-token output cap without finishing its reply.,False,,[],NC,,,,en,0.0,0.0,0.0,"[562, 858, 2461, 2497, 3840, 3948, 3966, 4019, 5446, 5915, 7305, 8523, 8612]",,,0,0.0,0.0,0.0,13,0,,,,0,
+llama3.1_8b,,,NC04,,False,,[2240],NC,,,,zh,0.46153846153846156,0.8571428571428571,0.3157894736842105,"[557, 2159, 2403, 2527, 2766, 2871, 3913, 3945, 3970, 3999, 4124, 4365, 8977]",,,31,0.47058823529411764,0.375,0.631578947368421,19,7,,,,12,
+llama3.1_8b,,,NC05,The model call 'classify' failed: The local model hit the 2048-token output cap without finishing its reply.,False,,[],NC,,,,zh,0.0,0.0,0.0,"[183, 701, 721, 731, 849, 1002, 1076, 1161, 2378, 2430, 3857, 4129, 6945, 8212, 8479, 8819, 10260]",,,0,0.0,0.0,0.0,17,0,,,,0,
+llama3.1_8b,,,NC06,The model call 'classify' failed: The local model hit the 2048-token output cap without finishing its reply.,False,,[],NC,,,,zh,0.0,0.0,0.0,"[561, 904, 1161, 2439, 2473, 2489, 4080, 4124, 4554, 5684, 5898, 7245, 7354, 8602, 8793, 10000]",,,0,0.0,0.0,0.0,16,0,,,,0,
+llama3.1_8b,True,,AB01,,,False,,AB,,,,en,,,,,,,,,,,,,,ambiguous,True,,
+llama3.1_8b,False,,AB02,The model call 'interpret' failed: The local model hit the 2048-token output cap without finishing its reply.,,False,,AB,,,,zh,,,,,,,,,,,,,,,False,,
+llama3.1_8b,True,,AB03,,,False,,AB,,,,en,,,,,,,,,,,,,,no_match,False,,
+llama3.1_8b,True,,AB04,,,False,,AB,,,,zh,,,,,,,,,,,,,,ambiguous,True,,
+llama3.1_8b,True,,AB05,,,False,,AB,,,,en,,,,,,,,,,,,,,ambiguous,False,,
+llama3.1_8b,True,,AB06,,,False,,AB,,,,zh,,,,,,,,,,,,,,ambiguous,False,,
+llama3.1_8b,True,,AB07,,,False,,AB,,,,en,,,,,,,,,,,,,,ambiguous,False,,
+llama3.1_8b,True,,AB08,,,False,,AB,,,,zh,,,,,,,,,,,,,,ambiguous,False,,
+llama3.1_8b,False,,AB09,The model call 'interpret' failed: Could not reach http://127.0.0.1:11434/v1: Request timed out.,,False,,AB,,,,en,,,,,,,,,,,,,,,False,,
+llama3.1_8b,True,,AB10,,,False,,AB,,,,en,,,,,,,,,,,,,,ambiguous,False,,
+llama3.1_8b,False,,AB11,The model call 'interpret' failed: Could not reach http://127.0.0.1:11434/v1: Request timed out.,,False,,AB,,,,zh,,,,,,,,,,,,,,,False,,
+llama3.1_8b,True,,AB12,,,False,,AB,,,,en,,,,,,,,,,,,,,ambiguous,True,,
+llama3.1_8b,True,,AB13,,,False,,AB,,,,zh,,,,,,,,,,,,,,ambiguous,True,,
+llama3.1_8b,True,,AB14,,,False,,AB,,,,zh,,,,,,,,,,,,,,ambiguous,True,,
+qwen2.5-coder_7b-instruct,,False,NL01,,False,,,NL,0.0,0.0,0.0,en,,,,,"[""category:宠物狗""]",False,,,,,,,[],unsupported,,,[]
+qwen2.5-coder_7b-instruct,,False,NL02,,False,,,NL,0.0,0.0,0.0,en,,,,,"[""category:篮球""]",False,,,,,,,[],no_match,,,[]
+qwen2.5-coder_7b-instruct,,False,NL03,,False,,,NL,0.0,0.0,0.0,en,,,,,"[""category:喜剧"", ""category:喜剧段子"", ""category:搞笑配音"", ""tag:搞笑""]",False,,,,,,,[],unsupported,,,[]
+qwen2.5-coder_7b-instruct,,False,NL04,,False,,,NL,0.0,0.0,0.0,en,,,,,"[""category:军事"", ""category:军人生活""]",False,,,,,,,[],no_match,,,[]
+qwen2.5-coder_7b-instruct,,False,NL05,,False,,,NL,0.0,0.0,0.0,en,,,,,"[""category:彩妆""]",False,,,,,,,[],no_match,,,[]
+qwen2.5-coder_7b-instruct,,False,NL06,,False,,,NL,0.0,0.0,0.0,en,,,,,"[""category:旅游"", ""category:旅游种草""]",False,,,,,,,[],no_match,,,[]
+qwen2.5-coder_7b-instruct,,False,NL07,,False,,,NL,0.0,0.0,0.0,en,,,,,"[""category:0至3岁萌宝"", ""category:晒娃""]",False,,,,,,,[],unsupported,,,[]
+qwen2.5-coder_7b-instruct,,False,NL08,,False,,,NL,0.0,0.0,0.0,en,,,,,"[""category:汽车""]",False,,,,,,,[],unsupported,,,[]
+qwen2.5-coder_7b-instruct,,False,NL09,,False,,,NL,0.0,0.0,0.0,en,,,,,"[""category:保健养生"", ""category:健康""]",False,,,,,,,[],no_match,,,[]
+qwen2.5-coder_7b-instruct,,False,NL10,,False,,,NL,0.0,0.0,0.0,en,,,,,"[""category:亲密关系"", ""category:情感关系""]",False,,,,,,,[],no_match,,,[]
+qwen2.5-coder_7b-instruct,,False,NL11,,False,,,NL,0.0,0.0,0.0,zh,,,,,"[""category:三农"", ""category:农业与农民""]",False,,,,,,,[],unsupported,,,[]
+qwen2.5-coder_7b-instruct,,False,NL12,,False,,,NL,0.0,0.0,0.0,zh,,,,,"[""category:娱乐八卦"", ""category:明星八卦""]",False,,,,,,,[],no_match,,,[]
+qwen2.5-coder_7b-instruct,,False,NL13,,False,,,NL,0.0,0.0,0.0,zh,,,,,"[""category:广场舞""]",False,,,,,,,[],unsupported,,,[]
+qwen2.5-coder_7b-instruct,,False,NL14,,False,,,NL,0.0,0.0,0.0,zh,,,,,"[""tag:高考""]",False,,,,,,,[],unsupported,,,[]
+qwen2.5-coder_7b-instruct,,False,NL15,,False,,,NL,0.0,0.0,0.0,zh,,,,,"[""category:二次元""]",False,,,,,,,[],unsupported,,,[]
+qwen2.5-coder_7b-instruct,,False,NL16,,False,,,NL,0.0,0.0,0.0,zh,,,,,"[""category:灾害事故""]",False,,,,,,,[],unsupported,,,[]
+qwen2.5-coder_7b-instruct,,False,NL17,,False,,,NL,0.0,0.0,0.0,zh,,,,,"[""category:穿搭""]",False,,,,,,,[],no_match,,,[]
+qwen2.5-coder_7b-instruct,,False,NL18,,False,,,NL,0.0,0.0,0.0,zh,,,,,"[""category:音乐演唱""]",False,,,,,,,[],unsupported,,,[]
+qwen2.5-coder_7b-instruct,,False,NL19,,False,,,NL,0.0,0.0,0.0,zh,,,,,"[""category:健身"", ""category:燃脂训练""]",False,,,,,,,[],no_match,,,[]
+qwen2.5-coder_7b-instruct,,False,NL20,,False,,,NL,0.0,0.0,0.0,zh,,,,,"[""category:书法"", ""category:软笔""]",False,,,,,,,[],no_match,,,[]
+qwen2.5-coder_7b-instruct,,,NC01,,False,,[833],NC,,,,en,0.47619047619047616,0.8333333333333334,0.3333333333333333,"[543, 622, 777, 914, 945, 1076, 3797, 4068, 7157, 8319]",,,0,0.56,0.7,0.4666666666666667,15,6,,,,115,
+qwen2.5-coder_7b-instruct,,,NC02,,False,,[],NC,,,,en,0.7857142857142858,1.0,0.6470588235294118,"[518, 745, 5466, 7100, 8518, 8806]",,,1,0.8666666666666666,1.0,0.7647058823529411,17,11,,,,137,
+qwen2.5-coder_7b-instruct,,,NC03,,False,,[],NC,,,,en,0.14285714285714288,1.0,0.07692307692307693,"[562, 858, 2461, 2497, 3840, 3948, 3966, 4019, 5446, 5915, 7305, 8612]",,,0,0.631578947368421,1.0,0.46153846153846156,13,1,,,,138,
+qwen2.5-coder_7b-instruct,,,NC04,,False,,[],NC,,,,zh,0.4799999999999999,1.0,0.3157894736842105,"[557, 635, 2403, 2527, 2871, 3913, 3945, 3970, 3999, 4124, 4365, 5898, 8977]",,,12,0.7272727272727273,0.8571428571428571,0.631578947368421,19,6,,,,100,
+qwen2.5-coder_7b-instruct,,,NC05,,False,,[],NC,,,,zh,0.45454545454545453,1.0,0.29411764705882354,"[183, 721, 1002, 1161, 2430, 3857, 4129, 6945, 8212, 8479, 8819, 10260]",,,0,0.5384615384615384,0.7777777777777778,0.4117647058823529,17,5,,,,141,
+qwen2.5-coder_7b-instruct,,,NC06,,False,,[],NC,,,,zh,0.47619047619047616,1.0,0.3125,"[561, 904, 1161, 2439, 2473, 2489, 4080, 4554, 7354, 8602, 10000]",,,0,0.39999999999999997,0.5555555555555556,0.3125,16,5,,,,130,
+qwen2.5-coder_7b-instruct,True,,AB01,,,False,,AB,,,,en,,,,,,,,,,,,,,unsupported,False,,
+qwen2.5-coder_7b-instruct,True,,AB02,,,False,,AB,,,,zh,,,,,,,,,,,,,,unsupported,False,,
+qwen2.5-coder_7b-instruct,False,,AB03,The model call 'interpret' failed: The local model hit the 2048-token output cap without finishing its reply.,,False,,AB,,,,en,,,,,,,,,,,,,,,False,,
+qwen2.5-coder_7b-instruct,True,,AB04,,,False,,AB,,,,zh,,,,,,,,,,,,,,unsupported,False,,
+qwen2.5-coder_7b-instruct,False,,AB05,The model call 'interpret' failed: The local model hit the 2048-token output cap without finishing its reply.,,False,,AB,,,,en,,,,,,,,,,,,,,,False,,
+qwen2.5-coder_7b-instruct,True,,AB06,,,False,,AB,,,,zh,,,,,,,,,,,,,,unsupported,True,,
+qwen2.5-coder_7b-instruct,False,,AB07,The model call 'interpret' failed: The local model hit the 2048-token output cap without finishing its reply.,,False,,AB,,,,en,,,,,,,,,,,,,,,False,,
+qwen2.5-coder_7b-instruct,False,,AB08,The model call 'interpret' failed: The local model hit the 2048-token output cap without finishing its reply.,,False,,AB,,,,zh,,,,,,,,,,,,,,,False,,
+qwen2.5-coder_7b-instruct,True,,AB09,,,False,,AB,,,,en,,,,,,,,,,,,,,no_match,False,,
+qwen2.5-coder_7b-instruct,True,,AB10,,,False,,AB,,,,en,,,,,,,,,,,,,,unsupported,False,,
+qwen2.5-coder_7b-instruct,True,,AB11,,,False,,AB,,,,zh,,,,,,,,,,,,,,unsupported,False,,
+qwen2.5-coder_7b-instruct,True,,AB12,,,False,,AB,,,,en,,,,,,,,,,,,,,no_match,True,,
+qwen2.5-coder_7b-instruct,True,,AB13,,,False,,AB,,,,zh,,,,,,,,,,,,,,no_match,True,,
+qwen2.5-coder_7b-instruct,False,,AB14,The model call 'interpret' failed: The local model hit the 2048-token output cap without finishing its reply.,,False,,AB,,,,zh,,,,,,,,,,,,,,,False,,

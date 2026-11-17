@@ -1,22 +1,37 @@
 [
  {
   "selector": "[data-role='results'] .lab-table-wrap >> nth=0",
-  "say": "The first table is the nonliteral requests. Exact means the right action, every required label, and nothing outside the reviewed acceptable set. Claude Sonnet five point five 17 of 20; GPT five 17 of 20; GPT five mini 16 of 20."
+  "say": "The first table is the nonliteral requests. Exact means the right action, every required label, and nothing outside the reviewed acceptable set. Claude Sonnet five point five 17 of 20; GPT five 17 of 20; GPT five mini 16 of 20; Llama three point one eight B 0 of 20; Qwen two point five coder seven B 0 of 20.",
+  "hold": 3.0
  },
  {
   "selector": "[data-role='results'] .lab-table-wrap >> nth=1",
-  "say": "Next, cases where the model should not change the feed. Correct abstentions: Claude Sonnet five point five 12 of 14; GPT five 10 of 14; GPT five mini 7 of 14."
+  "say": "Next, cases where the model should not change the feed. Correct abstentions: Claude Sonnet five point five 12 of 14; GPT five 10 of 14; GPT five mini 7 of 14; Llama three point one eight B 11 of 14; Qwen two point five coder seven B 9 of 14.",
+  "hold": 3.0
  },
  {
   "selector": "[data-role='results'] .lab-table-wrap >> nth=2",
-  "say": "For new categories, member F1 on the shared pool of one hundred fifty KuaiRec items: Claude Sonnet five point five 0.87; GPT five 0.92; GPT five mini 0.94."
+  "say": "For new categories, member F1 on the shared pool of one hundred fifty KuaiRec items: Claude Sonnet five point five 0.87; GPT five 0.92; GPT five mini 0.94; Llama three point one eight B 0.18; Qwen two point five coder seven B 0.47.",
+  "hold": 3.0
  },
  {
   "selector": "[data-role='results'] .lab-table-wrap >> nth=3",
-  "say": "Downstream, on the trained ranker, the controls raise the share of target videos in the top ten from almost zero toward the level of the reviewed control. The table and the non-inferiority test below give the exact numbers, including where the relative ten percent margin is not met."
+  "say": "Downstream, on the trained ranker, the share of target videos in the top ten goes from 0.01 with no control to 0.53 with the reviewed control; the models reach 0.56, 0.55, 0.52, 0.02, 0.06. Hit rate at one stays within the absolute margin; the relative ten percent margin is not met, because the base rate is so low.",
+  "hold": 3.0
+ },
+ {
+  "selector": "[data-role='results'] .lab-table-wrap >> nth=0",
+  "hold": 3.5,
+  "say": "Local versus frontier: the best local model, Llama three point one eight B, matches 0 of 20 nonliteral requests exactly, against 17 for Claude Sonnet five point five, and abstains correctly on 11 of 14 against 12. Local calls cost nothing but take 126 seconds each on this laptop."
+ },
+ {
+  "selector": "[data-role='results'] .panel >> nth=1",
+  "hold": 3.5,
+  "say": "Finally, the old one-hundred-case parser bank, re-used and labelled as re-use, scored strictly: Llama three point one eight B 79; Qwen two point five coder seven B 74; GPT five mini 60; GPT five 60 out of one hundred. None reaches the eighty-five percent target."
  },
  {
   "selector": "[data-role='results'] .lab-table-wrap >> nth=-1",
-  "say": "The last table lists latency, cost and every failure of every model."
+  "say": "The last table lists latency, cost and every failure of every model.",
+  "hold": 3.0
  }
 ]
