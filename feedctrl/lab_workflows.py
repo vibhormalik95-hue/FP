@@ -306,16 +306,24 @@ def _labels(lab, user_id, kind):
     return {t["value"] for t in lab.vocabulary(lab.user(user_id)) if t["kind"] == kind}
 
 
-def manual_preview(lab, user_id, kind, value, action, strength="standard"):
+def manual_preview(lab, user_id, kind, value, action, strength="standard", values=None):
+    """One or several existing labels of one kind, one action. No model is called."""
     if kind not in ("feature", "category", "tag", "custom"):
         raise LabError("Choose a KuaiRec feature, a KuaiRec category, a topic tag or a new category.")
-    if value not in _labels(lab, user_id, kind):
-        raise LabError(f"'{value}' is not an existing label of that kind.")
+    chosen = [v for v in (values or [value]) if v]
+    if not chosen or len(chosen) > 20:
+        raise LabError("Choose between one and twenty labels.")
+    known = _labels(lab, user_id, kind)
+    unknown = [v for v in chosen if v not in known]
+    if unknown:
+        raise LabError(f"'{unknown[0]}' is not an existing label of that kind.")
     view = lab.view(user_id)
-    control = make_control("manual", action, {"kind": kind, "value": value}, strength)
-    return lab.new_preview(user_id, "manual", f"Manual control: {control['text']}", controls=[control],
-                           checks=[{"check": f"'{value}' exists", "ok": True}],
-                           notes=["No model was called. The person chose the label and the action."],
+    group = secrets.token_hex(4)   # labels chosen together act together ("only" keeps any of them)
+    controls = [make_control("manual", action, {"kind": kind, "value": v}, strength, group=group) for v in dict.fromkeys(chosen)]
+    summary = controls[0]["text"] if len(controls) == 1 else f"{len(controls)} labels: " + "; ".join(c["text"] for c in controls)
+    return lab.new_preview(user_id, "manual", f"Manual control: {summary}", controls=controls,
+                           checks=[{"check": f"'{v}' exists", "ok": True} for v in dict.fromkeys(chosen)],
+                           notes=["No model was called. The person chose the labels and the action."],
                            base_version=view["version"])
 
 

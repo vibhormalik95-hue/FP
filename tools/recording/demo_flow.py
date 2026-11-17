@@ -28,9 +28,6 @@ def run_demo(d, page, cfg, events, model_label, results_line):
     d.click("[data-view='lab']", "Now the language controls.")
     page.wait_for_selector(".lab-card")
     d.point("[data-role='english-only']", "The display is in English: machine-translated from the original Chinese, and labelled as such. One click shows the original.")
-    applied = api("lab/state?user_id=14")["controls"]
-    if applied:
-        d.say("For this recording, KuaiRec's news and incident categories are hidden for this user. That control is listed under Applied now.")
     d.say("On the right: this user's top ten from the trained model.")
     d.hold(3.0)
     d.choose("[data-role='provider-kind']", "Provider: the OpenAI API.", "Op")
@@ -48,28 +45,44 @@ def run_demo(d, page, cfg, events, model_label, results_line):
     if "memory" not in status.get("key_source", ""):
         raise RuntimeError("The page did not report the pasted key as held in memory; the take is aborted.")
     d.say("The status line confirms it: key typed into this page, memory only.")
-    # 1. Manual
+    # 1. Manual: hide the news and incident categories, kept applied for the rest of the take
     d.click("[data-tab='manual']", "Workflow one, the reference: a manual category control. No model.")
-    d.click("[data-role='label-filter']", "I search the KuaiRec categories.")
-    say_while_typing(d, "dance", "Labels can be searched in English.")
+    d.say("This user's feed is full of news and incident stories, so first I hide those categories.")
+    for word, picks in (("incident", ("社会事件", "法制事件")), ("news", ("社会新闻", "民生资讯")), ("disaster", ("灾害事故",))):
+        d.click("[data-role='label-filter']", f"I search for {word}.")
+        d.page.fill("[data-role='label-filter']", "")
+        say_while_typing(d, word, "Labels can be searched in English.")
+        time.sleep(0.8)
+        for value in picks:
+            d.click(f"[data-role='label-list'] option[value='{value}']", f"I pick {gloss.get(value, 'it').rstrip('.')}.")
+    d.choose("[data-role='manual-action']", "The action is Hide.", "Hi")
+    b = done_count(page)
+    d.click("[data-role='manual-preview']", "Preview. A preview never changes the feed.")
+    wait_done(d, b, "manual", "[data-role='manual-preview']")
+    ch = page.evaluate("window.labLastPreview")["changes"]
+    d.say(f"Five hide controls: {ch['eligible_before'] - ch['eligible_after']} videos would leave the feed, and {len(ch['left'])} leave the top ten.")
+    d.click(".lab-feed .view-tabs button:has-text('Before')", "Before")
+    d.click(".lab-feed .view-tabs button:has-text('After')", "and after.")
+    d.click("[data-role='apply']", "Apply changes exactly the reviewed set. These stay applied for the rest of this video.")
+    page.wait_for_function("!document.querySelector('[data-role=review]')")
+    d.say("The news and incident categories are now listed under Applied now.")
+    # A second manual control, applied and then undone, to show Undo
+    d.click("[data-role='label-filter']", "Now one more: dance.")
+    d.page.fill("[data-role='label-filter']", "")
+    say_while_typing(d, "dance", "I search for dance.")
     time.sleep(0.8)
     d.click(f"[data-role='label-list'] option[value='{cfg.manual_value}']", "I pick Dance.")
     d.choose("[data-role='manual-action']", "Show more,", "Show m")
     d.choose("[data-role='lab-strength']", "strong.", "str")
     b = done_count(page)
-    d.click("[data-role='manual-preview']", "Preview. A preview never changes the feed.")
+    d.click("[data-role='manual-preview']", "Preview.")
     wait_done(d, b, "manual", "[data-role='manual-preview']")
     ch = page.evaluate("window.labLastPreview")["changes"]
-    d.say(f"{len(ch['entered'])} videos would enter the top ten.")
-    d.click(".lab-feed .view-tabs button:has-text('Before')", "Before")
-    d.click(".lab-feed .view-tabs button:has-text('After')", "and after.")
-    d.hold(2.0)
-    d.click("[data-role='apply']", "Apply changes exactly the reviewed set.")
+    d.say(f"{len(ch['entered'])} dance videos would enter the top ten.")
+    d.click("[data-role='apply']", "Apply.")
     page.wait_for_function("!document.querySelector('[data-role=review]')")
-    d.say("Applied. Each card names the control that moved it.")
-    d.hold(3.0)
-    d.click("[data-role='undo']", "Undo restores the previous feed exactly.")
-    d.hold(2.5)
+    d.say("Each card names the control that moved it.")
+    d.click("[data-role='undo']", "Undo removes the dance boost and restores the previous feed exactly; the news hide stays.")
     # 2. Nonliteral requests in two domains
     for n, ex in enumerate(cfg.interpret):
         d.click("[data-tab='interpret']", "Workflow two: a request in my own words, mapped to existing categories and tags." if n == 0
@@ -147,11 +160,16 @@ def run_demo(d, page, cfg, events, model_label, results_line):
     # Auto-apply
     d.click("[data-tab='manual']", "Last control: auto-apply.")
     d.click("[data-role='auto-apply']", "With it on, a preview is applied as soon as it arrives.")
+    d.click("[data-role='label-filter']", "I pick Dance again.")
+    d.page.fill("[data-role='label-filter']", "")
+    say_while_typing(d, "dance", "Dance.")
+    time.sleep(0.8)
+    d.click(f"[data-role='label-list'] option[value='{cfg.manual_value}']", "Dance.")
     b = done_count(page)
     d.click("[data-role='manual-preview']", "Preview,")
     wait_done(d, b, "manual", "[data-role='manual-preview']")
     d.say("and it is already applied.")
-    d.hold(2.5)
+    d.hold(2.0)
     d.click("[data-role='auto-apply']", "I turn it off")
     d.click("[data-role='undo']", "and undo.")
     d.hold(2.0)

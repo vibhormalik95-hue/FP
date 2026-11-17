@@ -158,7 +158,7 @@ export function LabView({api, user, status, onStatus}) {
       .replace(/[#]?[\u3400-\u9fff\u3000-\u303f\uff00-\uffef]+/g, ' ').replace(/\s{2,}/g, ' ').replace(/\s+([.,;:)])/g, '$1').trim() || '(original text not shown)');
     return {on: english, t, tx, c};
   }, [english, glossMap]);
-  const [kind, setKind] = useState('category'), [value, setValue] = useState(''), [action, setAction] = useState('hide'), [strength, setStrength] = useState('standard');
+  const [kind, setKind] = useState('category'), [values, setValues] = useState([]), value = values[values.length - 1] || '', setValue = v => setValues(v ? [v] : []), addValue = v => setValues(vs => vs.includes(v) ? vs : [...vs, v]), [action, setAction] = useState('hide'), [strength, setStrength] = useState('standard');
   const [request, setRequest] = useState(''), [description, setDescription] = useState(''), [definition, setDefinition] = useState(null);
   const [catAction, setCatAction] = useState('only'), [scope, setScope] = useState(40);
   const [newItems, setNewItems] = useState([{title: '', description: ''}]);
@@ -176,7 +176,7 @@ export function LabView({api, user, status, onStatus}) {
     try { const r = await fn(); after(r); window.labDone = (window.labDone || 0) + 1; } catch (e) { setError(e.message); window.labLastError = e.message; window.labDone = (window.labDone || 0) + 1; } finally { clearInterval(timer.current); setStage(null); setBusy(false); onStatus(); }
   }
   const showPreview = async p => { window.labLastPreview = {id: p.preview_id, kind: p.kind, changes: p.changes, calls: p.calls, controls: p.controls.map(c => c.text), notes: p.notes, applicable: p.applicable, selected: (p.evidence || []).filter(r => r.selected).length, rows: (p.evidence || []).length}; setPreview(p); setSide('after'); if (auto && p.applicable) await apply(p); };
-  async function apply(p = preview) { await run('apply', () => api('lab/apply', {user_id: user, preview_id: p.preview_id}), s => { setState(s); setPreview(null); }); }
+  async function apply(p = preview) { await run('apply', () => api('lab/apply', {user_id: user, preview_id: p.preview_id}), s => { setState(s); setPreview(null); setValues([]); }); }
   const undo = () => run('undo', () => api('lab/undo', {user_id: user}), s => { setState(s); setPreview(null); });
   const reset = () => run('reset', () => api('lab/reset', {user_id: user}), s => { setState(s); setPreview(null); setDefinition(null); });
 
@@ -189,13 +189,14 @@ export function LabView({api, user, status, onStatus}) {
           <label className="lab-auto"><input type="checkbox" checked={english} onChange={e => setEnglish(e.target.checked)} data-role="english-only"/> English</label>
           <label className="lab-auto"><input type="checkbox" checked={auto} onChange={e => setAuto(e.target.checked)} data-role="auto-apply"/> Auto-apply</label></div>
 
-        {tab === 'manual' && <form className="panel" onSubmit={e => { e.preventDefault(); run('manual', () => api('lab/manual', {user_id: user, kind, value, action, strength}), showPreview); }}>
+        {tab === 'manual' && <form className="panel" onSubmit={e => { e.preventDefault(); run('manual', () => api('lab/manual', {user_id: user, kind, value, values, action, strength}), showPreview); }}>
           <p className="help">Pick a label and an action. No model.</p>
           <div className="lab-row"><label>Label type<select value={kind} onChange={e => { setKind(e.target.value); setValue(''); }} data-role="manual-kind">{Object.entries(KINDS).map(([k, l]) => <option key={k} value={k}>{l}</option>)}</select></label>
             <label>Action<select value={action} onChange={e => setAction(e.target.value)} data-role="manual-action">{Object.entries(ACTIONS).map(([k, l]) => <option key={k} value={k}>{l}</option>)}</select></label>
             {['boost', 'reduce'].includes(action) && <label>Strength<select value={strength} onChange={e => setStrength(e.target.value)} data-role="lab-strength">{STRENGTHS.map(s => <option key={s}>{s}</option>)}</select></label>}</div>
-          <LabelPicker api={api} user={user} kind={kind} value={value} onPick={setValue}/>
-          <button className="primary" disabled={busy || !value} data-role="manual-preview">Preview <span>↗</span></button></form>}
+          <LabelPicker api={api} user={user} kind={kind} value={value} onPick={addValue}/>
+          {values.length > 0 && <div className="lab-picked" data-role="picked">{values.map(v => <span key={v} lang="zh">{enValue.t(v)} <button type="button" aria-label="Remove" onClick={() => setValues(values.filter(x => x !== v))}>×</button></span>)}</div>}
+          <button className="primary" disabled={busy || !values.length} data-role="manual-preview">Preview <span>↗</span></button></form>}
 
         {tab === 'interpret' && <form className="panel" onSubmit={e => { e.preventDefault(); run('interpret', () => api('lab/interpret', {user_id: user, request}), showPreview); }}>
           <p className="help">Say what you want. No category name needed.</p>

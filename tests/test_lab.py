@@ -272,3 +272,13 @@ def test_failed_call_is_charged_its_reservation():
     with pytest.raises(LabError):
         wf.interpret_preview(_lab(), Broken("m"), ledger, 7, "anything at all")
     assert ledger.total() == 0.02 and ledger.reserved() == 0
+
+
+def test_manual_several_labels_in_one_preview_and_one_undo():
+    lab = _lab()
+    p = wf.manual_preview(lab, 7, "category", None, "hide", values=["home", "walking"])
+    assert len(p["controls"]) == 2 and len({c["group"] for c in p["controls"]}) == 1
+    assert lab.apply(7, p["preview_id"])["feed"]["eligible"] == 2          # items 2, 5 and 1 hidden
+    assert lab.undo(7)["feed"]["eligible"] == 5
+    with pytest.raises(LabError):
+        wf.manual_preview(lab, 7, "category", None, "hide", values=["home", "no-such-label"])
