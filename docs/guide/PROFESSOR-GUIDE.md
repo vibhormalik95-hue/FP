@@ -13,7 +13,7 @@ The view **Results** shows the measured results of the offline evaluation, read 
 
 Everything is in English. The KuaiRec text (titles, captions, cover text, topic tags and the three levels of category names) was translated into English *before* processing; the application, the models and the screen work on that English text only. It is a machine translation of KuaiRec (CC BY-SA 4.0), stored as a versioned file with its SHA-256 (`data/kuairec_text_en-v1.json`).
 
-A demonstration video, `COMP9500-Feed-Control-Lab-demo.mp4` (sent separately, not in the repository), shows every workflow on this English application with OpenAI gpt-5, including where to paste your API key.
+A demonstration video, `COMP9500-Feed-Control-Lab-demo.mp4`, is sent separately (not in the repository); the version sent with this guide was recorded on this English application and shows every workflow with OpenAI gpt-5, including where to paste your API key.
 
 # 2. Install (once)
 
@@ -36,7 +36,7 @@ It needs only Python (no virtual environment yet) and writes these files:
 | `data/processed.json` | The processed KuaiRec subset (865 users, 2,593 items) |
 | `data/kuairec_text_en-v1.json` | The English text layer the application loads: machine translation of KuaiRec (CC BY-SA 4.0) |
 | `results/models/seed_42/`, `seed_43/`, `seed_44/` | The trained SASRec checkpoints (the app uses seed 42) |
-| `data/raw/`, `data/kuairec_gloss_en.json`, `data/kuairec_text_en-v1.label-map.json` | The unchanged official source table and the translation inputs, kept for the licence and for re-scoring the 17 November evaluation. The application never loads them. |
+| `data/raw/`, `data/kuairec_gloss_en.json`, `data/kuairec_text_en-v1.label-map.json` | The unchanged official source table (kept for the licence and for re-scoring the 17 November evaluation), the translation input and the map from each original label to its English label (for the English re-run of the evaluation). The application never loads them. |
 
 If a file is already there with a different hash, it is reported and left alone (`--force` replaces it).
 
@@ -102,7 +102,7 @@ Open **Language controls**. The bar at the top chooses the model provider for al
 1. **Model provider:** choose *OpenAI or OpenAI-compatible API*.
 2. **Model:** `gpt-5-mini` (recommended: fast and inexpensive). `gpt-5` also works; it is slower and about five times the price.
 3. **Reasoning effort:** `low` is what the measured results used; `minimal` (OpenAI only) is much faster with gpt-5.
-4. **API key:** paste your key. The field is masked. Leave **Base URL** empty.
+4. **API key:** paste your key. The field is masked. Leave **Base URL** as it is (`https://api.openai.com/v1`).
 5. Press **Use this provider**. The line below the bar then says `Now: OpenAI-compatible · gpt-5-mini · effort low` together with the money spent so far.
 
 The key is kept in the memory of the server process only. It is never written to a file or a log, and it is gone when you stop the server.

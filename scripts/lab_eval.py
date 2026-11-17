@@ -70,6 +70,9 @@ def git_commit():
 # ------------------------------------------------------------------ run
 def cmd_run(args):
     data, set_sha = load_set(args.set)
+    if args.text == "english" and not data.get("input_text") == "english":
+        raise SystemExit("--text english needs the English version of the set (requests and labels in English); "
+                         "the frozen set holds the original text.")
     _, catalog, _ = load_catalog(args.text)
     lab = KuaiRecLab(catalog, scorer=lambda u: {}, users={})
     vocabulary = lab.vocabulary(UserLab(), for_model=True)
@@ -315,7 +318,7 @@ def cmd_score(args):
                "scoring_commit": scoring_commit,
                "set_sha256": set_sha, "models": meta, "summaries": summaries, "paired_tests": tests,
                "downstream": {"users": sample, "cases": effects}, "tables": tables,
-               "scored_utc": datetime.now(timezone.utc).isoformat(timespec="seconds")}
+               "scored_utc": datetime.now(timezone.utc).isoformat(timespec="seconds"), "input_text": args.text}
     pub = ROOT / args.publish
     pub.mkdir(parents=True, exist_ok=True)
     (pub / "summary.json").write_text(json.dumps(summary, ensure_ascii=False, indent=1, default=float), encoding="utf-8")
@@ -396,7 +399,7 @@ def main(argv=None):
     r.add_argument("--timeout", type=float)
     r.add_argument("--budget-usd", type=float)
     r.add_argument("--out", required=True)
-    r.add_argument("--text", choices=("original", "english"), default="english")
+    r.add_argument("--text", choices=("original", "english"), default="original")
     s = sub.add_parser("score")
     s.add_argument("--set", required=True)
     s.add_argument("--run", required=True)

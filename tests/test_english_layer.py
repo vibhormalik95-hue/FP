@@ -105,3 +105,11 @@ def test_the_published_english_layer_has_no_cjk_when_present():
     text = path.read_text(encoding="utf-8")
     assert not CJK.search(text)
     assert json.loads(text)["label"] == kc.ENGLISH_LABEL
+
+
+def test_model_text_in_another_script_never_reaches_the_page():
+    from feedctrl.lab_routes import NON_ENGLISH, english_only
+    out, n = english_only({"summary": "ok", "notes": [], "evidence": [{"reason": "Pets " + chr(0x5BA0) + chr(0x7269)}]})
+    assert n == 1 and out["evidence"][0]["reason"] == "Pets " + NON_ENGLISH
+    assert "removed" in out["notes"][0]
+    assert english_only({"a": "plain English"}) == ({"a": "plain English"}, 0)

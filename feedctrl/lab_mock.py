@@ -39,7 +39,7 @@ def _action(text):
 
 def answer(task, payload):
     return {"interpret": _interpret, "define": _define, "classify": _classify, "assess": _assess,
-            "new-items": _new_items, "translate": _translate}[task](payload)
+            "new-items": _new_items, "translate": _translate, "gloss": _translate}[task](payload)
 
 
 def _label_tokens(label):

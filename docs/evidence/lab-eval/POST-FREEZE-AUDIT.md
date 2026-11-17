@@ -40,7 +40,7 @@ All five models therefore ran the same prompts, schemas, item views and quotatio
 - Every results table states the prediction commit of each model and the scoring commit (`scripts/lab_eval.py` adds the line to each table note and to `summary.json`).
 - All rows of a table are scored by the same scoring code at the same commit, from predictions produced by prediction code that is identical across models (except the local-only cap). No table mixes scoring versions.
 - The define change and the quotation-rule changes do not touch any reported number. The downstream re-score does; it is applied to all models at one scoring commit, so no model was re-run.
-- The shipped app is stricter than the measured code in one respect: quotations must be at least two characters (three for Latin text) and tags must match whole. The measured member selections used the freeze-time rule; this is stated beside the new-category table.
+- The shipped app is stricter than the measured code in one respect: quotations must be at least three characters (since r4; two, or three for Latin text, before) and tags must match whole. The measured member selections used the freeze-time rule; this is stated beside the new-category table.
 
 ## Notes on the local runs
 

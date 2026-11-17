@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import ipaddress
 import json
+import re
 import os
 import threading
 from collections import Counter
@@ -102,6 +103,35 @@ ORIGINAL_TEXT_PRIOR = "Prior run: measured on the original KuaiRec text (17 Nov)
 ENGLISH_TEXT_RUN = "Measured on the English text layer (machine translation of KuaiRec)."
 
 
+_C = chr
+CJK = re.compile("[" + _C(0x3000) + "-" + _C(0x303F) + _C(0x3400) + "-" + _C(0x9FFF) + _C(0xFF00) + "-" + _C(0xFFEF) + "]+")
+NON_ENGLISH = "[non-English text removed]"
+
+
+def english_only(value):
+    """Replace any CJK run in a response by a marker; returns (value, number of replacements).
+
+    The item text and labels are English already. This catches model output (a reason, a label, a
+    definition) that a model wrote in another script despite the English-only prompts."""
+    count = 0
+
+    def walk(v):
+        nonlocal count
+        if isinstance(v, str):
+            new, n = CJK.subn(NON_ENGLISH, v)
+            count += n
+            return new
+        if isinstance(v, list):
+            return [walk(x) for x in v]
+        if isinstance(v, dict):
+            return {k: walk(x) for k, x in v.items()}
+        return v
+    out = walk(value)
+    if count and isinstance(out, dict) and isinstance(out.get("notes"), list):
+        out["notes"].append(f"{count} run(s) of non-English model text were removed from this view.")
+    return out, count
+
+
 def build_lab(demo, english_path=None):
     """The English KuaiRec catalogue joined to the processed items, scored by the app's recommender.
 
@@ -113,6 +143,9 @@ def build_lab(demo, english_path=None):
     if demo.fixture or not (english_path or sidecar):
         return None
     rows, provenance = read_english_layer(english_path) if english_path else read_caption_table(sidecar)
+    if any(CJK.search(str(v)) for row in rows.values() for v in row.values()):
+        raise ValueError("The item text holds CJK characters; the app needs the English text layer "
+                         "(data/kuairec_text_en-v1.json, see fetch-assets).")
     catalog = build_catalog(demo.data, rows)
 
     def scorer(user_id):
@@ -150,7 +183,7 @@ def mount_lab(app, *, english_path=None, results_dir=None, budget_usd=None, lab=
 
     def guarded(fn):
         try:
-            return fn()
+            return english_only(fn())[0]
         except LabError as exc:
             return _error(exc)
 

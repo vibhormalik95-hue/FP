@@ -58,6 +58,10 @@ def main():
     subprocess.run([args.tts_python, str(script_py), str(video), str(take / "transcript.json")], check=True)
     transcript = json.loads((take / "transcript.json").read_text(encoding="utf-8"))
     take_log = json.loads((take / "timeline.json").read_text(encoding="utf-8"))
+    if take_log.get("failed"):
+        print(json.dumps({"failed": take_log["failed"], "cjk_hits": [e for e in take_log["events"] if "cjk_hit" in e],
+                          "cjk_pass": False}, indent=1))
+        return 1
     timeline = take_log["timeline"]
     cjk = [e for e in take_log.get("events", []) if "cjk_checks" in e or "cjk_hit" in e]
     cjk_checks = sum(e.get("cjk_checks", 0) for e in cjk)
