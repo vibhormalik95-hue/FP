@@ -43,7 +43,7 @@ function FeedCard({item, mark}) {
     <p className="lab-zh" lang="zh">{item.title || item.caption || '(no text in KuaiRec)'}</p>
     {item.caption && item.caption !== item.title && <p className="lab-zh small" lang="zh">{item.caption}</p>}
     <Gloss gloss={item.gloss_en}/></>}
-    <div className="lab-pills">{item.kuairec_categories.filter(c => !en.on || !CJK.test(en.t(c))).map(c => <span key={c} lang="zh">{en.t(c)}</span>)}{item.tags.slice(0, 4).filter(t => !en.on || !CJK.test(en.t(t))).map(t => <span key={t} className="tag" lang="zh">#{en.t(t)}</span>)}</div>
+    <div className="lab-pills">{item.kuairec_categories.filter(c => !en.on || en.t(c) !== '(untranslated label)').map(c => <span key={c} lang="zh">{en.t(c)}</span>)}{item.tags.slice(0, 4).filter(t => !en.on || en.t(t) !== '(untranslated label)').map(t => <span key={t} className="tag" lang="zh">#{en.t(t)}</span>)}</div>
     {item.controls.length > 0 && <p className="lab-ctl">{[...new Set(item.controls.map(c => { const m = c.match(/^(Show more|Show less|Hide|Show only)[^:]*:[^']*'([^']+)'/); return m ? `${{'Show more': '↑', 'Show less': '↓', 'Hide': '×', 'Show only': '='}[m[1]]} ${en.t(m[2])}` : en.c(c); }))].join('  ')}</p>}
   </article>;
 }
@@ -151,7 +151,7 @@ export function LabView({api, user, status, onStatus}) {
   const [auto, setAuto] = useState(false), [english, setEnglish] = useState(true), [glossMap, setGlossMap] = useState({});
   useEffect(() => { if (user !== null) api(`lab/labels?user_id=${user}&limit=2000`).then(r => setGlossMap(Object.fromEntries(r.labels.filter(l => l.gloss_en).map(l => [l.value, l.gloss_en])))).catch(() => {}); }, [user]);
   const enValue = useMemo(() => {
-    const t = v => (english && glossMap[v]) || v;
+    const t = v => !english ? v : (glossMap[v] || (CJK.test(v) ? '(untranslated label)' : v));
     const tx = s => english ? String(s ?? '').replace(/'([^']+)'/g, (_, v) => `'${t(v)}'`) : s;
     // English-only text: label names translated, any remaining Chinese run removed.
     const c = s => !english ? s : (tx(s).replace(/\b(category|tag|custom|feature):([^\s,;()]+)/g, (_, k, v) => `${k}:${t(v)}`)

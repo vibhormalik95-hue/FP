@@ -16,6 +16,7 @@ import subprocess
 import tempfile
 import threading
 import time
+from urllib.parse import urlsplit
 
 # USD per million tokens (input, output). Anthropic first-party list prices as of
 # November 2026; OpenAI entries are rough defaults and are labelled estimates.
@@ -153,11 +154,16 @@ class OpenAICompatibleProvider(Provider):
             kwargs["http_client"] = http_client
         self._client = OpenAI(**kwargs)
         self.base_url = base_url or "https://api.openai.com/v1"
+        if not urlsplit(self.base_url).scheme or not urlsplit(self.base_url).hostname:
+            raise ProviderError("The base URL needs http:// or https:// and a host, for example http://127.0.0.1:11434/v1.")
 
     def describe(self):
         from urllib.parse import urlsplit, urlunsplit
         parts = urlsplit(self.base_url)
-        shown = urlunsplit((parts.scheme, parts.hostname + (f":{parts.port}" if parts.port else ""), parts.path, "", ""))
+        if parts.scheme and parts.hostname:
+            shown = urlunsplit((parts.scheme, parts.hostname + (f":{parts.port}" if parts.port else ""), parts.path, "", ""))
+        else:
+            shown = self.base_url.rsplit("@", 1)[-1]
         return {**super().describe(), "base_url": shown, "effort": self.effort}   # never show user:password@
 
     def complete(self, task, system, payload, schema):
