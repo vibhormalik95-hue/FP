@@ -87,9 +87,10 @@ reviews your proposal."""
 DEFINE_PROMPT = f"""Propose ONE new operational category for a short-video catalogue from the person's
 natural-language description. {DATA_NOTE} Use only the supplied item metadata as evidence.
 A new category may overlap existing categories, but a renamed existing category is not new.
-Do not classify the whole catalogue yet. Give a short label (at most 60 characters, in the language of
-the description) and a self-contained one-paragraph definition (at most 600 characters) that states the
-conditions an item must meet. Cite up to five items whose fields support the definition, copying each
+Do not classify the whole catalogue yet. Give a short label (at most 60 characters) and a self-contained
+one-paragraph definition (at most 600 characters) that states the conditions an item must meet; write the
+label, the definition and the rationale in the language of the person's description, even when the items
+are in another language. Cite up to five items whose fields support the definition, copying each
 quote EXACTLY from the named field (title, description or tags; gloss only if no original field helps).
 Membership rules the definition must allow: a match needs affirmative evidence for every condition; a
 non-match needs evidence that a condition is false; missing information is unknown.

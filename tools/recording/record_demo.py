@@ -288,7 +288,8 @@ class Director:
             time.sleep(d)
 
     def hold(self, secs):
-        self.wait_speech(); time.sleep(secs)
+        # The result stays on screen while it is narrated; the silent part of a hold stays well under five seconds.
+        self.wait_speech(); time.sleep(min(secs, 2.2))
 
     # -- actions
     def point(self, sel, text, min_ring=1.6):

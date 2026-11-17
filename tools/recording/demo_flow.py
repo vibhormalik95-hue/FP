@@ -3,6 +3,8 @@ from __future__ import annotations
 
 import time
 
+import pyautogui
+
 from demo_script import (SPOKEN_MODEL, calls_line, done_count, glosses, say_while_typing, spoken_controls,
                          wait_done)
 
@@ -59,6 +61,7 @@ def run_demo(d, page, cfg, events, model_label, results_line):
         d.click("[data-tab='interpret']", "Workflow two: a request in my own words, mapped to existing categories and tags." if n == 0
                 else "A second request, in another domain.")
         d.click("[data-role='request']", ex["say"])
+        pyautogui.hotkey("ctrl", "a"); pyautogui.press("delete")
         say_while_typing(d, ex["request"], "No category name is used.")
         b = done_count(page)
         d.click("[data-role='interpret-preview']", "Interpret and preview.")
@@ -149,4 +152,3 @@ def run_demo(d, page, cfg, events, model_label, results_line):
     d.hold(3.0)
     d.say("The test set was drafted by an AI and reviewed row by row by me. Claude is both the drafter's family and a measured model.")
     d.say("Code, tests and results are in the repository. Thank you.")
-    d.hold(2.0)

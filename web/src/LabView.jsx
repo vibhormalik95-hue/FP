@@ -1,8 +1,8 @@
 import React, { createContext, useContext, useEffect, useMemo, useRef, useState } from 'react';
 
 // English-only display: the machine-translation gloss replaces the original Chinese text (labelled).
-const EnCtx = createContext({on: false, t: v => v, tx: s => s});
-const CJK = /[㐀-鿿]/;
+const EnCtx = createContext({on: false, t: v => v, tx: s => s, c: s => s});
+const CJK = /[\u3400-\u9fff]/;
 
 // Language controls over the real KuaiRec feed. The model proposes; the server checks; the
 // person reviews; Apply changes exactly the reviewed set; Undo restores the previous state.
@@ -39,12 +39,12 @@ function FeedCard({item, mark}) {
   const enText = [g.title, g.description].filter(Boolean).join(' · ') || (CJK.test(item.title + item.caption) ? '(no translation)' : [item.title, item.caption].filter(Boolean).join(' · '));
   return <article className={`lab-card ${mark || ''}`} data-item={item.item_id}>
     <div className="lab-card-head"><b>#{item.rank}</b><span>Item {item.item_id}{item.origin === 'added' ? ' · added by you' : ''}</span><em>{item.score.toFixed(3)}{Math.abs(item.score - item.base_score) > 1e-9 ? ` (base ${item.base_score.toFixed(3)})` : ''}</em></div>
-    {en.on ? <p className="lab-gloss lab-gloss-main"><span>EN · machine translation</span>{item.title || item.caption ? enText : '(no text in KuaiRec)'}</p> : <>
+    {en.on ? <p className="lab-gloss lab-gloss-main"><span>EN · machine translation</span>{item.title || item.caption ? en.c(enText) : '(no text in KuaiRec)'}</p> : <>
     <p className="lab-zh" lang="zh">{item.title || item.caption || '(no text in KuaiRec)'}</p>
     {item.caption && item.caption !== item.title && <p className="lab-zh small" lang="zh">{item.caption}</p>}
     <Gloss gloss={item.gloss_en}/></>}
-    <div className="lab-pills">{item.kuairec_categories.map(c => <span key={c} lang="zh">{en.t(c)}</span>)}{item.tags.slice(0, 4).map(t => <span key={t} className="tag" lang="zh">#{en.t(t)}</span>)}{item.feature_ids.map(f => <span key={f} className="feat">{f}</span>)}</div>
-    {item.controls.length > 0 && <p className="lab-ctl">{item.controls.map(en.tx).join(' · ')}</p>}
+    <div className="lab-pills">{item.kuairec_categories.filter(c => !en.on || !CJK.test(en.t(c))).map(c => <span key={c} lang="zh">{en.t(c)}</span>)}{item.tags.slice(0, 4).filter(t => !en.on || !CJK.test(en.t(t))).map(t => <span key={t} className="tag" lang="zh">#{en.t(t)}</span>)}{item.feature_ids.map(f => <span key={f} className="feat">{f}</span>)}</div>
+    {item.controls.length > 0 && <p className="lab-ctl">{item.controls.map(en.c).join(' · ')}</p>}
   </article>;
 }
 
@@ -66,8 +66,9 @@ function FeedColumn({state, preview, side, setSide}) {
 }
 
 function Checks({checks}) {
+  const en = useContext(EnCtx);
   if (!checks?.length) return null;
-  return <ul className="lab-checks">{checks.map((c, i) => <li key={i} className={c.ok ? 'ok' : 'bad'}>{c.ok ? '✓' : '✗'} {c.check}</li>)}</ul>;
+  return <ul className="lab-checks">{checks.map((c, i) => <li key={i} className={c.ok ? 'ok' : 'bad'}>{c.ok ? '✓' : '✗'} {en.c(c.check)}</li>)}</ul>;
 }
 
 function Calls({calls}) {
@@ -81,10 +82,10 @@ function Calls({calls}) {
 function EvidenceRows({preview}) {
   const en = useContext(EnCtx);
   const termEn = l => { const i = l.indexOf(':'); return i < 0 ? l : `${l.slice(0, i)}: ${en.t(l.slice(i + 1))}`; };
-  if (preview.kind === 'interpret') return <div className="lab-evidence">{preview.evidence.map((e, i) => <div key={i} className="lab-ev"><b>{ACTIONS[e.action] || e.action}{e.strength && ['boost', 'reduce'].includes(e.action) ? ` (${e.strength})` : ''}</b> for “{e.intent_span}”<p>{e.relation}</p><p className="lab-labels">{e.labels.map(l => <code key={l} lang="zh">{termEn(l)}</code>)}</p></div>)}</div>;
+  if (preview.kind === 'interpret') return <div className="lab-evidence">{preview.evidence.map((e, i) => <div key={i} className="lab-ev"><b>{ACTIONS[e.action] || e.action}{e.strength && ['boost', 'reduce'].includes(e.action) ? ` (${e.strength})` : ''}</b> for “{en.c(e.intent_span)}”<p>{en.c(e.relation)}</p><p className="lab-labels">{e.labels.map(l => <code key={l} lang="zh">{termEn(l)}</code>)}</p></div>)}</div>;
   if (preview.kind === 'new-category') return <div className="lab-table-wrap"><table className="lab-table"><thead><tr><th>Item</th><th>Text (KuaiRec)</th><th>Verdict</th><th>Quotation</th><th>Evidence check</th><th>Selected</th></tr></thead><tbody>
-    {preview.evidence.map(r => <tr key={r.item_id} className={r.selected ? 'sel' : ''}><td>{r.item_id}</td><td>{!en.on && <span lang="zh">{r.title || r.caption}</span>}{r.gloss_en && <small className="lab-gloss-inline">EN (MT): {[r.gloss_en.title, r.gloss_en.description].filter(Boolean).join(' · ')}</small>}</td><td>{r.verdict}</td><td>{r.quote ? <>{en.on && CJK.test(r.quote) ? <i>exact quotation from the original text</i> : <q lang="zh">{r.quote}</q>} <small>{r.field}{r.quote_from_translation ? ' (from translation)' : ''}{r.quote_verified ? ' · found' : ' · NOT FOUND'}</small></> : '-'}<small className="lab-reason">{r.reason}</small></td><td>{r.assessment ? (r.assessment.supports ? 'supports' : 'does not support') : '-'}<small className="lab-reason">{r.assessment?.reason}</small></td><td>{r.selected ? 'yes' : 'no'}</td></tr>)}</tbody></table></div>;
-  if (preview.kind === 'new-items') return <div className="lab-evidence">{preview.evidence.map(e => <div key={e.item_id} className="lab-ev"><b>{e.title}</b> → categories: {e.categories.length ? e.categories.map(c => <code key={c} lang="zh">{en.t(c)}</code>) : 'none'}; tags: {e.tags.length ? e.tags.map(t => <code key={t} lang="zh">#{en.t(t)}</code>) : 'none'}<p>{e.category_reason}</p>{e.new_categories.map(n => <p key={n.label}>New category <b>{n.label}</b>: {n.verdict}{n.quote ? <> · <q>{n.quote}</q></> : ''} · {n.selected ? 'selected' : 'not selected'}</p>)}</div>)}</div>;
+    {preview.evidence.map(r => <tr key={r.item_id} className={r.selected ? 'sel' : ''}><td>{r.item_id}</td><td>{!en.on && <span lang="zh">{r.title || r.caption}</span>}{r.gloss_en && <small className="lab-gloss-inline">EN (MT): {[r.gloss_en.title, r.gloss_en.description].filter(Boolean).join(' · ')}</small>}</td><td>{r.verdict}</td><td>{r.quote ? <>{en.on && CJK.test(r.quote) ? <i>exact quotation from the original text</i> : <q lang="zh">{r.quote}</q>} <small>{r.field}{r.quote_from_translation ? ' (from translation)' : ''}{r.quote_verified ? ' · found' : ' · NOT FOUND'}</small></> : '-'}<small className="lab-reason">{en.c(r.reason)}</small></td><td>{r.assessment ? (r.assessment.supports ? 'supports' : 'does not support') : '-'}<small className="lab-reason">{en.c(r.assessment?.reason)}</small></td><td>{r.selected ? 'yes' : 'no'}</td></tr>)}</tbody></table></div>;
+  if (preview.kind === 'new-items') return <div className="lab-evidence">{preview.evidence.map(e => <div key={e.item_id} className="lab-ev"><b>{en.c(e.title)}</b> → categories: {e.categories.length ? e.categories.map(c => <code key={c} lang="zh">{en.t(c)}</code>) : 'none'}; tags: {e.tags.length ? e.tags.map(t => <code key={t} lang="zh">#{en.t(t)}</code>) : 'none'}<p>{en.c(e.category_reason)}</p>{e.new_categories.map(n => <p key={n.label}>New category <b>{en.c(n.label)}</b>: {n.verdict}{n.quote ? <> · <q>{en.c(n.quote)}</q></> : ''} · {n.selected ? 'selected' : 'not selected'}</p>)}</div>)}</div>;
   return null;
 }
 
@@ -92,15 +93,15 @@ function Review({preview, onApply, onDiscard, busy, auto}) {
   const en = useContext(EnCtx);
   return <section className="lab-review" aria-label="Review" data-role="review">
     <p className="eyebrow">REVIEW · {preview.kind.toUpperCase()}</p>
-    <h3>{en.tx(preview.summary)}</h3>
+    <h3>{en.c(preview.summary)}</h3>
     <div className="lab-blocks">
       <div><h4>1 · What came back</h4>
-        {preview.proposal?.status && <p>Model status: <b>{preview.proposal.status}</b>{preview.proposal.reason ? ` · ${preview.proposal.reason}` : ''}</p>}
+        {preview.proposal?.status && <p>Model status: <b>{preview.proposal.status}</b>{preview.proposal.reason ? ` · ${en.c(preview.proposal.reason)}` : ''}</p>}
         <EvidenceRows preview={preview}/>
         {preview.controls.length > 0 && <><h4>Controls that Apply would add</h4><ul className="lab-controls">{preview.controls.map(c => <li key={c.id} lang="zh">{en.tx(c.text)}</li>)}</ul></>}
         {preview.affected.map((a, i) => <p key={i} className="help">{en.tx(a.control)}: {a.count} item(s) in the catalogue carry this label.</p>)}
       </div>
-      <div><h4>2 · What the application checked</h4><Checks checks={preview.checks}/>{preview.notes.map((n, i) => <p key={i} className="help">{n}</p>)}<Calls calls={preview.calls}/></div>
+      <div><h4>2 · What the application checked</h4><Checks checks={preview.checks}/>{preview.notes.map((n, i) => <p key={i} className="help">{en.c(n)}</p>)}<Calls calls={preview.calls}/></div>
       <div><h4>3 · Your decision</h4>
         <p className="help">Eligible items: {preview.changes.eligible_before} → {preview.changes.eligible_after}. Compare the feed on the right (Before / After).</p>
         {auto && preview.applicable && <p className="help">Auto-apply is on: this preview is applied as soon as it arrives.</p>}
@@ -149,7 +150,11 @@ export function LabView({api, user, status, onStatus}) {
   useEffect(() => { if (user !== null) api(`lab/labels?user_id=${user}&limit=2000`).then(r => setGlossMap(Object.fromEntries(r.labels.filter(l => l.gloss_en).map(l => [l.value, l.gloss_en])))).catch(() => {}); }, [user]);
   const enValue = useMemo(() => {
     const t = v => (english && glossMap[v]) || v;
-    return {on: english, t, tx: s => english ? String(s ?? '').replace(/'([^']+)'/g, (_, v) => `'${t(v)}'`) : s};
+    const tx = s => english ? String(s ?? '').replace(/'([^']+)'/g, (_, v) => `'${t(v)}'`) : s;
+    // English-only text: label names translated, any remaining Chinese run removed.
+    const c = s => !english ? s : (tx(s).replace(/\b(category|tag|custom|feature):([^\s,;()]+)/g, (_, k, v) => `${k}:${t(v)}`)
+      .replace(/[#]?[\u3400-\u9fff\u3000-\u303f\uff00-\uffef]+/g, ' ').replace(/\s{2,}/g, ' ').replace(/\s+([.,;:)])/g, '$1').trim() || '(original text not shown)');
+    return {on: english, t, tx, c};
   }, [english, glossMap]);
   const [kind, setKind] = useState('category'), [value, setValue] = useState(''), [action, setAction] = useState('hide'), [strength, setStrength] = useState('standard');
   const [request, setRequest] = useState(''), [description, setDescription] = useState(''), [definition, setDefinition] = useState(null);
