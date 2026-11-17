@@ -1,0 +1,1053 @@
+{
+ "version": "lab-eval-set-20261117-frozen-en",
+ "status": "DRAFT - written by an AI agent (Claude), not yet human-reviewed",
+ "label_vocabulary": "all kind==\"category\" terms (266) + kind==\"tag\" terms with item_count>=3 (201); term_id = \"category:<name>\" / \"tag:<name>\"",
+ "cases": [
+  {
+   "id": "NL01",
+   "group": "NL",
+   "language": "en",
+   "domain": "pets",
+   "request": "We're bringing home a golden retriever next weekend and I want to soak up everything about life with one before it arrives.",
+   "action": "boost",
+   "required": [
+    "category:Pet dog"
+   ],
+   "acceptable": [
+    "category:Pets",
+    "category:Pet daily record",
+    "tag:Doggy",
+    "tag:Cute pet",
+    "tag:Pets",
+    "category:Pet industry peripheral"
+   ],
+   "distractors": [
+    "category:Pet cat",
+    "tag:Cat",
+    "category:Animal sheltering",
+    "category:Plants and microorganisms",
+    "category:Funny animals"
+   ]
+  },
+  {
+   "id": "NL02",
+   "group": "NL",
+   "language": "en",
+   "domain": "sports",
+   "request": "My team got bounced in the first round of the playoffs and watching anyone dunk right now just stings. Turn that down a notch.",
+   "action": "reduce",
+   "required": [
+    "category:Basketball"
+   ],
+   "acceptable": [
+    "tag:CBA going all out to recover",
+    "category:Ball sports",
+    "tag:Basketball"
+   ],
+   "distractors": [
+    "category:Football",
+    "category:Exercise",
+    "tag:Kuaishou sports",
+    "category:Competitive sports"
+   ]
+  },
+  {
+   "id": "NL03",
+   "group": "NL",
+   "language": "en",
+   "domain": "comedy",
+   "request": "Lately every other clip is someone hamming it up for laughs or goofy fake voices over movie scenes. I'm laughed out, so ease off on that.",
+   "action": "reduce",
+   "required": [
+    "category:Comedy",
+    "category:Comedy skits",
+    "category:Funny dubbing",
+    "tag:Funny"
+   ],
+   "acceptable": [
+    "tag:Funny dubbing",
+    "tag:Funny video",
+    "category:Funny interaction",
+    "tag:Silly/funny (sand-carving meme)",
+    "tag:Super joke-writer program",
+    "tag:High-energy joke master",
+    "tag:Action comedy",
+    "category:Prank mischief",
+    "category:Funny animals",
+    "category:Funny stickers",
+    "tag:Confusing behaviors awards"
+   ],
+   "distractors": [
+    "category:Funny stories and trivia",
+    "category:Film variety shows",
+    "category:Short play"
+   ]
+  },
+  {
+   "id": "NL04",
+   "group": "NL",
+   "language": "en",
+   "domain": "military",
+   "request": "My brother just left on his first deployment. Anything with tanks, warships or barracks life makes my stomach drop, so take it off my feed completely.",
+   "action": "hide",
+   "required": [
+    "category:Military",
+    "category:Military life"
+   ],
+   "acceptable": [
+    "category:National defense updates",
+    "tag:I am Special Forces: The Blade Unsheathes"
+   ],
+   "distractors": [
+    "tag:Special police force",
+    "tag:Flame blue",
+    "category:Disaster accident",
+    "category:Current affairs news"
+   ]
+  },
+  {
+   "id": "NL05",
+   "group": "NL",
+   "language": "en",
+   "domain": "beauty",
+   "request": "I've decided to go bare-faced for good, and I'm tired of being told which lipstick and eyeshadow to buy. Less of that, please.",
+   "action": "reduce",
+   "required": [
+    "category:Makeup"
+   ],
+   "acceptable": [
+    "tag:Makeup",
+    "category:Makeup sale",
+    "tag:Summer beauty products worth having",
+    "category:Beauty",
+    "tag:Eyebrow shaping tutorial",
+    "category:Beauty makeup"
+   ],
+   "distractors": [
+    "category:Skincare",
+    "category:Looks/attractiveness",
+    "category:Sales and marketing",
+    "category:Hairdressing",
+    "tag:Product recommendation"
+   ]
+  },
+  {
+   "id": "NL06",
+   "group": "NL",
+   "language": "en",
+   "domain": "travel",
+   "request": "Zero leave days left this year and I'm stuck at my desk. For tonight, nothing but faraway places on my screen.",
+   "action": "only",
+   "required": [
+    "category:Travel / Tourism",
+    "category:Travel recommendations (seed planting slang)"
+   ],
+   "acceptable": [
+    "category:Domestic travel recommendations",
+    "category:Travel ways to play",
+    "category:Scenery aerial drone",
+    "category:Scenic photography",
+    "category:Accommodation picks",
+    "category:Road trip",
+    "tag:Take you traveling",
+    "tag:Follow Kuaishou to travel",
+    "tag:Kuaishou Traveler",
+    "tag:This place is super fun",
+    "tag:Scenery",
+    "tag:Longed-for homestay",
+    "tag:Voyage through wind and waves",
+    "tag:Where to go for a graduation trip",
+    "tag:Kuaishou Homestay Experience Tester",
+    "tag:Travel rookie breakout contest",
+    "tag:Beautiful countryside towns",
+    "tag:Follow me and I'll show you the world"
+   ],
+   "distractors": [
+    "category:Photography",
+    "category:Traffic news",
+    "category:Outdoor food"
+   ]
+  },
+  {
+   "id": "NL07",
+   "group": "NL",
+   "language": "en",
+   "domain": "kids/parenting",
+   "request": "We've been trying to conceive for two years, and the endless toddler-milestone clips are getting hard to watch. Dial them down a bit.",
+   "action": "reduce",
+   "required": [
+    "category:0 to 3 years cute baby",
+    "category:Showing off kid"
+   ],
+   "acceptable": [
+    "category:Parent-child",
+    "category:Cute kids aged 4 to 12",
+    "tag:Baby growth record",
+    "tag:Home has cute baby",
+    "tag:Home has cute kids",
+    "tag:Cute kid",
+    "tag:Kuaishou baby plan",
+    "category:Pregnancy and childbirth",
+    "category:Pregnant",
+    "category:Parenting",
+    "category:Parenting health knowledge"
+   ],
+   "distractors": [
+    "category:Family relationships",
+    "category:Children's animation",
+    "category:Wedding",
+    "category:Academic education"
+   ]
+  },
+  {
+   "id": "NL08",
+   "group": "NL",
+   "language": "en",
+   "domain": "cars",
+   "request": "Petrolhead mode today: engines, burnouts, test drives and nothing else.",
+   "action": "only",
+   "required": [
+    "category:Cars"
+   ],
+   "acceptable": [
+    "category:Playing with cars",
+    "category:Skillful drifting",
+    "category:Car news",
+    "category:Car daily life",
+    "category:Use car",
+    "category:Maintenance and repair",
+    "category:Car show news",
+    "category:Motorbike tribe",
+    "tag:Quick Car Talk"
+   ],
+   "distractors": [
+    "category:Traffic news",
+    "tag:Traffic safety",
+    "category:Extreme sports",
+    "category:Road trip",
+    "category:Street extreme sports"
+   ]
+  },
+  {
+   "id": "NL09",
+   "group": "NL",
+   "language": "en",
+   "domain": "health",
+   "request": "My blood pressure readings keep creeping up and I've been told to start looking after myself. Help me learn how.",
+   "action": "boost",
+   "required": [
+    "category:Health",
+    "category:Health and wellness"
+   ],
+   "acceptable": [
+    "category:Other health and wellness",
+    "category:Dietary therapy and food taboos for health",
+    "category:Common diseases",
+    "category:See a doctor, treat illness",
+    "tag:Health science popularization on Kuaishou",
+    "tag:Health",
+    "tag:Health and wellness",
+    "category:Fitness",
+    "category:Relaxation training"
+   ],
+   "distractors": [
+    "category:Lose weight",
+    "category:Tumor cancer",
+    "category:Sexual health",
+    "category:Food tutorial"
+   ]
+  },
+  {
+   "id": "NL10",
+   "group": "NL",
+   "language": "en",
+   "domain": "emotion/relationships",
+   "request": "She left last week after five years together. No lovey-dovey pairs, no weepy breakup monologues — scrub all of that off my feed.",
+   "action": "hide",
+   "required": [
+    "category:Emotional relationship",
+    "category:Intimate relationship"
+   ],
+   "acceptable": [
+    "category:Emotion",
+    "tag:Emotion",
+    "tag:Emotional quotes",
+    "tag:Couple",
+    "tag:Couple avatar",
+    "category:Short romance drama",
+    "tag:Express love with Kuaishou",
+    "category:Emotion sharing",
+    "category:Wedding"
+   ],
+   "distractors": [
+    "category:Family relationships",
+    "category:Family short drama",
+    "category:Marriage and family law",
+    "tag:Moved"
+   ]
+  },
+  {
+   "id": "NL11",
+   "group": "NL",
+   "language": "en",
+   "domain": "rural life",
+   "request": "I’ve been cooped up in an office building for a year and really miss the days of growing vegetables and feeding chickens in my hometown yard — give me more of that kind of thing.",
+   "action": "boost",
+   "required": [
+    "category:Agriculture-rural-farmers (sannong)",
+    "category:Agriculture and farmers"
+   ],
+   "acceptable": [
+    "category:Crop farming",
+    "category:Aquaculture",
+    "category:Fisheries",
+    "tag:Beautiful countryside towns",
+    "category:Village short drama"
+   ],
+   "distractors": [
+    "category:Delicious food",
+    "category:Travel / Tourism",
+    "category:Everyday candid shots",
+    "category:Plants and microorganisms",
+    "category:Outdoor food"
+   ],
+   "original_language": "zh"
+  },
+  {
+   "id": "NL12",
+   "group": "NL",
+   "language": "en",
+   "domain": "celebrity",
+   "request": "I don’t care at all who divorced, who cheated, or whose house of cards fell — don’t let me see those anymore.",
+   "action": "hide",
+   "required": [
+    "category:Entertainment gossip",
+    "category:Celebrity gossip"
+   ],
+   "acceptable": [
+    "category:Celebrity entertainment",
+    "category:Celebrities and stars",
+    "tag:Celebrity"
+   ],
+   "distractors": [
+    "category:Fan-made",
+    "category:Wedding",
+    "category:Legal incident",
+    "category:Social news",
+    "category:Film variety shows"
+   ],
+   "original_language": "zh"
+  },
+  {
+   "id": "NL13",
+   "group": "NL",
+   "language": "en",
+   "domain": "music/dance",
+   "request": "The aunt downstairs turns her speakers up to max every night; now that rhythm gives me a headache the moment I hear it — push fewer videos like that.",
+   "action": "reduce",
+   "required": [
+    "category:Square dance"
+   ],
+   "acceptable": [
+    "category:Leisure dance",
+    "category:Aerobics",
+    "tag:Kuaishou Square Dance"
+   ],
+   "distractors": [
+    "category:Dance",
+    "category:Latin dance",
+    "category:Music",
+    "category:Ballroom dance",
+    "category:Clubbing"
+   ],
+   "original_language": "zh"
+  },
+  {
+   "id": "NL14",
+   "group": "NL",
+   "language": "en",
+   "domain": "education",
+   "request": "My kid will be taking exams next year and the whole family is tense about those few days in June — show me more things that might help.",
+   "action": "boost",
+   "required": [
+    "tag:College entrance exam"
+   ],
+   "acceptable": [
+    "tag:Good luck on the college entrance exam",
+    "tag:2020 gaokao season",
+    "category:Education",
+    "category:K12",
+    "category:K12 (2)",
+    "category:English",
+    "category:Language skills",
+    "category:Academic education"
+   ],
+   "distractors": [
+    "category:Dance and art exam",
+    "category:Parent-child",
+    "tag:Where to go for a graduation trip",
+    "category:Cute kids aged 4 to 12"
+   ],
+   "original_language": "zh"
+  },
+  {
+   "id": "NL15",
+   "group": "NL",
+   "language": "en",
+   "domain": "anime",
+   "request": "Today I only want to soak in the paper-doll world — don’t show anything three-dimensional.",
+   "action": "only",
+   "required": [
+    "category:Second dimension (anime/manga)"
+   ],
+   "acceptable": [
+    "category:Second-dimension cool pics",
+    "category:Animation",
+    "category:Comics",
+    "category:Children's animation",
+    "category:Youth animation",
+    "tag:Anime",
+    "category:Wallpaper avatar",
+    "category:Virtual world",
+    "category:Virtual visual"
+   ],
+   "distractors": [
+    "category:Second-dimension reality show",
+    "category:Cosplay",
+    "category:Lolita",
+    "category:JK and uniforms",
+    "category:Games",
+    "category:Hanfu ancient style"
+   ],
+   "original_language": "zh"
+  },
+  {
+   "id": "NL16",
+   "group": "NL",
+   "language": "en",
+   "domain": "news",
+   "request": "This tablet is for my dad — he can’t sleep if he sees footage of car crashes, landslides, fires, so show fewer of those.",
+   "action": "reduce",
+   "required": [
+    "category:Disaster accident"
+   ],
+   "acceptable": [
+    "category:Social incident",
+    "tag:Traffic safety",
+    "category:Traffic news",
+    "tag:Safety",
+    "tag:Safety first",
+    "tag:Follow rules; travel safely",
+    "tag:Flame blue",
+    "tag:Cross fire and water for you"
+   ],
+   "distractors": [
+    "category:Warm news",
+    "category:Livelihood news",
+    "category:Legal incident",
+    "category:Strange people and strange phenomena",
+    "category:International politics"
+   ],
+   "original_language": "zh"
+  },
+  {
+   "id": "NL17",
+   "group": "NL",
+   "language": "en",
+   "domain": "fashion",
+   "request": "I start at the company next month and my wardrobe only has hoodies and sweatpants — I’d like to learn how to dress a bit more presentably.",
+   "action": "boost",
+   "required": [
+    "category:Outfit"
+   ],
+   "acceptable": [
+    "category:Fashion",
+    "tag:Daily outfits",
+    "category:Women's clothing",
+    "category:Fashion street shoot",
+    "category:Trend",
+    "tag:Street fashion photography",
+    "category:Boots",
+    "tag:Outfit"
+   ],
+   "distractors": [
+    "category:Beauty makeup",
+    "category:Exercise",
+    "category:Looks/attractiveness",
+    "tag:Cross-dressing",
+    "category:Hanfu ancient style"
+   ],
+   "original_language": "zh"
+  },
+  {
+   "id": "NL18",
+   "group": "NL",
+   "language": "en",
+   "domain": "music",
+   "request": "There’s a karaoke contest at work next week — I want to watch how people warm up and hit high notes to pick up some tips.",
+   "action": "boost",
+   "required": [
+    "category:Music performance"
+   ],
+   "acceptable": [
+    "category:Music",
+    "category:Original singer cover",
+    "category:Performance"
+   ],
+   "distractors": [
+    "category:Musical instrument performance",
+    "category:Professional dance",
+    "category:Funny dubbing",
+    "tag:Beat point",
+    "category:Clubbing"
+   ],
+   "original_language": "zh"
+  },
+  {
+   "id": "NL19",
+   "group": "NL",
+   "language": "en",
+   "domain": "fitness",
+   "request": "I just had knee surgery; those jumpy, sweaty workout videos make me crave being able to do it but I can’t — just stop pushing them to me.",
+   "action": "hide",
+   "required": [
+    "category:Fitness",
+    "category:Fat-burning training"
+   ],
+   "acceptable": [
+    "category:Aerobics",
+    "category:Fitness training",
+    "category:Fitness shaping",
+    "category:Lose weight",
+    "tag:Fitness",
+    "tag:Fitness check-in",
+    "tag:Kuaishou gym",
+    "tag:Workout",
+    "tag:Keep exercising every day to give yourself a good body",
+    "tag:Physical training",
+    "category:Exercise",
+    "category:Leisure trampoline",
+    "category:Yoga"
+   ],
+   "distractors": [
+    "category:Relaxation training",
+    "category:Dance",
+    "category:See a doctor, treat illness",
+    "category:Health"
+   ],
+   "original_language": "zh"
+  },
+  {
+   "id": "NL20",
+   "group": "NL",
+   "language": "en",
+   "domain": "calligraphy/art",
+   "request": "After retirement I write big characters on the park ground with a sponge brush dipped in water every morning — I want to see how masters hold the brush.",
+   "action": "boost",
+   "required": [
+    "category:Calligraphy",
+    "category:Soft brush"
+   ],
+   "acceptable": [
+    "tag:Calligraphy and painting",
+    "tag:Handwritten",
+    "category:Hard-pen (calligraphy)",
+    "category:Traditional craft",
+    "tag:Calligraphy"
+   ],
+   "distractors": [
+    "category:Painting",
+    "category:Hand painting",
+    "category:Simple drawing",
+    "category:Signature design",
+    "category:Square dance"
+   ],
+   "original_language": "zh"
+  },
+  {
+   "id": "NC01",
+   "group": "NC",
+   "language": "en",
+   "description": "Videos of police, firefighters, soldiers, medics and other first responders actually doing their job.",
+   "label": "First responders on duty",
+   "definition": "Member only if the item text establishes both: (1) a central person is identified as a police officer (any branch, including auxiliary or court police), firefighter, soldier/armed police, doctor, nurse, paramedic or professional rescue worker; (2) the text describes them actively doing that job in the events shown (rescuing, treating, testing, questioning, arresting, mediating, escorting, investigating), or states that they are on duty in those events (e.g. 'on duty', 'responding to a call', 'flood relief'). Not members: they only issue a notice, statement or advice; are the victim or subject of a court case; appear off duty, in a skit, drama, dance or costume; or their role or duty is only implied.",
+   "members": [
+    557,
+    3810,
+    543,
+    622,
+    945,
+    3797,
+    3921,
+    5853,
+    8937,
+    8319,
+    914,
+    777,
+    7157,
+    1076,
+    4068
+   ],
+   "pool_size": 150,
+   "excluded": [
+    8382,
+    4518,
+    2871,
+    8874,
+    3913,
+    3970
+   ]
+  },
+  {
+   "id": "NC02",
+   "group": "NC",
+   "language": "en",
+   "description": "Stuff that happens overseas, or where the people in it are foreigners.",
+   "label": "Set abroad or about foreigners",
+   "definition": "Member only if the item text establishes either: (a) the scene or the reported event takes place in a named or explicitly foreign country (not mainland China, Hong Kong, Macao or Taiwan), or (b) the main people are explicitly identified as foreign nationals or foreigners ('laowai', 'foreigners', 'Americans', etc.). Not members: Chinese people or officials discussing foreign matters from China; Chinese places said to look like abroad; people who hold or regained Chinese nationality; Taiwan/Hong Kong residents; foreign brands or words without a stated foreign setting or person.",
+   "members": [
+    203,
+    418,
+    518,
+    753,
+    873,
+    2119,
+    2158,
+    3930,
+    4449,
+    5352,
+    5466,
+    5575,
+    7100,
+    8806,
+    2430,
+    745,
+    8518
+   ],
+   "pool_size": 150,
+   "excluded": [
+    8563
+   ]
+  },
+  {
+   "id": "NC03",
+   "group": "NC",
+   "language": "en",
+   "description": "Clips where you see someone or something before and after a makeover.",
+   "label": "Before-and-after transformation in the clip",
+   "definition": "Member only if the item text indicates the video itself shows the same person, animal, object or picture in a before state and an after state of a visible change in appearance or condition. Counts: outfit/makeup transformation clips (titles or hashtags such as 'outfit change', 'wardrobe change', 'transform', 'ultimate transformation'), makeup removal, photo restoration, side-by-side results. Not members: figurative turnarounds (career 'comeback', grades), behaviour comparisons (before vs after marriage, then vs now), policies about renovation, workouts promising future change, or merely wearing a costume.",
+   "members": [
+    562,
+    858,
+    2461,
+    2497,
+    3840,
+    3966,
+    4019,
+    5446,
+    5915,
+    7305,
+    8523,
+    8612,
+    3948
+   ],
+   "pool_size": 150
+  },
+  {
+   "id": "NC04",
+   "group": "NC",
+   "language": "en",
+   "description": "Videos shot in rainy, windy, or flood conditions.",
+   "label": "Scenes in rain, snow, storms or flood conditions.",
+   "definition": "Counts only if both are met: (1) the text indicates the video images or reported events occur in rain (of any intensity), snow, hail, typhoon or strong wind, or in flooding/ponding/standing water caused by such weather (including flood relief scenes); (2) that weather or its consequences actually appear in the video footage, not metaphor, jingles, weather knowledge, or slogans unrelated to the images. Not included: clear weather, high temperatures, rainbows, sunsets; slogan-style tags (like 'floods are ruthless but people are kind') without describing footage; post-event disputes about soaked cars; joking or metaphorical uses of weather (e.g. 'don’t worry when it rains').",
+   "members": [
+    557,
+    945,
+    2871,
+    3913,
+    3970,
+    635,
+    2159,
+    2403,
+    2766,
+    3778,
+    3945,
+    3999,
+    4124,
+    4365,
+    2527,
+    8977,
+    5656,
+    6812,
+    5898
+   ],
+   "pool_size": 150,
+   "excluded": [
+    833
+   ],
+   "original_language": "zh"
+  },
+  {
+   "id": "NC05",
+   "group": "NC",
+   "language": "en",
+   "description": "Videos that mention a specific amount of money, such as prices, wages, fines or compensation.",
+   "label": "Mentions a specific monetary amount.",
+   "definition": "Count it whenever the text explicitly contains a specific monetary amount: a number (Arabic numerals or Chinese numerals) plus a currency unit (yuan, kuai, ten thousand yuan, US dollars, ¥, etc.), indicating price, cost, income, salary, fine, compensation, reward, amount involved in a case, etc. Specific amounts used metaphorically or in a quotation also count. Do not count: instances that only say \"money\", \"save money\", or \"owe how much money\" without a specific amount; indeterminate expressions like \"a few taels of silver\"; cases where the character after a number like \"kuai\" or \"wan\" is not used as a currency (for example, \"2 kuai chicken nuggets\", or \"35 wan\" without a stated unit); other numbers such as jin (catty), years old, years, phone numbers, etc.",
+   "members": [
+    1076,
+    849,
+    2430,
+    183,
+    701,
+    721,
+    731,
+    1161,
+    2378,
+    3857,
+    4129,
+    6945,
+    8212,
+    8479,
+    8819,
+    10260,
+    1002
+   ],
+   "pool_size": 150,
+   "original_language": "zh"
+  },
+  {
+   "id": "NC06",
+   "group": "NC",
+   "language": "en",
+   "description": "Videos of ordinary laborers at work like food delivery riders, couriers, stall vendors or construction workers.",
+   "label": "Work scenes of grassroots laborers.",
+   "definition": "Counts only if both are met: (1) the text clearly identifies the video's main people as one of these workers: delivery riders, couriers, sanitation workers, construction/renovation/high-altitude workers, movers or porters, security guards, cleaners, restaurant servers, truck or taxi drivers, street vendors, and similar frontline manual or service workers; (2) the content relates to their work: actively working or delivering orders, at the workplace, work equipment or uniform, income or business conditions, not just a passing mention. Not included: using a profession as metaphor, joke, or flirtation; roleplay; talking only about delivery/courier policy or companies without specific workers; generic 'working a job' without a specific occupation; drivers who just happen to appear in a story.",
+   "members": [
+    4124,
+    1161,
+    2439,
+    2473,
+    2489,
+    4080,
+    4554,
+    561,
+    5898,
+    904,
+    5684,
+    7245,
+    7354,
+    8793,
+    10000,
+    8602
+   ],
+   "pool_size": 150,
+   "excluded": [
+    5656
+   ],
+   "original_language": "zh"
+  },
+  {
+   "id": "AB01",
+   "group": "AB",
+   "language": "en",
+   "request": "Can you make my feed a bit more grown-up?",
+   "expected_status": "ambiguous",
+   "reason": "Competing readings: fewer kids/anime/cute content, more news/finance/education, or more adult/sexy content. No single label set or action follows."
+  },
+  {
+   "id": "AB02",
+   "group": "AB",
+   "language": "en",
+   "request": "Those jumpy, bouncing kinds of videos — show me fewer of them.",
+   "expected_status": "ambiguous",
+   "reason": "'Jumpy and bouncing' could mean dance, square dance, aerobics, trampoline, parkour/extreme sports or jumpy pets; the subject is unclear.",
+   "original_language": "zh"
+  },
+  {
+   "id": "AB03",
+   "group": "AB",
+   "language": "en",
+   "request": "Do something about all the dance videos.",
+   "expected_status": "ambiguous",
+   "reason": "Subject is clear (dance) but the action is not: more, fewer or hide are all plausible."
+  },
+  {
+   "id": "AB04",
+   "group": "AB",
+   "language": "en",
+   "request": "Show me more stuff related to apples.",
+   "expected_status": "ambiguous",
+   "reason": "'Apple' can mean the fruit (food, farming) or Apple (phones, tag: Apple Camera); the different readings receive different labels.",
+   "original_language": "zh"
+  },
+  {
+   "id": "AB05",
+   "group": "AB",
+   "language": "en",
+   "request": "Cap the celebrity gossip at three clips an hour.",
+   "expected_status": "unsupported",
+   "reason": "Rate quota (max N per hour) is not an available operation; only boost/reduce/hide/only exist."
+  },
+  {
+   "id": "AB06",
+   "group": "AB",
+   "language": "en",
+   "request": "On weekdays before 9 a.m. show only news; other times don’t care.",
+   "expected_status": "unsupported",
+   "reason": "Time-window condition (weekday mornings before 9) is not supported; controls are not time-scoped.",
+   "original_language": "zh"
+  },
+  {
+   "id": "AB07",
+   "group": "AB",
+   "language": "en",
+   "request": "Sort my feed so the funny stuff always comes before the news.",
+   "expected_status": "unsupported",
+   "reason": "Explicit ordering between categories is not an available operation."
+  },
+  {
+   "id": "AB08",
+   "group": "AB",
+   "language": "en",
+   "request": "Push pets and food at a one-to-one ratio for me.",
+   "expected_status": "unsupported",
+   "reason": "Fixed mixing ratio between two categories is not supported.",
+   "original_language": "zh"
+  },
+  {
+   "id": "AB09",
+   "group": "AB",
+   "language": "en",
+   "request": "Whenever I skip a video, bury anything like it for the rest of the day.",
+   "expected_status": "unsupported",
+   "reason": "Event-triggered, time-limited rule based on skips and item similarity; not expressible with label controls."
+  },
+  {
+   "id": "AB10",
+   "group": "AB",
+   "language": "en",
+   "request": "I'd love more tarot readings and horoscope forecasts.",
+   "expected_status": "no_match",
+   "reason": "No vocabulary label covers tarot/astrology (checked: there’s no category or tag with 'zodiac', 'tarot', 'divination', 'horoscope'; religion/Buddhism are not astrology)."
+  },
+  {
+   "id": "AB11",
+   "group": "AB",
+   "language": "en",
+   "request": "Show more videos about how to pick lottery numbers.",
+   "expected_status": "no_match",
+   "reason": "No label covers lotteries or gambling (checked: no 'lottery'/'betting'/'double-color ball' term); personal finance/economics are finance and leisure chess/cards is board/card games, so none relates closely enough.",
+   "original_language": "zh"
+  },
+  {
+   "id": "AB12",
+   "group": "AB",
+   "language": "en",
+   "request": "If my nephew ever borrows my phone I might want the scary accident clips gone, but not right now.",
+   "expected_status": "any_abstain",
+   "reason": "Hypothetical and explicitly deferred ('not right now'); no change is requested at present."
+  },
+  {
+   "id": "AB13",
+   "group": "AB",
+   "language": "en",
+   "request": "I didn’t say I don’t want fitness videos, so don’t change that on your own.",
+   "expected_status": "any_abstain",
+   "reason": "Negated statement / correction with no new preference; nothing should be proposed.",
+   "original_language": "zh"
+  },
+  {
+   "id": "AB14",
+   "group": "AB",
+   "language": "en",
+   "request": "My bestie has been forwarding me cute pet videos every day lately — it’s so annoying haha.",
+   "expected_status": "any_abstain",
+   "reason": "Venting about a friend's messages, not a request about the feed; reading it as 'reduce pets' would be an over-interpretation.",
+   "original_language": "zh"
+  }
+ ],
+ "pool": [
+  557,
+  3810,
+  543,
+  622,
+  945,
+  3797,
+  3921,
+  5853,
+  8382,
+  8937,
+  8319,
+  914,
+  777,
+  4518,
+  7157,
+  1076,
+  4068,
+  5813,
+  378,
+  849,
+  7141,
+  2427,
+  2530,
+  2871,
+  8874,
+  3913,
+  3970,
+  203,
+  418,
+  518,
+  753,
+  873,
+  2119,
+  2158,
+  3930,
+  4449,
+  5352,
+  5466,
+  5575,
+  7100,
+  8806,
+  2430,
+  745,
+  142,
+  2660,
+  4127,
+  3589,
+  8563,
+  562,
+  858,
+  2461,
+  2497,
+  3840,
+  3966,
+  4019,
+  5446,
+  5915,
+  7305,
+  8523,
+  8612,
+  3948,
+  307,
+  3950,
+  5581,
+  8739,
+  7300,
+  5712,
+  635,
+  833,
+  2159,
+  2403,
+  2766,
+  3778,
+  3945,
+  3999,
+  4124,
+  4365,
+  2527,
+  8977,
+  503,
+  5656,
+  6812,
+  4530,
+  2400,
+  2460,
+  183,
+  701,
+  721,
+  731,
+  1161,
+  2378,
+  3857,
+  4129,
+  6945,
+  8212,
+  8479,
+  8819,
+  10260,
+  1002,
+  1875,
+  7270,
+  1095,
+  413,
+  8518,
+  2439,
+  2473,
+  2489,
+  4080,
+  4554,
+  561,
+  5898,
+  904,
+  5684,
+  7245,
+  7354,
+  8793,
+  10000,
+  8602,
+  5612,
+  3739,
+  555,
+  799,
+  2397,
+  2331,
+  8359,
+  2352,
+  435,
+  3977,
+  2941,
+  3723,
+  5718,
+  5353,
+  3742,
+  5726,
+  8460,
+  681,
+  258,
+  5782,
+  5241,
+  4416,
+  8571,
+  2065,
+  8783,
+  7097,
+  8506,
+  2545,
+  2240,
+  5367,
+  9821,
+  9843
+ ],
+ "frozen": {
+  "reviewed_by": "Vibhor Malik",
+  "reviewed_utc": "2026-11-17T02:27:25+00:00",
+  "review_csv": "review_human.csv",
+  "review_csv_sha256": "384c47777bef2984eeb088a482543473690d63057503dfc4db614a0210a150b2",
+  "draft_csv_sha256": "d44f3b923268de96cd660b64812b5884ad6a34a7d11aeafe7071bd01a8d8fc64",
+  "cases_reviewed_sha256": "b819850e41afa44fd5c24331959061fe08af843476364bdbad27ae5e099836b4",
+  "coverage": "all 1,211 rows judged individually",
+  "corrections": {
+   "label": 9,
+   "member": 10,
+   "definition": 2,
+   "expected_status": 3
+  },
+  "note": "AI-drafted (Claude Opus 5.5), human-reviewed. Chinese requests judged through English gloss. No tuning after freeze."
+ },
+ "input_text": "english",
+ "derivation": {
+  "from": "docs/evidence/lab-eval-set-20261117/cases.frozen.json",
+  "from_sha256": "d4af21e6ed311448c79fabc7286a7dc00eba62cb3ec5c45dde60d8a01f233a82",
+  "label_map_sha256": "ba7e03c02e05757533679cd3c5351b9281cff8c0f35903b04cabec6acbe85e96",
+  "text_layer_sha256": "034f5ac96375175d4bb8c16c7a8aa934ea9b1035e3920c74fe2ddc5ddde1c207",
+  "translated_fields": 33,
+  "translator": {
+   "provider": "openai",
+   "model": "gpt-5-mini"
+  },
+  "cost_usd": 0.0057,
+  "made_utc": "2026-11-17T18:51:22+00:00",
+  "note": "Labels mapped through the label map; Chinese text fields machine-translated once before any prediction. Members, pools, actions and statuses unchanged."
+ }
+}

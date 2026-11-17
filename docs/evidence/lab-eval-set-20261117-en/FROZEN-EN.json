@@ -1,0 +1,9 @@
+{
+ "file": "cases.en.json",
+ "sha256": "a444cc46e01e0df499b7df14dfac58a213471b72ea36775624a6dfb5aa3d979d",
+ "derived_from_sha256": "d4af21e6ed311448c79fabc7286a7dc00eba62cb3ec5c45dde60d8a01f233a82",
+ "label_map_sha256": "ba7e03c02e05757533679cd3c5351b9281cff8c0f35903b04cabec6acbe85e96",
+ "text_layer_sha256": "034f5ac96375175d4bb8c16c7a8aa934ea9b1035e3920c74fe2ddc5ddde1c207",
+ "frozen_utc": "2026-11-17T18:51:22+00:00",
+ "note": "Hashes committed before any prediction of the English-input re-run."
+}
