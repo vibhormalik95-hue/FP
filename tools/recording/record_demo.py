@@ -424,7 +424,7 @@ def main():
     events.append({"screen": phys, "capture": cap_size})
 
     voice = Voice(args.tts_python, out / "voice", args.voice)
-    env = {k: v for k, v in os.environ.items() if k not in ("ANTHROPIC_API_KEY", "OPENAI_API_KEY")}
+    env = {k: v for k, v in os.environ.items() if k != "ANTHROPIC_API_KEY"}   # the server reads OPENAI_API_KEY itself
     args.key = os.environ.get("OPENAI_API_KEY", "")
     if not args.key and not args.test_clip:  # noqa
         raise SystemExit("OPENAI_API_KEY is needed for the take (it is pasted into the masked field).")

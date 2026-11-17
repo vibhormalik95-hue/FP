@@ -181,13 +181,7 @@ def run_demo(d, page, cfg, events, model_label, results_line):
     d.hold(3.0)
     d.choose("[data-role='provider-kind']", "I choose the model provider. The professor can use any OpenAI key here.", "Op")
     d.type_into("[data-role='provider-model']", cfg.model, f"The model is {spoken_model}: in my measurements it is the strongest model that needs only an API key.")
-    d.click("[data-role='api-key']", "I paste the key. The field is masked, and the server keeps the key in memory only. It is never written to disk or shown again.")
-    clipboard(cfg.key)
-    if GUARD:
-        GUARD()
-    pyautogui.hotkey("ctrl", "v")
-    clipboard("")
-    time.sleep(0.4)
+    d.point("[data-role='api-key']", "This masked field takes an API key. A key typed here stays in the server's memory only. For this recording the key comes from an environment variable, so the field stays empty and no key appears on screen.")
     d.click("[data-role='provider-save']", "Use this provider.")
     d.hold(2.0)
     # ---------------------------------------------------------------- manual
