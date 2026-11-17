@@ -26,3 +26,7 @@ Thumbs.db
 .env.local
 .env.*.local
 outgoing/
+
+# Private KuaiRec data, checkpoints and local result runs (never commit).
+/data/
+/results/
