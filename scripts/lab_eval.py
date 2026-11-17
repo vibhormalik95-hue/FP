@@ -111,7 +111,7 @@ def cmd_run(args):
                                unknown=sum(r["verdict"] == "unknown" for r in rows),
                                missing=sum(r["missing"] for r in rows),
                                quote_failures=sum(not r["quote_verified"] for r in rows),
-                               from_translation=sum(r["quote_from_translation"] for r in rows if r["selected"]),
+                               from_translation=sum(bool(r.get("quote_from_translation")) for r in rows if r["selected"]),
                                verdicts={str(r["item_id"]): [r["verdict"], r["quote_verified"],
                                                              (r["assessment"] or {}).get("supports")] for r in rows})
             except LabError as exc:
