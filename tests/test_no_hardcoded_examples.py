@@ -25,7 +25,7 @@ SUBJECT_WORDS = re.compile(r"\b(hungry|hunger|food|cook\w*|recipe\w*|bak(e|ing)|
                            r"pet|pets|dog|cat|travel|music|repair|sport\w*|dance|beauty|car|cars)\b", re.I)
 # The mock may name generic action verbs in Chinese (hide, remove, less, only). They carry no subject.
 MOCK_ACTION_WORDS = {"不要", "屏蔽", "去掉", "少", "只看"}
-ALLOWED_NUMBERS = {"9_000_000", "8765", "11434", "1000", "2000", "8000", "16000", "3600", "1008"}
+ALLOWED_NUMBERS = {"9_000_000", "8765", "11434", "1000", "2000", "8000", "16000", "3600", "1008", "2048", "4096", "8192", "16384", "32768"}  # + Ollama context sizes
 
 
 def _requests():
