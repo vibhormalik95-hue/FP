@@ -26,7 +26,7 @@ def run_demo(d, page, cfg, events, model_label, results_line):
     # Language controls
     d.click("[data-view='lab']", "Now the language controls.")
     page.wait_for_selector(".lab-card")
-    d.click("[data-role='english-only']", "I switch the display to English. It is machine-translated from the original Chinese, and labelled as such.")
+    d.point("[data-role='english-only']", "The display is in English: machine-translated from the original Chinese, and labelled as such. One click shows the original.")
     d.say("On the right: this user's top ten from the trained model.")
     d.hold(3.0)
     d.choose("[data-role='provider-kind']", "Provider: the OpenAI API.", "Op")
@@ -66,6 +66,7 @@ def run_demo(d, page, cfg, events, model_label, results_line):
         b = done_count(page)
         d.click("[data-role='interpret-preview']", "Interpret and preview.")
         err = wait_done(d, b, "interpret", "[data-role='interpret-preview']")
+        d.say("The answer is back.", wait=False)
         if err:
             d.say("The call failed; the page shows the error, and nothing changed.")
             d.hold(3.0)
@@ -90,6 +91,7 @@ def run_demo(d, page, cfg, events, model_label, results_line):
     b = done_count(page)
     d.click("[data-role='define']", "Step one: propose a definition.")
     wait_done(d, b, "define", "[data-role='define']")
+    d.say("The answer is back.", wait=False)
     defn = page.evaluate("window.labLastDefinition")
     d.ensure_visible("[data-role='definition']")
     d.say(f"A label, a definition with conditions, and {defn['evidence']} cited examples, each quotation checked.")
@@ -99,6 +101,7 @@ def run_demo(d, page, cfg, events, model_label, results_line):
     b = done_count(page)
     d.click("[data-role='classify']", "Approve and classify.")
     wait_done(d, b, "classify", "[data-role='classify']")
+    d.say("The answer is back.", wait=False)
     p = page.evaluate("window.labLastPreview")
     d.ensure_visible(".lab-table")
     d.say(f"One row per video: verdict, quotation, independent check. {p['selected']} of {p['rows']} selected. {calls_line(p)}.")
@@ -139,7 +142,6 @@ def run_demo(d, page, cfg, events, model_label, results_line):
     d.click("[data-role='undo']", "and undo.")
     d.hold(2.0)
     # Results
-    d.scroll_to_top()
     d.click("[data-view='results']", "The Results page reads the measured result files.")
     page.wait_for_selector("[data-role='results']")
     for line in results_line:

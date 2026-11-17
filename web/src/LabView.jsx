@@ -146,7 +146,7 @@ function LabelPicker({api, user, kind, value, onPick}) {
 export function LabView({api, user, status, onStatus}) {
   const [tab, setTab] = useState('manual'), [state, setState] = useState(null), [preview, setPreview] = useState(null);
   const [side, setSide] = useState('after'), [busy, setBusy] = useState(false), [error, setError] = useState(''), [stage, setStage] = useState(null);
-  const [auto, setAuto] = useState(false), [english, setEnglish] = useState(false), [glossMap, setGlossMap] = useState({});
+  const [auto, setAuto] = useState(false), [english, setEnglish] = useState(true), [glossMap, setGlossMap] = useState({});
   useEffect(() => { if (user !== null) api(`lab/labels?user_id=${user}&limit=2000`).then(r => setGlossMap(Object.fromEntries(r.labels.filter(l => l.gloss_en).map(l => [l.value, l.gloss_en])))).catch(() => {}); }, [user]);
   const enValue = useMemo(() => {
     const t = v => (english && glossMap[v]) || v;
