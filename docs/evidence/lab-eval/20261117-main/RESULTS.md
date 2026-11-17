@@ -35,10 +35,10 @@ Selected = verdict match, quotation found in the item, and the independent check
 | Control | TCP@10 (boost/only cases) | TCER@10 (hide/reduce cases) | NDCG@10 | HR@1 |
 | --- | --- | --- | --- | --- |
 | none | 0.0063 | 0.0118 | 0.0242 | 0.0050 |
-| reference | 0.4447 | 0.0000 | 0.0160 | 0.0058 |
-| claude-sonnet-5-5-cli | 0.3583 | 0.0000 | 0.0173 | 0.0042 |
-| gpt-5 | 0.3810 | 0.0000 | 0.0184 | 0.0056 |
-| gpt-5-mini | 0.3282 | 0.0000 | 0.0175 | 0.0044 |
+| reference | 0.5290 | 0.0000 | 0.0153 | 0.0062 |
+| claude-sonnet-5-5-cli | 0.5625 | 0.0000 | 0.0144 | 0.0040 |
+| gpt-5 | 0.5521 | 0.0000 | 0.0156 | 0.0056 |
+| gpt-5-mini | 0.5178 | 0.0000 | 0.0145 | 0.0044 |
 
 TCP/TCER: share of the top ten that is in the REFERENCE target set. none = no control; reference = the reviewed control.
 
@@ -46,9 +46,9 @@ TCP/TCER: share of the top ten that is in the REFERENCE target set. none = no co
 
 | Model | Mean HR@1 diff | 95% CI lower | Relative margin | Non-inferior (relative 10%) | Non-inferior (absolute 0.10) | Mean NDCG@10 diff |
 | --- | --- | --- | --- | --- | --- | --- |
-| claude-sonnet-5-5-cli | -0.0008 | -0.0023 | -0.0005 | False | True | -0.0068 |
-| gpt-5 | 0.0006 | -0.0023 | -0.0005 | False | True | -0.0057 |
-| gpt-5-mini | -0.0006 | -0.0021 | -0.0005 | False | True | -0.0066 |
+| claude-sonnet-5-5-cli | -0.0010 | -0.0027 | -0.0005 | False | True | -0.0097 |
+| gpt-5 | 0.0006 | -0.0023 | -0.0005 | False | True | -0.0085 |
+| gpt-5-mini | -0.0006 | -0.0021 | -0.0005 | False | True | -0.0096 |
 
 Bootstrap over cases. HR@1 of the base ranking is very low, so the relative margin is tiny.
 
@@ -56,9 +56,9 @@ Bootstrap over cases. HR@1 of the base ranking is very low, so the relative marg
 
 | Model | Cases | Mean TCP diff | Wilcoxon p | BH-adjusted p |
 | --- | --- | --- | --- | --- |
-| claude-sonnet-5-5-cli | 16 | -0.0864 | 0.0054 | 0.0054 |
-| gpt-5 | 16 | -0.0637 | 0.0034 | 0.0050 |
-| gpt-5-mini | 16 | -0.1165 | 0.0034 | 0.0050 |
+| claude-sonnet-5-5-cli | 16 | 0.0335 | 0.4449 | 0.6543 |
+| gpt-5 | 16 | 0.0231 | 0.6543 | 0.6543 |
+| gpt-5-mini | 16 | -0.0111 | 0.4971 | 0.6543 |
 
 ## Paired comparisons between models (all 40 cases)
 

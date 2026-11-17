@@ -15,6 +15,7 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import re
 import sys
 import time
 from pathlib import Path
@@ -26,6 +27,12 @@ from feedctrl.llm_providers import Ledger, ProviderError, build_provider  # noqa
 from feedctrl.parser_benchmark import _wilson  # noqa: E402
 
 FROZEN_SHA256 = "836b6e0e1fc4ccfc2174c99426db052115caddc6c63a5da764381d7c8e01eed6"
+def grounded(prediction, text):
+    """The grounding rule of controls.parse_control: a boost or mute must name exactly the one category the text names."""
+    mentions = set(re.findall(r"\bcategory_\d+\b", text.lower()))
+    return prediction["operation"] not in ("boost", "mute") or mentions == {prediction["category"]}
+
+
 LABEL = ("Re-use of the previously used 100-case parser test bank, unchanged, with no tuning. "
          "Not new unseen evidence. The frozen Llama 3.1 8B result (79/100) is unchanged.")
 
@@ -66,6 +73,8 @@ def main(argv=None):
                                                   and obj.get("category") is None)
                 row["latency_s"], row["cost_usd"] = call.get("latency_s"), call.get("cost_usd")
                 row["prediction"] = _validate_control(obj, case["categories"], f"{args.provider}:{args.model}")
+                if not grounded(row["prediction"], case["text"]):
+                    raise ParserOperationalError("LLM action is not grounded in exactly one explicit allowed category")
                 row["operation_correct"] = row["prediction"]["operation"] == case["expected"]["operation"]
                 row["correct"] = all(row["prediction"][k] == case["expected"][k] for k in ("operation", "category", "strength"))
                 row["posthoc_lenient_correct"] = row["posthoc_lenient_correct"] or row["correct"]

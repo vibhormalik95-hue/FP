@@ -59,9 +59,14 @@ def clipboard(text):
     u32.CloseClipboard()
 
 
+GUARD = None   # set by record_demo: verifies Chrome is in front before each keystroke
+
+
 def type_text(text, interval=0.05):
     """Character by character with the real keyboard; non-ASCII characters through the clipboard."""
     for ch in text:
+        if GUARD:
+            GUARD()
         if ord(ch) < 128:
             pyautogui.write(ch, interval=0)
         else:
@@ -175,6 +180,8 @@ def run_demo(d, page, cfg, events, model_label, results_line):
     d.type_into("[data-role='provider-model']", cfg.model, f"The model is {spoken_model}: in my measurements it is the strongest model that needs only an API key.")
     d.click("[data-role='api-key']", "I paste the key. The field is masked, and the server keeps the key in memory only. It is never written to disk or shown again.")
     clipboard(cfg.key)
+    if GUARD:
+        GUARD()
     pyautogui.hotkey("ctrl", "v")
     clipboard("")
     time.sleep(0.4)

@@ -146,6 +146,19 @@ class Capture:
         self.proc.wait(60)
 
 
+# ------------------------------------------------------------------ foreground guard
+def foreground_title():
+    u32 = ctypes.windll.user32
+    hwnd = u32.GetForegroundWindow()
+    buf = ctypes.create_unicode_buffer(512)
+    u32.GetWindowTextW(hwnd, buf, 512)
+    return buf.value
+
+
+class NotInFront(RuntimeError):
+    pass
+
+
 # ------------------------------------------------------------------ the director
 class Director:
     def __init__(self, page, voice, capture, events):
@@ -153,6 +166,16 @@ class Director:
         self.timeline = []
         self.speech_end = 0.0
         self.calibrate()
+
+    def ensure_front(self):
+        """Every click and keystroke must reach Chrome. Refocus once; abort the take otherwise."""
+        if "Chrome" in foreground_title():
+            return
+        self.page.bring_to_front()
+        time.sleep(0.6)
+        if "Chrome" not in foreground_title():
+            raise NotInFront(f"Foreground window is '{foreground_title()}', not Chrome; the take is aborted.")
+        self.events.append({"t": round(self.cap.now(), 2), "refocused": True})
 
     # -- coordinates
     def calibrate(self):
@@ -262,14 +285,17 @@ class Director:
         cx, cy = self.point(sel, text)
         self.page.evaluate("window.__demo.clear()")
         self.page.evaluate(f"window.__demo.ripple({cx},{cy})")
+        self.ensure_front()
         pyautogui.click()
         self.events.append({"t": round(self.cap.now(), 2), "click": sel})
+        print(f"[take] {self.events[-1]['t']:7.1f}s click {sel}", flush=True)
         time.sleep(0.35)
 
     def choose(self, sel, text, typed):
         """Open a select list and choose an option by typing its first letters, as a person would."""
         self.click(sel, text)
         time.sleep(0.45)
+        self.ensure_front()
         pyautogui.write(typed, interval=0.12)
         time.sleep(0.35)
         pyautogui.press("enter")
@@ -376,6 +402,7 @@ def results_lines(folder):
 
 
 def main():
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
     ap = argparse.ArgumentParser()
     ap.add_argument("--tts-python", required=True)
     ap.add_argument("--out", required=True)
@@ -451,6 +478,7 @@ def main():
             events.append({"presynthesized": len(lines)})
             cap = Capture(out / "video-raw.mp4", cap_size)
             d = Director(page, voice, cap, events)
+            demo_script.GUARD = d.ensure_front
             time.sleep(1.0)
             if args.test_clip:
                 demo_script.test_clip(d, page, args)
