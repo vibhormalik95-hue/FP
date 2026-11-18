@@ -183,7 +183,10 @@ def test_provider_error_never_contains_the_key():
     from feedctrl.llm_providers import _scrub
     secret = "sk-test-" + "x" * 40
     assert secret not in _scrub(f"bad key {secret}", secret)
-    assert "x" * 30 not in _scrub("Bearer sk-abcdef" + "y" * 30, None) or True
+    # A key-shaped value that was never registered is still cut after its first six characters.
+    tail = "SENTINEL" + "y" * 30
+    scrubbed = _scrub("Bearer sk-abcdef" + tail, None)
+    assert tail not in scrubbed and "y" * 10 not in scrubbed and scrubbed.startswith("Bearer sk-abcdef")
 
 
 @pytest.mark.skipif(not (ROOT / "data/processed.json").is_file() or not (ROOT / "data/raw/kuairec_caption_category.csv").is_file(),

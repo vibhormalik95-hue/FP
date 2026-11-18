@@ -50,6 +50,25 @@ def run(runner, *names):
             'intercepted': intercepted.group(1) if intercepted else 'not reported', 'text': text}
 
 
+def copy_verdict(current):
+    """Problems of the run on the copy. The run fails when no check ran, when a check failed that is not a check of
+    the frozen files, or when the runner exited nonzero and the parsed failures do not explain it (a crash, a guard
+    interception or a collection error can end the runner without a FAIL or ERROR line)."""
+    problems = []
+    unexpected = [name for name in current['problems'] if name not in FROZEN_FILE_CHECKS]
+    if current['ran'] == 0:
+        problems.append('no check ran')
+    if unexpected:
+        problems.append('unexpected failures: ' + ', '.join(unexpected))
+    if current['exit'] != 0 and not current['problems']:
+        problems.append(f"runner exit {current['exit']} without a parsed FAIL or ERROR line")
+    if current['exit'] == 0 and current['problems']:
+        problems.append('runner exit 0 although failures were parsed')
+    if current['intercepted'] not in ('[]', 'not reported') and current['intercepted']:
+        problems.append('guard intercepted events: ' + current['intercepted'])
+    return problems
+
+
 def count_words(problems):
     return 'no check with a failure' if not problems else (
         '1 check with a failure' if len(problems) == 1 else f'{len(problems)} checks with a failure')
@@ -84,12 +103,13 @@ def main():
     print('   A failure here means that the current prompts differ from the frozen first model input.')
     print(f'2. The same checks with the current-contract test inputs, on a temporary copy: {current["ran"]} checks, '
           f'{count_words(current["problems"])}. Intercepted events: {current["intercepted"]}')
-    unexpected = [name for name in current['problems'] if name not in FROZEN_FILE_CHECKS]
+    print(f'   Runner exit code on the copy: {current["exit"]}; on the frozen profile: {frozen["exit"]}')
     for name in current['problems']:
         print(f'   {"expected on the copy (a check of the frozen files)" if name in FROZEN_FILE_CHECKS else "NOT EXPECTED"}: {name}')
-    if current['ran'] == 0 or unexpected:
+    problems = copy_verdict(current)
+    if problems:
         sys.stdout.write(current['text'][-4000:])
-        print('FAIL: the driver checks do not pass with the current-contract test inputs')
+        print('FAIL: the driver checks do not pass with the current-contract test inputs (' + '; '.join(problems) + ')')
         return 1
     print('PASS: the driver checks pass with the current-contract test inputs. The frozen profile is unchanged.')
     return 0
