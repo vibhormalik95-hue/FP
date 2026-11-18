@@ -21,7 +21,7 @@ Paths are relative to the repository root at tag `comp9500-final-2026-11-r6` (<h
 | R01 | Offline study of controllability (P018, P025) | `feedctrl/evaluation.py`, `scripts/lab_eval.py` | E1 frozen results; RES | done | No human subjects |
 | R02 | Prior work incl. Shu 2024 (P023, P031) | — | `paper/references-2026-11-14.bib` | partial | Shu citation unresolved |
 | R03 | Common short-video testbed (P023, P117) | `scripts/run_app.py`, `run-app.cmd`, `feedctrl/lab.py` | Guide §1, §5 | done | A–E and language controls on one KuaiRec/SASRec ranking |
-| R04 | React frontend, FastAPI backend (P033, P118a) | `web/src/main.jsx`, `web/src/LabView.jsx`, `feedctrl/api.py`, `feedctrl/lab_routes.py` | `tests/browser/lab_flows.cjs`; run-all-tests receipt (release r6) | done | Browser flow checks [[BROWSER]], page unit tests [[NODE]] (mock) |
+| R04 | React frontend, FastAPI backend (P033, P118a) | `web/src/main.jsx`, `web/src/LabView.jsx`, `feedctrl/api.py`, `feedctrl/lab_routes.py` | `tests/browser/lab_flows.cjs`; run-all-tests receipt (release r6) | done | Browser flow checks 42/42, page unit tests 136/136 (mock) |
 | R05 | Open-source SASRec (P024, P033, P118b) | `feedctrl/model.py` | Checkpoint provenance | done, dep. | Independently written variant |
 | R06 | Trained on KuaiRec (P024, P033) | `feedctrl/data.py`, `scripts/train.py` | 3 checkpoints; `FINAL2/AUDIT.md` | done | 865 users, 2,593 items; weak backbone |
 | R07 | Local Llama 3.1 8B via Ollama (P024, P033) | `feedctrl/controls.py`, `feedctrl/llm_providers.py` | Parser re-run summary; RES | done | Re-run 79/100; frozen set 40/40 cases, NL 0/20, NC F1 0.179 |

@@ -28,7 +28,7 @@ date: "17 November 2026"
    - New category from "Videos about dogs. Any video whose title, description or tags mention a dog or a puppy belongs to the category.", scope the top 50 of the current feed: **3 of 50 selected** (items 2882, 8902, 7564).
    - **Top ten changed after Apply:** before 7383, 2894, 4367, 2687, 4506, 1146, 5993, 2882, 10184, 8777; after 2882, 8902, 7564, 7383, 2894, 4367, 2687, 4506, 1146, 5993.
    - **New item** "Our puppy's first walk in the park": matched on "puppy", the evidence check supported it, so it joined the category (4 members). It starts at the user's median score, so it does not enter the top ten by itself.
-4. **Tests** (`run-all-tests.cmd`, mock provider, release r6): Python [[PYTEST]]; page unit tests [[NODE]]; browser flow checks [[BROWSER]]; English-only screens [[CJK]]; workflow checks [[WORKFLOWS]].
+4. **Tests** (`run-all-tests.cmd`, mock provider, release r6): Python 1,882 passed, 44 skipped, 1 failed by design (the frozen 11 Nov guarded profile, whose offline guard cannot run on Windows); page unit tests 136/136; browser flow checks 42/42; English-only screens: 57, no visible CJK character; workflow checks 21/21.
 
 # Key measured numbers (frozen set; measured on the original-text run, 17 Nov)
 

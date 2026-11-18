@@ -46,7 +46,7 @@ Status words: done / partial / not done; departure where the method differs. Det
 | R01 | Offline controllability study (P018, P025) | `feedctrl/evaluation.py`, `scripts/lab_eval.py` | E1 frozen results; 17 Nov results | done |
 | R02 | Prior work incl. "Shu 2024" (P023, P031) | `paper/references-2026-11-14.bib` | No Shu entry | partial |
 | R03 | Common short-video testbed (P023, P117) | `scripts/run_app.py`, `feedctrl/lab.py` | A–E and language controls on the same KuaiRec/SASRec ranking | done |
-| R04 | React + FastAPI (P033, P118a) | `web/src/`, `feedctrl/api.py`, `feedctrl/lab_routes.py` | Browser flow checks [[BROWSER]], page unit tests [[NODE]] (mock, release r6) | done |
+| R04 | React + FastAPI (P033, P118a) | `web/src/`, `feedctrl/api.py`, `feedctrl/lab_routes.py` | Browser flow checks 42/42, page unit tests 136/136 (mock, release r6) | done |
 | R05 | SASRec (Kang & McAuley) (P024, P033) | `feedctrl/model.py` | Independently written variant | done, departure (minor) |
 | R06 | Trained on KuaiRec (P024, P033) | `feedctrl/data.py`, `scripts/train.py`, `feedctrl/kuairec_catalog.py` | 865 users, 2,593 items; 3 checkpoints | done |
 | R07 | Local Llama 3.1 8B via Ollama (P024, P033) | `feedctrl/controls.py`, `feedctrl/llm_providers.py` | E1, frozen parser 79/100, re-run 79/100; frozen set 40/40 cases (NL 0/20) | done |
@@ -79,7 +79,7 @@ Status words: done / partial / not done; departure where the method differs. Det
 
 ## Checks
 
-- `run-all-tests.cmd` (mock) on the release code of r6: Python suite [[PYTEST]]; page unit tests [[NODE]]; browser flow checks [[BROWSER]]; English-only screens [[CJK]]; workflow checks [[WORKFLOWS]]. One Python test, `test_guarded_current_contract`, is frozen by design (the 11 November profile's guard blocks ctypes on Windows) and reported separately. The root-level `test_*.py` files and the `tools/hosted_validation*` tests are outside the runner. Earlier runs, including the d824e13-era run of 06:59Z, are history: [recording and QA history](notes/2026-11-17-recording-and-qa-history.md).
+- `run-all-tests.cmd` (mock) on the release code of r6: Python suite 1,882 passed, 44 skipped, 1 failed by design (the frozen 11 Nov guarded profile, whose offline guard cannot run on Windows); page unit tests 136/136; browser flow checks 42/42; English-only screens: 57, no visible CJK character; workflow checks 21/21. One Python test, `test_guarded_current_contract`, is frozen by design (the 11 November profile's guard blocks ctypes on Windows) and reported separately. The root-level `test_*.py` files and the `tools/hosted_validation*` tests are outside the runner. Earlier runs, including the d824e13-era run of 06:59Z, are history: [recording and QA history](notes/2026-11-17-recording-and-qa-history.md).
 - `tests/test_no_hardcoded_examples.py` checks that no example request or label is written into the application code, including the prompts (only docstrings and comments are exempt, since commit `1de3955`).
 - Code-review fixes of 17 November (commit `1de3955`) and later: downstream scoring applies the exact controls; Reset keeps the version increasing; model name and effort validated for the Claude CLI; explicit provider base URLs; anti-framing headers. Shipped rules in r6: a quotation from the title or description must be 3 or more characters and appear in that field; a quotation from the tags must be one whole tag (of any length). The measured runs used the earlier rule of the measurement commit; RESULTS.md describes the intermediate `1de3955` rule. Budget: each call reserves an advisory cost estimate before it starts, and a failed call keeps its reservation booked with its actual cost unknown; the estimate is not an upper bound (OpenAI output is uncapped and the SDK may retry once), so actual spend can exceed the limit.
 - Experiment 1 replay on Windows from the checkpoints: all 399 numeric leaves identical to the frozen summary. Full-ranking hashes differ below the top ten.
@@ -89,6 +89,6 @@ Status words: done / partial / not done; departure where the method differs. Det
 1. A live test of the Anthropic API route (needs a key; Claude was measured only through the Claude CLI).
 2. A full gemma4:31b run on the frozen set; it needs a faster machine.
 3. A verified English-input run of the frozen set (no English-input figure is reported).
-4. Extra polish. (Full test run on the release code of r6: Python suite [[PYTEST]]; page unit tests [[NODE]]; browser flow checks [[BROWSER]]; English-only screens [[CJK]]; workflow checks [[WORKFLOWS]]; 1 Python test frozen by design.)
+4. Extra polish. (Full test run on the release code of r6: Python suite 1,882 passed, 44 skipped, 1 failed by design (the frozen 11 Nov guarded profile, whose offline guard cannot run on Windows); page unit tests 136/136; browser flow checks 42/42; English-only screens: 57, no visible CJK character; workflow checks 21/21; 1 Python test frozen by design.)
 5. Author review of the paper: the student reviews the text and removes the "[student to confirm]" marker.
 6. Not measured: recommendation benefit to real users; real intent.
