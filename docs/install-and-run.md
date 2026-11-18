@@ -1,6 +1,6 @@
 # Install and run
 
-> **Current guide.** It replaces the install sections of earlier pages.
+> **Legacy guide (earlier demonstrator, 13–15 November).** This page describes the fixture scenarios and the SemanticPanel page started by `scripts/quickstart.py`, not the current application. The current application is the four-tab Lab (Choose a category, Say it your way, New category, New items; new-category scope 10–200 items of the current feed; editable definition; provider setup in the page), started by `run-app.cmd` (`scripts/run_app.py`, port 8765). Its guide is [docs/guide/PROFESSOR-GUIDE.md](guide/PROFESSOR-GUIDE.md).
 
 This page gives the setup commands for Windows PowerShell and macOS zsh. The recorded checks below ran on Linux at revision `ff92666`, with authored replies or stand-ins. Native Windows and macOS verification of these setup commands remains open. The separate [Windows fictional-item result](fictional-lifecycle-2026-11-15.json) used a task-local transport, not this quickstart workflow.
 
@@ -46,7 +46,7 @@ python scripts/quickstart.py manual --scenario tags
 ```
 
 Open <http://127.0.0.1:8765>. Without a model only the manual category control works; the model methods are marked "(needs a model provider)". There is no mode with hand-written replies.
-To try the language-control screens with no key and no cost, use Feed Control Studio instead: run `run-studio.cmd` and choose the **Mock** provider (see the [Studio guide](studio-guide.md)).
+To try the language controls with no key and no cost, use the current four-tab Lab (`run-app.cmd` or `python scripts/run_app.py`, port 8765, default **Mock** provider; see the [guide for the supervisor](guide/PROFESSOR-GUIDE.md)) instead.
 Press Ctrl+C in the terminal to stop the server.
 
 The original conditions A to E need category IDs of the form `category_N`. To try them, serve the built-in fixture:
@@ -190,5 +190,5 @@ Press Ctrl+C in the terminal of the server. Controls and reviews last for one br
 | `Run "python scripts/quickstart.py setup" first.` | The route file `model-route.json` does not exist yet, or it has an error. Run `setup`. |
 | A line that starts with `FAILED` in `doctor` | Read the line `What to do:` below it. The [failure table](model-routes.md#if-something-fails) lists every message. |
 | The page shows "The call to the provider failed", "The application rejected the reply" or "The request failed" | Read the message in the block "Application checks". It comes from the application or from the model provider. Nothing was applied. |
-| The model methods are marked "(needs a model provider)" | The server runs without a model (`manual`). Start it with `start` and a model route, or use Feed Control Studio (`run-studio.cmd`, **Mock** provider) to try the screens with no key. |
+| The model methods are marked "(needs a model provider)" | The server runs without a model (`manual`). Start it with `start` and a model route, or use the current Lab (`run-app.cmd`, default **Mock** provider) to try the language controls with no key. |
 | The instruction and the profile of the conditions C, D and E are disabled | The scenario has named categories. Use `python scripts/quickstart.py manual --scenario conditions`. |

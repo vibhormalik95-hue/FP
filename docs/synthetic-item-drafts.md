@@ -1,6 +1,6 @@
 # Fictional item metadata drafts
 
-> **Current guide.** The evidence statements at the end keep their dates.
+> **Legacy guide (earlier demonstrator, 13–15 November).** This page describes the fixture scenarios and the SemanticPanel page started by `scripts/quickstart.py`, not the current application. The current application is the four-tab Lab (Choose a category, Say it your way, New category, New items; new-category scope 10–200 items of the current feed; editable definition; provider setup in the page), started by `run-app.cmd` (`scripts/run_app.py`, port 8765). Its guide is [docs/guide/PROFESSOR-GUIDE.md](guide/PROFESSOR-GUIDE.md). The evidence statements at the end keep their dates.
 
 This optional feature lets a model write a title, a description and a category label for an item that does not exist.
 It creates no real media, no observed event and no record of the dataset.
@@ -15,7 +15,7 @@ Open the view **Language controls**. Under **Fictional items (separate list)**, 
 4. Read the draft under "Review the fictional item before you add it": the wording, the model and the hashes. A preview adds nothing to a list.
 5. If the draft is suitable, press **Approve and add to the list of fictional items**.
 
-A server without a provider says that no draft can be written. To try the screens with no key, use Feed Control Studio (`run-studio.cmd`, **Mock** provider).
+A server without a provider says that no draft can be written. To try the language controls with no key, use the current four-tab Lab (`run-app.cmd` or `python scripts/run_app.py`, port 8765, default **Mock** provider; see the [guide for the supervisor](guide/PROFESSOR-GUIDE.md)).
 
 A valid reply and a recorded origin do not make the wording suitable. Review it before you admit it.
 

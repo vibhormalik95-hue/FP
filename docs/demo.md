@@ -1,6 +1,6 @@
 # Guide to the language controls
 
-> **Current guide.** To install the application first, see [install and run](install-and-run.md).
+> **Legacy guide (earlier demonstrator, 13–15 November).** This page describes the fixture scenarios and the SemanticPanel page started by `scripts/quickstart.py`, not the current application. The current application is the four-tab Lab (Choose a category, Say it your way, New category, New items; new-category scope 10–200 items of the current feed; editable definition; provider setup in the page), started by `run-app.cmd` (`scripts/run_app.py`, port 8765). Its guide is [docs/guide/PROFESSOR-GUIDE.md](guide/PROFESSOR-GUIDE.md).
 
 This guide shows how to use each language control in the page, from the request to Undo, and how to check a run.
 It also says which kind of evidence each provider gives.
@@ -29,7 +29,7 @@ python scripts/quickstart.py manual --scenario conditions
 
 - `start` uses your [model route](model-routes.md).
 - `manual` (the same as `python scripts/run_demo.py --provider manual`) serves the page without a model. Only the manual method works. The page lists the model methods as "(needs a model provider)" and names the commands that start a provider.
-- There is no mode with hand-written replies. To try the language-control screens with no key and no cost, use Feed Control Studio: run `run-studio.cmd` and choose the **Mock** provider (see the [Studio guide](studio-guide.md)). The mock provider matches words literally and is only for trying the screens.
+- There is no mode with hand-written replies. To try the language controls with no key and no cost, use the current four-tab Lab (`run-app.cmd` or `python scripts/run_app.py`, port 8765, default **Mock** provider; see the [guide for the supervisor](guide/PROFESSOR-GUIDE.md)). The mock provider matches words literally and is only for trying the screens.
 - `manual --scenario conditions` serves the original conditions A to E on the built-in fixture, with no model. `python scripts/run_demo.py --scenario conditions` does the same. This scenario has no language controls.
 
 | Scenario | Items | Existing category for the manual method | Bundled requests |

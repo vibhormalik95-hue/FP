@@ -6,15 +6,24 @@
 
 | Document | Content |
 | --- | --- |
-| [Install and run](install-and-run.md) | From the source folder to a running application, on Windows and on macOS, the scenario `conditions` for the original conditions A to E, and the final verification sequence. |
-| [Guide to the language controls](demo.md) | Each method in the page from the request to Undo, the review, the providers and the browser check. |
-| [Model routes](model-routes.md) | How to connect a model: a command-line program, a hosted API with your own key, a model server on your computer, or by hand. |
-| [Route trial](route-trial.md) | Run the bundled requests through a route without the browser. |
-| [Application reference](app.md) | The views, the conditions A to E, the language-control workflow, endpoints, and what a review stores. |
+| [Guide for the supervisor](guide/PROFESSOR-GUIDE.md) | **Start here.** The current application: install, `fetch-assets`, `run-app.cmd` (`scripts/run_app.py`, port 8765), the four-tab Lab (Choose a category, Say it your way, New category, New items; scope 10–200 items of the current feed; editable definition; provider setup in the page), the Results page, the tests and troubleshooting. |
 | [Requirements and evidence](requirements-and-evidence.md) | Each request of the supervisor, the student's own commitments and the clauses of the proposal, mapped to code and to evidence. |
-| [Delivery index, 15 November](DELIVERY-INDEX-2026-11-15.md) | A short map of the paper, practical guides, requirements and dated integration records. |
-| [Fictional item drafts](synthetic-item-drafts.md) | Metadata that a model writes for an item that does not exist, in a separate list. |
+| [Recording and QA history](notes/2026-11-17-recording-and-qa-history.md) | Take 13 and take 14 recording details and earlier test runs, moved out of the professor-facing files. |
 | [The built interface](source-verification.md) | How to rebuild `web/dist` after a change to the interface source. |
+
+## Legacy guides (earlier demonstrator)
+
+These pages describe the fixture scenarios and the SemanticPanel page started by `scripts/quickstart.py` (13–15 November). They are kept for the earlier demonstrator and its records; they do not describe the current Lab. Use the [guide for the supervisor](guide/PROFESSOR-GUIDE.md) for the current application.
+
+| Document | Content |
+| --- | --- |
+| [Install and run](install-and-run.md) | Setup of the earlier demonstrator on Windows and macOS, the scenario `conditions` for A to E, and its verification sequence. |
+| [Guide to the language controls](demo.md) | Each method of the earlier page from the request to Undo. |
+| [Model routes](model-routes.md) | Routes of the earlier page: a command-line program, a hosted API, a model server, or by hand. |
+| [Route trial](route-trial.md) | Run the bundled requests through a route without the browser. |
+| [Application reference](app.md) | The views, endpoints and review records of the earlier page. |
+| [Delivery index, 15 November](DELIVERY-INDEX-2026-11-15.md) | A short map of the paper, practical guides, requirements and dated integration records on 15 November. |
+| [Fictional item drafts](synthetic-item-drafts.md) | Metadata that a model writes for an item that does not exist, in a separate list. |
 | [Literal source requirements](numbered-source-constraints.md) | Method note: how the staged category method treats digits and quoted terms in a definition. |
 
 ## Research records

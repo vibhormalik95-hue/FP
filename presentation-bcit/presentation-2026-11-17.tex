@@ -10,9 +10,8 @@
 % All five models measured: hosted predictions at commit 8dd978f, local
 % (llama3.1:8b, qwen2.5-coder:7b-instruct) at 9071f05, scored at fbb3e59
 % (docs/evidence/lab-eval/POST-FREEZE-AUDIT.md). gemma4:31b probe only:
-% runs/local-chain.log. Downstream values re-scored 17 Nov with the
-% exact controls. Video facts: docs/evidence/2026-11-17-video/ and
-% docs/evidence/2026-11-17-video-take13/check.json. Generalization check:
+% runs/local-chain.log (local-only, not in the repository). Downstream values re-scored 17 Nov with the
+% exact controls. Video facts: docs/evidence/2026-11-17-video-take14/README.md and check.json. Generalization check:
 % runs/generalization-gpt5/summary.md and runs/generalization-gpt5-nc/summary.md.
 % 4 Nov study: deliverables/2026-11-04-prospective-evaluation/PROTOCOL-AND-RESULTS.md.
 \usetheme[progressbar=head,numbering=fraction,sectionpage=none]{metropolis}
@@ -353,7 +352,7 @@ NDCG@10: Llama 0.02461; item feedback 0.03128.
 User is the analysis unit. Average three seeds within\\
 each request/class, then equal eligible classes per user.
 
-5,000 paired user bootstrap samples, seed 2026.\\
+5,000 paired bootstrap resamples of users, seed 2026.\\
 Pratt one-sided Wilcoxon with joint BH over 11 tests.
 
 Keep failures, infeasibility and exclusions visible.\\
@@ -446,7 +445,7 @@ A negative finding for autonomous use: a person must review each proposal.
 \end{center}
 \begin{itemize}
 \item One app serves the study view A--E and the language controls on the same data.
-\item KuaiRec text joined: caption, cover text, tags, 3 levels of category names, translated into English before processing; the app, the models and the screen use only this English layer (machine translation of KuaiRec, CC BY-SA 4.0).
+\item KuaiRec text joined: caption, cover text, tags, 3 levels of category names, translated into English before processing; the shipped app, its model calls and the screen use only this English layer (machine translation of KuaiRec, CC BY-SA 4.0). Experiment 3 measured the original text.
 \item Policy: hide, only, boost/reduce by 0.10 / 0.25 / 0.40 on the normalized score.
 \end{itemize}
 \src{Item text covers all 2,593 items; 2,513 have a caption or cover text. The model sees 467 terms: 266 category names and 201 tags carried by at least 3 items.}
@@ -463,16 +462,16 @@ Workflow & What happens & Calls\\\midrule
 4. New items & Title + description $\to$ existing categories, tags and new-category verdicts, then the same check. Score: median of the user's base scores. & 1 + check\\\bottomrule
 \end{tabular}\par
 Preview changes nothing; Apply needs the preview of the current state; Undo restores it.
-\src{Same functions in the app and the measurement script; a test checks code and prompts for example-specific logic. Since 17 Nov a quotation needs $\geq$2 characters or a whole tag (measured runs: earlier rule).}
+\src{Same functions in the app and the measurement script, except: the evaluator grouped a case's ``only'' labels (the app intersects separate controls; NL06, NL08, NL15) and used the freeze-time quotation rule (shipped: $\geq$3 characters or one whole tag). A test checks code and prompts for example-specific logic.}
 \end{frame}
 
 \begin{frame}{Demo video and a check on new domains}
 \footnotesize
 \textbf{Demo video} \texttt{COMP9500-Feed-Control-Lab-demo.mp4}
 \begin{itemize}
-\item Take 13: 10:12, 1920$\times$1080, one take on the English-only app; Kokoro af\_heart narration; gpt-5 at minimal effort (measured runs: low).
-\item GPT-5 through the OpenAI API (key pasted into the masked field, never shown).
-\item Checks: no silence $\geq$5\,s at $-45$\,dB; transcript matches 96/96 script sentences (similarity 0.89); live CJK check passed; one frame every 30\,s.
+\item Take 14: 10:57, 1920$\times$1080, one take on the English-only app; GPT-5 mini at low effort (the measured setting), through the OpenAI API (key pasted into the masked field, never shown).
+\item New category ``Dogs'': 3 of 50 selected, 2 enter the top ten after Apply; a new puppy item joins it.
+\item Checks: no silence $\geq$5\,s at $-45$\,dB; transcript aligned in order with the script, 103/103 sentences (r6 re-check, median sync 0.44\,s); live CJK check, 69 checks, none visible; one frame every 30\,s.
 \end{itemize}
 \textbf{New-domain check} (software check, not evaluation data; GPT-5)
 \begin{itemize}
@@ -480,7 +479,7 @@ Preview changes nothing; Apply needs the preview of the current state; Undo rest
 \item 2 new descriptions (music, kindness): a definition is now proposed even when the sampled items do not fit; classification of 100 items selected 0 for each.
 \item 2 new items classified to existing categories and tags.
 \end{itemize}
-\src{docs/evidence/2026-11-17-video/; tools/generalization\_examples.json; runs/generalization-gpt5*/summary.md (local). The define step is not part of the measured evaluation.}
+\src{docs/evidence/2026-11-17-video-take14/; tools/generalization\_examples.json; runs/generalization-gpt5*/summary.md (local). The define step is not part of the measured evaluation.}
 \end{frame}
 
 \section{Experiment 3}
@@ -506,7 +505,7 @@ AB (14) & 7 & 7 & Should not propose: ambiguous, unsupported, no match\\\bottomr
 \small
 \begin{itemize}
 \item Drafted by an AI: Claude Opus 5.5. 1,211 judgements.
-\item Reviewed row by row by \textbf{Vibhor Malik}: all 1,211 rows, not a sample.
+\item Reviewed row by row by \textbf{Vibhor Malik}: all 1,211 rows, not a sample (his attestation).
 \item 1,187 agreed; \textbf{24 corrected} (label 9, member 10, definition 2, status 3).
 \item Stop rule met formally (3 of 796 unflagged ``no'' rows wrong); resolved by the full review.
 \item Chinese requests judged through the English gloss.
@@ -607,8 +606,8 @@ Qwen2.5-Coder 7B (local) & $-0.0002$ & $-0.0006$ & fails & passes\\
 \begin{itemize}
 \item Reference AI-drafted (Claude Opus 5.5), then human-reviewed, not human-written.
 \item Claude is both the drafter's family and a measured model (Sonnet 5.5 via CLI): possible bias.
-\item Chinese requests judged through an English machine-translation gloss; all numbers come from the original-text run (17 Nov), English-input re-run pending.
-\item Small $n$ (20 / 14 / 6): wide intervals; pairwise differences not significant.
+\item Chinese requests judged through an English machine-translation gloss; all numbers come from the original-text run (17 Nov); an English-input run exists but its identity could not be verified, so no English-input figure is reported.
+\item Small $n$ (20 / 14 / 6): wide intervals; differences among hosted models not significant.
 \item HR@1 base rate $\approx$0.5\%: relative 10\% margin fails, absolute passes.
 \item Local models on one laptop only. gemma4:31b fit (37\,GB, 89\% CPU) but generated 0.90 tokens/s: not run. Anthropic API never run live.
 \item Frontier models are a declared departure from the proposal's local-model-only design.
@@ -625,7 +624,7 @@ ACM UMAP 2027, full/short & \textbf{29 Jan 2027} (abstract 22 Jan) & 8+2 or 4+2 
 ACM SIGIR 2027, full & \textbf{21 Jan 2027} (abstract 14 Jan) & $\leq$9 pages + refs, double-anonymous. Harder target for an offline study.\\[0.12cm]
 ACM SIGIR 2027, demo & \textbf{11 Feb 2027} (abstract 4 Feb) & $\leq$4 pages; needs a video or live interface. Fallback: present the system.\\\bottomrule
 \end{tabular}\par
-\src{Source: FINAL2/conference-options-verified.md. Read the call again on the day of decision. Submissions need an anonymous ACM version of the paper.}
+\src{Two venues, three options. Dates re-checked on the official pages, see the conference-options file (FINAL2/conference-options-verified.md). Read the call again on the day of decision. Submissions need an anonymous ACM version of the paper.}
 \end{frame}
 
 \begin{frame}{Next steps}
@@ -702,7 +701,7 @@ Floor & $-\Delta D(X)$, zero if the floor is violated\\
 Conditional & $\Delta D(X\cap Y)-\max(0,\Delta D(X\setminus Y))$\\\bottomrule
 \end{tabular}\par
 \vspace{0.25cm}
-Induced satisfaction requires a full list, the class band and $M>10^{-12}$. This operational measure is not Shannon information.
+Induced control success requires a full list, the class band and $M>10^{-12}$. This operational measure is neither user satisfaction nor Shannon information.
 \end{frame}
 
 \begin{frame}{Backup: study records}
