@@ -32,7 +32,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 from feedctrl.kuairec_catalog import (CATEGORY_LEVELS, ENGLISH_LABEL, ENGLISH_VERSION, MISSING, _tags,  # noqa: E402
                                       read_caption_table)
-from feedctrl.llm_providers import Ledger, build_provider  # noqa: E402
+from feedctrl.llm_providers import Ledger, ProviderError, build_provider, reserved_call  # noqa: E402
 
 CJK = re.compile("[\u3000-\u303f\u3400-\u9fff\uff00-\uffef\uf900-\ufaff\u3040-\u30ff]")
 PUNCT = {"\u3002": ".", "\u3001": ",", "\u300c": '"', "\u300d": '"', "\u300e": '"', "\u300f": '"', "\u3010": "[",
@@ -71,11 +71,12 @@ def translate(texts, provider, ledger, batch=40):
     def run(part):
         payload = {"texts": [{"id": str(n), "text": t} for n, t in enumerate(part)]}
         try:
-            data, call = provider.complete("translate", PROMPT, payload, SCHEMA)
-        except Exception as exc:  # recorded; the caller retries what is missing
-            ledger.add({"task": "translate", "error": str(exc)[:200], "cost_usd": 0.0})
+            # Through the budget reservation; a failed call is booked by the ledger with an unknown actual
+            # cost (cost_known False, the reserved estimate), never as 0. A call that does not fit the budget
+            # is not started. The caller retries what is missing, each retry reserving again.
+            data, call = reserved_call(provider, ledger, "translate", PROMPT, payload, SCHEMA)
+        except ProviderError:
             return {}
-        ledger.add(call)
         got = {}
         for t in data.get("translations", []):
             if t["id"].isdigit() and int(t["id"]) < len(part) and t["en"].strip():
@@ -167,7 +168,8 @@ def main() -> int:
                         "gloss_translator": gloss.get("translator"), "retranslator": {"provider": "openai", "model": args.model}},
              "items": items,
              "cost_usd": round(ledger.total(), 4), "calls": len(ledger.calls),
-             "errors": sum(1 for c in ledger.calls if c.get("error"))}
+             "errors": sum(1 for c in ledger.calls if c.get("error")),
+             "calls_with_unknown_cost": ledger.unknown_cost_calls()}
     body = json.dumps(layer, ensure_ascii=False, indent=1, sort_keys=True)
     if CJK.search(json.dumps({"items": items}, ensure_ascii=False)):
         print("FAILED: the item text of the layer holds CJK characters")

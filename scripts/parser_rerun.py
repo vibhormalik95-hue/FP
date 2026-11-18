@@ -33,6 +33,20 @@ def grounded(prediction, text):
     return prediction["operation"] not in ("boost", "mute") or mentions == {prediction["category"]}
 
 
+def latency_and_cost(rows, ledger_total):
+    """Median latency over the calls that returned (a failed call has no latency, never 0), and the cost:
+    unknown (None) when a provider call failed, because a failed call may still have been billed."""
+    latencies = sorted(r["latency_s"] for r in rows if r.get("latency_s") is not None)
+    failed = sum(1 for r in rows if r.get("provider_call_failed"))
+    return {"median_latency_s": latencies[len(latencies) // 2] if latencies else None,
+            "latency_calls_measured": len(latencies),
+            "failed_provider_calls": failed,
+            "cost_usd": None if failed else ledger_total,
+            "cost_usd_of_completed_calls": ledger_total,
+            "cost_note": (f"{failed} provider call(s) failed; their cost is unknown, so the total is unknown. "
+                          "cost_usd_of_completed_calls is a lower bound.") if failed else "all provider calls completed"}
+
+
 LABEL = ("Re-use of the previously used 100-case parser test bank, unchanged, with no tuning. "
          "Not new unseen evidence. The frozen Llama 3.1 8B result (79/100) is unchanged.")
 
@@ -61,9 +75,15 @@ def main(argv=None):
             system = CONTROL_PROMPT + "\nSCHEMA: " + json.dumps(schema, sort_keys=True)
             payload = {"allowed_categories": case["categories"], "request": case["text"]}
             row = {"case_id": case["case_id"], "group": case["group"], "expected": case["expected"],
-                   "prediction": None, "correct": False, "operation_correct": False, "error": None}
+                   "prediction": None, "correct": False, "operation_correct": False, "error": None,
+                   "provider_call_failed": False}
             try:
-                obj, call = provider.complete("parser", system, payload, schema)
+                try:
+                    obj, call = provider.complete("parser", system, payload, schema)
+                except ProviderError:
+                    row["provider_call_failed"] = True   # no latency and an unknown cost, never 0
+                    row["latency_s"], row["cost_usd"] = None, None
+                    raise
                 ledger.add(call)
                 row["raw"] = obj
                 # Post-hoc, format-lenient (secondary): ignore ONLY the strength field when the reply is
@@ -97,8 +117,8 @@ def main(argv=None):
                "clarify_recall": f"{sum(r['correct'] for r in clarify)}/{len(clarify)}",
                "per_group": {g: f"{sum(r['correct'] for r in rows if r['group'] == g)}/{sum(r['group'] == g for r in rows)}"
                              for g in sorted({r["group"] for r in rows})},
-               "cost_usd": ledger.total(), "elapsed_s": round(time.monotonic() - started, 1),
-               "median_latency_s": sorted(r.get("latency_s") or 0 for r in rows)[len(rows) // 2]}
+               "elapsed_s": round(time.monotonic() - started, 1),
+               **latency_and_cost(rows, ledger.total())}
     (out / "summary.json").write_text(json.dumps(summary, indent=2), encoding="utf-8")
     print(json.dumps(summary, indent=2))
     return 0

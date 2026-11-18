@@ -66,6 +66,45 @@ COMPARE_STATEMENTS = (
     'Two routes can use different model settings, for example the output limit or the sampling. '
     'This table does not correct for that.',
 )
+UNUSABLE_STATEMENTS = {
+    'interrupted': 'The trial was interrupted: not every chosen case ran. Each finished case ran one time. '
+                   'Nothing was approved.',
+    'changed': 'THE APPLIED STATE CHANGED DURING A CASE. This trial does not state that nothing was applied.',
+    'unread': 'The applied state could not be read back for every case. '
+              'This trial does not state that nothing was applied.',
+}
+
+
+def trial_statements(interrupted, untouched, changed):
+    """The statements of a trial record: "each case ran one time, nothing was applied" only when it is true."""
+    if untouched and not interrupted:
+        return list(STATEMENTS)
+    lines = list(STATEMENTS[:3])
+    if interrupted:
+        lines.append(UNUSABLE_STATEMENTS['interrupted'])
+    if changed:
+        lines.append(UNUSABLE_STATEMENTS['changed'])
+    elif not untouched:
+        lines.append(UNUSABLE_STATEMENTS['unread'])
+    elif interrupted:
+        lines.append('Nothing was applied in the finished cases.')
+    return lines
+
+
+def unusable_reason(trial):
+    """Why a trial record cannot be compared, or None. Only a finished trial with an unchanged state can."""
+    totals = trial.get('totals') if isinstance(trial.get('totals'), dict) else {}
+    if trial.get('interrupted') is not False:
+        return 'was interrupted (or does not record that it was not)'
+    if totals.get('state_changed') is not False:
+        return 'records that the applied state changed (or does not record that it did not)'
+    if totals.get('nothing_applied') is not True:
+        return 'does not record that nothing was applied'
+    if trial.get('exit_code') not in (0, 2):
+        return f'ended with exit code {trial.get("exit_code")!r}, a trial that cannot be used'
+    return None
+
+
 # A request key of a scenario is "<method>" or "<method>:<case>". Each method
 # is one way to make a request in the page. It has its own endpoint of the
 # application and a largest number of model calls for one request.
@@ -689,7 +728,8 @@ def run(args, out=print):
     errors = outcomes.get('error', 0)
     # 1: the trial cannot be used as it is. 2: a case ended in an error. 0: neither.
     exit_code = 1 if not untouched or interrupted else 2 if errors else 0
-    trial = {'kind': KIND, 'format': FORMAT, 'statements': list(STATEMENTS), 'scenario': args.scenario,
+    trial = {'kind': KIND, 'format': FORMAT, 'statements': trial_statements(interrupted, untouched, changed),
+             'scenario': args.scenario,
              'started_utc': started_utc, 'finished_utc': utc(), 'source_fingerprint': fingerprint,
              'provider': {'kind': provider, 'identity': identity, 'route_description': description},
              'environment': {'python': platform.python_version(), 'system': f'{platform.system()} {platform.release()}'},
@@ -760,6 +800,10 @@ def load_trial(folder):
         raise Stop(f'{path} is not valid JSON.') from None
     if not isinstance(trial, dict) or trial.get('kind') != KIND or not isinstance(trial.get('cases'), list):
         raise Stop(f'{path} is not the record of a route trial.')
+    reason = unusable_reason(trial)
+    if reason:
+        raise Stop(f'{path} {reason}. Its cases did not each run once with nothing applied, '
+                   'so it is not compared. Run the trial again.')
     return trial
 
 
@@ -779,7 +823,9 @@ def comparison(first, second):
         if a is None or b is None:
             same_outcome = same_selection = 'not run in both'
         else:
-            same_outcome = 'yes' if a['outcome'] == b['outcome'] else 'no'
+            # An error is a failed case, never an agreement: two errors are not "the same outcome".
+            same_outcome = ('error in a trial' if 'error' in (a['outcome'], b['outcome'])
+                            else 'yes' if a['outcome'] == b['outcome'] else 'no')
             both_review = a['outcome'] == 'review' and b['outcome'] == 'review'
             same_selection = ('yes' if a['selection'] == b['selection'] else 'no') if both_review else 'not applicable'
         cell = lambda result, read: 'not run' if result is None else read(result)
@@ -790,10 +836,12 @@ def comparison(first, second):
 
 
 def comparison_summary(rows):
-    both = [row for row in rows if row[3] in ('yes', 'no')]
+    both = [row for row in rows if row[3] in ('yes', 'no', 'error in a trial')]
     reviews = [row for row in both if row[4] in ('yes', 'no')]
+    failed = sum(row[3] == 'error in a trial' for row in both)
     return (f'Cases that both trials ran: {len(both)}. Same outcome: {sum(row[3] == "yes" for row in both)}. '
-            f'Both gave a review: {len(reviews)}; same items and action in {sum(row[4] == "yes" for row in reviews)} of them.')
+            f'Both gave a review: {len(reviews)}; same items and action in {sum(row[4] == "yes" for row in reviews)} of them.'
+            + (f' Cases with an error in at least one trial (not counted as the same outcome): {failed}.' if failed else ''))
 
 
 COMPARE_HEADERS = ['Case', 'Outcome A', 'Outcome B', 'Same outcome', 'Same items and action', 'Seconds A', 'Seconds B']
