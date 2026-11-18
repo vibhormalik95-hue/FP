@@ -2,6 +2,10 @@
 
 Run an already configured local app, then supply its loopback URL and a NEW
 output JSON path. No dataset, checkpoint, existing receipt or experiment is edited.
+
+The run is GATED: it exits 1 when any summary check is false (manual equals live English or
+Chinese, other session empty, final profile empty, every A-E check equal). The failed checks
+are listed in the receipt under "failed_checks".
 """
 import argparse
 import json
@@ -16,12 +20,21 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from feedctrl.controls import _local_endpoint
 
 
-def main():
+SUMMARY_CHECKS = ("manual_equals_live_english", "manual_equals_live_chinese", "other_session_empty",
+                  "final_profile_empty", "all_ae_checks_equal")
+
+
+def failed_checks(record):
+    """Every summary check that is missing or not true."""
+    return [key for key in SUMMARY_CHECKS if record.get(key) is not True]
+
+
+def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("base_url")
     parser.add_argument("output", type=Path)
     parser.add_argument("--user", type=int, default=14)
-    args = parser.parse_args()
+    args = parser.parse_args(argv)
     base = _local_endpoint(args.base_url)
     if args.output.exists():
         raise SystemExit("Output already exists; preserve it and choose a new receipt path")
@@ -94,9 +107,15 @@ def main():
     final=run("final_profile","/api/steering?user_id="+str(user))
     record["final_profile_empty"]=final.get("commands")==[]
     record["all_ae_checks_equal"]=all(x["all_ae_unchanged"] for x in record["cases"])
+    record["failed_checks"]=failed_checks(record)
+    record["all_checks_passed"]=not record["failed_checks"]
     record["finished_utc"]=datetime.now(timezone.utc).isoformat();save()
     print(str(args.output),flush=True)
+    if record["failed_checks"]:
+        print(json.dumps({"failed_checks":record["failed_checks"]}),flush=True)
+        return 1
+    return 0
 
 
 if __name__ == "__main__":
-    main()
+    raise SystemExit(main())

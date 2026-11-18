@@ -1,10 +1,11 @@
-"""The demonstration launcher, offline. No listener, no process, no model.
+"""The legacy demonstration launcher, offline. No listener, no process, no model.
 
-The personal-cli path is exercised with an authored runner that returns CLI
-envelopes built from the fixed test replies of tests/standins/authored_replies.py
-(a test double; no launcher has hand-written replies). That checks wiring,
-the loopback boundary and the provider report; it is not evidence about
-the Windows process runner, the real CLI or any model.
+The manual, relay and route providers run here against the fixed test replies of
+tests/standins/authored_replies.py (a test double; no launcher has hand-written
+replies). The personal-cli route is RETIRED: its tests below are skipped for that
+reason and are kept only as the record of the retired flow; what runs is the
+check that the route is refused. Nothing here is evidence about the Windows
+process runner, the real CLI or any model.
 """
 import argparse
 import hashlib
@@ -117,8 +118,12 @@ def test_a_provider_failure_is_reported_and_changes_nothing(monkeypatch):
         headers = session(client)
         body = json.loads((run_demo.SCENARIOS['category'] / 'app-preview.json').read_text())
         body['objective'] += ' Please.'
+        before = client.get('/api/semantic/groups?user_id=1', headers=headers).json()
         reply = client.post('/api/semantic/definition/preview', headers=headers, json=body).json()
         assert reply['definition_ready'] is False and reply['status'] == 'error'
+        # "Changes nothing" is read from the server state, not from the reply alone.
+        after = client.get('/api/semantic/groups?user_id=1', headers=headers).json()
+        assert after['feed'] == before['feed'] and after['groups'] == before['groups']
 
 
 def test_relay_needs_its_declarations():
@@ -397,4 +402,7 @@ def test_production_driver_and_frozen_input_pin_are_unchanged():
 def test_personal_cli_route_is_retired():
     with pytest.raises(SystemExit) as e:
         run_demo.build_personal_cli_app(type('A', (), {'reviewed_config': None, 'report': None, 'port': None})())
-    assert 'retired' in str(e.value) and 'studio' in str(e.value)
+    message = str(e.value)
+    # R6 E1a/E1b: the retired route names the canonical Lab, never the absent Studio recovery path.
+    assert 'retired' in message and 'scripts/run_app.py' in message and '8765' in message
+    assert 'studio' not in message.lower() and 'run-studio' not in message

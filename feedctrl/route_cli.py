@@ -121,8 +121,23 @@ def is_shim(executable):
     return Path(executable).suffix.lower() in ('.cmd', '.bat')
 
 
+_SENSITIVE_NAME = re.compile(r'(?i)(key|token|secret|passw|auth|credential|cookie|session|bearer)')
+
+
+def _sensitive(name, value):
+    """A passed value that can authenticate: a credential-like name, a key shape, or a long opaque value."""
+    return bool(value) and (bool(_SENSITIVE_NAME.search(name)) or bool(routes._KEY_SHAPES.search(value))
+                            or len(value) >= 16)
+
+
 def environment(config):
-    names = (*ENV_ALLOW, *(config.get('pass_environment') or []))
+    """The reduced environment of a program. Every sensitive value of ``pass_environment`` is
+    remembered by the scrubber, so that a record file, receipt or error text never holds it."""
+    passed = config.get('pass_environment') or []
+    names = (*ENV_ALLOW, *passed)
+    for name in passed:
+        if _sensitive(name, os.environ.get(name, '')):
+            routes.remember_secret(os.environ[name])
     return {**ENV_SET, **{name: os.environ[name] for name in names if name in os.environ}}
 
 
@@ -599,7 +614,8 @@ def _cli_check(config, *, api_key=None, step):
     try:
         code, out, err = run_program([executable, 'auth', 'status'], b'', environment(config), None, 30, 100_000)
     except RouteError:
-        step('sign-in', True, 'The sign-in state could not be read with this CLI version. The test call decides.')
+        step('sign-in', True, 'The sign-in state could not be read with this CLI version: not verified. '
+             'Only the test call can show that the CLI answers.', status='unverified')
         return True
     state = _lenient_object(out)
     if code == 0:
@@ -612,7 +628,8 @@ def _cli_check(config, *, api_key=None, step):
         step('sign-in', False, 'The CLI reports that it is not signed in.',
              _SIGN_IN_ADVICE.replace('then try again', 'then run the check again'))
         return False
-    step('sign-in', True, 'This CLI version did not report a sign-in state. The test call decides.')
+    step('sign-in', True, 'This CLI version did not report a sign-in state: not verified. '
+         'Only the test call can show that the CLI answers.', status='unverified')
     return True
 
 

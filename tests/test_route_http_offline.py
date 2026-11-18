@@ -486,7 +486,10 @@ class RawServer:
                 if line.lower().startswith(b'content-length:'):
                     length = int(line.split(b':', 1)[1])
             while len(rest) < length:
-                rest += connection.recv(65536)
+                block = connection.recv(65536)
+                if not block:          # the client closed early: stop, never spin on an empty read
+                    return
+                rest += block
             self.count += 1
             try:
                 self.answer(connection, head.decode('latin-1'))

@@ -1,4 +1,9 @@
-"""Serve the Feed Control Lab on this computer for the language-control demonstration.
+"""LEGACY / REPRODUCTION launcher: serve the earlier scenario app for the language-control demonstration.
+
+This is not the current application. The current application is the Feed Control
+Lab on real KuaiRec: run-app.cmd (Windows) or "python scripts/run_app.py", served on
+http://127.0.0.1:8765, with a mock provider when no key is given. This launcher is
+kept to reproduce the earlier scenario runs.
 
 Examples (run from the repository root):
 
@@ -7,23 +12,21 @@ Examples (run from the repository root):
     python scripts/run_demo.py --scenario hunger --provider relay \
         --relay-dir runs/relay-01 --declared-model claude-fable-5-2 \
         --transport-note "replies pasted by hand from a Claude chat"
-    python scripts/run_demo.py --provider personal-cli --reviewed-config my-config.json \
-        --report runs/category-report.json
     python scripts/run_demo.py --scenario hunger --provider route --route-file model-route.json
 
 Providers
     manual        No model. Only the manual category control is offered.
     relay         An operator carries each request to a model and saves the reply.
-    personal-cli  The signed-in Claude Code CLI on Windows, through the reviewed
-                  configuration that the validation driver already checks.
     route         A model route from a route file: a program on this computer, a
                   hosted API with your own key, a local model server, or the relay.
                   Write the file with "python scripts/model_route.py setup".
                   See docs/model-routes.md.
+    personal-cli  RETIRED. It is still recognised only to refuse it with a message
+                  that names the canonical Lab.
 
-There is no provider with hand-written replies. To try the screens of a
-language-control workflow with no key and no model, use Feed Control Studio
-(run-studio.cmd) and its mock provider; see docs/studio-guide.md.
+There is no provider with hand-written replies. To try the language controls with
+no key and no model, use the canonical Lab and its mock provider: run-app.cmd (or
+python scripts/run_app.py) on http://127.0.0.1:8765.
 
 Scenarios
     tags      Ten invented items with categories and tags: the manual control, a
@@ -262,8 +265,9 @@ def build_app(args):
 
 
 RETIRED_PERSONAL_CLI = ('personal-cli is retired: it served the token-gated personal app through the frozen '
-                        'driver in tools/hosted_validation_current. Use the Studio instead: '
-                        'python -m studio --provider claude-cli  (or run-studio.cmd with your own API key).')
+                        'driver in tools/hosted_validation_current. Use the canonical Lab instead: '
+                        'python scripts/run_app.py --provider claude-cli  (or run-app.cmd), '
+                        'served on http://127.0.0.1:8765.')
 
 
 def build_personal_cli_app(args):
@@ -351,7 +355,7 @@ def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__.split('\n\n')[0])
     parser.add_argument('--scenario', choices=sorted([*SCENARIOS, *FIXTURE_SCENARIOS]))
     parser.add_argument('--provider', choices=('manual', 'relay', 'personal-cli', 'route'),
-                        default='manual')
+                        default='manual', help='personal-cli is retired and is refused with a pointer to the canonical Lab')
     parser.add_argument('--route-file', help='with --provider route; default: model-route.json')
     parser.add_argument('--record-dir', help='with --provider route: a new folder for the call records, or "none"')
     parser.add_argument('--port', type=int)

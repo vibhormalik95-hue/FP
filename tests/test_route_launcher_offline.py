@@ -235,7 +235,9 @@ def test_quickstart_setup_and_doctor_are_the_route_tool(tmp_path, capsys):
     with pytest.raises(SystemExit) as done:
         quickstart.main(['doctor', '--file', str(tmp_path / 'none.json')])
     assert done.value.code == 1
-    assert 'the route works' in capsys.readouterr().out
+    # R6 E4: the relay has no test call, so the doctor passes without claiming that the route works.
+    output = capsys.readouterr().out
+    assert 'the route is not proven to work' in output and 'the route works' not in output
 
 
 def test_the_earlier_quick_start_steps_still_parse():
@@ -249,7 +251,10 @@ def test_the_earlier_quick_start_steps_still_parse():
     with pytest.raises(SystemExit) as stopped:
         quickstart.main(['rehearse'])
     assert stopped.value.code == 2
-    assert sorted(run_demo.SCENARIOS) == sorted(set(run_demo.SCENARIOS)) and 'category' in run_demo.SCENARIOS
+    # A dict cannot repeat a key, so the check is between the two tables: no name is both a folder
+    # scenario and a fixture scenario, and every folder scenario has its data file.
+    assert not set(run_demo.SCENARIOS) & set(run_demo.FIXTURE_SCENARIOS) and 'category' in run_demo.SCENARIOS
+    assert all((folder / 'app-data.json').is_file() for folder in run_demo.SCENARIOS.values())
 
 
 # ---------------------------------------------------------------- review findings F04 and F05

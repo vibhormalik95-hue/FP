@@ -309,11 +309,9 @@ def test_a_proposal_without_a_control_matches_nothing():
 def test_a_reply_without_the_declared_fields_and_bounds_is_rejected(raw):
     result, seen = run(raw)
     assert result['status'] == 'error' and result['controls'] == [] and len(seen) == 1
-    if isinstance(raw, dict) and raw.get('alternatives') == ['lone\ud800surrogate']:
-        assert failed(result) == 'The reply is bounded finite JSON'
-    else:
-        assert failed(result) == 'The reply has the declared fields and bounded values'
-        assert result['checks'][-1]['detail']
+    # The lone-surrogate reply is a case of the next test (bounded finite JSON), not of this one.
+    assert failed(result) == 'The reply has the declared fields and bounded values'
+    assert result['checks'][-1]['detail']
 
 
 @pytest.mark.parametrize('raw', [{'status': float('nan')}, {'status': {1, 2}}, {1: 'x'},
