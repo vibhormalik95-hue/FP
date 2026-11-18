@@ -12,6 +12,7 @@ import json
 import re
 import time
 import urllib.request
+from pathlib import Path
 
 import pyautogui
 
@@ -117,16 +118,52 @@ def spoken_controls(texts, gloss, limit=4):
 
 
 def money(v):
-    if not v or v < 0.01:
-        return "less than one cent"
-    return f"about {round(v * 100):d} cents" if v < 1 else f"about {v:.2f} dollars"
+    """Spoken cost of a list-price estimate. None (unknown) is never turned into a number."""
+    if v is None:
+        return "cost not known"
+    if v == 0:
+        return "no API charge"
+    if v < 0.01:
+        return "an estimated cost below one cent"
+    return f"an estimated {round(v * 100):d} cents" if v < 1 else f"an estimated {v:.2f} dollars"
 
 
 def calls_line(p):
-    calls = [c for c in p.get("calls", []) if not c.get("error")]
-    secs = sum(c.get("latency_s") or 0 for c in calls)
-    cost = sum(c.get("cost_usd") or 0 for c in calls)
-    return f"{len(calls)} model call{'s' if len(calls) != 1 else ''}, {secs:.0f} seconds of model time, {money(cost)}"
+    calls = p.get("calls", [])
+    ok = [c for c in calls if not c.get("error")]
+    failed = len(calls) - len(ok)
+    secs = sum(c.get("latency_s") or 0 for c in ok)
+    unknown = sum(c.get("cost_usd") is None for c in calls)
+    cost = None if unknown == len(calls) and calls else sum(c.get("cost_usd") or 0 for c in calls)
+    line = f"{len(ok)} model call{'s' if len(ok) != 1 else ''}, {secs:.0f} seconds of model time summed over the calls, {money(cost)}"
+    if unknown and cost is not None:
+        line += f", plus {unknown} call{'s' if unknown != 1 else ''} of unknown cost"
+    if failed:
+        line += f"; {failed} call{'s' if failed != 1 else ''} failed"
+    return line
+
+
+MEASURED_SUMMARY = Path(__file__).resolve().parents[2] / "docs/evidence/lab-eval/20261117-main/summary.json"
+
+
+def measured_summary(path=MEASURED_SUMMARY):
+    try:
+        return json.loads(Path(path).read_text(encoding="utf-8"))
+    except (OSError, ValueError):
+        return None
+
+
+def model_line(model, spoken, summary):
+    """What the narration says about the chosen model: only facts from the published measured summary."""
+    s = (summary or {}).get("summaries", {}).get(model)
+    if not s:
+        return f"Model: {spoken}. It was not measured under this name, so I make no claim about its accuracy."
+    f1 = {n: v.get("nc_member_f1") for n, v in summary["summaries"].items() if v.get("nc_member_f1") is not None}
+    best = max(f1, key=f1.get) if f1 else None
+    line = f"Model: {spoken}. In my measured runs it chose the exact labels for {s['nl_exact']} of {s['nl_cases']} nonliteral requests"
+    if s.get("nc_member_f1") is not None:
+        line += f", with a new-category member F1 of {s['nc_member_f1']:.2f}" + (", the highest of the measured models" if best == model else "")
+    return line + "."
 
 
 def wait_done(d, before, task, trigger=None, limit=360):
