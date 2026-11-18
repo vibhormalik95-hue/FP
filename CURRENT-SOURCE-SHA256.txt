@@ -519,7 +519,7 @@ a8e34ab23d8ae729f1797aaedd2499a554a90a8de281ceeaeb10b673727fc3ad  docs/evidence/
 b7446ea6b50f0508d570b9fb22c8bfe70e338fd1d7e2c624713fa6756e496cef  docs/evidence/2026-11-17-video-take13/contact-sheet.png
 8d3367bf04628a6e7372353a8678c69a8dcefac34b0c68b98d413ed4968b3092  docs/evidence/2026-11-17-video-take13/narration-timeline.json
 15d24489110910576b7542bd7efa4559fb29f0a7d34d550a4c4a8fb67f0bd87d  docs/evidence/2026-11-17-video-take13/transcript.json
-1c12d46cc02c4358a23b65dd1f1d2a02696d22d96d71b52ff209ad22cfe2015e  docs/evidence/2026-11-17-video-take14/ERRATA-2026-11-17-r6.md
+10a0ba6e3aa1cf682f1d4320064d2218003c64b92a102aeb477a96993dd006b2  docs/evidence/2026-11-17-video-take14/ERRATA-2026-11-17-r6.md
 947b3a3c205e9e4e3497ceb8fda873ac429e5a12ba55db303fac936b6d87c613  docs/evidence/2026-11-17-video-take14/README.md
 51b6b11d452a01b685a0b13e279c5302080ed94aa2e4c4c39644e2a047781689  docs/evidence/2026-11-17-video-take14/check.json
 d3ee8372ac0df283e700f1f10a684d1de12c01dbeeada78a7c63854e693b9255  docs/evidence/2026-11-17-video-take14/contact-sheet.png
@@ -669,8 +669,8 @@ da751920a317ed318b7b5cd7fa585a6cc7d28502d457856382e9be24b10a3bd7  paper/IEEEtran
 c6419e7ea38531947b6caad88ff22fdaa70c9bbd7c5b8e2f3432077d1d31268c  paper/research-paper-2026-10-19.tex
 eb2a3d41e31ea8e548835362141035a0508a4cbfdf4b978f1edb606f55ab6241  paper/research-paper-2026-11-14.pdf
 8f098cadcf17fe305c2c2f3854786bcea250a1308bdcec5622f1a7ad26948656  paper/research-paper-2026-11-14.tex
-308c0850e42870f5ccb7cae0baab6d3e981835b0dcceee0174ed6fd167ae4692  paper/research-paper-2026-11-17.pdf
-2e6c05816a9669ffe007c613cbdab9d4d0ced221ac211329571d4e593e9e633a  paper/research-paper-2026-11-17.tex
+d45f674fed5ed24a76c979b070ea24e11247013ced0c5ba0aed1d8b63a437094  paper/research-paper-2026-11-17.pdf
+26ee9f06ef42a69ed23c881a8521c2117b9b21211907a01786f5a7b16218822e  paper/research-paper-2026-11-17.tex
 e0bea8da1f809bac89072b1dde0a89b1d5922280c2570030dcab5d5c19c671f4  presentation-bcit/ERRATA-2026-11-17-r6.md
 39a86e366fa351154117616c4e7fa16dbace9878e34339c16a5a62dd826c1629  presentation-bcit/ai-reference-main.tex
 1838e698b7e8908337d43f67e07f25542d2d2f77159eb9ebca9e55dc38cb6409  presentation-bcit/bcit_logo.png
