@@ -1,5 +1,5 @@
 {
- "base": "http://127.0.0.1:8766",
+ "base": "http://127.0.0.1:49387",
  "user": "14",
  "shots": [
   "01-ae-condition-c.png",
@@ -18,6 +18,6 @@
   "10-results.png"
  ],
  "model_calls": 8,
- "cost_usd": 0.023059,
+ "cost_usd": 0.022464,
  "cjk": "none visible in any shot"
 }

@@ -89,7 +89,7 @@ The model proposes; a person reviews; a fixed policy applies exactly the approve
 Request & How it is answered & Measured result\\\midrule
 1. Manual category control with measured performance & Manual workflow on real KuaiRec labels; no model. Same policy as the language controls & Reviewed reference control: TCP@10 0.0063 $\to$ 0.5290; model controls 0.5178--0.5625 (200 users)\\[0.15cm]
 2. A new category from natural language that feeds the filter & Definition $\to$ person reviews $\to$ membership with quotations $\to$ separate evidence check $\to$ filter & Member F1 0.875--0.936 (6 cases, 150-item pool)\\[0.15cm]
-3. Indirect intent matched to existing categories and tags & One call maps any wording (EN or ZH) to the 467 existing KuaiRec terms & Exact intended profile 16--17 of 20; abstention 7--12 of 14\\\bottomrule
+3. Indirect intent matched to existing categories and tags & One call maps any wording (measured: EN or ZH; app: English) to the 467 existing KuaiRec terms & Exact intended profile 16--17 of 20; abstention 7--12 of 14\\\bottomrule
 \end{tabular}\par
 \src{Experiment 3, frozen AI-drafted and human-reviewed set, three hosted models (two local 7--8B models: 0 of 20 exact). Small $n$: wide intervals.}
 \end{frame}
@@ -427,7 +427,7 @@ A negative finding for autonomous use: a person must review each proposal.
 \begin{tikzpicture}[font=\scriptsize, node distance=2.2mm,
   st/.style={draw=bcitblue, thick, rounded corners=2pt, align=center, minimum width=12mm, minimum height=7.5mm, inner sep=1pt},
   ar/.style={-{Latex[length=1.6mm]}, bcitblue, thick}]
-\node[st] (a) {Request\\EN or ZH};
+\node[st] (a) {Request\\English};
 \node[st, right=of a] (b) {Proposal\\model};
 \node[st, right=of b] (c) {Checks\\application};
 \node[st, right=of c] (d) {Review\\person};
@@ -457,12 +457,12 @@ A negative finding for autonomous use: a person must review each proposal.
 \toprule
 Workflow & What happens & Calls\\\midrule
 1. Manual & Person picks an existing label and an action. & 0\\[0.12cm]
-2. Request to existing labels & Any wording, EN or ZH, plus the 467 terms (no item text) $\to$ controls with exact terms, a verbatim span and a relation; or ambiguous / no match / unsupported. & 1\\[0.12cm]
+2. Request to existing labels & Any English wording, plus the 467 terms (no item text) $\to$ controls with exact terms, a verbatim span and a relation; or ambiguous / no match / unsupported. & 1\\[0.12cm]
 3. New category & Definition (label $\leq$60, definition $\leq$600 characters) $\to$ person reviews $\to$ membership of each item in scope ($\leq$200) with a quotation $\to$ verdict-blind check of match quotations. & 1 + batches\\[0.12cm]
 4. New items & Title + description $\to$ existing categories, tags and new-category verdicts, then the same check. Score: median of the user's base scores. & 1 + check\\\bottomrule
 \end{tabular}\par
 Preview changes nothing; Apply needs the preview of the current state; Undo restores it.
-\src{Same functions in the app and the measurement script, except: the evaluator grouped a case's ``only'' labels (the app intersects separate controls; NL06, NL08, NL15) and used the freeze-time quotation rule (shipped: $\geq$3 characters or one whole tag). A test checks code and prompts for example-specific logic.}
+\src{App and measurement script share functions, except: the evaluator grouped a case's ``only'' labels (app intersects; NL06, NL08, NL15) and used the freeze-time quote rule (shipped: $\geq$3 characters in title/description, whole tag in tags). Measured: EN/ZH requests, original text + glosses; now English-only prompts and text, revised data note. A test bars example-specific logic.}
 \end{frame}
 
 \begin{frame}{Demo video and a check on new domains}
@@ -471,7 +471,7 @@ Preview changes nothing; Apply needs the preview of the current state; Undo rest
 \begin{itemize}
 \item Take 14: 10:57, 1920$\times$1080, one take on the English-only app; GPT-5 mini at low effort (the measured setting), through the OpenAI API (key pasted into the masked field, never shown).
 \item New category ``Dogs'': 3 of 50 selected, 2 enter the top ten after Apply; a new puppy item joins it.
-\item Checks: no silence $\geq$5\,s at $-45$\,dB; transcript aligned in order with the script, 103/103 sentences (r6 re-check, median sync 0.44\,s); live CJK check, 69 checks, none visible; one frame every 30\,s.
+\item Checks: no silence $\geq$5\,s at $-45$\,dB; transcript word check, 103/103 script sentences found; live CJK check, 69 checks, none visible; one frame every 30\,s.
 \end{itemize}
 \textbf{New-domain check} (software check, not evaluation data; GPT-5)
 \begin{itemize}
