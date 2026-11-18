@@ -68,6 +68,43 @@ def git_commit():
 
 
 # ------------------------------------------------------------------ run
+IDENTITY = ("provider", "model", "effort", "set_sha256", "input_text")
+
+
+def resume_meta(meta_path, pred_path, done, args, set_sha, attempt):
+    """The run manifest. A new output starts a new manifest. Resuming an existing output is allowed only when the
+    identity (provider, model, effort, set hash, input text) is the same as recorded; a different code commit is
+    refused unless --resume-across-code-change is given, and then every attempt keeps its own commit. Earlier
+    manifests are never overwritten with the current values (r6 finding C1)."""
+    identity = {"provider": args.provider, "model": args.model, "effort": args.effort, "set_sha256": set_sha,
+                "input_text": args.text}
+    if not pred_path.is_file() or not done:
+        if meta_path.is_file() and pred_path.is_file():
+            raise SystemExit(f"{meta_path} exists for an empty prediction file; use a new --name or --out.")
+        return {"name": args.name, **identity, "code_commit": attempt["code_commit"],
+                "started_utc": attempt["started_utc"], "attempts": [attempt]}
+    if not meta_path.is_file():
+        raise SystemExit(f"{pred_path} has {len(done)} predictions but no manifest; refusing to resume. Use a new --name or --out.")
+    old = json.loads(meta_path.read_text(encoding="utf-8"))
+    recorded = {k: old.get(k, "original" if k == "input_text" else None) for k in IDENTITY}
+    mismatch = {k: (recorded[k], identity[k]) for k in IDENTITY if recorded[k] != identity[k]}
+    if mismatch:
+        raise SystemExit("Refusing to resume: the existing run differs in " + "; ".join(
+            f"{k} recorded {a!r}, now {b!r}" for k, (a, b) in mismatch.items()) + ". Use a new --name or --out.")
+    attempts = old.get("attempts") or [{"code_commit": old.get("code_commit"), "started_utc": old.get("started_utc"),
+                                        "cases_already_done": 0, "note": "reconstructed from a manifest without attempts"}]
+    commits = {a.get("code_commit") for a in attempts}
+    if attempt["code_commit"] not in commits and not getattr(args, "resume_across_code_change", False):
+        raise SystemExit(f"Refusing to resume: earlier attempts ran at {sorted(map(str, commits))}, this code is "
+                         f"{attempt['code_commit']}. Use a new output, or --resume-across-code-change to record a mixed run.")
+    attempts = attempts + [attempt]
+    commits = [a.get("code_commit") for a in attempts]
+    new = {**old, "attempts": attempts}
+    if len(set(commits)) > 1:
+        new["code_commit"] = "mixed: " + ", ".join(dict.fromkeys(map(str, commits)))
+    return new
+
+
 def cmd_run(args):
     data, set_sha = load_set(args.set)
     if args.text == "english" and not data.get("input_text") == "english":
@@ -80,29 +117,32 @@ def cmd_run(args):
     out = ROOT / args.out
     out.mkdir(parents=True, exist_ok=True)
     pred_path = out / f"{args.name}.jsonl"
+    meta_path = out / f"{args.name}.meta.json"
     done = {}
     if pred_path.is_file():
         for line in pred_path.read_text(encoding="utf-8").splitlines():
             row = json.loads(line)
             done[row["case_id"]] = row
+    attempt = {"code_commit": git_commit(), "started_utc": datetime.now(timezone.utc).isoformat(timespec="seconds"),
+               "cases_already_done": len(done)}
+    meta = resume_meta(meta_path, pred_path, done, args, set_sha, attempt)
     provider = build_provider(args.provider, model=args.model, effort=args.effort, timeout=args.timeout)
     ledger = Ledger(budget_usd=args.budget_usd)
-    meta = {"name": args.name, "provider": args.provider, "model": args.model, "effort": args.effort,
-            "code_commit": git_commit(),
-            "set_sha256": set_sha, "started_utc": datetime.now(timezone.utc).isoformat(timespec="seconds")}
-    (out / f"{args.name}.meta.json").write_text(json.dumps(meta, indent=2), encoding="utf-8")
+    meta_path.write_text(json.dumps(meta, indent=2), encoding="utf-8")
+    attempt_no = len(meta["attempts"])
     with pred_path.open("a", encoding="utf-8") as handle:
         for case in data["cases"]:
             if case["id"] in done:
                 continue
             calls, started = [], time.monotonic()
-            row = {"case_id": case["id"], "group": case["group"], "model": args.name}
+            row = {"case_id": case["id"], "group": case["group"], "model": args.name, "attempt": attempt_no}
             try:
                 if case["group"] in ("NL", "AB"):
                     raw, controls, checks, evidence, calls = wf.interpret_request(provider, ledger, case["request"], vocabulary)
                     row.update(status=raw.get("status"), reason=raw.get("reason"), alternatives=raw.get("alternatives"),
                                controls=[{"action": c["action"], "strength": c["strength"],
-                                          "term_id": f"{c['target']['kind']}:{c['target']['value']}"} for c in controls],
+                                          "term_id": f"{c['target']['kind']}:{c['target']['value']}",
+                                          "control_group": c["group"].rsplit("-", 1)[-1]} for c in controls],
                                failed_checks=[c["check"] for c in checks if not c["ok"]])
                 else:
                     rows, memberships, assessments = wf.classify_members(provider, ledger, case["label"], case["definition"], pool, calls)
@@ -160,13 +200,7 @@ def downstream(data, preds_by_model, catalog, users, n_users, seed):
 
     from feedctrl.lab import apply_controls, make_control
 
-    def label_controls(controls, group="case"):
-        """The exact controls, applied by the application's own policy (strength, mixed actions, 'only' groups)."""
-        out = []
-        for c in controls:
-            kind, _, value = c["term_id"].partition(":")
-            out.append(make_control("eval", c["action"], {"kind": kind, "value": value}, c.get("strength", "standard"), group=group))
-        return out
+    label_controls = eval_controls
 
     def set_controls(members, action="boost"):
         custom = {"eval-set": {"label": "eval-set", "definition": "", "members": {str(i): {"selected": True} for i in members}}}
@@ -210,6 +244,48 @@ def downstream(data, preds_by_model, catalog, users, n_users, seed):
 
 
 # ------------------------------------------------------------------ score
+SCORER_VERSION = "lab_eval score v1.1 (r6): v1 metrics unchanged; app grouping used only for rows that store a control group"
+
+
+def eval_controls(controls, group="case"):
+    """The controls, applied by the application's own policy (strength, mixed actions, 'only' groups).
+    Grouping: a prediction row written since r6 stores the app's control group of every term, and the app's
+    grouping is used (labels of one model control are a union; separate 'only' controls intersect). Rows of
+    earlier runs (all runs of 17 Nov 2026) store no group; their terms are put in one group per case (a union),
+    which differs from the app when a model proposed several separate 'only' controls (see grouping_unknown)."""
+    from feedctrl.lab import make_control
+    out = []
+    for c in controls:
+        kind, _, value = c["term_id"].partition(":")
+        g = f"{group}-{c['control_group']}" if c.get("control_group") is not None else group
+        out.append(make_control("eval", c["action"], {"kind": kind, "value": value}, c.get("strength", "standard"), group=g))
+    return out
+
+
+def find_grouping_unknown(preds_by_model):
+    """Per model, the cases whose 'only' grouping cannot be recovered from the stored rows: several 'only' terms
+    and no stored control group. For these cases the scored downstream effect may differ from the app."""
+    return {n: sorted(cid for cid, p in preds.items()
+                      if sum(c["action"] == "only" for c in (p.get("controls") or [])) > 1
+                      and any(c.get("control_group") is None for c in (p.get("controls") or [])))
+            for n, preds in preds_by_model.items()}
+
+
+def noninf_sentence(noninf, hosted):
+    """The HR@1 non-inferiority sentence of the narration, derived from the table rows
+    [name, mean diff, ci low, relative margin, non-inferior relative, non-inferior absolute, ndcg diff]."""
+    rows = [r for r in noninf if r[0] in hosted]
+    if not rows:
+        return ""
+    rel = [r[0] for r in rows if r[4]]
+    absolute = [r[0] for r in rows if r[5]]
+    if len(absolute) == len(rows) and not rel:
+        return ("For the frontier models, hit rate at one stays within the absolute margin, but not within the "
+                "relative ten percent margin, because the base rate is so low.")
+    return ("Hit rate at one is non-inferior within the absolute margin for " + (", ".join(absolute) or "no frontier model")
+            + ", and within the relative ten percent margin for " + (", ".join(rel) or "no frontier model") + ".")
+
+
 def cmd_score(args):
     data, set_sha = load_set(args.set)
     processed, catalog, _ = load_catalog(args.text)
@@ -278,6 +354,7 @@ def cmd_score(args):
 
     names = sorted(rows_by_model)
     scoring_commit = git_commit()
+    grouping_unknown = find_grouping_unknown({n: preds_by_model[n] for n in names})
     provenance_line = ("Predictions produced at commit: " + "; ".join(f"{n} {meta[n].get('code_commit', 'unknown')}" for n in names)
                        + f". Scored at commit {scoring_commit}.")
     pct = lambda v: None if v is None else f"{100 * v:.0f}%"
@@ -295,7 +372,11 @@ def cmd_score(args):
          "note": ("Selected = verdict match, quotation found in the item, and the independent check supports it. Every model used the reviewed reference definition. " + ("Measured with the freeze-time quotation rule; the shipped app is stricter since 1de3955 (quotations of 2+ characters, 3+ letters for Latin text, whole tags)." if args.text == "original" else "Measured on the English text layer with the quotation rule of the shipped app (3+ characters, whole tags)."))},
         {"title": "Downstream effect on the trained SASRec ranking (%d sampled users, seed %d)" % (len(sample), args.seed),
          "columns": ["Control", "TCP@10 (boost/only cases)", "TCER@10 (hide/reduce cases)", "NDCG@10", "HR@1"],
-         "rows": eff_rows, "note": "TCP/TCER: share of the top ten that is in the REFERENCE target set. none = no control; reference = the reviewed control."},
+         "rows": eff_rows, "note": "TCP/TCER: share of the top ten that is in the REFERENCE target set. none = no control; reference = the reviewed control."
+                 + (" Grouping: these prediction rows store no control group, so several 'only' labels of one case are applied as one "
+                    "group (a union); the app intersects separate 'only' controls. Cases where this can differ: "
+                    + "; ".join(f"{n} {', '.join(v)}" for n, v in grouping_unknown.items() if v) + "."
+                    if any(grouping_unknown.values()) else "")},
         {"title": "HR@1 non-inferiority against no control (proposal margin 10%)",
          "columns": ["Model", "Mean HR@1 diff", "95% CI lower", "Relative margin", "Non-inferior (relative 10%)", "Non-inferior (absolute 0.10)", "Mean NDCG@10 diff"],
          "rows": noninf, "note": "Bootstrap over cases. HR@1 of the base ranking is very low, so the relative margin is tiny."},
@@ -317,6 +398,7 @@ def cmd_score(args):
                                f"{provenance_line}"),
                "scoring_commit": scoring_commit,
                "set_sha256": set_sha, "models": meta, "summaries": summaries, "paired_tests": tests,
+               "scorer": {"version": SCORER_VERSION, "grouping_unknown": grouping_unknown},
                "downstream": {"users": sample, "cases": effects}, "tables": tables,
                "scored_utc": datetime.now(timezone.utc).isoformat(timespec="seconds"), "input_text": args.text}
     pub = ROOT / args.publish
@@ -349,7 +431,7 @@ def cmd_score(args):
              f"{say(n)} {summaries[n]['nl_exact']} of {summaries[n]['nl_cases']}" for n in order) + "."},
         {"selector": f"{wraps} >> nth=1", "say": "Next, cases where the model should not change the feed. Correct abstentions: " + "; ".join(
             f"{say(n)} {summaries[n]['ab_abstained']} of {summaries[n]['ab_cases']}" for n in order) + "."},
-        {"selector": f"{wraps} >> nth=2", "say": "For new categories, member F1 on the shared pool of one hundred fifty KuaiRec items: " + "; ".join(
+        {"selector": f"{wraps} >> nth=2", "say": f"For new categories, member F1 on the shared pool of {len(data['pool'])} KuaiRec items: " + "; ".join(
             f"{say(n)} {summaries[n]['nc_member_f1']:.2f}" for n in order if summaries[n]["nc_member_f1"] is not None) + "."},
         {"selector": f"{wraps} >> nth=3", "say": None}]
     local = sorted(n for n in order if meta[n].get("provider") == "ollama")
@@ -359,8 +441,7 @@ def cmd_score(args):
                             f"with no control to {eff['reference'][1]:.2f} with the reviewed control. The frontier models reach "
                             + ", ".join(f"{eff[h][1]:.2f}" for h in hosted)
                             + ("; the local models only " + " and ".join(f"{eff[l][1]:.2f}" for l in local) if local else "")
-                            + ". For the frontier models, hit rate at one stays within the absolute margin, but not within the "
-                              "relative ten percent margin, because the base rate is so low.")
+                            + ". " + noninf_sentence(noninf, hosted))
     if local and hosted:
         narration.append({"selector": f"{wraps} >> nth=0", "hold": 3.5, "say":
             f"Local versus frontier: the local models matched "
@@ -368,15 +449,21 @@ def cmd_score(args):
             "where they proposed almost nothing, their abstention scores, "
             + " and ".join(f"{summaries[l]['ab_abstained']}" for l in local) + f" of {summaries[local[0]]['ab_cases']}, reflect refusing, not judgement. The frontier models matched "
             + " to ".join(str(v) for v in sorted({summaries[h]['nl_exact'] for h in hosted})) + f" of {summaries[hosted[0]]['nl_cases']}. "
-            "Local calls cost nothing, but took " + " and ".join(f"{summaries[l]['latency_median_s']:.0f}" for l in local)
+            "Local calls had no API cost (electricity not counted), but took " + " and ".join(f"{summaries[l]['latency_median_s']:.0f}" for l in local)
             + " seconds each at the median on this laptop."})
     parser = ROOT / "docs/evidence/lab-eval/20261117-b-parser-rerun/summary.json"
     if parser.is_file():
         rows = {r[0]: r for r in json.loads(parser.read_text(encoding="utf-8"))["tables"][0]["rows"]}
-        parts = [f"{say(n)} {rows[n][1].split('/')[0]}" for n in ("llama3.1_8b", "qwen2.5-coder_7b-instruct", "gpt-5-mini", "gpt-5") if n in rows]
+        names_p = [n for n in ("llama3.1_8b", "qwen2.5-coder_7b-instruct", "gpt-5-mini", "gpt-5") if n in rows]
+        scores = {n: rows[n][1].split("/") for n in names_p}
+        parts = [f"{say(n)} {scores[n][0]}" for n in names_p]
+        reach = [n for n in names_p if len(scores[n]) == 2 and int(scores[n][1]) and int(scores[n][0]) / int(scores[n][1]) >= 0.85]
+        total = {scores[n][1] for n in names_p}
         narration.append({"selector": "[data-role='results'] .panel >> nth=1", "hold": 3.5, "say":
-            "Finally, the old one-hundred-case parser bank, re-used and labelled as re-use, scored strictly: "
-            + "; ".join(parts) + " out of one hundred. None reaches the eighty-five percent target."})
+            "Finally, the old parser bank, re-used and labelled as re-use, scored strictly: "
+            + "; ".join(parts) + (f" out of {total.pop()}" if len(total) == 1 else "") + ". "
+            + ("None reaches the eighty-five percent target." if not reach
+               else " and ".join(say(n) for n in reach) + " reach the eighty-five percent target.")})
     narration.append({"selector": f"{wraps} >> nth=-1", "say": "The last table lists latency, cost and every failure of every model."})
     for n in narration:
         n.setdefault("hold", 3.0)
@@ -400,6 +487,8 @@ def main(argv=None):
     r.add_argument("--budget-usd", type=float)
     r.add_argument("--out", required=True)
     r.add_argument("--text", choices=("original", "english"), default="original")
+    r.add_argument("--resume-across-code-change", action="store_true",
+                   help="allow resuming an output whose earlier attempts ran at another code commit (recorded as mixed)")
     s = sub.add_parser("score")
     s.add_argument("--set", required=True)
     s.add_argument("--run", required=True)
