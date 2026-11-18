@@ -117,10 +117,8 @@ def same_state(a, b):
     return all(a.get(k) == b.get(k) for k in keys)
 
 
-def feed_changed(before, after):
-    return before["eligible"] != after["eligible"] or before["order"] != after["order"] \
-        or before.get("ranked") != after.get("ranked") \
-        or before["custom"] != after["custom"] or before["added"] != after["added"]
+def ranking_changed(before, after):
+    return before.get("ranked") != after.get("ranked") or before["eligible"] != after["eligible"]
 
 
 def expected_interpret(provider, kind):
@@ -164,8 +162,8 @@ def workflows(base, user, examples, provider="mock"):
         why = []
         if s1 != 200 or s2 != 200:
             why.append(f"apply {s1}, undo {s2}")
-        if s1 == 200 and not feed_changed(before, after):
-            why.append("Apply changed nothing")
+        if s1 == 200 and not ranking_changed(before, after):
+            why.append("Apply did not change the ranking")
         if not semantic[0]:
             why.append(semantic[1])
         if not same_state(restored, before):
@@ -231,8 +229,8 @@ def workflows(base, user, examples, provider="mock"):
                 want_ids = {r["item_id"] for r in selected}
                 if s1 != 200 or got != want_ids:
                     ok, why = False, f"apply {s1}; members after Apply {sorted(got)[:10]} differ from selected {sorted(want_ids)[:10]}"
-                elif not feed_changed(before, after):
-                    ok, why = False, "Apply of the new category changed nothing"
+                elif not ranking_changed(before, after):
+                    ok, why = False, "Apply of the new category did not change the ranking"
                 else:
                     label = d["label"]
             record("new-category: classify", ex, st, p, sec, f"{len(selected)} selected of {len(ev)}", ok, why)

@@ -18,7 +18,7 @@ const snapshot = p => p.evaluate(u => fetch(`/api/lab/state?user_id=${u}`).then(
   custom: Object.fromEntries(Object.entries(s.custom).map(([k, v]) => [k, v.members])), added: s.added.map(a => a.title),
   items: Object.fromEntries(s.feed.items.map(i => [i.item_id, i.kuairec_categories || []]))})), labUser);
 const same = (a, b) => JSON.stringify([a.ranked, a.controls, a.custom, a.added]) === JSON.stringify([b.ranked, b.controls, b.custom, b.added]);
-const changed = (a, b) => !same(a, b);
+const changed = (a, b) => JSON.stringify(a.ranked) !== JSON.stringify(b.ranked);   // the ranking itself
 const shownIds = p => p.$$eval('.lab-feed .lab-card', cards => cards.map(c => Number(c.dataset.item)));
 
 (async () => {

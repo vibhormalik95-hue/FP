@@ -161,7 +161,9 @@ _KEY_SHAPES = re.compile(
     r'|\bAIza[0-9A-Za-z_\-]{20,}'
     r'|\beyJ[A-Za-z0-9_\-]{8,}\.[A-Za-z0-9_\-]{8,}\.[A-Za-z0-9_\-]{4,}'
     r'|(?<![A-Za-z0-9])(?=[A-Za-z0-9]*[a-z])(?=[A-Za-z0-9]*[A-Z])(?=[A-Za-z0-9]*[0-9])[A-Za-z0-9]{40,}(?![A-Za-z0-9])')
-_KEY_SHAPES_BYTES = re.compile(_KEY_SHAPES.pattern.encode('ascii'))   # the same shapes, for a record file
+# For a record file only the clearly prefixed shapes are cut (not the generic 40+ character rule), so long ids
+# or base64 signatures in CLI output stay intact and are not reported as removed keys.
+_KEY_SHAPES_BYTES = re.compile(_KEY_SHAPES.pattern.rsplit('|', 1)[0].encode('ascii'))
 # A setting of the route file with one of these names would hold a credential.
 _SECRET_SETTING = re.compile(r'(?i)^(x[-_])?(api[-_]?key|key|token|secret|passw(or)?d|passwd|authorization|bearer|'
                              r'credentials?|access[-_]?token|auth[-_]?token|client[-_]?secret)$')

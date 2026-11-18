@@ -511,7 +511,7 @@ def main():
         raise SystemExit("Port 8765 is already in use by another process; the recorder starts and uses its own app server. "
                          "Stop that process or free the port; nothing was started.")
     server = chrome = cap = None
-    old_toasts, minimized = None, False
+    old_toasts, toasts_changed, minimized = None, False, False
     voice = None
     examples = json.loads((REPO / "tools/demo_examples.json").read_text(encoding="utf-8"))
     args.manual_value = examples["manual"][1]["value"]
@@ -543,6 +543,7 @@ def main():
             "credentials_enable_service": False, "profile": {"password_manager_enabled": False},
             "translate": {"enabled": False}, "browser": {"has_seen_welcome_page": True}}))
         old_toasts = set_toasts(False)
+        toasts_changed = True
         subprocess.run(["powershell", "-NoProfile", "-Command", "(New-Object -ComObject Shell.Application).MinimizeAll()"])
         minimized = True
         time.sleep(1.0)
@@ -598,7 +599,7 @@ def main():
                 proc.terminate()
         if voice is not None:
             voice.close()
-        if old_toasts is not None:
+        if toasts_changed:   # restore: a missing value (the Windows default) means notifications were on
             set_toasts(True if old_toasts in (None, 1) else False)
         if minimized:
             subprocess.run(["powershell", "-NoProfile", "-Command", "(New-Object -ComObject Shell.Application).UndoMinimizeALL()"])

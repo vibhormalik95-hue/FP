@@ -89,7 +89,7 @@ def test_results_are_labelled_by_the_text_they_were_measured_on(tmp_path):
     lab_routes.mount_lab(app, results_dir=tmp_path / "lab-eval", lab=object())
     runs = TestClient(app).get("/api/lab/results").json()["runs"]
     assert runs[0]["text_label"] == lab_routes.ORIGINAL_TEXT_PENDING
-    assert "English-input re-run pending" in runs[0]["text_label"]
+    assert "no English-input figure is reported" in runs[0]["text_label"]
     new = tmp_path / "lab-eval" / "20261120-english"
     new.mkdir()
     (new / "summary.json").write_text(json.dumps({"title": "E", "input_text": "english", "tables": []}), encoding="utf-8")

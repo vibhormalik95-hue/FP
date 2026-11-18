@@ -149,3 +149,11 @@ def test_expected_interpret_outcomes():
     assert rat.expected_interpret("openai", "nonliteral") == "propose"
     assert rat.expected_interpret("mock", "nonliteral") == "any"
     assert rat.expected_interpret("openai", "abstain") == "abstain"
+
+
+def test_a_control_that_leaves_the_ranking_unchanged_fails(monkeypatch):
+    class Inert(FakeLab):
+        def ranked(self):
+            return list(range(1, 31))
+    rows = run(monkeypatch, Inert())
+    assert not rows["manual"]["ok"] and "ranking" in rows["manual"]["why_not_ok"]

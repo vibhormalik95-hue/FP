@@ -466,7 +466,9 @@ def reserved_call(provider, ledger, task, system, payload, schema):
         data, call = provider.complete(task, system, payload, schema)
     except BaseException as exc:
         ledger.settle(reservation, {"task": task, "provider": provider.name, "model": provider.model,
-                                    "error": str(exc)[:200] or type(exc).__name__, "cost_usd": None, "latency_s": None})
+                                    "error": (_scrub(str(exc), getattr(provider, "_secret", None))[:200]
+                                              if isinstance(exc, ProviderError) else f"unexpected failure: {type(exc).__name__}"),
+                                    "cost_usd": None, "latency_s": None})
         if isinstance(exc, ProviderError) or not isinstance(exc, Exception):
             raise
         raise ProviderError(f"The call failed: {type(exc).__name__}") from None

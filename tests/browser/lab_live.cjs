@@ -27,9 +27,10 @@ const check = (name, ok, detail = '') => { checks.push({name, ok: Boolean(ok), d
     added: s.added.map(a => `${a.item_id}:${a.title}`),
     cats: Object.fromEntries(s.feed.items.map(i => [i.item_id, i.kuairec_categories || []]))})), user);
   const same = (a, b) => JSON.stringify([a.ranked, a.controls, a.custom, a.added]) === JSON.stringify([b.ranked, b.controls, b.custom, b.added]);
+  const rankChanged = (a, b) => JSON.stringify(a.ranked) !== JSON.stringify(b.ranked);
   const brief = s => ({eligible: s.eligible, top10: s.top10, controls: s.controls, custom: s.custom, added: s.added});
   const done = async (before, ms = 900000) => page.waitForFunction(b => (window.labDone || 0) > b, before, {timeout: ms});
-  const labDone = () => page.evaluate(() => window.labDone || 0);
+  const labDone = () => page.evaluate(() => { window.labLastPreview = null; window.labLastError = null; window.labLastDefinition = null; return window.labDone || 0; });
   const preview = () => page.evaluate(() => window.labLastPreview || null);
   const lastErr = () => page.evaluate(() => window.labLastError || null);
   const apply = async () => { const b = await labDone(); await page.click('[data-role="apply"]'); await done(b, 60000); };
@@ -65,13 +66,13 @@ const check = (name, ok, detail = '') => { checks.push({name, ok: Boolean(ok), d
   let [p, err] = await interpret(ex.interpret[1].request);
   check('Interpret: positive literal — "more basketball" proposes a Basketball control', p && p.applicable && p.controls.some(c => /basketball/i.test(c) && /more/i.test(c)), err || (p && p.controls.join('; ')));
   if (p && p.applicable) { const before = await state(); await apply(); const a = await state();
-    steps.push({step: 'interpret basketball', ...brief(a)}); check('Interpret: Apply changes the ranking', !same(a, before));
+    steps.push({step: 'interpret basketball', ...brief(a)}); check('Interpret: Apply changes the ranking', rankChanged(a, before));
     await undo(); check('Interpret: Undo restores the exact state', same(await state(), before)); }
   [p, err] = await interpret(ex.interpret[4].request);
   check('Interpret: positive nonliteral — the pets request proposes hiding/reducing animal labels', p && p.applicable && p.controls.some(c => /(hide|less)/i.test(c) && /(pet|animal|cat|dog)/i.test(c)), err || (p && p.controls.join('; ')));
   if (p && p.applicable) { await page.click('[data-role="discard"]').catch(() => {}); }
   [p, err] = await interpret(ex.interpret_abstain[0].request);
-  check('Interpret: negative — the abstain request changes nothing', p && !p.applicable && p.controls.length === 0, err || (p && `applicable ${p.applicable}`));
+  check('Interpret: negative — the abstain request changes nothing (the call succeeded)', p && !err && !p.applicable && p.controls.length === 0, err || (p && `applicable ${p.applicable}`));
   await page.click('[data-role="discard"]').catch(() => {});
   check('Interpret: feed unchanged after the previews', same(await state(), start));
 
@@ -94,10 +95,11 @@ const check = (name, ok, detail = '') => { checks.push({name, ok: Boolean(ok), d
   if (q && q.applicable) { const before = await state(); await apply(); catState = await state();
     steps.push({step: 'new category Dogs applied', selected, ...brief(catState)});
     check('New category: Apply stores exactly the selected members and changes the ranking',
-      (catState.custom.Dogs || []).length === selected && !same(catState, before), JSON.stringify(catState.custom));
+      (catState.custom.Dogs || []).length === selected && rankChanged(catState, before), JSON.stringify(catState.custom));
   }
   const [d2, q2] = await defineClassify(ex.new_category_negative[0].description, null);
-  check('New category: negative — the Voyager description selects no member', !q2 || q2.selected === 0, `definition ${d2 && d2.status}; selected ${q2 ? q2.selected : 0}`);
+  const e2 = await lastErr();
+  check('New category: negative — the Voyager description selects no member (the calls succeeded)', d2 && !e2 && (!q2 || q2.selected === 0), e2 || `definition ${d2 && d2.status}; selected ${q2 ? q2.selected : 0}`);
   await page.click('[data-role="discard"]').catch(() => {});
 
   // 4. New items: positive = the puppy video joins Dogs; negative = the cooking video does not.
@@ -105,7 +107,7 @@ const check = (name, ok, detail = '') => { checks.push({name, ok: Boolean(ok), d
     await page.fill('[data-role="new-description-0"]', item.description); const b = await labDone();
     await page.click('[data-role="new-items-preview"]'); await done(b); return [await preview(), await lastErr()]; };
   let [ni, e3] = await addItem(ex.new_items[1].items[0]);
-  check('New items: negative — the cooking video does not join Dogs', ni && ni.joined === 0, e3 || `joined ${ni && ni.joined}`);
+  check('New items: negative — the cooking video does not join Dogs (a Dogs category exists and the preview succeeded)', catState && ni && !e3 && ni.joined === 0, e3 || `joined ${ni && ni.joined}`);
   await page.click('[data-role="discard"]').catch(() => {});
   [ni, e3] = await addItem(ex.new_items[2].items[0]);
   check('New items: positive — the puppy video joins Dogs (match + quotation + independent check)', ni && ni.joined === 1, e3 || `joined ${ni && ni.joined}`);

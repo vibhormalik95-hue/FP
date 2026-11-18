@@ -98,7 +98,8 @@ class ProviderSlot:
 
 # How the Results page labels a run by the item text it used. Runs before the English layer used the
 # original KuaiRec text (summary.json has no "input_text"); those files are frozen and are not edited.
-ORIGINAL_TEXT_PENDING = "Measured on the original-text run (17 Nov); English-input re-run pending."
+ORIGINAL_TEXT_PENDING = ("Measured on the original-text run (17 Nov). An English-input run exists, but its identity "
+                         "is not verified, so no English-input figure is reported.")
 ORIGINAL_TEXT_PRIOR = "Prior run: measured on the original KuaiRec text (17 Nov)."
 ENGLISH_TEXT_RUN = "Measured on the English text layer (machine translation of KuaiRec)."
 
