@@ -26,9 +26,15 @@ def run_demo(d, page, cfg, events, model_label, results_line):
     d.say("Everything here is English: the KuaiRec text was machine-translated before processing, and the models read the English text.")
     d.say("On the right: this user's top ten from the trained model.")
     d.hold(3.0)
-    d.choose("[data-role='provider-kind']", "Provider: the OpenAI API.", "Op")
-    d.type_into("[data-role='provider-model']", cfg.model, f"Model: {spoken_model}, fast and inexpensive, and the best of my tests at new categories.")
-    d.choose("[data-role='provider-effort']", "Reasoning effort low, the same setting as the measured results.", "lo")
+    provider = getattr(cfg, "provider", "openai")
+    effort = getattr(cfg, "effort", "low")
+    summary = demo_script.measured_summary()
+    d.choose("[data-role='provider-kind']", {"openai": "Provider: the OpenAI API.", "anthropic": "Provider: the Anthropic API."}[provider],
+             {"openai": "Op", "anthropic": "An"}[provider])
+    d.type_into("[data-role='provider-model']", cfg.model, demo_script.model_line(cfg.model, spoken_model, summary))
+    measured = provider == "openai" and effort == "low" and cfg.model in (summary or {}).get("summaries", {})
+    d.choose("[data-role='provider-effort']", f"Reasoning effort {effort}" + (", the same setting as the measured results." if measured
+             else ". The measured results used low effort with other routes, so this setting is not measured."), effort[:2])
     d.click("[data-role='api-key']", "This is where your own API key goes. I paste mine into the masked field.")
     clipboard(cfg.key)
     try:

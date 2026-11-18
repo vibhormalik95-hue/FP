@@ -56,7 +56,8 @@
  * The script reports which provider the server declared. It never labels a run
  * as live inference by itself: that depends on the provider line in the receipt.
  * Exit code 0 means every flow completed; 2 means a flow stopped early (for
- * example a declined review or a rejected reply); 1 means a check failed.
+ * example a declined review or a rejected reply); 1 means a check failed; 3
+ * means every flow completed but the video requested with --video was not saved.
  *
  * With --video the script records the page to <out>/video/<scenario>.webm. It
  * then scrolls each thing that it checks into view and pauses, so that the
@@ -1000,7 +1001,12 @@ function check(name, condition, detail) {
         const target = path.join(OUT, 'video', SCENARIO + '.webm');
         fs.renameSync(await video.path(), target);
         receipt.video.file = 'video/' + SCENARIO + '.webm';
-      } catch (error) { receipt.video.error = String(error.message || error); }
+      } catch (error) {
+        // A requested video that was not saved is a failure of the run, not a note.
+        receipt.video.error = String(error.message || error);
+        receipt.outcome += '; the requested video was not saved';
+        if (!process.exitCode) process.exitCode = 3;
+      }
       save();
     }
     await browser.close();

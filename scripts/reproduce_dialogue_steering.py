@@ -1,4 +1,9 @@
-"""Served development audit of reviewed dialogue; not a human/held-out study."""
+"""Served development audit of reviewed dialogue; not a human/held-out study.
+
+The run is GATED: it exits 1 when any recorded check fails (a comparison, an unchanged A-E
+state, an unchanged active profile during review, an expected interpretation or an expected
+clarification). The failed checks are listed in the receipt under "failed_checks".
+"""
 import argparse
 import json
 import sys
@@ -12,11 +17,32 @@ sys.path.insert(0,str(Path(__file__).resolve().parents[1]))
 from feedctrl.controls import _local_endpoint
 
 
-def main():
+CASE_CHECKS=('fixed_ae_unchanged','review_did_not_change_active_profile','interpretation_matches_expected',
+             'expected_clarification_received')
+
+
+def failed_checks(record):
+    """Every recorded check that is not true: ``case_name.check`` or ``comparisons.name``."""
+    failed=[f"{case['name']}.{key}" for case in record['cases'] for key in CASE_CHECKS if key in case and case[key] is not True]
+    return failed+[f"comparisons.{key}" for key,value in record['comparisons'].items() if value is not True]
+
+
+def finish(record,save):
+    record['failed_checks']=failed_checks(record)
+    record['all_checks_passed']=not record['failed_checks']
+    record['finished_utc']=datetime.now(timezone.utc).isoformat();save()
+    print(json.dumps(record['comparisons']),flush=True)
+    if record['failed_checks']:
+        print(json.dumps({'failed_checks':record['failed_checks']}),flush=True)
+        return 1
+    return 0
+
+
+def main(argv=None):
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('base_url');parser.add_argument('output',type=Path)
     parser.add_argument('--profile-only',action='store_true',help='Audit fresh replacement planning after an existing multi-topic profile')
-    args=parser.parse_args()
+    args=parser.parse_args(argv)
     if args.output.exists():raise SystemExit('Preserve the old receipt; choose a new output path')
     base=_local_endpoint(args.base_url)
     opener=urllib.request.build_opener(urllib.request.ProxyHandler({}))
@@ -103,9 +129,7 @@ def main():
         undone=review('undo_replacement','Undo the last change.',True)
         record['comparisons']['undo_restores_prior_profile_feed']=same_feed(undone.get('feed'),prior.get('feed'))
         run('global_reset','/api/reset',{'user_id':14},False)
-        record['finished_utc']=datetime.now(timezone.utc).isoformat();save()
-        print(json.dumps(record['comparisons']),flush=True)
-        return
+        return finish(record,save)
     oracle=manual('manual_light_qingdao',[command('\u9752\u5c9b')])
     review('unconfirmed_english_light_qingdao','A little more Qingdao.')
     # A scope selection is an explicit manual input, not model-derived intent.
@@ -144,8 +168,7 @@ def main():
     _,final_ae=call('/api/compare?user_id=14',h=h);_,final=call('/api/steering?user_id=14',h=h)
     record['comparisons']['global_reset_restores_clean_ae']=final_ae==clean_ae
     record['comparisons']['global_reset_clears_profile_and_history']=not final['commands'] and not final['can_undo']
-    record['finished_utc']=datetime.now(timezone.utc).isoformat();save()
-    print(json.dumps(record['comparisons']),flush=True)
+    return finish(record,save)
 
 
-if __name__=='__main__':main()
+if __name__=='__main__':raise SystemExit(main())

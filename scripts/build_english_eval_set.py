@@ -1,6 +1,10 @@
 """Derive the English version of the frozen evaluation set, for the English-input re-run.
 
-    python scripts/build_english_eval_set.py      (uses OPENAI_API_KEY once, for the text fields)
+    python scripts/build_english_eval_set.py --out NEW_FOLDER   (uses OPENAI_API_KEY once, for the text fields)
+
+The frozen output (docs/evidence/lab-eval-set-20261117-en) already exists and is never regenerated: the
+script refuses to write into a folder that already holds cases.en.json or FROZEN-EN.json, and checks
+this before any model call. A re-derivation needs an explicit new --out folder.
 
 Input: the frozen set docs/evidence/lab-eval-set-20261117/cases.frozen.json (never changed) and the label
 map of the English text layer (data/kuairec_text_en-v1.label-map.json). Output:
@@ -18,6 +22,7 @@ by hand, and the translation was made before any prediction of the English run.
 """
 from __future__ import annotations
 
+import argparse
 import hashlib
 import json
 import re
@@ -27,14 +32,15 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
-from feedctrl.llm_providers import Ledger, build_provider  # noqa: E402
+from feedctrl.llm_providers import Ledger, ProviderError, build_provider, reserved_call  # noqa: E402
 
 C = chr
 CJK = re.compile("[" + C(0x3000) + "-" + C(0x303F) + C(0x3400) + "-" + C(0x9FFF) + C(0xFF00) + "-" + C(0xFFEF) + "]")
 SRC = ROOT / "docs/evidence/lab-eval-set-20261117/cases.frozen.json"
 MAP = ROOT / "data/kuairec_text_en-v1.label-map.json"
 LAYER = ROOT / "data/kuairec_text_en-v1.json"
-OUT = ROOT / "docs/evidence/lab-eval-set-20261117-en"
+OUT = ROOT / "docs/evidence/lab-eval-set-20261117-en"   # the frozen derivation; never written again
+OUTPUT_FILES = ("cases.en.json", "FROZEN-EN.json")
 TERM_FIELDS = ("required", "acceptable", "distractors")
 TEXT_FIELDS = ("request", "reason", "description", "label", "definition")
 PROMPT = ("Translate each text into plain, natural English. They are requests to a short-video app, notes about "
@@ -52,7 +58,26 @@ def sha(path):
     return hashlib.sha256(Path(path).read_bytes()).hexdigest()
 
 
-def main():
+def refuse_existing_output(out):
+    """Stop before any model call when the output folder already holds a derivation."""
+    existing = [name for name in OUTPUT_FILES if (Path(out) / name).exists()]
+    if existing:
+        raise SystemExit(f"{out} already holds {', '.join(existing)}: the frozen English set is never "
+                         "regenerated or overwritten. Give a new, empty --out folder.")
+
+
+def write_new(path, text):
+    with open(path, "x", encoding="utf-8", newline="\n") as handle:   # exclusive: never replaces a file
+        handle.write(text)
+
+
+def main(argv=None):
+    ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
+    ap.add_argument("--out", required=True, type=Path,
+                    help="a NEW folder for cases.en.json and FROZEN-EN.json (the frozen folder is refused)")
+    args = ap.parse_args(argv)
+    out_dir = args.out if args.out.is_absolute() else ROOT / args.out
+    refuse_existing_output(out_dir)
     data = json.loads(SRC.read_text(encoding="utf-8"))
     label_map = json.loads(MAP.read_text(encoding="utf-8"))["label_map"]
 
@@ -76,8 +101,13 @@ def main():
         if not todo:
             break
         payload = {"texts": [{"id": str(i), "text": t[2]} for i, t in todo]}
-        out, call = provider.complete("translate", PROMPT, payload, SCHEMA)
-        ledger.add(call)
+        try:
+            # Through the budget reservation, re-checked before every attempt; a failed call is booked by
+            # the ledger with an unknown actual cost (cost_known False), never as 0.
+            out, call = reserved_call(provider, ledger, "translate", PROMPT, payload, SCHEMA)
+        except ProviderError as exc:
+            print(f"attempt {attempt + 1} failed: {exc}", flush=True)
+            continue
         for row in out["translations"]:
             i = int(row["id"]) if row["id"].isdigit() else -1
             if 0 <= i < len(texts) and row["en"].strip() and not CJK.search(row["en"]):
@@ -104,6 +134,7 @@ def main():
                              "label_map_sha256": sha(MAP), "text_layer_sha256": sha(LAYER),
                              "translated_fields": len(texts), "translator": {"provider": "openai", "model": "gpt-5-mini"},
                              "cost_usd": round(ledger.total(), 4),
+                             "calls_with_unknown_cost": ledger.unknown_cost_calls(),
                              "made_utc": datetime.now(timezone.utc).isoformat(timespec="seconds"),
                              "note": "Labels mapped through the label map; Chinese text fields machine-translated "
                                      "once before any prediction. Members, pools, actions and statuses unchanged."}}
@@ -111,14 +142,15 @@ def main():
     if CJK.search(body.replace(json.dumps(data["frozen"], ensure_ascii=False, indent=1), "")):
         hits = sorted(set(CJK.findall(body)))[:10]
         print("note: CJK left only in the copied review record?", hits)
-    OUT.mkdir(parents=True, exist_ok=True)
-    path = OUT / "cases.en.json"
-    path.write_text(body, encoding="utf-8", newline="\n")
+    out_dir.mkdir(parents=True, exist_ok=True)
+    refuse_existing_output(out_dir)
+    path = out_dir / "cases.en.json"
+    write_new(path, body)
     frozen = {"file": "cases.en.json", "sha256": sha(path), "derived_from_sha256": sha(SRC),
               "label_map_sha256": sha(MAP), "text_layer_sha256": sha(LAYER),
               "frozen_utc": datetime.now(timezone.utc).isoformat(timespec="seconds"),
               "note": "Hashes committed before any prediction of the English-input re-run."}
-    (OUT / "FROZEN-EN.json").write_text(json.dumps(frozen, indent=1), encoding="utf-8", newline="\n")
+    write_new(out_dir / "FROZEN-EN.json", json.dumps(frozen, indent=1))
     print(json.dumps({"cases": len(cases), "translated_fields": len(texts), "sha256": frozen["sha256"],
                       "cost_usd": ledger.total()}))
 

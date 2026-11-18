@@ -103,5 +103,19 @@
       "action": "boost",
       "strength": "strong"
     }
+  ],
+  "interpret_abstain": [
+    {
+      "domain": "none",
+      "language": "en",
+      "kind": "abstain",
+      "request": "Okay, that is all for now."
+    }
+  ],
+  "new_category_negative": [
+    {
+      "domain": "space probes",
+      "description": "Videos about the Voyager spacecraft beyond the heliopause in interstellar space."
+    }
   ]
 }

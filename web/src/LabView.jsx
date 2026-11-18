@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import { callsSummary, effortOptionLabel, labScorer, waitingLabel } from './labUi.js';
 
 
 // Language controls over the real KuaiRec feed. The model proposes; the server checks; the
@@ -15,12 +16,7 @@ const PROVIDER_DEFAULTS = {
   ollama: {model: 'qwen2.5-coder:7b-instruct', note: 'A local model served by Ollama on this computer. No key.'},
   'claude-cli': {model: 'claude-sonnet-5-5', note: 'The Claude CLI signed in on this computer. Author\'s machine only.'},
 };
-const STAGES = {
-  interpret: ['Sending the request and the label list to the model…', 'The model chooses existing labels…', 'The server checks every label and the quoted span…'],
-  define: ['Sending the description and this user\'s top items to the model…', 'The model drafts a label and a definition…', 'The server checks every quotation…'],
-  classify: ['Classifying every item in scope, ten per call, four calls at a time…', 'Each verdict needs an exact quotation…', 'A separate call checks each cited quotation without seeing the verdict…', 'The server keeps only matches whose quotation exists and passed the check…'],
-  'new-items': ['Sending the new items and the existing labels to the model…', 'The model picks existing categories and tags…', 'The server drops any label that does not exist…'],
-};
+// The waiting line names the task and the elapsed time only; it never claims that a backend stage finished.
 
 const fmtUsd = v => (typeof v === 'number' ? `USD ${v.toFixed(4)}` : 'cost n/a');
 
@@ -33,14 +29,14 @@ function FeedCard({item, mark}) {
   </article>;
 }
 
-function FeedColumn({state, preview, side, setSide}) {
+function FeedColumn({state, preview, side, setSide, modelMode}) {
   const showing = preview ? (side === 'before' ? preview.before : preview.after) : state?.feed;
   const changes = preview?.changes;
   const mark = id => !preview || side === 'before' ? (changes && side === 'before' && changes.left.includes(id) ? 'left' : '')
     : changes.entered.includes(id) ? 'entered' : changes.moved_up.includes(id) ? 'up' : changes.moved_down.includes(id) ? 'down' : '';
   return <aside className="lab-feed" aria-label="Feed">
     <div className="lab-feed-head">
-      <div><p className="eyebrow">{preview ? 'PREVIEW · NOT APPLIED' : 'CURRENT FEED · TRAINED SASREC RANKING'}</p>
+      <div><p className="eyebrow">{preview ? 'PREVIEW · NOT APPLIED' : `CURRENT FEED · ${labScorer(modelMode).eyebrow}`}</p>
         <h2>{preview ? (side === 'before' ? 'Feed before' : 'Feed after Apply') : 'Top ten for this user'}</h2></div>
       {preview && <div className="view-tabs" role="group" aria-label="Before or after"><button className={side === 'before' ? 'active' : ''} onClick={() => setSide('before')}>Before</button><button className={side === 'after' ? 'active' : ''} onClick={() => setSide('after')}>After</button></div>}
     </div>
@@ -59,17 +55,17 @@ function Checks({checks}) {
 
 function Calls({calls}) {
   if (!calls?.length) return null;
-  const total = calls.reduce((s, c) => s + (c.cost_usd || 0), 0);
-  return <details className="lab-calls"><summary>{calls.length} model call(s) · {fmtUsd(total)} · {calls.map(c => c.latency_s).filter(Boolean).reduce((a, b) => a + b, 0).toFixed(1)} s total</summary>
+  const sum = callsSummary(calls);
+  return <details className="lab-calls"><summary>{sum.count} model call(s) · {fmtUsd(sum.cost)} · {sum.latencyText}</summary>
     <table><thead><tr><th>Task</th><th>Provider · model</th><th>Seconds</th><th>Tokens in/out</th><th>Cost</th></tr></thead>
       <tbody>{calls.map((c, i) => <tr key={i}><td>{c.task}</td><td>{c.provider} · {c.served_by || c.model}</td><td>{c.latency_s ?? '-'}</td><td>{c.input_tokens ?? '-'} / {c.output_tokens ?? '-'}</td><td>{c.error ? `error: ${c.error}` : fmtUsd(c.cost_usd)}</td></tr>)}</tbody></table></details>;
 }
 
-function EvidenceRows({preview}) {
+export function EvidenceRows({preview}) {
   if (preview.kind === 'interpret') return <div className="lab-evidence">{preview.evidence.map((e, i) => <div key={i} className="lab-ev"><b>{ACTIONS[e.action] || e.action}{e.strength && ['boost', 'reduce'].includes(e.action) ? ` (${e.strength})` : ''}</b> for “{e.intent_span}”<p>{e.relation}</p></div>)}</div>;
   if (preview.kind === 'new-category') return <div className="lab-table-wrap"><table className="lab-table"><thead><tr><th>Item</th><th>Text (KuaiRec, English)</th><th>Verdict</th><th>Quotation</th><th>Evidence check</th><th>Selected</th></tr></thead><tbody>
-    {preview.evidence.map(r => <tr key={r.item_id} className={r.selected ? 'sel' : ''}><td>{r.item_id}</td><td>{r.title || r.caption || '(no text)'}</td><td>{r.verdict}</td><td>{r.quote ? <><q>{r.quote}</q> <small>{r.field}{r.quote_verified ? ' · found' : ' · NOT FOUND'}</small></> : '-'}<small className="lab-reason">{r.reason}</small></td><td>{r.assessment ? (r.assessment.supports ? 'supports' : 'does not support') : '-'}<small className="lab-reason">{r.assessment?.reason}</small></td><td>{r.selected ? 'yes' : 'no'}</td></tr>)}</tbody></table></div>;
-  if (preview.kind === 'new-items') return <div className="lab-evidence">{preview.evidence.map(e => <div key={e.item_id} className="lab-ev"><b>{e.title}</b> → categories: {e.categories.length ? e.categories.map(c => <code key={c}>{c}</code>) : 'none'}; tags: {e.tags.length ? e.tags.map(t => <code key={t}>#{t}</code>) : 'none'}<p>{e.category_reason}</p>{e.new_categories.map(n => <p key={n.label}>New category <b>{n.label}</b>: {n.verdict}{n.quote ? <> · <q>{n.quote}</q></> : ''}{n.verdict === 'match' ? ` · independent check: ${!n.quote_verified ? 'not run, quotation not found' : n.assessment ? (n.assessment.supports ? 'supports' : 'does not support') : 'no answer'}` : ''} · {n.selected ? 'selected' : 'not selected'}{n.assessment?.reason ? <small className="lab-reason">{n.assessment.reason}</small> : null}</p>)}</div>)}</div>;
+    {preview.evidence.map(r => <tr key={r.item_id} className={r.selected ? 'sel' : ''}><td>{r.item_id}</td><td>{r.title || r.caption || '(no text)'}</td><td>{r.verdict}</td><td>{r.quote ? <><q>{r.quote}</q> <small>{r.field}{r.quote_verified ? ' · found' : ' · NOT FOUND'}</small></> : '-'}{' '}<small className="lab-reason">{r.reason}</small></td><td>{r.assessment ? (r.assessment.supports ? 'supports' : 'does not support') : '-'}{' '}<small className="lab-reason">{r.assessment?.reason}</small></td><td>{r.selected ? 'yes' : 'no'}</td></tr>)}</tbody></table></div>;
+  if (preview.kind === 'new-items') return <div className="lab-evidence">{preview.evidence.map(e => <div key={e.item_id} className="lab-ev"><b>{e.title}</b> → categories: {e.categories.length ? e.categories.map(c => <code key={c}>{c}</code>) : 'none'}; tags: {e.tags.length ? e.tags.map(t => <code key={t}>#{t}</code>) : 'none'}<p>{e.category_reason}</p>{e.new_categories.map(n => <p key={n.label}>New category <b>{n.label}</b>: {n.verdict}{n.quote ? <> · <q>{n.quote}</q></> : ''}{n.verdict === 'match' ? ` · independent check: ${!n.quote_verified ? 'not run, quotation not found' : n.assessment ? (n.assessment.supports ? 'supports' : 'does not support') : 'no answer'}` : ''} · {n.selected ? 'selected' : 'not selected'}{n.assessment?.reason ? <>{' '}<small className="lab-reason">{n.assessment.reason}</small></> : null}</p>)}</div>)}</div>;
   return null;
 }
 
@@ -113,7 +109,7 @@ function ProviderBar({status, api, onChange}) {
     <label>Model<input value={model} onChange={e => setModel(e.target.value)} spellCheck={false} data-role="provider-model"/></label>
     {keyed && <label>API key<input type="password" value={key} onChange={e => setKey(e.target.value)} placeholder={status?.env_keys?.[kind] ? 'empty = use the environment variable' : 'paste your key'} autoComplete="new-password" spellCheck={false} data-role="api-key"/></label>}
     {(kind === 'ollama' || kind === 'openai') && <label>Base URL<input value={baseUrl} onChange={e => setBaseUrl(e.target.value)} placeholder={kind === 'ollama' ? 'http://127.0.0.1:11434/v1' : 'https://api.openai.com/v1'} spellCheck={false}/></label>}
-    {(kind === 'openai' || kind === 'anthropic' || kind === 'claude-cli') && <label>Reasoning effort<select value={effort} onChange={e => setEffort(e.target.value)} data-role="provider-effort">{(kind === 'openai' ? ['minimal', 'low', 'medium', 'high'] : ['low', 'medium', 'high']).map(x => <option key={x} value={x}>{x}{x === 'low' ? ' (measured)' : ''}</option>)}</select></label>}
+    {(kind === 'openai' || kind === 'anthropic' || kind === 'claude-cli') && <label>Reasoning effort<select value={effort} onChange={e => setEffort(e.target.value)} data-role="provider-effort">{(kind === 'openai' ? ['minimal', 'low', 'medium', 'high'] : ['low', 'medium', 'high']).map(x => <option key={x} value={x}>{effortOptionLabel(kind, model, x)}</option>)}</select></label>}
     <button className="secondary" data-role="provider-save">Use this provider</button>
     <p className="help">Now: <b>{current?.label} · {current?.model}{current?.effort ? ` · effort ${current.effort}` : ''}</b> · spent {fmtUsd(current?.spent_usd)}.{msg && <> {msg}</>}</p>
   </form>;
@@ -126,7 +122,7 @@ function LabelPicker({api, user, kind, value, onPick}) {
     <select size={7} value={value} onChange={e => onPick(e.target.value)} data-role="label-list">{labels.map(l => <option key={l.term_id} value={l.value} onClick={() => onPick(l.value)}>{l.value} · {l.item_count} items</option>)}</select></div>;
 }
 
-export function LabView({api, user, status, onStatus}) {
+export function LabView({api, user, status, onStatus, resetKey = 0}) {
   const [tab, setTab] = useState('manual'), [state, setState] = useState(null), [preview, setPreview] = useState(null);
   const [side, setSide] = useState('after'), [busy, setBusy] = useState(false), [error, setError] = useState(''), [stage, setStage] = useState(null);
   const [auto, setAuto] = useState(false);
@@ -138,14 +134,14 @@ export function LabView({api, user, status, onStatus}) {
   const timer = useRef(null);
 
   const refresh = () => api(`lab/state?user_id=${user}`).then(setState).catch(e => setError(e.message));
-  useEffect(() => { if (user !== null) { setPreview(null); setDefinition(null); refresh(); } }, [user]);
+  useEffect(() => { if (user !== null) { setPreview(null); setDefinition(null); refresh(); } }, [user, resetKey]);
   useEffect(() => () => clearInterval(timer.current), []);
 
   async function run(task, fn, after) {
-    setBusy(true); setError(''); const started = Date.now(); const lines = STAGES[task] || [];
-    setStage(lines.length ? {text: lines[0], s: 0} : null);
+    setBusy(true); setError(''); const started = Date.now(); const line = waitingLabel(task);
+    setStage(line ? {text: line, s: 0} : null);
     clearInterval(timer.current);
-    if (lines.length) timer.current = setInterval(() => { const s = Math.round((Date.now() - started) / 1000); setStage({text: lines[Math.min(Math.floor(s / 6), lines.length - 1)], s}); }, 1000);
+    if (line) timer.current = setInterval(() => setStage({text: line, s: Math.round((Date.now() - started) / 1000)}), 1000);
     try { const r = await fn(); after(r); window.labDone = (window.labDone || 0) + 1; } catch (e) { setError(e.message); window.labLastError = e.message; window.labDone = (window.labDone || 0) + 1; } finally { clearInterval(timer.current); setStage(null); setBusy(false); onStatus(); }
   }
   const showPreview = async p => { window.labLastPreview = {id: p.preview_id, kind: p.kind, changes: p.changes, calls: p.calls, controls: p.controls.map(c => c.text), notes: p.notes, applicable: p.applicable, selected: (p.evidence || []).filter(r => r.selected).length, rows: (p.evidence || []).length, joined: (p.evidence || []).flatMap(e => e.new_categories || []).filter(n => n.selected).length}; setPreview(p); setSide('after'); if (auto && p.applicable) await apply(p); };
@@ -205,13 +201,13 @@ export function LabView({api, user, status, onStatus}) {
         {preview && <Review preview={preview} busy={busy} onApply={() => apply()} onDiscard={() => setPreview(null)}/>}
 
         <section className="panel lab-applied" data-role="applied"><h4>Applied now</h4>
-          {state?.controls.length ? <ul className="lab-controls">{state.controls.map(c => <li key={c.id}>{c.text}</li>)}</ul> : <p className="help">No control is applied. The feed is the trained recommender's ranking.</p>}
+          {state?.controls.length ? <ul className="lab-controls">{state.controls.map(c => <li key={c.id}>{c.text}</li>)}</ul> : <p className="help">No control is applied. The feed is the ranking of {labScorer(status?.model_mode).words}.</p>}
           {state && Object.values(state.custom).map(c => <p key={c.label} className="help"><b>{c.label}</b>: {c.members.length} member(s). {c.definition}</p>)}
           {state?.added.length > 0 && <p className="help">Added items: {state.added.map(a => `${a.item_id} ${a.title}`).join(' · ')}</p>}
           <div className="lab-buttons"><button className="secondary" disabled={busy || !state?.can_undo} onClick={undo} data-role="undo">Undo the last change</button><button className="text-button" disabled={busy} onClick={reset} data-role="lab-reset">Reset this user</button></div>
         </section>
       </section>
-      <FeedColumn state={state} preview={preview} side={side} setSide={setSide}/>
+      <FeedColumn state={state} preview={preview} side={side} setSide={setSide} modelMode={status?.model_mode}/>
     </div>
   </div>;
 }

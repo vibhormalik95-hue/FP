@@ -46,6 +46,21 @@ def _scrub(text, secret):
     return re.sub(r"(sk-[A-Za-z0-9_\-]{6})[A-Za-z0-9_\-]+", r"\1…", text)[:600]
 
 
+def safe_base_url(url):
+    """The base URL without ``user:password@``, query string or fragment: safe for messages and records."""
+    from urllib.parse import urlunsplit
+    try:
+        parts = urlsplit(str(url))
+        host = parts.hostname
+        port = parts.port
+    except ValueError:
+        return "[base URL hidden]"
+    if parts.scheme and host:
+        host = f"[{host}]" if ":" in host else host
+        return urlunsplit((parts.scheme, host + (f":{port}" if port else ""), parts.path, "", ""))
+    return "[base URL hidden]"
+
+
 def _cost(model, tokens_in, tokens_out):
     price = PRICES.get(model)
     if not price:
@@ -69,10 +84,20 @@ class Provider:
 
     free = False   # True for providers that never charge (mock, local models)
 
-    max_output_tokens = 16000   # the largest reply a hosted provider may return (Anthropic max_tokens; OpenAI uncapped)
+    # The output-token figure used for the cost ESTIMATE. It equals the Anthropic max_tokens cap (16000), but
+    # the OpenAI-compatible call sends no output cap (reasoning tokens are billed as output and can exceed it),
+    # so for OpenAI it is not a bound on the reply or on its cost.
+    max_output_tokens = 16000
+    # The hosted SDK clients retry a failed request once (max_retries=1). A retried attempt may be billed, and
+    # its usage is never reported to this process, so the recorded cost of a call is not a bound either.
+    sdk_max_retries = 1
 
     def estimate_usd(self, system, payload, max_output_tokens=None):
-        """An upper-bound cost of one call, reserved against the budget before the call starts.
+        """An advisory cost estimate of one call, reserved against the budget before the call starts.
+
+        It is NOT an upper bound: the OpenAI-compatible request sets no output cap, and an SDK retry
+        (``sdk_max_retries``) can bill a second attempt. A reservation therefore limits how many calls
+        start, but cannot guarantee that the actual spend stays within the budget.
         Characters / 2.5 over-counts tokens for mixed Chinese and English text on purpose."""
         if self.free or self.name in ("mock", "ollama"):
             return 0.0
@@ -171,13 +196,16 @@ class OpenAICompatibleProvider(Provider):
             raise ProviderError("The base URL needs http:// or https:// and a host, for example http://127.0.0.1:11434/v1.")
 
     def describe(self):
-        from urllib.parse import urlsplit, urlunsplit
+        return {**super().describe(), "base_url": safe_base_url(self.base_url), "effort": self.effort}   # never show user:password@
+
+    def _clean(self, text):
+        """Scrub the key and any raw form of the base URL (credentials, query secrets) from an error text."""
+        text = str(text)
         parts = urlsplit(self.base_url)
-        if parts.scheme and parts.hostname:
-            shown = urlunsplit((parts.scheme, parts.hostname + (f":{parts.port}" if parts.port else ""), parts.path, "", ""))
-        else:
-            shown = self.base_url.rsplit("@", 1)[-1]
-        return {**super().describe(), "base_url": shown, "effort": self.effort}   # never show user:password@
+        for secret in (self.base_url, parts.password, parts.username, parts.query, parts.fragment):
+            if secret:
+                text = text.replace(secret, "[hidden]")
+        return _scrub(text, self._secret)
 
     def complete(self, task, system, payload, schema):
         import openai
@@ -200,9 +228,9 @@ class OpenAICompatibleProvider(Provider):
         except openai.AuthenticationError:
             raise ProviderError("The server rejected the key (401). Check the key and try again.") from None
         except openai.APIStatusError as exc:
-            raise ProviderError(f"API error {exc.status_code}: {_scrub(exc.message, self._secret)}") from None
+            raise ProviderError(f"API error {exc.status_code}: {self._clean(exc.message)}") from None
         except openai.APIConnectionError as exc:
-            raise ProviderError(f"Could not reach {self.base_url}: {_scrub(exc, self._secret)}") from None
+            raise ProviderError(f"Could not reach {safe_base_url(self.base_url)}: {self._clean(exc)}") from None
         choice = response.choices[0]
         if self.name == "ollama" and getattr(choice, "finish_reason", None) == "length":
             raise ProviderError(f"The local model hit the {LOCAL_MAX_TOKENS}-token output cap without finishing its reply.")
@@ -367,8 +395,11 @@ class Ledger:
             return round(sum(self._reserved.values()), 6)
 
     def reserve(self, amount):
-        """Hold ``amount`` against the budget before a call starts, so parallel calls cannot overspend.
-        Returns a reservation id, or None when the reservation does not fit in the budget."""
+        """Hold ``amount`` (an advisory estimate) against the budget before a call starts.
+
+        Parallel calls cannot all start on the same remaining budget, but the reservation does not
+        prevent overspend: the estimate is not an upper bound (no OpenAI output cap; an SDK retry may be
+        billed). Returns a reservation id, or None when the reservation does not fit in the budget."""
         with self._lock:
             if self.budget_usd is not None and self.total() + sum(self._reserved.values()) + amount > self.budget_usd:
                 return None
@@ -385,8 +416,12 @@ class Ledger:
         with self._lock:
             held = self._reserved.pop(reservation, 0.0)
             if call.get("error") and not call.get("cost_usd"):
+                # The actual cost of a failed call is unknown (it may have used tokens, and the SDK may have
+                # billed a retried attempt). The reserved estimate is booked so the budget never counts it as 0.
                 call["cost_usd"] = held
-                call["cost_source"] = "failed call: reserved upper bound charged" if held else "failed call"
+                call["cost_known"] = False
+                call["cost_source"] = ("failed call: actual cost unknown; reserved estimate booked (advisory, "
+                                       "may be below the real charge)") if held else "failed call: actual cost unknown"
             elif call.get("cost_usd") is None:
                 tin, tout = call.get("input_tokens") or 0, call.get("output_tokens") or 0
                 call["cost_usd"] = round(tin / 1e6 * CEILING_PRICE[0] + tout / 1e6 * CEILING_PRICE[1], 6)
@@ -407,3 +442,35 @@ class Ledger:
 
     def total(self):
         return round(sum(c.get("cost_usd") or 0 for c in self.calls), 6)
+
+    def unknown_cost_calls(self):
+        """Calls whose actual cost is unknown (failed calls); their booked cost is an estimate or nothing."""
+        return sum(1 for c in self.calls if c.get("cost_known") is False or (c.get("error") and c.get("cost_usd") is None))
+
+
+class BudgetExhausted(ProviderError):
+    """No reservation fits in the remaining budget: the call was not started."""
+
+
+def reserved_call(provider, ledger, task, system, payload, schema):
+    """One model call through the budget reservation, for the offline build scripts.
+
+    Reserves the advisory estimate first (raises BudgetExhausted without calling when it does not fit),
+    then settles: a success books its reported cost; a failure books the reservation with
+    ``cost_known: False`` (never 0) and is raised as ProviderError."""
+    reservation = ledger.reserve(provider.estimate_usd(system, payload))
+    if reservation is None:
+        raise BudgetExhausted(f"Budget reached: USD {ledger.total():.4f} booked and USD {ledger.reserved():.4f} "
+                              f"reserved of {ledger.budget_usd}. The call was not started.")
+    try:
+        data, call = provider.complete(task, system, payload, schema)
+    except BaseException as exc:
+        ledger.settle(reservation, {"task": task, "provider": provider.name, "model": provider.model,
+                                    "error": (_scrub(str(exc), getattr(provider, "_secret", None))[:200]
+                                              if isinstance(exc, ProviderError) else f"unexpected failure: {type(exc).__name__}"),
+                                    "cost_usd": None, "latency_s": None})
+        if isinstance(exc, ProviderError) or not isinstance(exc, Exception):
+            raise
+        raise ProviderError(f"The call failed: {type(exc).__name__}") from None
+    ledger.settle(reservation, call)
+    return data, call

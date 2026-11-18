@@ -33,7 +33,7 @@ Every number is copied from a recorded file. Nothing is a placeholder: the `\TBF
 | Parser bank re-run (re-use of the Experiment 1 bank, not new evidence) | `docs/evidence/lab-eval/20261117-b-parser-rerun/summary.json` |
 | Construction, review and freeze of the evaluation set | `docs/evidence/lab-eval-set-20261117/README.md` and `FROZEN.json` |
 | Windows replay of Experiment 1 (16 November) | `FINAL2/AUDIT.md`, section 4 (outside the repository) |
-| gemma4:31b probe (not run) | `docs/evidence/lab-eval/20261117-main/runs/local-chain.log` |
+| gemma4:31b probe (not run) | `docs/evidence/lab-eval/20261117-main/runs/local-chain.log` (local-only: ignored by git, not in the repository) |
 | Popularity concentration of the seed-42 ranker (items 8958, 1116) | `docs/evidence/2026-11-17-popularity/top10-concentration-seed42.json` (only 27 distinct items appear in any of the 865 top tens) |
 | Experiments 1 and 2, practice evaluation, 4 November study, development records | Unchanged from `research-paper-2026-11-14.tex` |
 

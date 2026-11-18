@@ -1,6 +1,6 @@
 # Feed Control Lab: application reference
 
-> **Current reference.** To run the application, see [install and run](install-and-run.md). To use the language controls, see the [guide](demo.md).
+> **Legacy guide (earlier demonstrator, 13–15 November).** This page describes the fixture scenarios and the SemanticPanel page started by `scripts/quickstart.py`, not the current application. The current application is the four-tab Lab (Choose a category, Say it your way, New category, New items; new-category scope 10–200 items of the current feed; editable definition; provider setup in the page), started by `run-app.cmd` (`scripts/run_app.py`, port 8765). Its guide is [docs/guide/PROFESSOR-GUIDE.md](guide/PROFESSOR-GUIDE.md).
 
 Feed Control Lab is a research application (React and FastAPI) for changing a recommendation feed through explicit controls.
 It shows item metadata, not playable videos. It runs on one computer and binds to 127.0.0.1 only.
@@ -132,7 +132,7 @@ The provider identity is a declaration by the route. The application records it.
 
 ## Providers
 
-There is no provider with hand-written replies. To try the language-control screens with no key, use Feed Control Studio (`run-studio.cmd`, **Mock** provider; see the [Studio guide](studio-guide.md)).
+There is no provider with hand-written replies. To try the language controls with no key, use the current four-tab Lab (`run-app.cmd` or `python scripts/run_app.py`, port 8765, default **Mock** provider; see the [guide for the supervisor](guide/PROFESSOR-GUIDE.md)).
 
 The server gets its provider at start. A request from the page cannot supply a provider address, a credential or a provider choice.
 

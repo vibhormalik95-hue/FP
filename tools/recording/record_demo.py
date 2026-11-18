@@ -316,10 +316,12 @@ class Director:
         if d > 0:
             time.sleep(d)
 
+    MAX_SILENT_HOLD = 4.0   # the silence check fails at 5 s; a requested reading dwell up to 4 s is kept
+
     def hold(self, secs):
-        # The result stays on screen while it is narrated; the silent part of a hold stays well under five seconds.
+        # The result stays on screen after the narration for the requested reading dwell, capped below the 5 s silence limit.
         self.check_cjk("hold")
-        self.wait_speech(); time.sleep(min(secs, 1.0))
+        self.wait_speech(); time.sleep(max(0.0, min(secs, self.MAX_SILENT_HOLD)))
 
     # -- actions
     def point(self, sel, text, min_ring=1.6):
@@ -460,6 +462,19 @@ def results_lines(folder):
     return s or [{"say": "The tables show the measured results of every model."}]
 
 
+KEY_ENV = {"openai": "OPENAI_API_KEY", "anthropic": "ANTHROPIC_API_KEY"}
+
+
+def port_free(port):
+    import socket
+    with socket.socket() as s:
+        try:
+            s.bind(("127.0.0.1", port))
+            return True
+        except OSError:
+            return False
+
+
 def main():
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
     ap = argparse.ArgumentParser()
@@ -470,14 +485,16 @@ def main():
     ap.add_argument("--prehide", default="", help="comma-separated KuaiRec categories hidden for the user before the take starts")
     ap.add_argument("--results", default="docs/evidence/lab-eval")
     ap.add_argument("--voice", default="af_heart")
-    ap.add_argument("--provider", default="openai", choices=["openai", "anthropic"])
+    ap.add_argument("--provider", default="openai", choices=sorted(KEY_ENV))
     ap.add_argument("--model", default="gpt-5-mini")
     ap.add_argument("--category-index", type=int, default=2, help="which new_category example of tools/demo_examples.json")
     ap.add_argument("--item-index", type=int, default=2, help="which new_items example of tools/demo_examples.json")
     ap.add_argument("--scope", default="50")
     ap.add_argument("--category-label", default="Dogs")
-    ap.add_argument("--effort", default="low")
+    ap.add_argument("--effort", default="low", choices=["minimal", "low", "medium", "high"])
     args = ap.parse_args()
+    if args.provider != "openai" and args.effort == "minimal":
+        raise SystemExit("Effort 'minimal' exists only for OpenAI reasoning models.")
     out = Path(args.out); out.mkdir(parents=True, exist_ok=True)
     events = []
     ctypes.windll.user32.SetProcessDPIAware()
@@ -485,42 +502,55 @@ def main():
     cap_size = (phys[0], phys[0] * 9 // 16)          # top 16:9 region of the screen
     events.append({"screen": phys, "capture": cap_size})
 
-    voice = Voice(args.tts_python, out / "voice", args.voice)
-    env = {k: v for k, v in os.environ.items() if k not in ("ANTHROPIC_API_KEY", "OPENAI_API_KEY")}   # the key is pasted in the page
-    args.key = os.environ.get("OPENAI_API_KEY", "")
+    env = {k: v for k, v in os.environ.items() if k not in KEY_ENV.values()}   # the key is pasted in the page
+    args.key = os.environ.get(KEY_ENV[args.provider], "")
     if not args.key:
-        raise SystemExit("OPENAI_API_KEY is needed for the take (it is pasted into the masked key field).")
+        raise SystemExit(f"{KEY_ENV[args.provider]} is needed for a take with --provider {args.provider} "
+                         "(it is pasted into the masked key field).")
+    if not port_free(8765):
+        raise SystemExit("Port 8765 is already in use by another process; the recorder starts and uses its own app server. "
+                         "Stop that process or free the port; nothing was started.")
+    server = chrome = cap = None
+    old_toasts, toasts_changed, minimized = None, False, False
+    voice = None
     examples = json.loads((REPO / "tools/demo_examples.json").read_text(encoding="utf-8"))
     args.manual_value = examples["manual"][1]["value"]
     args.interpret = [{**examples["interpret"][2], "say": "I just ate, and do not want to be tempted by food."},
                       {**examples["interpret"][4], "say": "My cat is at the vet, and I cannot bear to see animals."}]
     args.new_category = examples["new_category"][args.category_index]["description"]
     args.new_item = examples["new_items"][args.item_index]["items"][0]
-    server = subprocess.Popen([args.app_python, "scripts/run_app.py", "--port", "8765", "--provider", "mock"],
-                              cwd=REPO, env=env)
-    import urllib.request
-    for _ in range(240):   # the app must answer before Chrome opens it
-        try:
-            urllib.request.urlopen(URL + "api/lab/status", timeout=2).read()
-            break
-        except OSError:
-            time.sleep(0.5)
-    else:
-        raise SystemExit("The app did not start.")
-    profile = out / "chrome-profile"
-    (profile / "Default").mkdir(parents=True, exist_ok=True)
-    (profile / "Default" / "Preferences").write_text(json.dumps({
-        "credentials_enable_service": False, "profile": {"password_manager_enabled": False},
-        "translate": {"enabled": False}, "browser": {"has_seen_welcome_page": True}}))
-    old_toasts = set_toasts(False)
-    subprocess.run(["powershell", "-NoProfile", "-Command", "(New-Object -ComObject Shell.Application).MinimizeAll()"])
-    time.sleep(1.0)
-    chrome = subprocess.Popen([CHROME, f"--user-data-dir={profile}", f"--remote-debugging-port={CDP_PORT}", "--start-maximized",
-                               f"--force-device-scale-factor={SCALE}", "--no-first-run", "--no-default-browser-check",
-                               "--disable-features=Translate,PasswordManagerOnboarding", "--hide-crash-restore-bubble",
-                               "--disable-extensions", "--disable-sync", URL])
-    cap = None
     try:
+        voice = Voice(args.tts_python, out / "voice", args.voice)
+        server = subprocess.Popen([args.app_python, "scripts/run_app.py", "--port", "8765", "--provider", "mock"],
+                                  cwd=REPO, env=env)
+        events.append({"app_server_pid": server.pid, "port": 8765})
+        import urllib.request
+        for _ in range(240):   # the app must answer before Chrome opens it
+            if server.poll() is not None:
+                raise SystemExit(f"The recorder's app server exited with code {server.returncode}.")
+            try:
+                urllib.request.urlopen(URL + "api/lab/status", timeout=2).read()
+                break
+            except OSError:
+                time.sleep(0.5)
+        else:
+            raise SystemExit("The app did not start.")
+        if server.poll() is not None:
+            raise SystemExit("A server answered on 8765, but it is not the recorder's own process.")
+        profile = out / "chrome-profile"
+        (profile / "Default").mkdir(parents=True, exist_ok=True)
+        (profile / "Default" / "Preferences").write_text(json.dumps({
+            "credentials_enable_service": False, "profile": {"password_manager_enabled": False},
+            "translate": {"enabled": False}, "browser": {"has_seen_welcome_page": True}}))
+        old_toasts = set_toasts(False)
+        toasts_changed = True
+        subprocess.run(["powershell", "-NoProfile", "-Command", "(New-Object -ComObject Shell.Application).MinimizeAll()"])
+        minimized = True
+        time.sleep(1.0)
+        chrome = subprocess.Popen([CHROME, f"--user-data-dir={profile}", f"--remote-debugging-port={CDP_PORT}", "--start-maximized",
+                                   f"--force-device-scale-factor={SCALE}", "--no-first-run", "--no-default-browser-check",
+                                   "--disable-features=Translate,PasswordManagerOnboarding", "--hide-crash-restore-bubble",
+                                   "--disable-extensions", "--disable-sync", URL])
         with sync_playwright() as p:
             for _ in range(60):
                 try:
@@ -561,13 +591,18 @@ def main():
             demo_script.clipboard("")      # first: never leave a key on the clipboard
         except Exception:
             pass
+        # Only what this recorder started is stopped; other processes are never touched.
         if cap:
             cap.stop()
-        chrome.terminate()
-        server.terminate()
-        voice.close()
-        set_toasts(True if old_toasts in (None, 1) else False)
-        subprocess.run(["powershell", "-NoProfile", "-Command", "(New-Object -ComObject Shell.Application).UndoMinimizeALL()"])
+        for proc in (chrome, server):
+            if proc is not None and proc.poll() is None:
+                proc.terminate()
+        if voice is not None:
+            voice.close()
+        if toasts_changed:   # restore: a missing value (the Windows default) means notifications were on
+            set_toasts(True if old_toasts in (None, 1) else False)
+        if minimized:
+            subprocess.run(["powershell", "-NoProfile", "-Command", "(New-Object -ComObject Shell.Application).UndoMinimizeALL()"])
         if sys.exc_info()[0] is not None:
             # A failed take keeps its record (for example the CJK hit that failed it).
             (out / "timeline.json").write_text(json.dumps({"timeline": [], "events": events, "duration": None,

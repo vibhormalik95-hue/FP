@@ -137,8 +137,11 @@ def build_catalog(processed: dict, caption_rows: dict[int, dict], gloss: dict | 
 def label_vocabulary(catalog: dict[int, dict], gloss: dict | None = None) -> list[dict]:
     """Every existing label with its item count: feature IDs, KuaiRec category names and topic tags.
 
-    ``term_id`` is ``feature:<id>``, ``category:<name>`` or ``tag:<name>``. Names are the
-    original Chinese text; an English gloss, when present, is labelled machine translation.
+    ``term_id`` is ``feature:<id>``, ``category:<name>`` or ``tag:<name>``. Names are copied
+    unchanged from the rows the catalogue was built from: the English machine translation when
+    those rows come from the English text layer (``read_english_layer``, what the app loads), the
+    original Chinese only when they come from the official caption table. This function does not
+    translate or check the language. An English gloss, when present, is labelled machine translation.
     """
     counts: dict[tuple[str, str], int] = {}
     for record in catalog.values():

@@ -191,7 +191,44 @@ def stable_write(path: Path, contents: bytes) -> None:
         path.write_bytes(contents)
 
 
+def prose_invariants(result: dict) -> list[str]:
+    """The facts that the fixed sentences of the version-1 report state. Empty when every one holds.
+
+    The report prose was written for the frozen inputs. Instead of silently printing it for other inputs,
+    render_markdown checks each stated fact against the computed result and refuses when one fails."""
+    failures = []
+    for backend, analysis in result["backends"].items():
+        ni = analysis["hr1_noninferiority_sensitivity"]
+        if [row["condition"] for row in ni] != ["C", "D", "E"]:
+            failures.append(f"{backend}: the NI contrasts are not exactly C, D and E")
+            continue
+        for field in ("baseline_hr1", "mean_difference", "simultaneous_lower", "n_users",
+                      "informative_users_nonzero_paired_difference"):
+            if len({json.dumps(row[field]) for row in ni}) != 1:
+                failures.append(f"{backend}: C, D and E differ in {field}, so one 'common' figure cannot describe them")
+        for row in ni:
+            absolute, relative = row["absolute_10_percentage_points"], row["relative_10_percent_of_observed_reference"]
+            if not (absolute["margin_exceeds_baseline"] and absolute["margin_allows_complete_baseline_loss"]):
+                failures.append(f"{backend}/{row['condition']}: the absolute margin does not exceed the baseline")
+            if not absolute["statistical_criterion_passed"]:
+                failures.append(f"{backend}/{row['condition']}: the absolute reading does not pass")
+            if relative["statistical_criterion_passed"]:
+                failures.append(f"{backend}/{row['condition']}: the relative reading does not fail")
+    if any(len(analysis["seeds"]) != 3 for analysis in result["backends"].values()):
+        failures.append("a backend does not have exactly three seeds")
+    if not result.get("rule_llm_metrics_identical"):
+        failures.append("the rule and LLM results are not identical")
+    if len({analysis["user_count"] for analysis in result["backends"].values()}) != 1:
+        failures.append("the backends have different user counts")
+    return failures
+
+
 def render_markdown(result: dict) -> str:
+    failures = prose_invariants(result)
+    if failures:
+        raise ValueError("The version-1 report prose does not describe these inputs: " + "; ".join(failures)
+                         + ". Write a new report version instead of reusing this text.")
+    total_users = next(iter(result["backends"].values()))["user_count"]
     lines = ["# Post-audit analysis, version " + str(result["version"]), "", "This is a supplemental analysis of frozen outputs. No experiments were rerun or rewritten. Original combined summaries are preserved beside this report. All new analyses are exploratory; the primary family is unchanged.", ""]
     for backend, analysis in result["backends"].items():
         ni, ndcg, sat = analysis["hr1_noninferiority_sensitivity"][0], analysis["boost_ndcg_tradeoff"], analysis["policy_saturation"]
@@ -204,7 +241,7 @@ def render_markdown(result: dict) -> str:
         lines += ["", f"The absolute margin exceeds baseline and permits losing every baseline hit. Its mathematical exploratory pass is preserved, but is not evidence of practically preserved accuracy. The relative reading fails the same decision rule. There are {ni['informative_users_nonzero_paired_difference']}/{ni['n_users']} users with nonzero paired HR@1 differences. The relative margin is an observed-baseline sensitivity with that margin held fixed, not a prospectively specified ratio analysis. Neither reading resolves supervisor approval or margin justification.", "",
                   f"Post-hoc boost C−A NDCG@10: {ndcg['reference_mean']:.12f} → {ndcg['condition_mean']:.12f}; paired difference {ndcg['mean_difference']:.12f}, 95% user-bootstrap CI [{ndcg['ci95'][0]:.12f}, {ndcg['ci95'][1]:.12f}], relative change {ndcg['relative_change']:.2%}; two-sided Wilcoxon–Pratt p={ndcg['p_two_sided_unadjusted']:.6g}. Nonzero paired differences: {ndcg['informative_users_nonzero_paired_difference']}/{ndcg['n_users']}. This is an unadjusted exploratory secondary contrast, outside the unchanged primary BH family.", "",
                   f"Catalogue: {sat['catalogue_items']} items, {sat['catalogue_categories']} categories; {sat['assigned_categories']} assigned categories contain {sat['assigned_category_min_items']}–{sat['assigned_category_max_items']} items each. In C, {sat['boost_users_saturated_tcp_one_all_seeds']['C']}/{analysis['user_count']} boost users have TCP=1 across all seeds; {sat['mute_users_zero_exposure_all_seeds']['C']}/{analysis['user_count']} mute users have zero exposure across all seeds. A's single-item boost can change TCP by at most {sat['item_only_boost_max_tcp_change_from_uncontrolled']:.1f} versus uncontrolled ranking.", "", sat["interpretation"], ""]
-    lines += ["## Interpretation boundaries", "", "Hard mute has a structural compliance advantage. A positive +0.25 category boost does not mathematically guarantee a strict increase for every possible ranking (ties, already-saturated lists, or large score gaps can yield no change). The observed primary hypothesis is statistically supported on this cohort, but its interpretation is restricted by deterministic policy enforcement, category/item intervention granularity, saturation, and identical rule/LLM main results. Claims of broad LLM benefit or general recommendation quality do not follow.", "", "The bootstrap conditions on these users and three realized training seeds. Sparse nonzero HR@1 differences weaken precision and resampling reliability; 865 total users alone does not cure the sparse-outcome problem.", ""]
+    lines += ["## Interpretation boundaries", "", "Hard mute has a structural compliance advantage. A positive +0.25 category boost does not mathematically guarantee a strict increase for every possible ranking (ties, already-saturated lists, or large score gaps can yield no change). The observed primary hypothesis is statistically supported on this cohort, but its interpretation is restricted by deterministic policy enforcement, category/item intervention granularity, saturation, and identical rule/LLM main results. Claims of broad LLM benefit or general recommendation quality do not follow.", "", f"The bootstrap conditions on these users and three realized training seeds. Sparse nonzero HR@1 differences weaken precision and resampling reliability; {total_users} total users alone does not cure the sparse-outcome problem.", ""]
     return "\n".join(lines)
 
 

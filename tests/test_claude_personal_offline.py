@@ -33,8 +33,13 @@ class PersonalTests(unittest.TestCase):
     def setUp(self):
         self.file=patch('pathlib.Path.is_file',return_value=True);self.file.start();self.addCleanup(self.file.stop)
         self.dir=patch('pathlib.Path.is_dir',return_value=True);self.dir.start();self.addCleanup(self.dir.stop)
-    def test_all_four_explicit_gates_and_no_construction_call(self):
-        for gate in ('runtime_authorized','data_authorized','subscription_and_usage_authorized','executable_reviewed','managed_runtime_reviewed','process_containment_reviewed'):
+    def test_all_six_explicit_gates_and_no_construction_call(self):
+        gates=('runtime_authorized','data_authorized','subscription_and_usage_authorized','executable_reviewed','managed_runtime_reviewed','process_containment_reviewed')
+        # The list is the whole set of Boolean gates of the function: a new or dropped gate fails here.
+        import inspect
+        declared=tuple(n for n,p in inspect.signature(make_claude_personal_infer).parameters.items() if p.default is False)
+        self.assertEqual(sorted(gates),sorted(declared));self.assertEqual(len(gates),6)
+        for gate in gates:
             params=options();params[gate]=False
             with patch('feedctrl.claude_personal._run_process',side_effect=AssertionError('must not run')):
                 with self.assertRaises(ValueError): make_claude_personal_infer(**params)

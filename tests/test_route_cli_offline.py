@@ -25,12 +25,17 @@ MODEL = 'claude-standin-not-a-model'
 PAYLOAD = dict(model_routes.TEST_PAYLOAD)
 SCHEMA = dict(model_routes.TEST_SCHEMA)
 PASSED = ['STANDIN_REPLIES', 'STANDIN_FAIL', 'STANDIN_UNKNOWN', 'STANDIN_LOG', 'STANDIN_DELAY', 'STANDIN_REPORT_MODEL']
-pytestmark = pytest.mark.skipif(os.name == 'nt', reason='the launcher of these tests is a POSIX shell file')
+# No module-wide skip: a test that needs no POSIX launcher runs on every system, Windows included.
+# A test that needs the stand-in launcher (a POSIX shell file) is skipped on Windows with that reason;
+# such a skip is not Windows evidence of any kind.
+POSIX_LAUNCHER = 'needs the stand-in launcher, a POSIX shell file; not run (and not proven) on Windows'
 
 
 @pytest.fixture
 def claude(tmp_path, monkeypatch):
     """A launcher for the stand-in CLI, its log file and a function that sets its behaviour."""
+    if os.name == 'nt':
+        pytest.skip(POSIX_LAUNCHER)
     launcher = common.write_launcher(tmp_path / 'bin', ROOT / 'tests' / 'standins' / 'cli_claude_code.py')
     log = tmp_path / 'cli-log.jsonl'
     monkeypatch.setenv('STANDIN_REPLIES', 'echo-ok')
@@ -179,13 +184,33 @@ def test_a_timeout_also_stops_what_the_program_started(tmp_path):
     assert call(config)[3].category == 'timeout'
     child = int(marker.read_text())
     for _ in range(50):
-        try:
-            os.kill(child, 0)
-        except ProcessLookupError:
+        if not process_alive(child):
             break
         time.sleep(0.1)
     else:
         pytest.fail('the child of the stopped program is still running')
+
+
+def process_alive(pid):
+    """Whether a process runs, without changing it. On Windows os.kill(pid, 0) would end the
+    process (TerminateProcess), so the state is read with OpenProcess and GetExitCodeProcess."""
+    if os.name != 'nt':
+        try:
+            os.kill(pid, 0)
+        except ProcessLookupError:
+            return False
+        return True
+    import ctypes
+    kernel = ctypes.windll.kernel32
+    handle = kernel.OpenProcess(0x1000, False, pid)        # PROCESS_QUERY_LIMITED_INFORMATION
+    if not handle:
+        return False
+    code = ctypes.c_ulong()
+    try:
+        known = kernel.GetExitCodeProcess(handle, ctypes.byref(code))
+    finally:
+        kernel.CloseHandle(handle)
+    return bool(known) and code.value == 259                # STILL_ACTIVE
 
 
 def test_a_missing_program_is_reported_before_any_call(tmp_path):
@@ -399,6 +424,13 @@ def test_f17_the_cause_of_a_cli_failure_is_read_from_the_result_text(claude, fai
     assert error.category == expected and words in str(error)
 
 
+def max_rss_kib(resource):
+    """The peak resident size of this process in KiB: Linux reports KiB, macOS reports bytes."""
+    value = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+    return value // 1024 if sys.platform == 'darwin' else value
+
+
+@pytest.mark.skipif(os.name == 'nt', reason='reads ru_maxrss of the POSIX resource module; not run (and not proven) on Windows')
 def test_f14_the_output_of_a_program_is_bounded_while_it_runs(tmp_path):
     import resource
     flood = ('import sys\nkind = sys.argv[1]\nstream = sys.stdout if kind == "out" else sys.stderr\n'
@@ -406,13 +438,13 @@ def test_f14_the_output_of_a_program_is_bounded_while_it_runs(tmp_path):
              'if kind == "err":\n    sys.stdout.write(\'{"ok": true}\')\n')
     script = tmp_path / 'flood.py'
     script.write_text(flood, encoding='ascii')
-    before = resource.getrusage(resource.RUSAGE_SELF).ru_maxrss
+    before = max_rss_kib(resource)
     started = time.monotonic()
     config = {'route': 'cli', 'profile': 'generic', 'model': 'declared', 'argv': [sys.executable, str(script), 'out', '6000'],
               'max_response_bytes': 1000}
     _, _, _, error = call(config, record_dir=tmp_path / 'a')
     assert error.category == 'reply_too_large' and time.monotonic() - started < 20
-    assert resource.getrusage(resource.RUSAGE_SELF).ru_maxrss - before < 100_000      # less than 100 MB more (in KB)
+    assert max_rss_kib(resource) - before < 100_000      # less than about 100 MB more (in KiB, on Linux and macOS)
     config['argv'] = [sys.executable, str(script), 'err', '50']                         # about 3 MB on standard error
     result, _, _, error = call(config, record_dir=tmp_path / 'b')
     assert error is None and result == {'ok': True}

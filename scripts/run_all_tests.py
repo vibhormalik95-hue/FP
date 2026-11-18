@@ -66,60 +66,201 @@ def call(base, path, body=None, timeout=900):
         return e.code, payload, round(time.monotonic() - started, 2)
 
 
-def workflows(base, user, examples):
+def pytest_verdict(code, text):
+    """The pytest step passes only when pytest's own exit code agrees with the parsed failures.
+
+    Exit 0 with no failure line passes. Exit 1 passes only when every parsed failure is listed in
+    FROZEN_BY_DESIGN and the summary line counts exactly those failures. Any other exit code (2 interrupted,
+    3 internal error, 4 usage error, 5 no tests collected), or exit 1 with no parsed failure line, fails."""
+    failed = re.findall(r"^(?:FAILED|ERROR) (\S+)", text, re.M)
+    unexpected = [f for f in failed if f not in FROZEN_BY_DESIGN]
+    frozen = [f for f in failed if f in FROZEN_BY_DESIGN]
+    last = [line for line in text.splitlines() if re.search(r"\d+ (passed|failed|errors?)\b", line)]
+    summary = last[-1] if last else ""
+    counted = sum(int(n) for n in re.findall(r"(\d+) (?:failed|errors?)\b", summary))
+    problems = list(unexpected)
+    if code == 0:
+        if failed:
+            problems.append(f"pytest exit 0 but {len(failed)} failure line(s) parsed")
+    elif code == 1:
+        if not failed:
+            problems.append("pytest exit 1 without a parsed failure line")
+        elif counted != len(failed):
+            problems.append(f"pytest summary counts {counted} failure(s) or error(s), {len(failed)} parsed")
+    else:
+        problems.append(f"pytest exit {code} (not a test-failure exit)")
+    if code in (0, 1) and not summary:
+        problems.append("no pytest summary line")
+    return {"exit": code, "result": summary or "?", "failed_unexpected": problems,
+            "failed_frozen_by_design": frozen, "ok": not problems}
+
+
+def snapshot(base, user):
+    """The exact applied state and feed of one user: controls, new categories with members, added items,
+    eligible count and the ordered item ids with scores of the shown feed."""
+    st, s, _ = call(base, f"/api/lab/state?user_id={user}")
+    if st != 200:
+        return {"error": st}
+    return {"controls": [(c.get("action"), (c.get("target") or {}).get("kind"), (c.get("target") or {}).get("value"),
+                          c.get("strength"), c.get("group")) for c in s["controls"]],
+            "custom": {k: v["members"] for k, v in s["custom"].items()},
+            "added": [(a["item_id"], a["title"]) for a in s["added"]],
+            "eligible": s["feed"]["eligible"],
+            "order": [(i["item_id"], i["score"]) for i in s["feed"]["items"]],
+            "ranked": s["feed"].get("ranked_ids"),
+            "items": {i["item_id"]: {"categories": i.get("kuairec_categories") or [], "tags": i.get("tags") or []}
+                      for i in s["feed"]["items"]}}
+
+
+def same_state(a, b):
+    keys = ("controls", "custom", "added", "eligible", "order", "ranked")
+    return all(a.get(k) == b.get(k) for k in keys)
+
+
+def ranking_changed(before, after):
+    return before.get("ranked") != after.get("ranked") or before["eligible"] != after["eligible"]
+
+
+def expected_interpret(provider, kind):
+    """What a correct run must do. A language model must propose for every example request; an abstain example
+    must change nothing. The mock reads literal words only: on a nonliteral request it may or may not find a
+    literal label word, so either outcome is accepted, but a proposal must still apply and undo exactly."""
+    if kind == "abstain":
+        return "abstain"
+    if provider == "mock" and kind == "nonliteral":
+        return "any"
+    return "propose"
+
+
+def workflows(base, user, examples, provider="mock"):
     rows = []
 
-    def record(workflow, ex, status, payload, seconds, outcome, ok):
+    def record(workflow, ex, status, payload, seconds, outcome, ok, why=""):
         calls = payload.get("calls", []) if isinstance(payload, dict) else []
         rows.append({"workflow": workflow, "domain": ex.get("domain"), "input": ex.get("request") or ex.get("description")
                      or ex.get("value") or ex.get("items", [{}])[0].get("title"), "http": status, "seconds": seconds,
                      "model_calls": len(calls), "cost_usd": round(sum(c.get("cost_usd") or 0 for c in calls), 6),
-                     "call_errors": [c["error"] for c in calls if c.get("error")], "outcome": outcome, "ok": ok,
+                     "unknown_cost_calls": sum(c.get("cost_usd") is None for c in calls),
+                     "call_errors": [c["error"] for c in calls if c.get("error")], "outcome": outcome, "ok": bool(ok),
+                     "why_not_ok": "" if ok else why,
                      "detail": payload.get("detail") if isinstance(payload, dict) else None})
 
-    def apply_undo(preview):
-        s1, applied, _ = call(base, "/api/lab/apply", {"user_id": user, "preview_id": preview["preview_id"]})
-        s2, undone, _ = call(base, "/api/lab/undo", {"user_id": user})
-        return s1 == 200 and s2 == 200 and undone["feed"]["eligible"] == preview["before"]["eligible"], \
-            applied.get("feed", {}).get("eligible")
+    def check_row(name, ok, outcome, why):
+        rows.append({"workflow": name, "domain": "all", "input": "", "http": None, "seconds": 0, "model_calls": 0,
+                     "cost_usd": 0, "unknown_cost_calls": 0, "call_errors": [], "outcome": outcome, "ok": bool(ok),
+                     "why_not_ok": "" if ok else why, "detail": None})
 
+    def apply_undo(preview, check=None):
+        """Apply, require a real change (and the semantic ``check`` on the applied state), Undo, and require the exact
+        earlier state: the same controls, members, added items, eligible count, item ids, order and scores."""
+        before = snapshot(base, user)
+        s1, applied, _ = call(base, "/api/lab/apply", {"user_id": user, "preview_id": preview["preview_id"]})
+        after = snapshot(base, user)
+        semantic = check(after) if (check and s1 == 200) else (True, "")
+        s2, _, _ = call(base, "/api/lab/undo", {"user_id": user})
+        restored = snapshot(base, user)
+        why = []
+        if s1 != 200 or s2 != 200:
+            why.append(f"apply {s1}, undo {s2}")
+        if s1 == 200 and not ranking_changed(before, after):
+            why.append("Apply did not change the ranking")
+        if not semantic[0]:
+            why.append(semantic[1])
+        if not same_state(restored, before):
+            why.append("Undo did not restore the exact earlier state (ids, order, scores, controls)")
+        return not why, applied.get("feed", {}).get("eligible"), "; ".join(why)
+
+    def label_gone(kind, value):
+        key = {"category": "categories", "tag": "tags"}.get(kind)
+
+        def check(after):
+            bad = [i for i, it in after["items"].items() if key and value in it[key]]
+            return not bad, f"hidden label {value!r} still in the shown feed: {bad[:5]}"
+        return check
+
+    initial = snapshot(base, user)
     for ex in examples["manual"]:
         st, p, sec = call(base, "/api/lab/manual", {"user_id": user, **{k: ex[k] for k in ("kind", "value", "action")},
                                                     "strength": ex.get("strength", "standard")})
-        ok, after = apply_undo(p) if st == 200 else (False, None)
-        record("manual", ex, st, p, sec, f"eligible {p.get('changes', {}).get('eligible_before')} -> {after}", ok)
-    for ex in examples["interpret"]:
+        check = label_gone(ex["kind"], ex["value"]) if ex["action"] == "hide" else None
+        ok, after, why = apply_undo(p, check) if st == 200 and p.get("applicable") else (False, None, f"http {st}, not applicable")
+        record("manual", ex, st, p, sec, f"eligible {p.get('changes', {}).get('eligible_before')} -> {after}", ok, why)
+    for ex in examples["interpret"] + examples.get("interpret_abstain", []):
+        kind = ex.get("kind", "abstain")
         st, p, sec = call(base, "/api/lab/interpret", {"user_id": user, "request": ex["request"]})
         status = (p.get("proposal") or {}).get("status") if st == 200 else None
-        ok = st == 200
-        if ok and p["applicable"]:
-            ok, _ = apply_undo(p)
-        record("interpret", ex, st, p, sec, f"{status}: " + "; ".join(c["text"] for c in p.get("controls", []))[:300]
-               if st == 200 else str(p.get("detail"))[:300], ok)
-    label = None
+        want = expected_interpret(provider, kind)
+        ok, why = st == 200, "" if st == 200 else f"http {st}"
+        if ok and want == "any" and p.get("applicable"):
+            ok, _, why = apply_undo(p)
+        elif ok and want == "propose":
+            if not (p.get("applicable") and p.get("controls")):
+                ok, why = False, f"expected an applicable proposal, got status {status} with {len(p.get('controls', []))} control(s)"
+            else:
+                ok, _, why = apply_undo(p)
+        elif ok and want == "abstain" and (p.get("applicable") or p.get("controls")):
+            ok, why = False, f"expected no change, got {len(p.get('controls', []))} control(s)"
+        record(f"interpret ({kind}, expect {want})", ex, st, p, sec,
+               f"{status}: " + "; ".join(c["text"] for c in p.get("controls", []))[:300]
+               if st == 200 else str(p.get("detail"))[:300], ok, why)
+    members_seen, label = 0, None
     for ex in examples["new_category"]:
         st, d, sec = call(base, "/api/lab/define", {"user_id": user, "description": ex["description"], "scope_size": 100})
-        record("new-category: define", ex, st, d, sec, f"{d.get('status')}: {d.get('label')}" if st == 200 else str(d.get("detail")), st == 200)
+        record("new-category: define", ex, st, d, sec, f"{d.get('status')}: {d.get('label')}" if st == 200 else str(d.get("detail")),
+               st == 200, f"http {st}")
         if st == 200 and d.get("status") == "propose":
             st, p, sec = call(base, "/api/lab/classify", {"user_id": user, "label": d["label"], "definition": d["definition"],
                                                           "action": "boost", "strength": "strong", "scope_size": 100})
-            selected = [r["item_id"] for r in p.get("evidence", []) if r.get("selected")] if st == 200 else []
-            ok = st == 200 and all(r["quote_verified"] or r["verdict"] == "unknown" for r in p.get("evidence", [])
-                                   if r.get("selected"))
-            if ok and p["applicable"]:
+            ev = p.get("evidence", []) if st == 200 else []
+            selected = [r for r in ev if r.get("selected")]
+            # The application's rule: selected = verdict match + quotation found + the independent check supports it.
+            bad = [r["item_id"] for r in selected if not (r.get("verdict") == "match" and r.get("quote_verified")
+                                                          and (r.get("assessment") or {}).get("supports") is True)]
+            ok, why = st == 200 and not bad, (f"http {st}" if st != 200 else f"selected without match+quote+check: {bad}")
+            if ok and selected:
+                members_seen += len(selected)
+                before = snapshot(base, user)
                 s1, _, _ = call(base, "/api/lab/apply", {"user_id": user, "preview_id": p["preview_id"]})
-                ok, label = s1 == 200, d["label"]
-            record("new-category: classify", ex, st, p, sec, f"{len(selected)} selected of {len(p.get('evidence', []))}", ok)
+                after = snapshot(base, user)
+                got = set()
+                for k, m in after.get("custom", {}).items():
+                    if k not in before.get("custom", {}):
+                        got = set(m)
+                want_ids = {r["item_id"] for r in selected}
+                if s1 != 200 or got != want_ids:
+                    ok, why = False, f"apply {s1}; members after Apply {sorted(got)[:10]} differ from selected {sorted(want_ids)[:10]}"
+                elif not ranking_changed(before, after):
+                    ok, why = False, "Apply of the new category did not change the ranking"
+                else:
+                    label = d["label"]
+            record("new-category: classify", ex, st, p, sec, f"{len(selected)} selected of {len(ev)}", ok, why)
+    check_row("new-category: at least one category selects members and feeds the filter", members_seen > 0,
+              f"{members_seen} members selected", "no example selected any member")
+    for ex in examples.get("new_category_negative", []):
+        st, d, sec = call(base, "/api/lab/define", {"user_id": user, "description": ex["description"], "scope_size": 100})
+        n = 0
+        if st == 200 and d.get("status") == "propose":
+            st2, p, _ = call(base, "/api/lab/classify", {"user_id": user, "label": d["label"], "definition": d["definition"],
+                                                         "action": "boost", "strength": "strong", "scope_size": 100})
+            n = sum(bool(r.get("selected")) for r in p.get("evidence", [])) if st2 == 200 else -1
+        record("new-category: negative (expect no member)", ex, st, d, sec, f"{d.get('status')}: {n} selected",
+               st == 200 and n == 0, f"http {st}, {n} selected")
     for ex in examples["new_items"]:
         st, p, sec = call(base, "/api/lab/new-items", {"user_id": user, "items": ex["items"]})
-        ok = st == 200
+        ok, why = st == 200 and bool(p.get("applicable")), f"http {st}"
         if ok:
-            ok, _ = apply_undo(p)
+            title = ex["items"][0]["title"]
+            ok, _, why = apply_undo(p, lambda after: (any(t == title for _, t in after["added"]),
+                                                       f"the item {title!r} was not added"))
         ev = p.get("evidence", [{}])[0] if st == 200 else {}
         record("new-items", ex, st, p, sec, f"categories {ev.get('categories')} tags {ev.get('tags')} "
-               f"new-category verdicts {[(n['label'], n['verdict']) for n in ev.get('new_categories', [])]}"
-               if st == 200 else str(p.get("detail")), ok)
-    call(base, "/api/lab/reset", {"user_id": user})
+               f"new-category verdicts {[(n['label'], n['verdict'], n.get('selected')) for n in ev.get('new_categories', [])]}"
+               if st == 200 else str(p.get("detail")), ok, why)
+    s_reset, _, _ = call(base, "/api/lab/reset", {"user_id": user})
+    final = snapshot(base, user)
+    check_row("reset restores the exact initial feed (ids, order, scores, no controls)",
+              s_reset == 200 and same_state(final, initial), f"reset http {s_reset}",
+              "state after Reset differs from the initial state")
     return rows, label
 
 
@@ -146,13 +287,9 @@ def main(argv=None):
     if args.only_workflows:
         (out / "pytest.log").write_text("skipped (--only-workflows)", encoding="utf-8")
     text = (out / "pytest.log").read_text(encoding="utf-8", errors="replace")
-    failed = re.findall(r"^(?:FAILED|ERROR) (\S+)", text, re.M)
-    unexpected = [f for f in failed if f not in FROZEN_BY_DESIGN]
-    last = [line for line in text.splitlines() if re.search(r"\d+ (passed|failed)", line)]
-    summary["steps"]["pytest"] = {"exit": code, "seconds": sec, "result": last[-1] if last else "?",
-                                  "failed_unexpected": unexpected,
-                                  "failed_frozen_by_design": [f for f in failed if f in FROZEN_BY_DESIGN],
-                                  "ok": not unexpected}
+    summary["steps"]["pytest"] = {"seconds": sec, **({"exit": 0, "result": "skipped (--only-workflows)", "failed_unexpected": [],
+                                                       "failed_frozen_by_design": [], "ok": True}
+                                                      if args.only_workflows else pytest_verdict(code, text))}
 
     node = shutil.which("node")
     tests = sorted(str(p.relative_to(ROOT)) for p in (ROOT / "web/tests").glob("*.test.mjs"))
@@ -195,7 +332,7 @@ def main(argv=None):
             call(base, "/api/lab/reset", {"user_id": args.user})
         examples = json.loads((ROOT / args.examples).read_text(encoding="utf-8"))
         started = time.monotonic()
-        rows, _ = workflows(base, args.user, examples)
+        rows, _ = workflows(base, args.user, examples, provider=args.provider)
         _, calls, _ = call(base, "/api/lab/calls")
         summary["steps"]["workflows"] = {"seconds": round(time.monotonic() - started, 1), "ok": all(r["ok"] for r in rows),
                                          "cases": len(rows), "failed": sum(not r["ok"] for r in rows),
@@ -216,7 +353,11 @@ def main(argv=None):
         lines += ["", "Frozen by design (reported, not counted as failures):"] + [
             f"- `{t}`: {FROZEN_BY_DESIGN[t]}" for t in summary["steps"]["pytest"]["failed_frozen_by_design"]]
     if summary["steps"]["pytest"]["failed_unexpected"]:
-        lines += ["", "Unexpected test failures:"] + [f"- `{t}`" for t in summary["steps"]["pytest"]["failed_unexpected"]]
+        lines += ["", "Unexpected test failures or pytest problems:"] + [f"- `{t}`" for t in summary["steps"]["pytest"]["failed_unexpected"]]
+    wrows = json.loads((out / "workflows.json").read_text(encoding="utf-8")) if (out / "workflows.json").is_file() else []
+    if any(not r["ok"] for r in wrows):
+        lines += ["", "Workflow checks that failed:"] + [f"- {r['workflow']} ({r['domain']}): {r.get('why_not_ok')}"
+                                                          for r in wrows if not r["ok"]]
     lines += ["", "| Workflow | Domain | Input | OK | Seconds | Calls | USD | Outcome |", "| --- | --- | --- | --- | --- | --- | --- | --- |"]
     for r in json.loads((out / "workflows.json").read_text(encoding="utf-8")) if (out / "workflows.json").is_file() else []:
         lines.append(f"| {r['workflow']} | {r['domain']} | {str(r['input'])[:60]} | {'yes' if r['ok'] else 'NO'} | {r['seconds']} | "

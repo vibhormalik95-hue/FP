@@ -52,7 +52,7 @@ The Ollama Windows application normally starts its loopback API automatically. I
 
 ## Windows: open the demonstration app
 
-After the documented environment setup, run `scripts\run_app.ps1` to build the frontend if needed and launch the loopback application. The app has genuine metadata cards; the dataset does not distribute playable source videos. Read the visible data/backend status before demonstrating it. Rule controls are a software diagnostic; select Ollama for actual LLM parsing.
+To run the current application, use `run-app.cmd` (it runs `scripts/run_app.py` on port 8765; see the [guide for the supervisor](guide/PROFESSOR-GUIDE.md)). `scripts\run_app.ps1` is a legacy launcher: it starts the historical port-8000 API without the Lab and is kept only to reproduce the setup of these experiments. The app has genuine metadata cards; the dataset does not distribute playable source videos. Read the visible data/backend status before demonstrating it.
 
 ## Google Colab
 

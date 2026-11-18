@@ -1,6 +1,6 @@
 # Model routes
 
-> **Current guide.** To install the application first, see [install and run](install-and-run.md).
+> **Legacy guide (earlier demonstrator, 13–15 November).** This page describes the fixture scenarios and the SemanticPanel page started by `scripts/quickstart.py`, not the current application. The current application is the four-tab Lab (Choose a category, Say it your way, New category, New items; new-category scope 10–200 items of the current feed; editable definition; provider setup in the page), started by `run-app.cmd` (`scripts/run_app.py`, port 8765). Its guide is [docs/guide/PROFESSOR-GUIDE.md](guide/PROFESSOR-GUIDE.md).
 
 This page tells you how to connect the application to a language model of your choice.
 You do not need one vendor, one subscription or one operating system.

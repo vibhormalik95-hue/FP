@@ -1,7 +1,8 @@
 """Authored offline contract fixtures, not semantic gold or live model evidence.
 
 Direct in-process API functions and strict request models, no HTTP or scorer.
-Run with verification/run_guarded.py to prohibit model, process and network use.
+Run with "python tools/hosted_validation_current/run_guarded.py . test_category_resolution_offline"
+(from the repository root) to prohibit model, process and network use.
 """
 from copy import deepcopy
 import csv

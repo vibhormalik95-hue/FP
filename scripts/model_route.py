@@ -373,8 +373,25 @@ def check(args, out=print):
         out('FAILED  configuration: ' + model_routes.ascii_text(error))
         return 1
     result = run_check(config, test_call=not args.no_test_call, out=out)
-    out('\nResult: ' + ('the route works.' if result['ok'] else 'the route does not work yet. Read the lines marked FAILED.'))
+    out('\nResult: ' + verdict(result))
     return 0 if result['ok'] else 1
+
+
+def verdict(result):
+    """One sentence. "The route works" only after a real model answer to the test call."""
+    if not result['ok']:
+        return 'the route does not work yet. Read the lines marked FAILED.'
+    if result.get('model_response'):
+        unverified = result.get('unverified') or []
+        return 'the route works: the model answered the test call.' + (
+            f' (Not verified by its own step: {", ".join(unverified)}; the answer of the model shows that it works.)'
+            if unverified else '')
+    reason = {'skipped': 'the test call was not requested',
+              'not_run': 'this route has no test call (an operator answers the relay)'}.get(result.get('test_call'),
+                                                                                         'no test call was made')
+    unverified = result.get('unverified') or []
+    return ('no step failed, but the route is not proven to work: ' + reason + ', so no model answer was checked'
+            + (f'; not verified: {", ".join(unverified)}' if unverified else '') + '.')
 
 
 def show(args, out=print):

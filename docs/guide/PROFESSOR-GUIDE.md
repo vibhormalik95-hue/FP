@@ -11,13 +11,13 @@ The view **Original study (A to E)** holds the five conditions of the original p
 In every language control a model only *proposes*. The server checks the proposal, you review it, **Apply** changes exactly what you reviewed, and **Undo** restores the previous feed.
 The view **Results** shows the measured results of the offline evaluation, read from the result files.
 
-Everything is in English. The KuaiRec text (titles, captions, cover text, topic tags and the three levels of category names) was translated into English *before* processing; the application, the models and the screen work on that English text only. It is a machine translation of KuaiRec (CC BY-SA 4.0), stored as a versioned file with its SHA-256 (`data/kuairec_text_en-v1.json`). In short: the app works in English only; measured numbers come from the original-text run; the English set is frozen at `4847d80` and its re-run is pending.
+Everything is in English. The KuaiRec text (titles, captions, cover text, topic tags and the three levels of category names) was translated into English *before* processing; the application, its model calls and the screen work on that English text only. It is a machine translation of KuaiRec (CC BY-SA 4.0), stored as a versioned file with its SHA-256 (`data/kuairec_text_en-v1.json`). In short: The app works in English only; measured numbers come from the original-text run (17 Nov). An English-input run exists, but its identity could not be verified (the hosted runs were resumed across commits and the run manifest kept only the last commit), so no English-input figure is reported.
 
-A demonstration video, `COMP9500-Feed-Control-Lab-demo.mp4` (take 14, 10:57), is sent separately (not in the repository). It was recorded on this English application with OpenAI gpt-5-mini at low reasoning effort and shows every workflow, including where to paste your API key. In it, the new category "Dogs" selects 3 of the 50 videos in scope, two of them enter the top ten after Apply, and a new item about a puppy joins the category.
+A demonstration video, `COMP9500-Feed-Control-Lab-demo.mp4` (take 14, 10:57), is to be sent separately by the owner (not in the repository). It was recorded on this English application with OpenAI gpt-5-mini at low reasoning effort and shows every workflow, including where to paste your API key. In it, the new category "Dogs" selects 3 of the 50 videos in scope, two of them enter the top ten after Apply, and a new item about a puppy joins the category.
 
 # 2. Install (once)
 
-The code is at <https://github.com/vibhormalik95-hue/FP/tree/comp9500-final-2026-11-r5> (tag `comp9500-final-2026-11-r5`). Download it as a ZIP from that page, or run `git clone --branch comp9500-final-2026-11-r5 https://github.com/vibhormalik95-hue/FP.git`.
+The code is at <https://github.com/vibhormalik95-hue/FP/tree/comp9500-final-2026-11-r6> (tag `comp9500-final-2026-11-r6`). Download it as a ZIP from that page, or run `git clone --branch comp9500-final-2026-11-r6 https://github.com/vibhormalik95-hue/FP.git`.
 
 You need:
 
@@ -38,7 +38,7 @@ It needs only Python (no virtual environment yet) and writes these files:
 | `data/processed.json` | The processed KuaiRec subset (865 users, 2,593 items) |
 | `data/kuairec_text_en-v1.json` | The English text layer the application loads: machine translation of KuaiRec (CC BY-SA 4.0) |
 | `results/models/seed_42/`, `seed_43/`, `seed_44/` | The trained SASRec checkpoints (the app uses seed 42) |
-| `data/raw/`, `data/kuairec_gloss_en.json`, `data/kuairec_text_en-v1.label-map.json` | The unchanged official source table (kept for the licence and for re-scoring the 17 November evaluation), the translation input and the map from each original label to its English label (for the English re-run of the evaluation). The application never loads them. |
+| `data/raw/`, `data/kuairec_gloss_en.json`, `data/kuairec_text_en-v1.label-map.json` | The unchanged official source table (kept for the licence and for re-scoring the 17 November evaluation), the translation input and the map from each original label to its English label (for an English-input run of the evaluation). The application never loads them. |
 
 If a file is already there with a different hash, it is reported and left alone (`--force` replaces it).
 
@@ -91,7 +91,7 @@ Useful options (the same on both systems; on Windows add them after `run-app.cmd
 | --- | --- |
 | `--port 8770` | Use another port |
 | `--provider openai --model gpt-5-mini` | Start with OpenAI already selected (the key comes from `OPENAI_API_KEY`) |
-| `--budget-usd 1.00` | Stop model calls once this much has been spent in this server session. Each call reserves its upper-bound cost before it starts, so parallel calls cannot pass the limit together |
+| `--budget-usd 1.00` | Stop model calls once this much has been spent in this server session. The limit is advisory: each call reserves an advisory cost estimate before it starts, and a failed call keeps its reservation booked with its actual cost unknown; the estimate is not an upper bound (OpenAI output is uncapped and the SDK may retry once), so actual spend can exceed the limit |
 
 The server listens on `127.0.0.1` only, so nothing is reachable from other computers. Applied controls last until the server stops or you press **Reset this user**.
 
@@ -120,7 +120,7 @@ macOS:    export OPENAI_API_KEY=...
 **Other providers.**
 
 - **Mock (no AI, for tests)** needs no key and costs nothing. It only matches literal words, so it cannot read indirect requests. Use it to look at the screens and for the test runner.
-- **Ollama (local model on this computer)** needs no key. Start Ollama yourself with a large context window (`OLLAMA_CONTEXT_LENGTH=32768`) and pull a model, for example `qwen2.5-coder:7b-instruct`. Local models are slower. On the 17 November run (original text) llama3.1:8b and qwen2.5-coder:7b proposed almost nothing; the English-input re-run is pending.
+- **Ollama (local model on this computer)** needs no key. Start Ollama yourself with a large context window (`OLLAMA_CONTEXT_LENGTH=32768`) and pull a model, for example `qwen2.5-coder:7b-instruct`. Local models are slower. On the 17 November run (original text) llama3.1:8b and qwen2.5-coder:7b proposed almost nothing. An English-input run exists, but its identity could not be verified, so no English-input figure is reported.
 - **Anthropic API:** a route exists (key from `ANTHROPIC_API_KEY`), but it has not been tested with a live key. Claude was measured only through the Claude command-line program.
 
 With gpt-5-mini, an interpretation costs a fraction of a US cent, and a new category on 20 items about one cent. Every review shows the calls, seconds, tokens and the estimated cost.
@@ -187,13 +187,13 @@ Read the three blocks, then **Apply** or **Discard**. Other examples to try: `Fe
 
 ## 5.5 A new category
 
-Tab **3 · New category**. Describe a category that KuaiRec does not have, for example `Videos filmed outdoors in nature: mountains, rivers, fields or the sea.` Choose the scope: the top 10, 20, 40, 50, 80, 120 or 200 items of this user's *current* feed, after the controls already applied (a video you have hidden is not classified); 40 by default and press **Propose a definition**.
+Tab **3 · New category**. Describe a category that KuaiRec does not have, for example `Videos filmed outdoors in nature: mountains, rivers, fields or the sea.` Choose the scope: the top 10, 20, 40, 50, 80, 120 or 200 items of this user's *current* feed, after the controls already applied (a video you have hidden is not classified; 40 by default), and press **Propose a definition**.
 
 **Step 1 — review the definition.** The model proposes a label and a precise definition, with quotations from the user's top items that the server has found in the item text (ticks). If none of the sampled items fits the description, the model still proposes a definition from the description alone. You may edit the label and the definition. Choose what Apply should do (**Show only**, **Show more**, **Show less**, **Hide**).
 
-![Step 1: the proposed label "Nature outdoors — mountains/rivers/fields/sea" and its definition, with verified quotations from three items.](images/07-category-definition.png)
+![Step 1: the proposed label (in this run "Outdoor nature landscape footage"; the model's wording varies between runs) and its definition, with verified quotations from sample items.](images/07-category-definition.png)
 
-**Step 2 — classification and evidence.** Press **Approve the definition and classify**. The model classifies every item in the scope and must quote the exact words it relies on; a separate call checks each quotation cited for a match, without seeing the verdict. A quotation counts only if it has at least three characters and occurs in the named field (a tag must match a whole tag). Only items whose quotation exists *and* passed the check are selected; the table shows, for every match, what the check said and why. Describe the category by what the text of a video can show (words in its title, description or tags); a condition about what the picture mainly shows can rarely be established from text, so such matches are often rejected by the check. The table shows, for each item: the English KuaiRec text, the verdict, the quotation (found or not), the evidence check and whether it is selected.
+**Step 2 — classification and evidence.** Press **Approve the definition and classify**. The model classifies every item in the scope and must quote the exact words it relies on; a separate call checks each quotation cited for a match, without seeing the verdict. A quotation from the title or description must be 3 or more characters and appear in that field; a quotation from the tags must be one whole tag (of any length). Only items whose quotation exists *and* passed the check are selected; the table shows, for every match, what the check said and why. Describe the category by what the text of a video can show (words in its title, description or tags); a condition about what the picture mainly shows can rarely be established from text, so such matches are often rejected by the check. The table shows, for each item: the English KuaiRec text, the verdict, the quotation (found or not), the evidence check and whether it is selected.
 
 ![Step 2: the classification evidence table: one row per item with its verdict, the quotation (found or not), the independent check and whether it is selected.](images/08-category-review.png)
 
@@ -221,9 +221,9 @@ After **Apply** the item is listed under **Applied now** as an added item (ID 90
 
 The tab **Results** shows the measured results of the offline evaluation of the language controls. It reads the file `summary.json` of each run folder under `docs/evidence/lab-eval/<run>/` and shows each table with its run, test set and models.
 
-![The Results page with the run 20261117-main, labelled "Measured on the original-text run (17 Nov); English-input re-run pending" (the tables continue below the fold).](images/10-results.png)
+![The Results page with the run 20261117-main, labelled "Measured on the original-text run (17 Nov). An English-input run exists, but its identity is not verified, so no English-input figure is reported." (the tables continue below the fold).](images/10-results.png)
 
-**Every number on this page was measured on the original-text run (17 Nov); the English-input re-run is pending.** The page says so above each run. The run `20261117-main` measured gpt-5, gpt-5-mini and Claude Sonnet 5.5 on a frozen set of 40 cases that Claude (Opus 5.5) drafted and Vibhor Malik reviewed row by row (1,211 rows, 24 corrections). Claude is therefore both the drafter's family and a measured model. Two local models, llama3.1:8b and qwen2.5-coder:7b-instruct through Ollama, ran the same 40 cases; on this laptop they proposed almost nothing (0 of 20 exact on the nonliteral requests) and took about two minutes per call. Each table names the commits that produced the predictions (hosted `8dd978f`, local `9071f05`) and the scoring commit (`fbb3e59`). The downstream tables apply each model's exact controls with the application's own policy.
+**The app works in English only; measured numbers come from the original-text run (17 Nov). An English-input run exists, but its identity could not be verified (the hosted runs were resumed across commits and the run manifest kept only the last commit), so no English-input figure is reported.** Above each run the page reads: "Measured on the original-text run (17 Nov). An English-input run exists, but its identity is not verified, so no English-input figure is reported." The run `20261117-main` measured gpt-5, gpt-5-mini and Claude Sonnet 5.5 on a frozen set of 40 cases that Claude (Opus 5.5) drafted and Vibhor Malik reviewed row by row (1,211 rows, 24 corrections; his attestation, not independently verified). Claude Sonnet 5.5 ran through the local Claude command-line program, not the Anthropic API. Claude is therefore both the drafter's family and a measured model. Two local models, llama3.1:8b and qwen2.5-coder:7b-instruct through Ollama, ran the same 40 cases; on this laptop they proposed almost nothing (0 of 20 exact on the nonliteral requests) and took about two minutes per call. Each table names the commits that produced the predictions (hosted `8dd978f`, local `9071f05`) and the scoring commit (`fbb3e59`). The downstream tables apply each model's exact controls with the application's own policy, except that the evaluator grouped all "only" labels of a case (the app intersects separate controls; NL06, NL08, NL15) and used the freeze-time quotation rule, which the shipped rule tightens.
 
 # 7. Run all tests
 
@@ -274,4 +274,4 @@ One Python test is reported separately as *frozen by design* (a frozen 11 Novemb
 
 # 9. What the application does not claim
 
-The study is offline on KuaiRec with no user study. The English text is a machine translation: a wrong translation can make a label or a quotation misleading, and the measured numbers so far come from the run on the original text. The test set was drafted by an AI (Claude Opus 5.5) and reviewed row by row by a person, and a Claude model is also one of the measured models, which can favour Claude. The **Results** page states what was measured and its limits.
+The study is offline on KuaiRec with no user study. The English text is a machine translation: a wrong translation can make a label or a quotation misleading, and the measured numbers come from the run on the original text; no English-input figure is reported. The test set was drafted by an AI (Claude Opus 5.5) and, by the student's own attestation, reviewed row by row by him, and a Claude model is also one of the measured models, which can favour Claude. The **Results** page states what was measured and its limits.

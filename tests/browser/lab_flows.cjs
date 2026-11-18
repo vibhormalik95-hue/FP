@@ -11,11 +11,21 @@ const checks = []; let shot = 0;
 const check = (name, ok, detail = '') => { checks.push({name, ok: Boolean(ok), detail}); console.log(`${ok ? 'PASS' : 'FAIL'}  ${name}${detail ? ' · ' + detail : ''}`); };
 const eligible = async p => Number((await p.textContent('.lab-count')).match(/(\d+) of/)[1]);
 const noReview = p => p.waitForFunction(() => !document.querySelector('[data-role="review"]'), null, {timeout: 60000});
+// The exact server-side state of the page's user: full ranking (ids in order), controls, new categories, added items.
+let labUser = null;
+const snapshot = p => p.evaluate(u => fetch(`/api/lab/state?user_id=${u}`).then(r => r.json()).then(s => ({
+  ranked: s.feed.ranked_ids, eligible: s.feed.eligible, controls: s.controls.map(c => `${c.action}:${c.target.kind}:${c.target.value}`),
+  custom: Object.fromEntries(Object.entries(s.custom).map(([k, v]) => [k, v.members])), added: s.added.map(a => a.title),
+  items: Object.fromEntries(s.feed.items.map(i => [i.item_id, i.kuairec_categories || []]))})), labUser);
+const same = (a, b) => JSON.stringify([a.ranked, a.controls, a.custom, a.added]) === JSON.stringify([b.ranked, b.controls, b.custom, b.added]);
+const changed = (a, b) => JSON.stringify(a.ranked) !== JSON.stringify(b.ranked);   // the ranking itself
+const shownIds = p => p.$$eval('.lab-feed .lab-card', cards => cards.map(c => Number(c.dataset.item)));
 
 (async () => {
   const browser = await chromium.launch({channel: 'chrome'});
   const page = await browser.newPage({viewport: {width: 1920, height: 1080}});
   const errors = []; page.on('pageerror', e => errors.push(String(e)));
+  page.on('request', r => { const m = r.url().match(/lab\/state\?user_id=(\d+)/); if (m) labUser = Number(m[1]); });
   const snap = async name => page.screenshot({path: path.join(out, `${String(++shot).padStart(2, '0')}-${name}.png`)});
   const t0 = Date.now();
   await page.goto(base); await page.waitForSelector('[data-view="lab"]', {timeout: 60000});
@@ -34,6 +44,8 @@ const noReview = p => p.waitForFunction(() => !document.querySelector('[data-rol
   await page.selectOption('[data-role="provider-kind"]', 'mock');
   await page.click('[data-role="provider-save"]'); await page.waitForTimeout(300);
   const start = await eligible(page);
+  check('The page reports its user', labUser !== null, String(labUser));
+  const startState = await snapshot(page), startShown = await shownIds(page);
 
   // 1. manual
   const m = examples.manual[0];
@@ -47,27 +59,35 @@ const noReview = p => p.waitForFunction(() => !document.querySelector('[data-rol
   check('Manual preview leaves the applied feed unchanged', (await page.textContent('[data-role="applied"]')).includes('No control is applied'));
   await snap('manual-review');
   await page.click('[data-role="apply"]'); await noReview(page);
-  const afterManual = await eligible(page);
+  const afterManual = await eligible(page), manualState = await snapshot(page);
   check('Manual Apply removes the label', afterManual < start, `${start} -> ${afterManual}`);
+  check('Manual Apply: no shown video carries the hidden category', Object.values(manualState.items).every(c => !c.includes(m.value)));
   await page.click('[data-role="undo"]'); await page.waitForTimeout(600);
-  check('Undo restores the feed', (await eligible(page)) === start);
+  check('Undo restores the exact feed (full ranking, ids and order)', same(await snapshot(page), startState));
 
   // 2. interpret: every example; the mock can only match literal words.
-  for (const ex of examples.interpret) {
+  for (const ex of [...examples.interpret, ...(examples.interpret_abstain || []).map(e => ({...e, kind: 'abstain'}))]) {
     await page.click('[data-tab="interpret"]'); await page.fill('[data-role="request"]', ex.request);
     await page.click('[data-role="interpret-preview"]'); await page.waitForSelector('[data-role="review"], [data-role="error"]', {timeout: 120000});
     const text = await page.textContent('[data-role="review"]').catch(() => '');
     check(`Interpret (${ex.domain}, ${ex.kind}) returns a reviewed proposal`, text.includes('What the application checked'), (text.match(/Model status: (\w+)/) || [])[1] || 'error');
-    if (await page.$('[data-role="apply"]:not([disabled])')) {
+    const canApply = Boolean(await page.$('[data-role="apply"]:not([disabled])'));
+    // The mock reads literal words: a literal request must be applicable, an abstain request must not be.
+    if (ex.kind === 'literal') check(`Interpret (${ex.domain}) literal request is applicable`, canApply);
+    if (ex.kind === 'abstain') check(`Interpret (${ex.domain}) abstain request changes nothing`, !canApply);
+    if (canApply) {
+      const before = await snapshot(page);
       await page.click('[data-role="apply"]'); await noReview(page);
-      check(`Interpret Apply (${ex.domain}) adds a control`, !(await page.textContent('[data-role="applied"]')).includes('No control is applied'));
+      const after = await snapshot(page);
+      check(`Interpret Apply (${ex.domain}) adds a control and changes the ranking`, after.controls.length > before.controls.length && changed(before, after));
       await page.click('[data-role="undo"]'); await page.waitForTimeout(500);
+      check(`Interpret Undo (${ex.domain}) restores the exact ranking`, same(await snapshot(page), before));
     } else if (await page.$('[data-role="discard"]')) await page.click('[data-role="discard"]');
   }
   check('Feed column is in view', await page.evaluate(() => { const r = document.querySelector('.lab-feed').getBoundingClientRect(); return r.top < innerHeight && r.bottom > 0 && r.left < innerWidth; }));
 
   // 3. new category
-  const nc = examples.new_category[0];
+  const nc = examples.new_category[2] || examples.new_category[0];
   await page.click('[data-tab="category"]'); await page.fill('[data-role="category-description"]', nc.description);
   await page.click('[data-role="define"]'); await page.waitForSelector('[data-role="definition"], [data-role="error"]', {timeout: 120000});
   const defined = await page.$('[data-role="classify"]:not([disabled])');
@@ -78,22 +98,32 @@ const noReview = p => p.waitForFunction(() => !document.querySelector('[data-rol
     await page.evaluate(() => window.scrollTo(0, document.querySelector('[data-role="review"]').offsetTop - 20));
     check('Feed column stays visible while the review is scrolled into view', await page.evaluate(() => { const r = document.querySelector('.lab-feed').getBoundingClientRect(); return r.top < innerHeight && r.bottom > 0; }));
     await snap('category-review');
-    if (await page.$('[data-role="apply"]:not([disabled])')) {
+    const selected = await page.evaluate(() => (window.labLastPreview || {}).selected || 0);
+    const canApply = Boolean(await page.$('[data-role="apply"]:not([disabled])'));
+    check('New category: at least one member is selected and Apply is enabled', selected > 0 && canApply, `${selected} selected`);
+    if (canApply) {
+      const before = await snapshot(page);
       await page.click('[data-role="apply"]'); await noReview(page);
-      check('New category Apply filters the feed', (await eligible(page)) <= start);
+      const after = await snapshot(page), members = Object.values(after.custom)[0] || [];
+      check('New category Apply: the category holds the selected members and the ranking changes',
+        members.length === selected && changed(before, after), `${members.length} members`);
     }
   }
   // 4. new items, also judged against the new category
   const ni = examples.new_items[0].items[0];
   await page.click('[data-tab="items"]'); await page.fill('[data-role="new-title-0"]', ni.title); await page.fill('[data-role="new-description-0"]', ni.description);
   await page.click('[data-role="new-items-preview"]'); await page.waitForSelector('[data-role="review"]', {timeout: 120000});
+  const beforeItem = await snapshot(page);
   await page.click('[data-role="apply"]'); await noReview(page);
-  check('New item is added', (await page.textContent('[data-role="applied"]')).includes(ni.title));
+  const afterItem = await snapshot(page);
+  check('New item is added', (await page.textContent('[data-role="applied"]')).includes(ni.title) && afterItem.added.includes(ni.title));
   await snap('new-item');
   await page.click('[data-role="undo"]'); await page.waitForTimeout(500);
-  check('Undo removes the new item', !(await page.textContent('[data-role="applied"]')).includes(ni.title));
+  check('Undo removes the new item and restores the exact state', !(await page.textContent('[data-role="applied"]')).includes(ni.title)
+    && same(await snapshot(page), beforeItem));
   await page.click('[data-role="lab-reset"]'); await page.waitForTimeout(600);
-  check('Reset restores the trained ranking', (await eligible(page)) === start);
+  check('Reset restores the exact trained ranking (full ranking, ids and order, no controls)',
+    same(await snapshot(page), startState) && JSON.stringify(await shownIds(page)) === JSON.stringify(startShown));
 
   // Auto-apply
   await page.check('[data-role="auto-apply"]'); await pickManual();

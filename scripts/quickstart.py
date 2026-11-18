@@ -1,4 +1,10 @@
-"""One command for each step of the demonstration. Works the same on Windows, Linux and macOS.
+"""LEGACY / REPRODUCTION launcher: one command for each step of the earlier scenario demonstration.
+
+This is not the current application. The current application is the Feed Control
+Lab on real KuaiRec: run-app.cmd (Windows) or "python scripts/run_app.py", served on
+http://127.0.0.1:8765, with a mock provider when no key is given. This file serves
+the earlier scenario app (scripts/run_demo.py) and is kept to reproduce past runs.
+Works the same on Windows, Linux and macOS.
 
     python scripts/quickstart.py check
         Print the source fingerprint and the versions that matter.
@@ -6,8 +12,8 @@
     python scripts/quickstart.py manual --scenario tags
         Serve the app with no model: only the manual category control (with
         --scenario conditions: the original conditions A to E). To try the
-        language-control screens with no key, use Feed Control Studio instead:
-        run-studio.cmd and its mock provider (docs/studio-guide.md).
+        language controls with no key, use the canonical Lab instead:
+        run-app.cmd (or python scripts/run_app.py) and its mock provider.
 
     python scripts/quickstart.py setup
     python scripts/quickstart.py doctor
@@ -199,7 +205,8 @@ def manual(args):
                   f'Open http://127.0.0.1:{args.port}', flush=True)
         else:
             print(f'No model: the manual category control only. Open http://127.0.0.1:{args.port}\n'
-                  'To try the language controls with no key, use Feed Control Studio (run-studio.cmd, mock provider).',
+                  'To try the language controls with no key, use the canonical Lab: run-app.cmd '
+                  '(or python scripts/run_app.py, mock provider) on http://127.0.0.1:8765.',
                   flush=True)
         serve_until_stopped(server)
     finally:

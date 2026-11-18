@@ -161,6 +161,9 @@ _KEY_SHAPES = re.compile(
     r'|\bAIza[0-9A-Za-z_\-]{20,}'
     r'|\beyJ[A-Za-z0-9_\-]{8,}\.[A-Za-z0-9_\-]{8,}\.[A-Za-z0-9_\-]{4,}'
     r'|(?<![A-Za-z0-9])(?=[A-Za-z0-9]*[a-z])(?=[A-Za-z0-9]*[A-Z])(?=[A-Za-z0-9]*[0-9])[A-Za-z0-9]{40,}(?![A-Za-z0-9])')
+# For a record file only the clearly prefixed shapes are cut (not the generic 40+ character rule), so long ids
+# or base64 signatures in CLI output stay intact and are not reported as removed keys.
+_KEY_SHAPES_BYTES = re.compile(_KEY_SHAPES.pattern.rsplit('|', 1)[0].encode('ascii'))
 # A setting of the route file with one of these names would hold a credential.
 _SECRET_SETTING = re.compile(r'(?i)^(x[-_])?(api[-_]?key|key|token|secret|passw(or)?d|passwd|authorization|bearer|'
                              r'credentials?|access[-_]?token|auth[-_]?token|client[-_]?secret)$')
@@ -219,14 +222,18 @@ def scrub(text):
 
 
 def scrub_bytes(data):
-    """``(data without any remembered key, whether something was removed)``, for a record file."""
+    """``(data without any remembered key or key-shaped text, whether something was removed)``, for a record file.
+
+    A program's standard output and standard error are persisted through this function, so a key
+    that was never remembered (an ``sk-...`` or ``sk-ant-...`` key, a ``Bearer`` token) is also cut."""
     with _SECRETS_LOCK:
         known = list(_SECRETS)
     changed = False
     for pattern in known:
         cleaned = re.sub(pattern.pattern.encode('utf-8'), REMOVED.encode('ascii'), data)
         changed, data = changed or cleaned != data, cleaned
-    return data, changed
+    cleaned = _KEY_SHAPES_BYTES.sub(REMOVED.encode('ascii'), data)
+    return cleaned, changed or cleaned != data
 
 
 def scrub_value(value):
@@ -1171,24 +1178,35 @@ def check_route(config, *, api_key=None, test_call=True, out=print, key_error=No
 
     Steps: the configuration, the credential when one is needed, the endpoint or
     program, and then one very small structured request. Return
-    ``{'ok': bool, 'steps': [{'name', 'ok', 'detail', 'action'}]}``. ``ok`` is
-    true only when every step passed. ``key_error`` is the ``RouteError`` of a
-    key that could not be read; its message is shown in the credential step.
-    Every printed and returned text passes the scrubber.
+    ``{'ok': bool, 'model_response': bool, 'test_call': str, 'unverified': [str],
+    'steps': [{'name', 'ok', 'status', 'detail', 'action'}]}``. ``ok`` is true
+    only when no step failed. ``model_response`` is true only when the model
+    really answered the test call; only then does the route work. ``test_call``
+    is ``passed``, ``failed``, ``skipped`` (not requested) or ``not_run``. A step
+    whose state could not be read (for example the sign-in state of a CLI) has
+    the status ``unverified``: it did not fail, and it is not proof either.
+    ``key_error`` is the ``RouteError`` of a key that could not be read; its
+    message is shown in the credential step. Every printed and returned text
+    passes the scrubber.
     """
     steps = []
+    test_call_state = ['not_run']
     remember_secret(api_key)
 
-    def step(name, ok, detail, action=''):
-        entry = {'name': name, 'ok': bool(ok), 'detail': ascii_text(one_line(scrub(detail))),
+    def step(name, ok, detail, action='', status=None):
+        status = status or ('passed' if ok else 'failed')
+        entry = {'name': name, 'ok': bool(ok), 'status': status, 'detail': ascii_text(one_line(scrub(detail))),
                  'action': '' if ok else ascii_text(one_line(scrub(action)))}
         steps.append(entry)
-        out(f'{"OK    " if ok else "FAILED"}  {name}: {entry["detail"]}')
+        label = 'FAILED' if not ok else ('NOT VERIFIED' if status == 'unverified' else 'OK    ')
+        out(f'{label}  {name}: {entry["detail"]}')
         if entry['action']:
             out(f'        What to do: {entry["action"]}')
 
     def finish():
-        return {'ok': all(entry['ok'] for entry in steps), 'steps': steps}
+        return {'ok': all(entry['ok'] for entry in steps), 'model_response': test_call_state[0] == 'passed',
+                'test_call': test_call_state[0],
+                'unverified': [entry['name'] for entry in steps if entry['status'] == 'unverified'], 'steps': steps}
 
     try:
         config = validate_config(config)
@@ -1220,7 +1238,8 @@ def check_route(config, *, api_key=None, test_call=True, out=print, key_error=No
     if not reachable or config['route'] == 'relay':
         return finish()
     if not test_call:
-        out('The test call was not requested. No request was sent to the model.')
+        test_call_state[0] = 'skipped'
+        out('The test call was not requested. No request was sent to the model, so no model answer was checked.')
         return finish()
     out('The next step sends one very small request to the model. It can use a few tokens.')
     try:
@@ -1232,12 +1251,15 @@ def check_route(config, *, api_key=None, test_call=True, out=print, key_error=No
         reported = receipt.get('reported_model') or ', '.join(receipt.get('reported_models') or []) or 'not reported'
         rule = receipt.get('model_match_rule')
         if reply == {'ok': True}:
+            test_call_state[0] = 'passed'
             step('test call', True, f'The model returned the requested JSON object in {seconds:.1f} s. '
                                     f'Model reported by the reply: {reported}'
                                     + (f' (accepted as the requested model by the rule "{rule}")' if rule else '') + '.')
         else:
+            test_call_state[0] = 'failed'
             step('test call', False, 'The reply was valid JSON but did not hold "ok": true.',
                  'The model does not follow a simple instruction. Use a stronger model.')
     except RouteError as error:
+        test_call_state[0] = 'failed'
         step('test call', False, error.message, error.action)
     return finish()

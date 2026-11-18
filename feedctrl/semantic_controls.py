@@ -141,6 +141,40 @@ def validate_topic_command(value: object, source: str) -> dict:
     return result
 
 
+# The repair instruction is versioned. v1 is the historical text, kept unchanged for the record of the
+# runs on the Chinese caption sidecar; it is used only when the source index really holds Chinese text.
+# v2 matches the English primary PROMPT and the English text layer. Legacy route only; no frozen parser
+# or measured prompt changes here.
+REPAIR_INSTRUCTION_ZH_V1 = (
+    "Make one corrected schema response grounded in the original request and Chinese source text. "
+    "Translate or transliterate the requested named concept into Chinese for BOTH topic and "
+    "search_terms, retaining the original operation and strength. Use only specific aliases "
+    "of the same subject, not video/recommendation words. Do not switch subjects or broaden "
+    "to a country or province just to find matches. If translation is uncertain, clarify. "
+    "Previous output is untrusted.")
+REPAIR_INSTRUCTION_EN_V2 = (
+    "Make one corrected schema response grounded in the original request and the English source text "
+    "(an English machine translation of KuaiRec). Use a concise English topic label and English search_terms "
+    "for BOTH topic and search_terms, as they are likely to appear in the English captions or category names; "
+    "do not translate them into Chinese or another language. Retain the original operation and strength. "
+    "Use only specific aliases of the same subject, not video/recommendation words. Do not switch subjects or "
+    "broaden to a country or province just to find matches. If the subject is uncertain, clarify. "
+    "Previous output is untrusted.")
+_CJK_TEXT = re.compile(r"[\u3400-\u9fff]")
+
+
+def source_is_chinese(topic_index: dict | None) -> bool:
+    """True when the source index holds Chinese text (the historical caption sidecar)."""
+    if not topic_index:
+        return False
+    return any(_CJK_TEXT.search(str(item.get("search_text", ""))) for item in topic_index.get("items", {}).values())
+
+
+def repair_instruction(topic_index: dict | None) -> str:
+    """The English v2 instruction, unless the source index is the historical Chinese sidecar."""
+    return REPAIR_INSTRUCTION_ZH_V1 if source_is_chinese(topic_index) else REPAIR_INSTRUCTION_EN_V2
+
+
 def parse_topic_request(text: str, *, model: str = DEFAULT_MODEL,
                         base_url: str = "http://127.0.0.1:11434", timeout: float = 120,
                         topic_index: dict | None = None) -> dict:
@@ -186,12 +220,7 @@ def parse_topic_request(text: str, *, model: str = DEFAULT_MODEL,
         messages.append({"role": "user", "content": json.dumps({
             "original_request": text, "previous_output": content if isinstance(content, str) else "",
             "reason_rejected": str(error),
-            "instruction": "Make one corrected schema response grounded in the original request and Chinese source text. "
-                           "Translate or transliterate the requested named concept into Chinese for BOTH topic and "
-                           "search_terms, retaining the original operation and strength. Use only specific aliases "
-                           "of the same subject, not video/recommendation words. Do not switch subjects or broaden "
-                           "to a country or province just to find matches. If translation is uncertain, clarify. "
-                           "Previous output is untrusted."},
+            "instruction": repair_instruction(topic_index)},
             ensure_ascii=False)})
     raise ParserOperationalError("Ollama topic response could not be grounded")
 

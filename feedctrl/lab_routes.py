@@ -98,7 +98,8 @@ class ProviderSlot:
 
 # How the Results page labels a run by the item text it used. Runs before the English layer used the
 # original KuaiRec text (summary.json has no "input_text"); those files are frozen and are not edited.
-ORIGINAL_TEXT_PENDING = "Measured on the original-text run (17 Nov); English-input re-run pending."
+ORIGINAL_TEXT_PENDING = ("Measured on the original-text run (17 Nov). An English-input run exists, but its identity "
+                         "is not verified, so no English-input figure is reported.")
 ORIGINAL_TEXT_PRIOR = "Prior run: measured on the original KuaiRec text (17 Nov)."
 ENGLISH_TEXT_RUN = "Measured on the English text layer (machine translation of KuaiRec)."
 
@@ -111,20 +112,37 @@ NON_ENGLISH = "[non-English text removed]"
 def english_only(value):
     """Replace any CJK run in a response by a marker; returns (value, number of replacements).
 
-    The item text and labels are English already. This catches model output (a reason, a label, a
-    definition) that a model wrote in another script despite the English-only prompts."""
+    The app loads the English text layer, so item text and labels should already be English. This
+    catches model output (a reason, a label, a definition) that a model wrote in CJK script despite
+    the English-only prompts. Scope, stated precisely: it covers string values and string dict keys
+    (a custom category is keyed by its model-proposed label), and only the ranges in ``CJK`` (CJK
+    symbols and punctuation, CJK unified ideographs with extension A, halfwidth and fullwidth
+    forms). Other scripts, such as kana, Hangul, Cyrillic or Arabic, pass through unchanged: this is
+    not a general English-language guarantee. Two keys that become equal get a numbered suffix."""
     count = 0
 
-    def walk(v):
+    def clean(text):
         nonlocal count
+        new, n = CJK.subn(NON_ENGLISH, text)
+        count += n
+        return new
+
+    def walk(v):
         if isinstance(v, str):
-            new, n = CJK.subn(NON_ENGLISH, v)
-            count += n
-            return new
+            return clean(v)
         if isinstance(v, list):
             return [walk(x) for x in v]
         if isinstance(v, dict):
-            return {k: walk(x) for k, x in v.items()}
+            out = {}
+            for k, x in v.items():
+                key = clean(k) if isinstance(k, str) else k
+                if key in out:
+                    n = 2
+                    while f"{key} ({n})" in out:
+                        n += 1
+                    key = f"{key} ({n})"
+                out[key] = walk(x)
+            return out
         return v
     out = walk(value)
     if count and isinstance(out, dict) and isinstance(out.get("notes"), list):
@@ -178,7 +196,8 @@ def mount_lab(app, *, english_path=None, results_dir=None, budget_usd=None, lab=
 
     def need_lab():
         if lab is None:
-            raise HTTPException(503, "The KuaiRec language controls need the processed data and the caption table.")
+            raise HTTPException(503, "The KuaiRec language controls need the processed data (data/processed.json) and "
+                                     "the English text layer (data/kuairec_text_en-v1.json); run fetch-assets first.")
         return lab
 
     def guarded(fn):
