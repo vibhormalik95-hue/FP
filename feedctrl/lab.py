@@ -228,13 +228,18 @@ class KuaiRecLab:
 
     def scope(self, user_id, size):
         """The items a model classifies: the top ``size`` items of this user's current feed, after the applied
-        controls (an item the user has hidden is not classified), plus added items not already among them."""
+        controls (an item the user has hidden is not classified), plus the added items that the current controls
+        keep in the feed and that are not already among them. An added item that a control hides is excluded too:
+        the hidden-item rule has no exception for added items. (The new-items workflow classifies its own new
+        items directly; this scope is only for the new-category classification.)"""
         lab = self.user(user_id)
         with self._lock:
             ranked = self.feed(user_id, lab=lab)["ranked_ids"]
             items = self.items_for(lab)
             top = ranked[:size]
-            return [items[i] for i in top] + [item for i, item in lab.added.items() if i not in top]
+            visible = set(ranked)
+            return [items[i] for i in top] + [item for i, item in lab.added.items()
+                                              if i in visible and i not in top]
 
     # ----- previews ---------------------------------------------------------
     def new_preview(self, user_id, kind, summary, *, controls=(), new_custom=None, new_items=None,
@@ -325,7 +330,7 @@ class KuaiRecLab:
                                for k, v in lab.custom.items()},
                     "added": [{k: it[k] for k in ("item_id", "title", "caption", "kuairec_categories", "tags")}
                               for it in lab.added.values()],
-                    "feed": {k: feed[k] for k in ("eligible", "catalogue", "items")},
+                    "feed": {k: feed[k] for k in ("eligible", "catalogue", "items", "ranked_ids")},
                     "can_undo": bool(lab.history), "log": lab.log[-20:],
                     "cold_start_score": self.cold_start_score(user_id)}
 

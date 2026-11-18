@@ -9,8 +9,12 @@
 4. new items    title + description -> existing category names, tags and verdicts for every
                 reviewed new category (one call, plus the evidence check).
 
-The same functions run in the application and in the measurement (``scripts/lab_eval.py``),
-so the measured behaviour is the shipped behaviour. The prompts follow the student's
+The same model-facing functions run in the application and in the measurement
+(``scripts/lab_eval.py``). The measured runs of 17 Nov 2026 are not identical to the shipped
+application in two ways: (1) the evaluator applied all predicted labels of a case as one group,
+while the app intersects separate "only" controls (cases with several "only" labels may differ;
+the scorer lists them), and (2) they used the quotation rule of their commit; the shipped rule
+is stricter (3+ characters, or one whole tag of any length). The prompts follow the student's
 original contracts (``vocabulary_grounding.py``, ``staged_induction.py``). There is no
 request-specific, label-specific or example-specific logic in this module; a test enforces it.
 """
@@ -147,10 +151,13 @@ def quote_found(item, field, quote):
     """True when the quote occurs in the named field (case and whitespace insensitive)."""
     quote = _norm(quote).strip(" .\"'“”#")
     # At least three characters, or one whole tag; a single letter or a two-letter word proves nothing.
-    if len(quote) < 3:
+    # The whole-tag exception is checked before the minimum, so a whole two-character tag ("TV") counts.
+    if not quote:
         return False
     if field == "tags":
         return any(quote == _norm(t) for t in item.get("tags", []))
+    if len(quote) < 3:
+        return False
     if field in ("title", "description"):
         return quote in _norm(field_text(item, field))
     return False
@@ -172,7 +179,7 @@ def label_view(term):
 
 def call_model(provider, ledger, task, system, payload, schema, calls):
     estimate = provider.estimate_usd(system, payload)   # also charged if the call fails without a budget
-    reservation = ledger.reserve(estimate)   # parallel calls each reserve their upper bound first
+    reservation = ledger.reserve(estimate)   # parallel calls each reserve an advisory estimate first (not a hard cap)
     if reservation is None or (ledger.budget_usd is not None and ledger.total() >= ledger.budget_usd):
         if reservation is not None:
             ledger.release(reservation)
